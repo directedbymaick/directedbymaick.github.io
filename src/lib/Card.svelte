@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Spring } from 'svelte/motion';
 	import type { CardData } from '$lib/types';
 	import { resolveFoil, styleString } from '$lib/effects/foil';
 	import { charter } from '$lib/charter';
@@ -17,24 +18,27 @@
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const foil = $derived(resolveFoil(card, faction.color));
 
-	let px = $state(0.5);
-	let py = $state(0.5);
+	// Springs : le pointeur cible, la carte suit avec inertie.
+	const pointer = new Spring({ x: 0.5, y: 0.5 }, { stiffness: 0.12, damping: 0.5 });
 	let hover = $state(false);
 
 	function onMove(e: PointerEvent) {
 		if (!interactive) return;
 		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-		px = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-		py = Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height));
+		pointer.target = {
+			x: Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)),
+			y: Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height))
+		};
 		hover = true;
 	}
 
 	function onLeave() {
 		hover = false;
-		px = 0.5;
-		py = 0.5;
+		pointer.target = { x: 0.5, y: 0.5 };
 	}
 
+	const px = $derived(pointer.current.x);
+	const py = $derived(pointer.current.y);
 	const rx = $derived(hover ? (py - 0.5) * -22 : 0);
 	const ry = $derived(hover ? (px - 0.5) * 26 : 0);
 	const fromCenter = $derived(hover ? Math.min(1, Math.hypot(px - 0.5, py - 0.5) * 2.2) : 0);
@@ -65,7 +69,10 @@
 
 			<div class="art">
 				<img src={card.art} alt={card.name} draggable="false" />
-				<div class="foil" aria-hidden="true"></div>
+				<!-- Trois couches de matière à vitesses de parallaxe différentes :
+				     c'est le décalage entre elles qui fait le "papier foil". -->
+				<div class="foil-a" aria-hidden="true"></div>
+				<div class="foil-b" aria-hidden="true"></div>
 				<div class="sparkles" aria-hidden="true"></div>
 			</div>
 
@@ -93,7 +100,7 @@
 
 <style>
 	.scene {
-		perspective: 1200px;
+		perspective: 1100px;
 		width: var(--card-w, 320px);
 	}
 
@@ -101,15 +108,12 @@
 		width: 100%;
 		aspect-ratio: 63 / 88;
 		container-type: inline-size;
-		transform: rotateX(var(--rx)) rotateY(var(--ry));
-		transition: transform 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+		transform: translate3d(0, 0, 0.01px) rotateX(var(--rx)) rotateY(var(--ry));
 		transform-style: preserve-3d;
+		will-change: transform;
 		touch-action: none;
 		user-select: none;
 		-webkit-user-select: none;
-	}
-	.card.hover {
-		transition: transform 0.06s linear;
 	}
 
 	.face {
@@ -128,6 +132,16 @@
 			inset 0 0 0 0.4cqw rgba(255, 255, 255, 0.06);
 		color: #e8e6df;
 		font-family: 'Segoe UI', system-ui, sans-serif;
+		transition: box-shadow 0.4s ease;
+	}
+
+	/* glow de rareté : la couleur du cadre irradie quand la carte s'anime */
+	.card.hover .face {
+		box-shadow:
+			0 2.5cqw 8cqw rgba(0, 0, 0, 0.5),
+			0 0 calc(4cqw + var(--from-center) * 10cqw)
+				color-mix(in srgb, var(--frame) 55%, transparent),
+			inset 0 0 0 0.4cqw rgba(255, 255, 255, 0.08);
 	}
 
 	/* ---------- zones ---------- */
@@ -248,9 +262,10 @@
 		background: radial-gradient(circle at 35% 30%, #ff8f7f, #a81d2c 70%);
 	}
 
-	/* ---------- matière : foil ---------- */
+	/* ---------- matière ---------- */
 
-	.foil,
+	.foil-a,
+	.foil-b,
 	.sparkles,
 	.glare {
 		position: absolute;
@@ -259,9 +274,19 @@
 		opacity: 0;
 	}
 
-	/* holo (rare) : bandes irisées teintées par la palette, glissent avec le pointeur */
-	.card[data-foil='holo'] .foil {
+	/*
+	 * holo (rare) : deux nappes de bandes irisées teintées par la palette.
+	 * La couche A suit le pointeur (plage large), la couche B glisse en sens
+	 * inverse plus lentement — le décalage crée la profondeur du foil.
+	 */
+	.card[data-foil='holo'] .foil-a {
 		background:
+			radial-gradient(
+				farthest-corner circle at var(--px) var(--py),
+				rgba(255, 255, 255, 0.55) 5%,
+				rgba(120, 120, 120, 0.5) 40%,
+				#000 100%
+			),
 			repeating-linear-gradient(
 				var(--band-angle),
 				var(--c0) 0%,
@@ -272,17 +297,45 @@
 				#e6a7ff 35%,
 				var(--c0) 42%
 			);
-		background-size: 300% 300%;
-		background-position: calc(var(--pxn) * 100%) calc(var(--pyn) * 100%);
+		background-blend-mode: multiply;
+		background-size: 120% 120%, 300% 300%;
+		background-position:
+			center,
+			calc(10% + var(--pxn) * 80%) calc(10% + var(--pyn) * 80%);
 		mask-image: var(--grain);
-		mask-size: 38cqw;
+		mask-size: 34cqw;
 		mix-blend-mode: color-dodge;
-		filter: brightness(0.75) contrast(1.4) saturate(1.5);
+		filter: brightness(0.7) contrast(1.6) saturate(1.4);
+	}
+	.card[data-foil='holo'] .foil-b {
+		background: repeating-linear-gradient(
+			calc(var(--band-angle) + 55deg),
+			var(--c2) 0%,
+			#fff3c4 9%,
+			var(--c1) 18%,
+			#c4f0ff 27%,
+			var(--c2) 36%
+		);
+		background-size: 340% 340%;
+		background-position: calc(20% + (1 - var(--pxn)) * 60%) calc(20% + (1 - var(--pyn)) * 60%);
+		mask-image: var(--grain);
+		mask-size: 58cqw;
+		mix-blend-mode: overlay;
+		filter: brightness(0.9) contrast(1.3) saturate(1.3);
 	}
 
-	/* prismatic (épique) : roue conique centrée sur le pointeur */
-	.card[data-foil='prismatic'] .foil {
+	/*
+	 * prismatic (épique) : roue conique centrée sur le pointeur (couche A)
+	 * + bandes diagonales en contre-parallaxe (couche B).
+	 */
+	.card[data-foil='prismatic'] .foil-a {
 		background:
+			radial-gradient(
+				farthest-corner circle at var(--px) var(--py),
+				rgba(255, 255, 255, 0.5) 4%,
+				rgba(110, 110, 110, 0.45) 35%,
+				#000 100%
+			),
 			conic-gradient(
 				from var(--hue-shift) at var(--px) var(--py),
 				var(--c0),
@@ -294,14 +347,34 @@
 				#ffa7e6,
 				var(--c0)
 			);
+		background-blend-mode: multiply;
 		mask-image: var(--grain);
-		mask-size: 30cqw;
+		mask-size: 28cqw;
 		mix-blend-mode: color-dodge;
-		filter: brightness(0.7) contrast(1.5) saturate(1.7);
+		filter: brightness(0.68) contrast(1.7) saturate(1.6);
+	}
+	.card[data-foil='prismatic'] .foil-b {
+		background: repeating-linear-gradient(
+			var(--band-angle),
+			var(--c1) 0%,
+			#ffe9c4 8%,
+			var(--c2) 16%,
+			#c4e0ff 24%,
+			var(--c1) 32%
+		);
+		background-size: 300% 300%;
+		background-position: calc(15% + (1 - var(--pxn)) * 70%) calc(15% + var(--pyn) * 70%);
+		mask-image: var(--grain);
+		mask-size: 52cqw;
+		mix-blend-mode: overlay;
+		filter: brightness(0.95) contrast(1.25) saturate(1.4);
 	}
 
-	/* galaxy (légendaire) : nappes de nébuleuse + paillettes */
-	.card[data-foil='galaxy'] .foil {
+	/*
+	 * galaxy (légendaire) : nappes de nébuleuse (A) + bandes foil lentes (B)
+	 * + paillettes ponctuelles au pointeur.
+	 */
+	.card[data-foil='galaxy'] .foil-a {
 		background:
 			radial-gradient(
 				120cqw 90cqw at calc(100% - var(--px)) calc(100% - var(--py)),
@@ -316,31 +389,51 @@
 		mix-blend-mode: color-dodge;
 		filter: brightness(0.62) contrast(1.35) saturate(1.6);
 	}
+	.card[data-foil='galaxy'] .foil-b {
+		background: repeating-linear-gradient(
+			calc(var(--band-angle) - 40deg),
+			var(--c0) 0%,
+			#ffe6a7 10%,
+			var(--c1) 20%,
+			#a7e6ff 30%,
+			var(--c0) 40%
+		);
+		background-size: 320% 320%;
+		background-position: calc(20% + (1 - var(--pxn)) * 60%) calc(10% + var(--pyn) * 80%);
+		mask-image: var(--grain);
+		mask-size: 46cqw;
+		mix-blend-mode: overlay;
+		filter: brightness(0.85) contrast(1.4) saturate(1.5);
+	}
 	.card[data-foil='galaxy'] .sparkles {
-		background:
-			radial-gradient(
-				60cqw 60cqw at var(--px) var(--py),
-				#fff 0%,
-				#ffe9c4 25%,
-				transparent 65%
-			);
+		background: radial-gradient(
+			60cqw 60cqw at var(--px) var(--py),
+			#fff 0%,
+			#ffe9c4 25%,
+			transparent 65%
+		);
 		mask-image: var(--sparkle);
 		mask-size: 24cqw;
 		mix-blend-mode: color-dodge;
 		filter: contrast(2.2) brightness(0.9);
 	}
 
-	.card.hover .foil {
-		opacity: calc(0.22 + var(--from-center) * 0.42);
-		transition: opacity 0.2s ease;
+	.card.hover .foil-a {
+		opacity: calc(0.3 + var(--from-center) * 0.45);
+		transition: opacity 0.25s ease;
+	}
+	.card.hover .foil-b {
+		opacity: calc(0.18 + var(--from-center) * 0.35);
+		transition: opacity 0.25s ease;
 	}
 	.card.hover .sparkles {
 		opacity: calc(0.3 + var(--from-center) * 0.7);
-		transition: opacity 0.2s ease;
+		transition: opacity 0.25s ease;
 	}
 
 	/* mat (commune) : aucun foil — la matière, c'est l'absence de matière */
-	.card[data-foil='mat'] .foil,
+	.card[data-foil='mat'] .foil-a,
+	.card[data-foil='mat'] .foil-b,
 	.card[data-foil='mat'] .sparkles {
 		display: none;
 	}
@@ -349,15 +442,16 @@
 
 	.glare {
 		background: radial-gradient(
-			70cqw 55cqw at var(--px) var(--py),
-			rgba(255, 255, 255, 0.55) 0%,
-			rgba(255, 255, 255, 0.12) 35%,
-			transparent 70%
+			farthest-corner circle at var(--px) var(--py),
+			rgba(255, 255, 255, 0.7) 5%,
+			rgba(255, 255, 255, 0.15) 35%,
+			transparent 75%
 		);
-		mix-blend-mode: soft-light;
+		mix-blend-mode: overlay;
+		filter: brightness(0.9) contrast(1.6);
 	}
 	.card.hover .glare {
-		opacity: 1;
-		transition: opacity 0.2s ease;
+		opacity: calc(0.5 + var(--from-center) * 0.4);
+		transition: opacity 0.25s ease;
 	}
 </style>
