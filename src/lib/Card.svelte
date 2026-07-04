@@ -42,6 +42,10 @@
 		pointer.target = { x: 0.5, y: 0.5 };
 	}
 
+	const kindLabel = $derived(
+		card.kind === 'traveler' ? 'Traveler' : card.kind === 'protocole' ? 'Protocole' : 'Époque'
+	);
+
 	const px = $derived(pointer.current.x);
 	const py = $derived(pointer.current.y);
 	const rx = $derived(hover ? (py - 0.5) * -20 : 0);
@@ -86,24 +90,23 @@
 					<header class="plate">
 						<h2 class="name">{card.name}</h2>
 						<p class="cellline">
+							<span class="kindlabel">{kindLabel}</span>
 							{#if card.cell}
 								<span class="cell">{card.cell}</span>
-							{:else if card.kind === 'protocole'}
-								<span class="cell">Protocole</span>
-							{:else}
-								<span class="cell">Zone aveugle</span>
 							{/if}
+							<span class="hairline"></span>
 							<span class="fname">{faction.name}</span>
 						</p>
 					</header>
 
 					<div class="cartouche">
+						<span class="watermark" aria-hidden="true">{faction.sigil}</span>
 						{#if card.text}
 							<p class="rules">{card.text}</p>
 						{/if}
 						{#if card.synchro}
 							<p class="synchro">
-								<span class="synchro-tag">⟟ SYNCHRO ({card.synchro.cost})</span>
+								<span class="synchro-tag">⟟ Synchro {card.synchro.cost}</span>
 								{card.synchro.text}
 							</p>
 						{/if}
@@ -126,6 +129,7 @@
 				</div>
 
 				<div class="prism-veil" aria-hidden="true"></div>
+				<div class="etch" aria-hidden="true"></div>
 				<div class="glare" aria-hidden="true"></div>
 			</div>
 			<footer class="frame-footer" aria-hidden="true">
@@ -426,15 +430,59 @@
 			#c98340 100%
 		);
 	}
+	/* médaillon de faction : sigil serti dans un anneau d'acier (cf. hex stats) */
 	.sigil {
 		position: absolute;
-		top: 2.6cqw;
-		right: 2.6cqw;
+		top: 2.4cqw;
+		right: 2.4cqw;
 		z-index: 4;
-		font-size: 5.4cqw;
+		display: grid;
+		place-items: center;
+		width: 7.6cqw;
+		height: 7.6cqw;
+		border-radius: 50%;
+		font-size: 3.7cqw;
 		line-height: 1;
-		color: var(--accent);
-		text-shadow: 0 0 2.4cqw color-mix(in srgb, var(--accent) 70%, transparent);
+		background:
+			radial-gradient(90% 55% at 50% 8%, rgba(255, 255, 255, 0.24), transparent 60%),
+			radial-gradient(100% 80% at 50% 115%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 65%),
+			linear-gradient(180deg, #21232d 0%, #0f1118 100%);
+		color: color-mix(in srgb, var(--accent) 75%, #fff);
+		text-shadow: 0 0 2cqw color-mix(in srgb, var(--accent) 70%, transparent);
+		filter: drop-shadow(0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5));
+	}
+	.sigil::before {
+		content: '';
+		position: absolute;
+		inset: -0.55cqw;
+		z-index: -1;
+		border-radius: 50%;
+		background: linear-gradient(165deg, #eef1f6 0%, #9aa2b0 30%, #5d6473 55%, #d5dae2 78%, #7e8694 100%);
+	}
+
+	/* gravure de circuit : double filet + pastilles aux angles — l'ornement
+	   propriétaire de la carte (l'équivalent tech des filets or de luxe) */
+	.etch {
+		position: absolute;
+		inset: 1.2cqw;
+		z-index: 7;
+		pointer-events: none;
+		border-radius: 2.1cqw;
+		border: 1px solid color-mix(in srgb, var(--sys) 30%, transparent);
+		--pad: color-mix(in srgb, var(--sys) 60%, transparent);
+		background:
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.6cqw top 2.6cqw / 1.2cqw 1.2cqw,
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.6cqw top 2.6cqw / 1.2cqw 1.2cqw,
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.6cqw bottom 2.6cqw / 1.2cqw 1.2cqw,
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.6cqw bottom 2.6cqw / 1.2cqw 1.2cqw;
+		background-repeat: no-repeat;
+	}
+	.etch::before {
+		content: '';
+		position: absolute;
+		inset: 0.75cqw;
+		border-radius: 1.6cqw;
+		border: 1px solid color-mix(in srgb, var(--sys) 14%, transparent);
 	}
 
 	/* ---------- contenu ---------- */
@@ -508,12 +556,32 @@
 	.cellline {
 		margin: 1cqw 0 0;
 		display: flex;
-		gap: 1.8cqw;
+		gap: 1.6cqw;
 		align-items: center;
 		font-family: Consolas, 'Cascadia Mono', monospace;
 		font-size: 2.7cqw;
 		text-transform: uppercase;
 		letter-spacing: 0.14em;
+	}
+	/* taxonomie affichée : TRAVELER ◆ — l'ambre du HUD */
+	.kindlabel {
+		color: color-mix(in srgb, var(--sys) 78%, #fff);
+		font-weight: 700;
+		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--sys) 35%, transparent);
+	}
+	.kindlabel::after {
+		content: ' ◆';
+		font-size: 0.8em;
+		opacity: 0.7;
+	}
+	.hairline {
+		flex: 1;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--sys) 35%, transparent),
+			transparent 90%
+		);
 	}
 	/* le CELL est un chip taillé — accent en fond, pas de chevrons typographiques */
 	.cell {
@@ -555,10 +623,26 @@
 		overflow: hidden;
 		font-family: 'Segoe UI', system-ui, sans-serif;
 	}
+	/* filigrane de faction derrière le texte (cf. le watermark MTG) */
+	.watermark {
+		position: absolute;
+		right: -2.4cqw;
+		bottom: -4.4cqw;
+		font-size: 19cqw;
+		line-height: 1;
+		color: color-mix(in srgb, var(--accent) 55%, transparent);
+		opacity: 0.1;
+		pointer-events: none;
+		user-select: none;
+	}
+	.cartouche {
+		position: relative;
+	}
 	.rules {
 		margin: 0;
 		font-size: 3.6cqw;
 		line-height: 1.32;
+		position: relative;
 	}
 	.synchro {
 		margin: 1.4cqw 0 0;
@@ -569,15 +653,24 @@
 		background: color-mix(in srgb, var(--accent) 9%, transparent);
 		border-radius: 0 1cqw 1cqw 0;
 	}
+	/* pill étiquetée (cf. les chips "Déclenchement" de One Piece) */
 	.synchro-tag {
-		display: block;
+		display: inline-block;
 		font-family: Consolas, 'Cascadia Mono', monospace;
-		font-size: 2.8cqw;
+		font-size: 2.6cqw;
 		font-weight: 700;
-		letter-spacing: 0.14em;
-		color: var(--accent);
-		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--accent) 45%, transparent);
-		margin-bottom: 0.5cqw;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		padding: 0.45cqw 1.7cqw 0.4cqw;
+		margin-bottom: 0.7cqw;
+		clip-path: polygon(1cqw 0, 100% 0, calc(100% - 1cqw) 100%, 0 100%);
+		background: linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--accent) 85%, #fff) 0%,
+			color-mix(in srgb, var(--accent) 80%, #000) 100%
+		);
+		color: #0e0f15;
+		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
 	}
 	.flavor {
 		margin: 1.4cqw 0 0;
