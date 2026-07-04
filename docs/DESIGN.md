@@ -43,6 +43,18 @@ Règle d'or de la bible appliquée aux cartes :
 - **Capteurs** : points fins aux coins du cadre (détail signature).
 - **Typographie** : Bahnschrift (DIN) pour HUD/labels — froide, technique ; fallback Segoe UI. Pas de serif fantasy.
 
+## 4bis. La couche rétro-tech (Evangelion / Psycho-Pass / Blade Runner)
+
+Par-dessus l'anatomie, le corps de la carte est traité comme un **terminal CRT d'archive RIKKEN** :
+
+- **L'ambre système `#ffb454`** — la couleur du HUD (référence EVA/Blade Runner), distincte de l'accent de faction : cellule de coût, brackets, labels, hachures, micro-texte. Deux couleurs par carte maximum : l'ambre système + l'accent de faction.
+- **Scanlines CRT** + vignette chaude subtile sur tout le corps.
+- **Brackets de visée** aux quatre coins de la fenêtre d'art (viseur NERV).
+- **Numéro de série vertical** (`RIK·S01//SLUG`) le long de l'art — le dossier d'archive incarné.
+- **Hachures d'avertissement** (repeating 45°) sous la plaque de nom.
+- **Monospace phosphore** (Consolas) pour les micro-labels : ⟨CELL⟩, ATQ/INT, SYNCHRO — avec léger glow.
+- **Barre de titre terminal** ambre en tête du cartouche de texte.
+
 ## 5. La lumière ne s'allume qu'à l'activation
 
 Au repos, la carte est sobre (matériau + art). Au survol (= mode local) :

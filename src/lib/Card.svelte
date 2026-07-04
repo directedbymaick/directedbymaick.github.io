@@ -75,6 +75,10 @@
 					<div class="foil-b" aria-hidden="true"></div>
 					<div class="sparkles" aria-hidden="true"></div>
 					<div class="scrim" aria-hidden="true"></div>
+					<div class="hud-brackets" aria-hidden="true"></div>
+					<span class="serial" aria-hidden="true"
+						>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 16).toUpperCase()}</span
+					>
 				</div>
 
 				<span class="cost" title="Coût en Énergie">{card.cost}</span>
@@ -141,6 +145,9 @@
 		width: 100%;
 		aspect-ratio: 63 / 88;
 		container-type: inline-size;
+		/* couche rétro-tech : l'ambre système (EVA / Blade Runner) — la couleur
+		   du HUD, distincte de l'accent de faction qui reste sur les conduits */
+		--sys: #ffb454;
 		transform: translate3d(0, 0, 0.01px) rotateX(var(--rx)) rotateY(var(--ry));
 		transform-style: preserve-3d;
 		will-change: transform;
@@ -266,6 +273,25 @@
 		flex-direction: column;
 		color: #e8e6df;
 	}
+	/* CRT : scanlines + vignette chaude — l'écran rétro par-dessus tout */
+	.body::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 8;
+		pointer-events: none;
+		background:
+			repeating-linear-gradient(
+				180deg,
+				rgba(255, 255, 255, 0.025) 0 1px,
+				transparent 1px 3px
+			),
+			radial-gradient(
+				130% 100% at 50% 0%,
+				transparent 60%,
+				rgba(255, 180, 84, 0.05) 100%
+			);
+	}
 
 	/* ---------- art full-bleed ---------- */
 
@@ -290,6 +316,39 @@
 		inset: 0;
 		background: linear-gradient(180deg, rgba(16, 17, 23, 0.25) 0%, transparent 22%, transparent 68%, #101117 100%);
 		pointer-events: none;
+	}
+
+	/* brackets de visée (viseur NERV) aux coins de la fenêtre d'art */
+	.hud-brackets {
+		--bk: color-mix(in srgb, var(--sys) 75%, transparent);
+		position: absolute;
+		inset: 1.8cqw;
+		pointer-events: none;
+		z-index: 2;
+		background:
+			linear-gradient(var(--bk), var(--bk)) left 0 top 0 / 5cqw 0.35cqw,
+			linear-gradient(var(--bk), var(--bk)) left 0 top 0 / 0.35cqw 5cqw,
+			linear-gradient(var(--bk), var(--bk)) right 0 top 0 / 5cqw 0.35cqw,
+			linear-gradient(var(--bk), var(--bk)) right 0 top 0 / 0.35cqw 5cqw,
+			linear-gradient(var(--bk), var(--bk)) left 0 bottom 0 / 5cqw 0.35cqw,
+			linear-gradient(var(--bk), var(--bk)) left 0 bottom 0 / 0.35cqw 5cqw,
+			linear-gradient(var(--bk), var(--bk)) right 0 bottom 0 / 5cqw 0.35cqw,
+			linear-gradient(var(--bk), var(--bk)) right 0 bottom 0 / 0.35cqw 5cqw;
+		background-repeat: no-repeat;
+	}
+
+	/* numéro de série vertical — le dossier d'archive incarné (sous le sigil) */
+	.serial {
+		position: absolute;
+		top: 10cqw;
+		right: 2.9cqw;
+		z-index: 2;
+		writing-mode: vertical-rl;
+		font-family: Consolas, 'Cascadia Mono', monospace;
+		font-size: 2.1cqw;
+		letter-spacing: 0.24em;
+		color: color-mix(in srgb, var(--sys) 60%, transparent);
+		text-shadow: 0 0 1.2cqw color-mix(in srgb, var(--sys) 35%, transparent);
 	}
 
 	/* ---------- coût / sigil ---------- */
@@ -319,7 +378,11 @@
 			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
 			50% 0, 50% 5.5%, 5% 27.5%, 5% 72.5%, 50% 94.5%, 95% 72.5%, 95% 27.5%, 50% 5.5%
 		);
-		background: color-mix(in srgb, var(--accent) 85%, #fff);
+		/* l'Énergie est ambre — la couleur système, pas celle de la faction */
+		background: var(--sys);
+	}
+	.cost {
+		text-shadow: 0 0 2cqw color-mix(in srgb, var(--sys) 55%, transparent);
 	}
 	.sigil {
 		position: absolute;
@@ -345,11 +408,26 @@
 	}
 
 	.plate {
+		position: relative;
 		align-self: flex-start;
 		max-width: 100%;
-		padding: 1.4cqw 3cqw 1.2cqw 2.2cqw;
+		padding: 1.4cqw 3cqw 1.6cqw 2.2cqw;
 		background: linear-gradient(90deg, rgba(10, 11, 16, 0.92) 0%, rgba(10, 11, 16, 0.55) 78%, transparent 100%);
 		border-left: 0.7cqw solid var(--accent);
+	}
+	/* hachures d'avertissement (EVA) sous la plaque de nom */
+	.plate::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 38%;
+		height: 0.7cqw;
+		background: repeating-linear-gradient(
+			-45deg,
+			color-mix(in srgb, var(--sys) 80%, transparent) 0 1.6cqw,
+			transparent 1.6cqw 3.2cqw
+		);
 	}
 	.name {
 		margin: 0;
@@ -365,12 +443,21 @@
 		display: flex;
 		gap: 2.2cqw;
 		align-items: baseline;
-		font-size: 3cqw;
+		font-family: Consolas, 'Cascadia Mono', monospace;
+		font-size: 2.9cqw;
 		text-transform: uppercase;
-		letter-spacing: 0.16em;
+		letter-spacing: 0.14em;
 	}
 	.cell {
-		color: #9aa0ad;
+		color: color-mix(in srgb, var(--sys) 72%, #fff);
+	}
+	.cell::before {
+		content: '⟨';
+		opacity: 0.55;
+	}
+	.cell::after {
+		content: '⟩';
+		opacity: 0.55;
 	}
 	.fname {
 		font-weight: 700;
@@ -380,9 +467,11 @@
 		flex: 1;
 		margin-top: 1.8cqw;
 		padding: 2.2cqw 2.6cqw;
-		border-radius: 1.8cqw;
+		border-radius: 0 0 1.8cqw 1.8cqw;
 		background: rgba(255, 255, 255, 0.045);
 		border: 0.22cqw solid rgba(255, 255, 255, 0.09);
+		/* barre de titre terminal */
+		border-top: 0.45cqw solid color-mix(in srgb, var(--sys) 40%, transparent);
 		overflow: hidden;
 		font-family: 'Segoe UI', system-ui, sans-serif;
 	}
@@ -402,11 +491,12 @@
 	}
 	.synchro-tag {
 		display: block;
-		font-family: Bahnschrift, 'Segoe UI', sans-serif;
-		font-size: 2.9cqw;
+		font-family: Consolas, 'Cascadia Mono', monospace;
+		font-size: 2.8cqw;
 		font-weight: 700;
 		letter-spacing: 0.14em;
 		color: var(--accent);
+		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--accent) 45%, transparent);
 		margin-bottom: 0.5cqw;
 	}
 	.flavor {
@@ -443,10 +533,11 @@
 		color: #fff;
 	}
 	.stat small {
+		font-family: Consolas, 'Cascadia Mono', monospace;
 		font-size: 2.1cqw;
 		font-weight: 700;
 		letter-spacing: 0.22em;
-		color: #9aa0ad;
+		color: color-mix(in srgb, var(--sys) 70%, #fff);
 	}
 	.attack {
 		clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);
