@@ -32,7 +32,7 @@
 		<p class="gene">
 			gène : foil <code>{card.gene.foilPreset}</code> · seed <code>{card.gene.seed}</code> ·
 			palette
-			{#each card.gene.palette as c (c)}
+			{#each card.gene.palette as c, i (i)}
 				<span class="swatch" style="background: {c}" title={c}></span>
 			{/each}
 		</p>
