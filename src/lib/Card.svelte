@@ -430,39 +430,22 @@
 			#c98340 100%
 		);
 	}
-	/* médaillon de faction : sigil serti dans un anneau d'acier (cf. hex stats) */
+	/* sigil de faction : le glyphe accent, seul */
 	.sigil {
 		position: absolute;
 		top: 3.2cqw;
 		right: 3.2cqw;
 		z-index: 4;
-		display: grid;
-		place-items: center;
-		width: 7.6cqw;
-		height: 7.6cqw;
-		border-radius: 50%;
-		font-size: 3.7cqw;
+		font-size: 5cqw;
 		line-height: 1;
-		background:
-			radial-gradient(90% 55% at 50% 8%, rgba(255, 255, 255, 0.24), transparent 60%),
-			radial-gradient(100% 80% at 50% 115%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 65%),
-			linear-gradient(180deg, #21232d 0%, #0f1118 100%);
-		color: color-mix(in srgb, var(--accent) 75%, #fff);
-		text-shadow: 0 0 2cqw color-mix(in srgb, var(--accent) 70%, transparent);
-		filter: drop-shadow(0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5));
-	}
-	.sigil::before {
-		content: '';
-		position: absolute;
-		inset: -0.55cqw;
-		z-index: -1;
-		border-radius: 50%;
-		background: linear-gradient(165deg, #eef1f6 0%, #9aa2b0 30%, #5d6473 55%, #d5dae2 78%, #7e8694 100%);
+		color: color-mix(in srgb, var(--accent) 80%, #fff);
+		text-shadow:
+			0 0 2.2cqw color-mix(in srgb, var(--accent) 70%, transparent),
+			0 0.3cqw 0.6cqw rgba(0, 0, 0, 0.55);
 	}
 
-	/* gravure de circuit : UN filet + pastilles aux angles — l'ornement
-	   propriétaire. Sous les badges et le contenu (z2) : rien ne le chevauche,
-	   il ne chevauche rien. */
+	/* gravure : un filet fin, sous les badges et le contenu (z2) —
+	   il encadre, il ne croise rien. */
 	.etch {
 		position: absolute;
 		inset: 1.4cqw;
@@ -470,13 +453,6 @@
 		pointer-events: none;
 		border-radius: 2cqw;
 		border: 1px solid color-mix(in srgb, var(--sys) 28%, transparent);
-		--pad: color-mix(in srgb, var(--sys) 55%, transparent);
-		background:
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.4cqw top 2.4cqw / 1.2cqw 1.2cqw,
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.4cqw top 2.4cqw / 1.2cqw 1.2cqw,
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.4cqw bottom 2.4cqw / 1.2cqw 1.2cqw,
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.4cqw bottom 2.4cqw / 1.2cqw 1.2cqw;
-		background-repeat: no-repeat;
 	}
 
 	/* ---------- contenu ---------- */

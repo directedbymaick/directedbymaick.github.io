@@ -57,8 +57,8 @@ Par-dessus l'anatomie, le corps de la carte est traité comme un **terminal CRT 
 **Règle de matérialité (référence qualité : Pokémon TCG Pocket)** : aucun élément décoratif ne doit être un aplat. Chaque badge/plaque/panneau est un objet imprimé : gloss en tête + assise sombre (biseau), ombre portée (via `filter: drop-shadow` quand un clip-path avale les box-shadow), panneaux de texte en creux (inner shadow), fenêtre d'art enchâssée, gemmes serties (reflet + facette), corps teinté faction (radial bas).
 
 **Le système d'identité (références : Riftbound, MTG, One Piece TCG)** :
-- **La gravure de circuit** — l'ornement propriétaire : double filet ambre tracé au bord intérieur de la carte avec pastilles aux quatre angles (l'équivalent tech des doubles filets or). En full art, la gravure passe par-dessus l'artwork.
-- **Le médaillon de faction** — le sigil serti dans un anneau d'acier brossé (même langage que les cellules hex), teinté accent.
+- **La gravure** — l'ornement propriétaire : un filet ambre fin tracé au bord intérieur de la carte, SOUS les badges et le contenu (il encadre, il ne croise rien). En full art, la gravure passe par-dessus l'artwork. Pas de pastilles ni de second filet (retirés — bruit).
+- **Le sigil de faction** — le glyphe accent seul, avec glow, sans médaillon ni anneau (retirés — élément sans fonction).
 - **La ligne de taxonomie** — `TRAVELER ◆ [chip CELL] ───── FACTION` : type de carte en ambre, CELL en chip taillé accent, filet dégradé, faction en acier espacé.
 - **Les pills étiquetées** — la Synchro est une pill accent à texte sombre (`⟟ SYNCHRO n`), pas un label flottant.
 - **Le filigrane** — le sigil de faction en grand, fantômé (~10%) dans le coin du cartouche de texte.
