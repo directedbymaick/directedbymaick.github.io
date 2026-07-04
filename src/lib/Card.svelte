@@ -76,9 +76,6 @@
 					<div class="sparkles" aria-hidden="true"></div>
 					<div class="scrim" aria-hidden="true"></div>
 					<div class="crt" aria-hidden="true"></div>
-					<span class="serial" aria-hidden="true"
-						>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 16).toUpperCase()}</span
-					>
 				</div>
 
 				<span class="cost" title="Coût en Énergie">{card.cost}</span>
@@ -116,9 +113,9 @@
 
 					{#if card.kind !== 'protocole'}
 						<footer class="statbar">
-							<span class="stat attack"><small>ATQ</small>{card.attack}</span>
+							<span class="stat"><span class="hex">{card.attack}</span><small>ATQ</small></span>
 							<span class="rarity-dot" title={rarityDef.name}></span>
-							<span class="stat health"><small>INT</small>{card.health}</span>
+							<span class="stat"><small>INT</small><span class="hex">{card.health}</span></span>
 						</footer>
 					{:else}
 						<footer class="statbar protocol-bar">
@@ -130,6 +127,12 @@
 				<div class="prism-veil" aria-hidden="true"></div>
 				<div class="glare" aria-hidden="true"></div>
 			</div>
+			<footer class="frame-footer" aria-hidden="true">
+				<span class="ff-serial"
+					>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 18).toUpperCase()}</span
+				>
+				<span class="ff-rarity">◆ {rarityDef.name} · ZA-01</span>
+			</footer>
 			<div class="conduits" aria-hidden="true"></div>
 		</div>
 	</article>
@@ -162,7 +165,7 @@
 	.face {
 		position: absolute;
 		inset: 0;
-		padding: 2.3cqw;
+		padding: 2.3cqw 2.3cqw 5.4cqw;
 		border-radius: 4.6cqw;
 		box-shadow:
 			0 2.5cqw 6cqw rgba(0, 0, 0, 0.5),
@@ -347,18 +350,46 @@
 			inset 0 -0.6cqw 1.6cqw rgba(0, 0, 0, 0.3);
 	}
 
-	/* numéro de série vertical — le dossier d'archive incarné (sous le sigil) */
-	.serial {
+	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
+	   L'encre s'adapte au matériau (claire sur carbone/prisme, sombre sur métaux). */
+	.frame-footer {
 		position: absolute;
-		top: 10cqw;
-		right: 2.9cqw;
-		z-index: 2;
-		writing-mode: vertical-rl;
+		left: 3.2cqw;
+		right: 3.2cqw;
+		bottom: 0;
+		height: 5.4cqw;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		font-family: Consolas, 'Cascadia Mono', monospace;
-		font-size: 2.1cqw;
-		letter-spacing: 0.24em;
-		color: color-mix(in srgb, var(--sys) 60%, transparent);
-		text-shadow: 0 0 1.2cqw color-mix(in srgb, var(--sys) 35%, transparent);
+		font-size: 2cqw;
+		letter-spacing: 0.16em;
+		color: var(--frame-ink, rgba(236, 232, 225, 0.55));
+		text-shadow: 0 1px 0 var(--frame-ink-relief, rgba(0, 0, 0, 0.35));
+		pointer-events: none;
+	}
+	.ff-rarity {
+		text-transform: uppercase;
+	}
+	.card[data-material='carbone'] {
+		--frame-ink: rgba(236, 232, 225, 0.55);
+		--frame-ink-relief: rgba(0, 0, 0, 0.5);
+	}
+	.card[data-material='nacre'] {
+		--frame-ink: rgba(24, 30, 40, 0.65);
+		--frame-ink-relief: rgba(255, 255, 255, 0.5);
+	}
+	.card[data-material='argent'] {
+		--frame-ink: rgba(18, 22, 30, 0.62);
+		--frame-ink-relief: rgba(255, 255, 255, 0.45);
+	}
+	.card[data-material='or'] {
+		--frame-ink: rgba(46, 30, 8, 0.68);
+		--frame-ink-relief: rgba(255, 235, 180, 0.5);
+	}
+	.card[data-material='prisme'] {
+		--frame-ink: rgba(236, 232, 225, 0.6);
+		--frame-ink-relief: rgba(0, 0, 0, 0.5);
 	}
 
 	/* ---------- coût / sigil ---------- */
@@ -559,41 +590,57 @@
 	.protocol-bar {
 		justify-content: center;
 	}
+	/* stats : mini-cellules hexagonales — le même objet que la cellule de coût,
+	   serti d'acier au lieu d'ambre. Un seul langage de badge sur la carte. */
 	.stat {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		justify-content: center;
-		gap: 0.2cqw;
-		width: 14cqw;
-		height: 10.5cqw;
-		/* plaque biseautée : gloss en tête, assise sombre, ombre portée (filter,
-		   car le clip-path avale box-shadow) */
+		gap: 1.3cqw;
+	}
+	.stat .hex {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 8.6cqw;
+		height: 9.8cqw;
+		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 26%),
-			linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, transparent 30%),
-			linear-gradient(180deg, #232532 0%, #12141c 100%);
-		font-size: 5.6cqw;
+			radial-gradient(90% 55% at 50% 6%, rgba(255, 255, 255, 0.26), transparent 60%),
+			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 60%),
+			linear-gradient(180deg, #22242e 0%, #101219 100%);
+		font-size: 4.6cqw;
 		font-weight: 700;
 		line-height: 1;
+		padding-top: 0.4cqw;
+		font-variant-numeric: tabular-nums;
 		color: #fff;
-		text-shadow: 0 0.35cqw 0.5cqw rgba(0, 0, 0, 0.6);
-		filter: drop-shadow(0 0.45cqw 0.8cqw rgba(0, 0, 0, 0.5));
+		text-shadow: 0 0.3cqw 0.45cqw rgba(0, 0, 0, 0.6);
+		filter: drop-shadow(0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5));
+	}
+	.stat .hex::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		clip-path: polygon(
+			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
+			50% 0, 50% 6.5%, 6% 28%, 6% 72%, 50% 93.5%, 94% 72%, 94% 28%, 50% 6.5%
+		);
+		/* sertissage acier brossé */
+		background: linear-gradient(
+			165deg,
+			#eef1f6 0%,
+			#9aa2b0 30%,
+			#5d6473 55%,
+			#d5dae2 78%,
+			#7e8694 100%
+		);
 	}
 	.stat small {
 		font-family: Consolas, 'Cascadia Mono', monospace;
-		font-size: 2.1cqw;
+		font-size: 2.2cqw;
 		font-weight: 700;
-		letter-spacing: 0.22em;
-		color: color-mix(in srgb, var(--sys) 70%, #fff);
-	}
-	.attack {
-		clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);
-		border-left: 0.7cqw solid var(--accent);
-	}
-	.health {
-		clip-path: polygon(18% 0, 100% 0, 100% 100%, 18% 100%, 0 50%);
-		border-right: 0.7cqw solid var(--accent);
+		letter-spacing: 0.24em;
+		color: rgba(236, 232, 225, 0.5);
 	}
 	.rarity-dot {
 		width: 3.4cqw;
