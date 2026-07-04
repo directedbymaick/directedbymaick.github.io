@@ -2,6 +2,8 @@
 
 *L'histoire que racontent les 60 cartes. Source d'autorité : la bible manga (D:\Travelers\00_BIBLE) — ce fichier étend, il ne contredit jamais. Les additions propres au TCG sont marquées 🃏 (à faire remonter dans la bible si validées).*
 
+> **Canon étendu (2026-07-04)** : le user a validé KAIROS, les 7 zones, le recalibrage des CELL volés et l'Interstice, et donné carte blanche sur le reste. Le canon complet vit désormais dans **docs/UNIVERS.md** (synopsis, chronologie 1917→2026, RIKKEN, KAIROS, règles du voyage), **docs/PERSONNAGES.md** (fiches) et **docs/CHAPITRES.md** (chapitres 1 & 2 rédigés). En cas d'écart, UNIVERS.md fait foi côté TCG.
+
 ---
 
 ## 1. Le cadre : pourquoi ces 60 cartes existent
@@ -11,7 +13,7 @@
 Trois récits s'entrelacent, un par faction :
 
 - **RIKKEN** — *le Cycle*. Un nouveau cycle de recrutement s'ouvre (celui d'Hugo). L'institut mobilise : recrues, techniciens, vétérans, protocoles. Officiellement, c'est la routine d'élite. Officieusement, toutes les équipes cherchent un seul homme.
-- **KAIROS** 🃏 — *l'Infiltration*. Le nom que la faction corrompue se donne en interne : *kairos*, le moment opportun — l'écho direct de la thèse de Sōma (« ceux qui voient plus loin ont le droit de choisir »). Le set les montre tels qu'ils sont à l'arc 1 : invisibles, patients, déjà partout. Badges authentiques, CELL volés mal calibrés, protocoles détournés.
+- **KAIROS** ✓ — *l'Infiltration*. Le réseau fondé vers 2011 par d'anciens membres de RIKKEN (canon user), qui entraîne ses propres Travelers et sait **recalibrer des CELL volés sur des hôtes compatibles** (canon user — le recalibrage imparfait fait grésiller les conduits : marqueur visuel). *Kairos*, le moment opportun — l'écho direct de la thèse de Sōma. Le set les montre tels qu'ils sont à l'arc 1 : invisibles, patients, déjà partout. Détail complet : UNIVERS.md §6.
 - **LES ÉPOQUES** — *la Traque*. Les zones aveugles cartographiées par RIKKEN, fouillées une à une pour retrouver Hiroshi. Leurs habitants — les oubliés de l'Histoire — ne savent pas qu'ils vivent dans un angle mort du temps.
 
 **La règle d'or des Époques** (héritée du déterminisme de la bible) : une zone aveugle est un moment *sans témoin survivant, sans trace écrite, sans vestige*. Donc **aucune figure célèbre, aucun événement documenté** — seulement les anonymes que l'Histoire n'a pas notés. C'est leur dignité : ils n'ont besoin de personne pour exister.
