@@ -1,5 +1,5 @@
 {
-	"id": "protocole-transfert",
+	"id": "transfert-durgence",
 	"name": "Transfert d'urgence",
 	"kind": "protocole",
 	"cost": 2,
@@ -7,9 +7,13 @@
 	"flavor": "La Centrale n'aime pas les retours imprévus. Elle les autorise quand même.",
 	"rarity": "rare",
 	"faction": "rikken",
-	"art": "/art/protocole-transfert.svg",
+	"art": "/art/transfert-durgence.svg",
 	"gene": {
-		"palette": ["#151d2e", "#090b10", "#7fb4e8"],
+		"palette": [
+			"#151d2e",
+			"#090b10",
+			"#7fb4e8"
+		],
 		"foilPreset": "holo",
 		"accent": "#3d8fd6",
 		"seed": 520999
