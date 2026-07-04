@@ -1,0 +1,24 @@
+{
+	"id": "senior-descorte",
+	"name": "Sénior d'escorte",
+	"kind": "traveler",
+	"cost": 5,
+	"attack": 3,
+	"health": 6,
+	"cell": "CELL de série · Bastion",
+	"text": "Garde.",
+	"flavor": "Trois cycles de recrues lui ont survécu. C'est le but.",
+	"rarity": "rare",
+	"faction": "rikken",
+	"art": "/art/senior-descorte.webp",
+	"gene": {
+		"palette": [
+			"#1c2823",
+			"#0c1713",
+			"#d6d6c9"
+		],
+		"foilPreset": "holo",
+		"accent": "#3d8fd6",
+		"seed": 665286
+	}
+}

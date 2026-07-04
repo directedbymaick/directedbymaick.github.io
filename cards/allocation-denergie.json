@@ -1,0 +1,21 @@
+{
+	"id": "allocation-denergie",
+	"name": "Allocation d'énergie",
+	"kind": "protocole",
+	"cost": 4,
+	"text": "Ce tour-ci, vos Synchros coûtent (0).",
+	"flavor": "La Centrale a hurlé six secondes. Toutes les équipes s'en souviennent.",
+	"rarity": "epic",
+	"faction": "rikken",
+	"art": "/art/allocation-denergie.webp",
+	"gene": {
+		"palette": [
+			"#1c2339",
+			"#040906",
+			"#a4aac8"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#3d8fd6",
+		"seed": 641726
+	}
+}

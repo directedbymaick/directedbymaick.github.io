@@ -12,9 +12,13 @@
 	"faction": "rikken",
 	"art": "/art/technicienne-de-la-centrale.webp",
 	"gene": {
-		"palette": ["#132426", "#111c17", "#aac9e3"],
+		"palette": [
+			"#262c34",
+			"#161a18",
+			"#fdfdfe"
+		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 29690
+		"seed": 998617
 	}
 }

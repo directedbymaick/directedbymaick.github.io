@@ -14,11 +14,15 @@
 	"flavor": "Il agit. Il pense après. Dans cet ordre-là, toujours.",
 	"rarity": "epic",
 	"faction": "rikken",
-	"art": "/art/viktor-volkov.svg",
+	"art": "/art/viktor-volkov.webp",
 	"gene": {
-		"palette": ["#1f2127", "#0c0d10", "#e07b2a"],
+		"palette": [
+			"#1a222a",
+			"#040604",
+			"#b1aeac"
+		],
 		"foilPreset": "prismatic",
 		"accent": "#e07b2a",
-		"seed": 240301
+		"seed": 45730
 	}
 }

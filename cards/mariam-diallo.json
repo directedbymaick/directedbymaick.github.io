@@ -14,11 +14,15 @@
 	"flavor": "Sauver autrui la vide. Elle recommence quand même.",
 	"rarity": "rare",
 	"faction": "rikken",
-	"art": "/art/mariam-diallo.svg",
+	"art": "/art/mariam-diallo.webp",
 	"gene": {
-		"palette": ["#1a242b", "#0a0d10", "#35c4c9"],
+		"palette": [
+			"#493337",
+			"#050705",
+			"#f7e8e7"
+		],
 		"foilPreset": "holo",
 		"accent": "#35c4c9",
-		"seed": 230814
+		"seed": 473373
 	}
 }

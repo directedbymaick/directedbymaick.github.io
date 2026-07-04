@@ -7,15 +7,15 @@
 	"flavor": "La Centrale n'aime pas les retours imprévus. Elle les autorise quand même.",
 	"rarity": "rare",
 	"faction": "rikken",
-	"art": "/art/transfert-durgence.svg",
+	"art": "/art/transfert-durgence.webp",
 	"gene": {
 		"palette": [
-			"#151d2e",
-			"#090b10",
-			"#7fb4e8"
+			"#182426",
+			"#091518",
+			"#cbdac4"
 		],
 		"foilPreset": "holo",
 		"accent": "#3d8fd6",
-		"seed": 520999
+		"seed": 211642
 	}
 }

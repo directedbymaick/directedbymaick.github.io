@@ -13,13 +13,13 @@
 	"art": "/art/eclaireuse-temporelle.webp",
 	"gene": {
 		"palette": [
-			"#365458",
-			"#1c3a35",
-			"#a4bdc7"
+			"#1b2626",
+			"#0c1111",
+			"#b5aba3"
 		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 271431
+		"seed": 708517
 	},
 	"fullArt": true
 }

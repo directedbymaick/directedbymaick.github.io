@@ -16,9 +16,13 @@
 	"faction": "rikken",
 	"art": "/art/operationnelle-cell-aqua.webp",
 	"gene": {
-		"palette": ["#1a2426", "#0b1816", "#304448"],
+		"palette": [
+			"#2c3448",
+			"#242826",
+			"#ebe5d8"
+		],
 		"foilPreset": "mat",
 		"accent": "#35c4c9",
-		"seed": 800443
+		"seed": 886330
 	}
 }

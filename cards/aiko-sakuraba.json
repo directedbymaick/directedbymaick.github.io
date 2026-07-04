@@ -14,11 +14,15 @@
 	"flavor": "L'analyse reste probabiliste. C'est ce qui la ronge.",
 	"rarity": "rare",
 	"faction": "rikken",
-	"art": "/art/aiko-sakuraba.svg",
+	"art": "/art/aiko-sakuraba.webp",
 	"gene": {
-		"palette": ["#181e2a", "#0a0c12", "#3d6fd6"],
+		"palette": [
+			"#162826",
+			"#0b1715",
+			"#fbfdfe"
+		],
 		"foilPreset": "holo",
 		"accent": "#3d6fd6",
-		"seed": 350219
+		"seed": 184097
 	}
 }

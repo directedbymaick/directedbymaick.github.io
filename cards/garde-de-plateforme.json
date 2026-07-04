@@ -12,9 +12,13 @@
 	"faction": "rikken",
 	"art": "/art/garde-de-plateforme.webp",
 	"gene": {
-		"palette": ["#192828", "#0b1212", "#baaca7"],
+		"palette": [
+			"#3d4456",
+			"#33373b",
+			"#ccd2de"
+		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 557365
+		"seed": 627491
 	}
 }

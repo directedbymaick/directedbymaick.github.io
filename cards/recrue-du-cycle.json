@@ -12,9 +12,13 @@
 	"faction": "rikken",
 	"art": "/art/recrue-du-cycle.webp",
 	"gene": {
-		"palette": ["#263635", "#111818", "#d7e2f1"],
+		"palette": [
+			"#232d36",
+			"#02090b",
+			"#fefce4"
+		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 287021
+		"seed": 349759
 	}
 }

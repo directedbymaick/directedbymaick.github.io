@@ -12,9 +12,13 @@
 	"faction": "rikken",
 	"art": "/art/analyste-du-drft.webp",
 	"gene": {
-		"palette": ["#163838", "#0a1919", "#aad7e3"],
+		"palette": [
+			"#1a2525",
+			"#242b2a",
+			"#a8b5c8"
+		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 701551
+		"seed": 812528
 	}
 }
