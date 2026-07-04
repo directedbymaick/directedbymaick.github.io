@@ -5,9 +5,10 @@
 	import type { FactionId } from '$lib/types';
 
 	const SET_SIZE = 60;
-	const SET_NAME = 'Set 01 — Zones Aveugles';
+	const SEGMENTS = 12;
 
 	const factions = Object.keys(charter.factions) as FactionId[];
+	const filled = Math.round((cards.length / SET_SIZE) * SEGMENTS);
 
 	function byFaction(f: FactionId) {
 		return cards
@@ -17,18 +18,19 @@
 </script>
 
 <svelte:head>
-	<title>{charter.game.name} — Le mur de cartes</title>
+	<title>{charter.game.name} — Zones Aveugles</title>
 	<meta name="description" content={charter.game.tagline} />
 </svelte:head>
 
 <header class="hero">
-	<h1>Le mur de cartes</h1>
-	<p>{charter.game.tagline}</p>
-	<p class="setline">
-		<span class="setname">{SET_NAME}</span>
-		<span class="bar"><span class="fill" style="width: {(cards.length / SET_SIZE) * 100}%"></span></span>
-		<span class="count">{cards.length}/{SET_SIZE}</span>
-	</p>
+	<p class="kicker"><span class="k-diamond">◆</span> Set 01 · {cards.length}/{SET_SIZE} cartes</p>
+	<h1>Zones<br />Aveugles</h1>
+	<p class="tagline">{charter.game.tagline}</p>
+	<div class="progress" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
+		{#each Array(SEGMENTS) as _, i (i)}
+			<span class="seg" class:on={i < filled}></span>
+		{/each}
+	</div>
 </header>
 
 {#each factions as f (f)}
@@ -36,9 +38,9 @@
 	{#if list.length > 0}
 		<section class="faction-block">
 			<h2 style="--fc: {charter.factions[f].color}">
-				<span class="sigil">{charter.factions[f].sigil}</span>
-				{charter.factions[f].name}
-				<span class="fcount">{list.length}</span>
+				<span class="tab">{charter.factions[f].sigil} {charter.factions[f].name}</span>
+				<span class="rule"></span>
+				<span class="fcount">{list.length.toString().padStart(2, '0')}</span>
 			</h2>
 			<div class="wall">
 				{#each list as card (card.id)}
@@ -53,74 +55,97 @@
 {/each}
 
 <style>
+	/* ---------- hero ---------- */
+
 	.hero {
-		margin-bottom: 2.5rem;
+		margin: 1rem 0 3.4rem;
 	}
-	.hero h1 {
-		font-family: Georgia, serif;
-		font-size: 2.2rem;
-		margin: 0 0 0.4rem;
-	}
-	.hero p {
-		margin: 0.2rem 0;
-		color: #b9b5a9;
-	}
-	.setline {
+	.kicker {
 		display: flex;
 		align-items: center;
-		gap: 0.8rem;
-		margin-top: 0.9rem !important;
-		font-size: 0.9rem;
-	}
-	.setname {
-		font-family: Bahnschrift, 'Segoe UI', sans-serif;
-		letter-spacing: 0.08em;
+		gap: 0.55rem;
+		margin: 0 0 0.6rem;
+		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.28em;
 		text-transform: uppercase;
-		color: #e8e6df;
+		color: rgba(236, 232, 225, 0.55);
 	}
-	.bar {
-		flex: 0 1 220px;
-		height: 6px;
-		border-radius: 3px;
-		background: #22242e;
-		overflow: hidden;
+	.k-diamond {
+		color: #c23b4e;
+		font-size: 0.75em;
 	}
-	.fill {
-		display: block;
-		height: 100%;
-		border-radius: 3px;
-		background: linear-gradient(90deg, #3d8fd6, #77c2ea);
+	h1 {
+		margin: 0;
+		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-stretch: 68%;
+		font-weight: 800;
+		font-size: clamp(3.4rem, 9vw, 6.8rem);
+		line-height: 0.88;
+		letter-spacing: 0.01em;
+		text-transform: uppercase;
+		color: #ece8e1;
 	}
-	.count {
-		color: #8d8a80;
-		font-variant-numeric: tabular-nums;
+	.tagline {
+		margin: 1.1rem 0 0;
+		max-width: 46ch;
+		color: rgba(236, 232, 225, 0.65);
 	}
 
+	.progress {
+		display: flex;
+		gap: 5px;
+		margin-top: 1.4rem;
+		max-width: 420px;
+	}
+	.seg {
+		flex: 1;
+		height: 9px;
+		background: rgba(236, 232, 225, 0.1);
+		clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+	}
+	.seg.on {
+		background: #c23b4e;
+	}
+
+	/* ---------- sections de faction ---------- */
+
 	.faction-block {
-		margin-bottom: 3rem;
+		margin-bottom: 3.4rem;
 	}
 	.faction-block h2 {
 		display: flex;
-		align-items: baseline;
-		gap: 0.6rem;
-		font-family: Bahnschrift, 'Segoe UI', sans-serif;
-		font-size: 1.15rem;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: color-mix(in srgb, var(--fc) 75%, #fff);
-		border-bottom: 1px solid color-mix(in srgb, var(--fc) 35%, transparent);
-		padding-bottom: 0.5rem;
-		margin: 0 0 1.4rem;
+		align-items: center;
+		gap: 1rem;
+		margin: 0 0 1.6rem;
 	}
-	.faction-block .sigil {
-		color: var(--fc);
+	.tab {
+		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-stretch: 80%;
+		font-size: 1.02rem;
+		font-weight: 700;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: #0f1923;
+		background: color-mix(in srgb, var(--fc) 82%, #fff);
+		padding: 0.42rem 1.15rem 0.38rem;
+		clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+	}
+	.rule {
+		flex: 1;
+		height: 1px;
+		background: color-mix(in srgb, var(--fc) 35%, transparent);
 	}
 	.fcount {
-		margin-left: auto;
-		font-size: 0.85rem;
-		color: #8d8a80;
-		letter-spacing: 0;
+		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-size: 0.9rem;
+		font-weight: 700;
+		color: color-mix(in srgb, var(--fc) 70%, #fff);
+		font-variant-numeric: tabular-nums;
 	}
+
+	/* ---------- grille ---------- */
 
 	.wall {
 		display: grid;
@@ -132,16 +157,20 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.8rem;
+		gap: 0.85rem;
 		--card-w: min(290px, 100%);
 	}
 	.cardlink {
-		font-size: 0.9rem;
+		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
 		text-decoration: none;
-		opacity: 0.7;
+		color: rgba(236, 232, 225, 0.6);
+		transition: color 0.15s ease;
 	}
 	.cardlink:hover {
-		opacity: 1;
-		text-decoration: underline;
+		color: #ece8e1;
 	}
 </style>
