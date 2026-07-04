@@ -12,9 +12,14 @@
 	"faction": "kairos",
 	"art": "/art/akira-soma.svg",
 	"gene": {
-		"palette": ["#241419", "#0d0a0b", "#8d95a6"],
+		"palette": [
+			"#241419",
+			"#0d0a0b",
+			"#8d95a6"
+		],
 		"foilPreset": "galaxy",
 		"accent": "#c23b4e",
 		"seed": 731108
-	}
+	},
+	"fullArt": true
 }

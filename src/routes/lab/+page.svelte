@@ -100,6 +100,11 @@
 			<button type="button" onclick={reroll}>Relancer le seed</button>
 		</label>
 
+		<label class="row">
+			<input type="checkbox" bind:checked={base.fullArt} />
+			Full art (l'artwork couvre toute la carte)
+		</label>
+
 		<label>
 			Largeur de carte : {cardW}px
 			<input type="range" min="220" max="560" bind:value={cardW} />
@@ -158,6 +163,11 @@
 		gap: 0.35rem;
 		font-size: 0.9rem;
 		color: #b9b5a9;
+	}
+	label.row {
+		flex-direction: row;
+		align-items: center;
+		gap: 0.6rem;
 	}
 	select,
 	input[type='text'],

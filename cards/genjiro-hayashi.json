@@ -16,9 +16,14 @@
 	"faction": "rikken",
 	"art": "/art/genjiro-hayashi.svg",
 	"gene": {
-		"palette": ["#282318", "#0e0d0b", "#c9973d"],
+		"palette": [
+			"#282318",
+			"#0e0d0b",
+			"#c9973d"
+		],
 		"foilPreset": "galaxy",
 		"accent": "#c9973d",
 		"seed": 200005
-	}
+	},
+	"fullArt": true
 }

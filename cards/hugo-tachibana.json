@@ -16,9 +16,14 @@
 	"faction": "rikken",
 	"art": "/art/hugo-tachibana.svg",
 	"gene": {
-		"palette": ["#252a36", "#0b0d12", "#d8d3c4"],
+		"palette": [
+			"#252a36",
+			"#0b0d12",
+			"#d8d3c4"
+		],
 		"foilPreset": "prism",
 		"accent": "#d42a3d",
 		"seed": 190719
-	}
+	},
+	"fullArt": true
 }

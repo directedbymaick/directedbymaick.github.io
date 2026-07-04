@@ -62,6 +62,8 @@ export interface CardData {
 	art: string;
 	/** Cadrage de l'art dans sa fenêtre (object-position CSS). Défaut : 'center 12%' — préserve le haut des portraits. */
 	artPosition?: string;
+	/** Full art : l'artwork couvre toute la carte, panneaux en verre flouté par-dessus. Par défaut pour légendaire/prismatique. */
+	fullArt?: boolean;
 	gene: CardGene;
 }
 

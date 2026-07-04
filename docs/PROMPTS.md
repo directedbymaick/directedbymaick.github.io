@@ -12,6 +12,8 @@
 **Accents** : RIKKEN bleu `#3d8fd6` · KAIROS rouge `#c23b4e` · Époques bronze `#b08d57`.
 **Rappels bible** : lumière contenue (jamais de néon partout) · suits type voiture de sport (pas Iron Man) · Époques = zéro personnage historique célèbre, le « marqueur d'effacement » (brume, neige, crue…) visible dans l'image.
 
+**⚠️ Slots FULL ART** (légendaires + prismatiques : R19, R20, R21, R22, K20, K21, K22, E16) — l'artwork couvre TOUTE la carte, des panneaux de verre flouté se posent sur le tiers inférieur. Compose en conséquence : sujet et détails clés dans les **55% supérieurs**, le bas de l'image peut rester atmosphérique (décor, brume, matière) car il sera partiellement recouvert. Sur la grille MJ, choisis l'image dont le bas est le moins chargé en détails importants.
+
 ---
 
 ## RIKKEN — Acte I, le Cycle

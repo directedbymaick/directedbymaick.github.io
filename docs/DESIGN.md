@@ -56,6 +56,10 @@ Par-dessus l'anatomie, le corps de la carte est traité comme un **terminal CRT 
 
 **Règle de matérialité (référence qualité : Pokémon TCG Pocket)** : aucun élément décoratif ne doit être un aplat. Chaque badge/plaque/panneau est un objet imprimé : gloss en tête + assise sombre (biseau), ombre portée (via `filter: drop-shadow` quand un clip-path avale les box-shadow), panneaux de texte en creux (inner shadow), fenêtre d'art enchâssée, gemmes serties (reflet + facette), corps teinté faction (radial bas) + trame de demi-teinte sur la moitié basse.
 
+## 4ter. Le full art (légendaires et prismatiques)
+
+Les hautes raretés abandonnent la fenêtre d'art : **l'artwork couvre toute la carte**, les foils s'étendent avec lui, et les panneaux (plaque de nom, cartouche) deviennent du **verre flouté** (backdrop-blur) posé sur l'image, avec un scrim sombre progressif sur le tiers inférieur pour la lisibilité. Champ `fullArt: true` dans le JSON — posé automatiquement par la Forge pour légendaire/prismatique, activable à la main sur n'importe quelle carte (toggle dans /lab). Contrainte artwork : sujet dans les 55% supérieurs (cf. PROMPTS.md).
+
 ## 5. La lumière ne s'allume qu'à l'activation
 
 Au repos, la carte est sobre (matériau + art). Au survol (= mode local) :

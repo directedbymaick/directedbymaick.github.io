@@ -16,9 +16,14 @@
 	"faction": "kairos",
 	"art": "/art/renji-kuroda.svg",
 	"gene": {
-		"palette": ["#221a30", "#0c0a11", "#c9a7e8"],
+		"palette": [
+			"#221a30",
+			"#0c0a11",
+			"#c9a7e8"
+		],
 		"foilPreset": "prism",
 		"accent": "#b06ad4",
 		"seed": 440022
-	}
+	},
+	"fullArt": true
 }

@@ -52,5 +52,9 @@ export function assemble(input: AssembleInput): CardData {
 		card.attack = Math.floor(budget / 2);
 		card.health = Math.ceil(budget / 2);
 	}
+	// Hautes raretés : full art par défaut (DESIGN.md §4bis).
+	if (input.rarity === 'legendary' || input.rarity === 'prism') {
+		card.fullArt = true;
+	}
 	return card;
 }
