@@ -8,6 +8,8 @@
 
 	const links = [
 		{ href: '/', label: 'Le mur' },
+		{ href: '/regles', label: 'Règles' },
+		{ href: '/tuto', label: 'Tuto' },
 		{ href: '/lab', label: 'Lab' }
 	];
 </script>
