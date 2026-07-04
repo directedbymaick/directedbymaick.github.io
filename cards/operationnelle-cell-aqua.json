@@ -1,0 +1,24 @@
+{
+	"id": "operationnelle-cell-aqua",
+	"name": "Opérationnelle CELL Aqua",
+	"kind": "traveler",
+	"cost": 2,
+	"attack": 2,
+	"health": 2,
+	"cell": "CELL Aqua",
+	"synchro": {
+		"cost": 1,
+		"text": "Hydro-blindage : +0/+2."
+	},
+	"text": "",
+	"flavor": "L'eau ne force pas. Elle trouve le chemin.",
+	"rarity": "common",
+	"faction": "rikken",
+	"art": "/art/operationnelle-cell-aqua.webp",
+	"gene": {
+		"palette": ["#1a2426", "#0b1816", "#304448"],
+		"foilPreset": "mat",
+		"accent": "#35c4c9",
+		"seed": 800443
+	}
+}

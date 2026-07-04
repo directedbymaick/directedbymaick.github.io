@@ -1,0 +1,20 @@
+{
+	"id": "recrue-du-cycle",
+	"name": "Recrue du cycle",
+	"kind": "traveler",
+	"cost": 1,
+	"attack": 1,
+	"health": 2,
+	"cell": "Combinaison pré-CELL",
+	"text": "",
+	"flavor": "Le test peut la tuer. Elle a signé quand même.",
+	"rarity": "common",
+	"faction": "rikken",
+	"art": "/art/recrue-du-cycle.webp",
+	"gene": {
+		"palette": ["#263635", "#111818", "#d7e2f1"],
+		"foilPreset": "mat",
+		"accent": "#3d8fd6",
+		"seed": 287021
+	}
+}

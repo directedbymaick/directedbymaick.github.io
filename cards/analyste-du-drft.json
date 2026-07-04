@@ -1,0 +1,20 @@
+{
+	"id": "analyste-du-drft",
+	"name": "Analyste du DRFT",
+	"kind": "traveler",
+	"cost": 4,
+	"attack": 3,
+	"health": 3,
+	"cell": "Personnel du DRFT",
+	"text": "À l'arrivée : piochez une carte.",
+	"flavor": "Il a lu votre dossier. Il a lu tous les dossiers.",
+	"rarity": "common",
+	"faction": "rikken",
+	"art": "/art/analyste-du-drft.webp",
+	"gene": {
+		"palette": ["#163838", "#0a1919", "#aad7e3"],
+		"foilPreset": "mat",
+		"accent": "#3d8fd6",
+		"seed": 701551
+	}
+}

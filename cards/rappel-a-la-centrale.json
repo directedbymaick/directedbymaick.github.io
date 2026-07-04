@@ -1,0 +1,17 @@
+{
+	"id": "rappel-a-la-centrale",
+	"name": "Rappel à la Centrale",
+	"kind": "protocole",
+	"cost": 2,
+	"text": "Renvoyez une unité alliée dans votre main. Votre Centrale restaure 3 Intégrité.",
+	"flavor": "Le retour est toujours plus doux que le départ.",
+	"rarity": "common",
+	"faction": "rikken",
+	"art": "/art/rappel-a-la-centrale.webp",
+	"gene": {
+		"palette": ["#072b35", "#052329", "#77c2ea"],
+		"foilPreset": "mat",
+		"accent": "#3d8fd6",
+		"seed": 22259
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"id": "technicienne-de-la-centrale",
+	"name": "Technicienne de la Centrale",
+	"kind": "traveler",
+	"cost": 2,
+	"attack": 1,
+	"health": 3,
+	"cell": "Personnel de la Centrale",
+	"text": "À l'arrivée : restaurez 2 Intégrité à une unité alliée.",
+	"flavor": "Huit cents mètres sous Odaiba, quelqu'un doit bien serrer les boulons.",
+	"rarity": "common",
+	"faction": "rikken",
+	"art": "/art/technicienne-de-la-centrale.webp",
+	"gene": {
+		"palette": ["#132426", "#111c17", "#aac9e3"],
+		"foilPreset": "mat",
+		"accent": "#3d8fd6",
+		"seed": 29690
+	}
+}

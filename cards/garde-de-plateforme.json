@@ -1,0 +1,20 @@
+{
+	"id": "garde-de-plateforme",
+	"name": "Garde de plateforme",
+	"kind": "traveler",
+	"cost": 3,
+	"attack": 2,
+	"health": 4,
+	"cell": "CELL de série · Rempart",
+	"text": "Garde.",
+	"flavor": "Personne ne passe. La question ne s'est jamais posée.",
+	"rarity": "common",
+	"faction": "rikken",
+	"art": "/art/garde-de-plateforme.webp",
+	"gene": {
+		"palette": ["#192828", "#0b1212", "#baaca7"],
+		"foilPreset": "mat",
+		"accent": "#3d8fd6",
+		"seed": 557365
+	}
+}
