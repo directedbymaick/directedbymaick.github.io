@@ -54,6 +54,8 @@ Par-dessus l'anatomie, le corps de la carte est traité comme un **terminal CRT 
 - **Monospace phosphore** (Consolas) pour les micro-labels : ⟨CELL⟩, ATQ/INT, SYNCHRO — avec léger glow.
 - **Barre de titre terminal** ambre en tête du cartouche de texte.
 
+**Règle de matérialité (référence qualité : Pokémon TCG Pocket)** : aucun élément décoratif ne doit être un aplat. Chaque badge/plaque/panneau est un objet imprimé : gloss en tête + assise sombre (biseau), ombre portée (via `filter: drop-shadow` quand un clip-path avale les box-shadow), panneaux de texte en creux (inner shadow), fenêtre d'art enchâssée, gemmes serties (reflet + facette), corps teinté faction (radial bas) + trame de demi-teinte sur la moitié basse.
+
 ## 5. La lumière ne s'allume qu'à l'activation
 
 Au repos, la carte est sobre (matériau + art). Au survol (= mode local) :

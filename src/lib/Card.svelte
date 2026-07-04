@@ -268,10 +268,38 @@
 		height: 100%;
 		border-radius: 3cqw;
 		overflow: hidden;
-		background: #101117;
+		/* corps teinté faction : riche, jamais plat */
+		background:
+			radial-gradient(
+				120% 60% at 50% 108%,
+				color-mix(in srgb, var(--accent) 14%, transparent) 0%,
+				transparent 60%
+			),
+			linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, #12131b) 0%, #0d0e14 55%, #101119 100%);
 		display: flex;
 		flex-direction: column;
 		color: #e8e6df;
+		/* sertissage : liseré sombre + filet lumineux (relief imprimé) */
+		box-shadow:
+			0 0 0 1px rgba(0, 0, 0, 0.7),
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+	}
+	/* trame de demi-teinte sur la moitié basse (texture d'impression) */
+	.body::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background-image: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--accent) 30%, rgba(255, 255, 255, 0.14)) 0.9px,
+			transparent 1.1px
+		);
+		background-size: 7px 7px;
+		opacity: 0.16;
+		mask-image: linear-gradient(180deg, transparent 42%, #000 78%);
 	}
 
 	/* ---------- art full-bleed ---------- */
@@ -299,7 +327,8 @@
 		pointer-events: none;
 	}
 
-	/* filtre TV : scanlines + vignette chaude — UNIQUEMENT sur l'illustration */
+	/* filtre TV : scanlines + vignette chaude — UNIQUEMENT sur l'illustration.
+	   Porte aussi le sertissage de la fenêtre (écran enchâssé dans la carte). */
 	.crt {
 		position: absolute;
 		inset: 0;
@@ -312,6 +341,10 @@
 				transparent 1px 3px
 			),
 			radial-gradient(120% 120% at 50% 30%, transparent 55%, rgba(255, 180, 84, 0.06) 100%);
+		box-shadow:
+			inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+			inset 0 0.8cqw 2cqw rgba(0, 0, 0, 0.42),
+			inset 0 -0.6cqw 1.6cqw rgba(0, 0, 0, 0.3);
 	}
 
 	/* numéro de série vertical — le dossier d'archive incarné (sous le sigil) */
@@ -340,9 +373,11 @@
 		width: 11.5cqw;
 		height: 13cqw;
 		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+		/* cellule d'énergie : verre sombre bombé (gloss haut, ombre basse) */
 		background:
-			linear-gradient(200deg, rgba(255, 255, 255, 0.14), transparent 45%),
-			#14161d;
+			radial-gradient(90% 55% at 50% 6%, rgba(255, 255, 255, 0.28), transparent 60%),
+			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--sys) 30%, transparent), transparent 60%),
+			linear-gradient(180deg, #22242e 0%, #101219 100%);
 		font-size: 6.4cqw;
 		font-weight: 700;
 		/* centrage optique du chiffre : ligne à 1 + correction du décalage
@@ -351,7 +386,13 @@
 		padding-top: 0.5cqw;
 		font-variant-numeric: tabular-nums;
 		color: #fff;
+		text-shadow:
+			0 0.35cqw 0.5cqw rgba(0, 0, 0, 0.65),
+			0 0 2.2cqw color-mix(in srgb, var(--sys) 60%, transparent);
+		/* le clip-path avale box-shadow : l'ombre portée passe par filter */
+		filter: drop-shadow(0 0.5cqw 0.9cqw rgba(0, 0, 0, 0.55));
 	}
+	/* anneau ambre métallique brossé (l'Énergie est ambre — couleur système) */
 	.cost::before {
 		content: '';
 		position: absolute;
@@ -360,11 +401,14 @@
 			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
 			50% 0, 50% 5.5%, 5% 27.5%, 5% 72.5%, 50% 94.5%, 95% 72.5%, 95% 27.5%, 50% 5.5%
 		);
-		/* l'Énergie est ambre — la couleur système, pas celle de la faction */
-		background: var(--sys);
-	}
-	.cost {
-		text-shadow: 0 0 2cqw color-mix(in srgb, var(--sys) 55%, transparent);
+		background: linear-gradient(
+			165deg,
+			#ffe2ae 0%,
+			#e8a24a 28%,
+			#a86a24 52%,
+			#ffcf8a 74%,
+			#c98340 100%
+		);
 	}
 	.sigil {
 		position: absolute;
@@ -394,8 +438,17 @@
 		align-self: flex-start;
 		max-width: 100%;
 		padding: 1.4cqw 3cqw 1.6cqw 2.2cqw;
-		background: linear-gradient(90deg, rgba(10, 11, 16, 0.92) 0%, rgba(10, 11, 16, 0.55) 78%, transparent 100%);
+		/* plaque embossée : gradient vertical + filet lumineux en tête */
+		background: linear-gradient(
+			180deg,
+			rgba(34, 36, 46, 0.94) 0%,
+			rgba(13, 14, 20, 0.9) 100%
+		);
 		border-left: 0.7cqw solid var(--accent);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.12),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+			0 0.5cqw 1.2cqw rgba(0, 0, 0, 0.45);
 	}
 	/* hachures d'avertissement (EVA) sous la plaque de nom */
 	.plate::after {
@@ -450,10 +503,18 @@
 		margin-top: 1.8cqw;
 		padding: 2.2cqw 2.6cqw;
 		border-radius: 0 0 1.8cqw 1.8cqw;
-		background: rgba(255, 255, 255, 0.045);
-		border: 0.22cqw solid rgba(255, 255, 255, 0.09);
+		/* panneau en creux : plus sombre en haut, remonte vers le bas */
+		background: linear-gradient(
+			180deg,
+			rgba(0, 0, 0, 0.34) 0%,
+			rgba(255, 255, 255, 0.035) 85%
+		);
+		border: 0.22cqw solid rgba(0, 0, 0, 0.45);
 		/* barre de titre terminal */
-		border-top: 0.45cqw solid color-mix(in srgb, var(--sys) 40%, transparent);
+		border-top: 0.45cqw solid color-mix(in srgb, var(--sys) 45%, #3a2c14);
+		box-shadow:
+			inset 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.5),
+			inset 0 -1px 0 rgba(255, 255, 255, 0.07);
 		overflow: hidden;
 		font-family: 'Segoe UI', system-ui, sans-serif;
 	}
@@ -506,13 +567,18 @@
 		gap: 0.2cqw;
 		width: 14cqw;
 		height: 10.5cqw;
+		/* plaque biseautée : gloss en tête, assise sombre, ombre portée (filter,
+		   car le clip-path avale box-shadow) */
 		background:
-			linear-gradient(200deg, rgba(255, 255, 255, 0.1), transparent 50%),
-			#14161d;
+			linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 26%),
+			linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, transparent 30%),
+			linear-gradient(180deg, #232532 0%, #12141c 100%);
 		font-size: 5.6cqw;
 		font-weight: 700;
 		line-height: 1;
 		color: #fff;
+		text-shadow: 0 0.35cqw 0.5cqw rgba(0, 0, 0, 0.6);
+		filter: drop-shadow(0 0.45cqw 0.8cqw rgba(0, 0, 0, 0.5));
 	}
 	.stat small {
 		font-family: Consolas, 'Cascadia Mono', monospace;
@@ -535,6 +601,11 @@
 		rotate: 45deg;
 		border-radius: 0.7cqw;
 		background: var(--rarity-gem, #666);
+		/* gemme sertie : reflet + assise */
+		box-shadow:
+			inset 0.4cqw 0.4cqw 0.7cqw rgba(255, 255, 255, 0.55),
+			inset -0.4cqw -0.4cqw 0.7cqw rgba(0, 0, 0, 0.45),
+			0 0.3cqw 0.8cqw rgba(0, 0, 0, 0.5);
 	}
 	.card[data-material='carbone'] .rarity-dot { --rarity-gem: linear-gradient(135deg, #3a3d46, #23252c); background: #33363e; }
 	.card[data-material='nacre'] .rarity-dot { background: linear-gradient(135deg, #f2f0ea, #c9cdd6); }
