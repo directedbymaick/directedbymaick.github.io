@@ -385,8 +385,8 @@
 
 	.cost {
 		position: absolute;
-		top: 2.2cqw;
-		left: 2.2cqw;
+		top: 3.2cqw;
+		left: 3.2cqw;
 		z-index: 4;
 		display: grid;
 		place-items: center;
@@ -433,8 +433,8 @@
 	/* médaillon de faction : sigil serti dans un anneau d'acier (cf. hex stats) */
 	.sigil {
 		position: absolute;
-		top: 2.4cqw;
-		right: 2.4cqw;
+		top: 3.2cqw;
+		right: 3.2cqw;
 		z-index: 4;
 		display: grid;
 		place-items: center;
@@ -460,29 +460,23 @@
 		background: linear-gradient(165deg, #eef1f6 0%, #9aa2b0 30%, #5d6473 55%, #d5dae2 78%, #7e8694 100%);
 	}
 
-	/* gravure de circuit : double filet + pastilles aux angles — l'ornement
-	   propriétaire de la carte (l'équivalent tech des filets or de luxe) */
+	/* gravure de circuit : UN filet + pastilles aux angles — l'ornement
+	   propriétaire. Sous les badges et le contenu (z2) : rien ne le chevauche,
+	   il ne chevauche rien. */
 	.etch {
 		position: absolute;
-		inset: 1.2cqw;
-		z-index: 7;
+		inset: 1.4cqw;
+		z-index: 2;
 		pointer-events: none;
-		border-radius: 2.1cqw;
-		border: 1px solid color-mix(in srgb, var(--sys) 30%, transparent);
-		--pad: color-mix(in srgb, var(--sys) 60%, transparent);
+		border-radius: 2cqw;
+		border: 1px solid color-mix(in srgb, var(--sys) 28%, transparent);
+		--pad: color-mix(in srgb, var(--sys) 55%, transparent);
 		background:
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.6cqw top 2.6cqw / 1.2cqw 1.2cqw,
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.6cqw top 2.6cqw / 1.2cqw 1.2cqw,
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.6cqw bottom 2.6cqw / 1.2cqw 1.2cqw,
-			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.6cqw bottom 2.6cqw / 1.2cqw 1.2cqw;
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.4cqw top 2.4cqw / 1.2cqw 1.2cqw,
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.4cqw top 2.4cqw / 1.2cqw 1.2cqw,
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) left 2.4cqw bottom 2.4cqw / 1.2cqw 1.2cqw,
+			radial-gradient(circle, var(--pad) 0.45cqw, transparent 0.55cqw) right 2.4cqw bottom 2.4cqw / 1.2cqw 1.2cqw;
 		background-repeat: no-repeat;
-	}
-	.etch::before {
-		content: '';
-		position: absolute;
-		inset: 0.75cqw;
-		border-radius: 1.6cqw;
-		border: 1px solid color-mix(in srgb, var(--sys) 14%, transparent);
 	}
 
 	/* ---------- contenu ---------- */
@@ -494,7 +488,8 @@
 		display: flex;
 		flex-direction: column;
 		margin-top: -7cqw;
-		padding: 0 3cqw 2.4cqw;
+		/* respire à l'intérieur de la gravure (filet à 1.4cqw + pastilles) */
+		padding: 0 3.4cqw 3.2cqw;
 	}
 
 	.plate {
@@ -528,20 +523,6 @@
 			rgba(255, 255, 255, 0.3) 0%,
 			rgba(255, 255, 255, 0.08) 70%,
 			transparent 100%
-		);
-	}
-	/* hachures d'avertissement (EVA) sous la plaque de nom */
-	.plate::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0;
-		width: 38%;
-		height: 0.7cqw;
-		background: repeating-linear-gradient(
-			-45deg,
-			color-mix(in srgb, var(--sys) 80%, transparent) 0 1.6cqw,
-			transparent 1.6cqw 3.2cqw
 		);
 	}
 	.name {
