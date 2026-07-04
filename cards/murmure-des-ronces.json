@@ -1,0 +1,17 @@
+{
+	"id": "murmure-des-ronces",
+	"name": "Murmure des Ronces",
+	"cost": 2,
+	"attack": 1,
+	"health": 3,
+	"text": "À la fin de votre tour, gagne +1/+1 si vous n'avez pas attaqué.",
+	"flavor": "La forêt ne pousse jamais aussi vite que quand on ne la regarde pas.",
+	"rarity": "epic",
+	"faction": "ronces",
+	"art": "/art/murmure-des-ronces.svg",
+	"gene": {
+		"palette": ["#3fae5a", "#0b1a10", "#d8ffb0"],
+		"foilPreset": "prismatic",
+		"seed": 30871
+	}
+}

@@ -1,0 +1,59 @@
+{
+	"game": {
+		"name": "Online TCG (nom de travail)",
+		"tagline": "Des cartes vivantes, forgées par la machine, choisies par la main."
+	},
+	"rarities": {
+		"common": {
+			"name": "Commune",
+			"foilPreset": "mat",
+			"gemColor": "#9aa3b2",
+			"statBudgetPerCost": 2.0
+		},
+		"rare": {
+			"name": "Rare",
+			"foilPreset": "holo",
+			"gemColor": "#4da3ff",
+			"statBudgetPerCost": 2.2
+		},
+		"epic": {
+			"name": "Épique",
+			"foilPreset": "prismatic",
+			"gemColor": "#b45dff",
+			"statBudgetPerCost": 2.4
+		},
+		"legendary": {
+			"name": "Légendaire",
+			"foilPreset": "galaxy",
+			"gemColor": "#ffb347",
+			"statBudgetPerCost": 2.6
+		}
+	},
+	"factions": {
+		"forge": {
+			"name": "La Forge",
+			"color": "#d4552a",
+			"loreTone": "industriel, braises, métal en fusion, artisans obstinés"
+		},
+		"marees": {
+			"name": "Les Marées",
+			"color": "#2a9dd4",
+			"loreTone": "abysses, courants, patience minérale, secrets engloutis"
+		},
+		"ronces": {
+			"name": "Les Ronces",
+			"color": "#3fae5a",
+			"loreTone": "croissance sauvage, symbiose, forêt qui reprend ses droits"
+		},
+		"voile": {
+			"name": "Le Voile",
+			"color": "#8a5dd4",
+			"loreTone": "entre-mondes, illusions, prix à payer pour savoir"
+		}
+	},
+	"constraints": {
+		"minCost": 0,
+		"maxCost": 10,
+		"maxTextLength": 140
+	}
+}

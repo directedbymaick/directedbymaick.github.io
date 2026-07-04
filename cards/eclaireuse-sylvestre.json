@@ -1,0 +1,17 @@
+{
+	"id": "eclaireuse-sylvestre",
+	"name": "Éclaireuse Sylvestre",
+	"cost": 1,
+	"attack": 1,
+	"health": 2,
+	"text": "Charge.",
+	"flavor": "Première entrée, première sortie, jamais vue.",
+	"rarity": "common",
+	"faction": "ronces",
+	"art": "/art/eclaireuse-sylvestre.svg",
+	"gene": {
+		"palette": ["#57c273", "#122414", "#eaffc4"],
+		"foilPreset": "mat",
+		"seed": 55118
+	}
+}
