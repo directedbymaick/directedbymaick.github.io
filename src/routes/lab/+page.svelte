@@ -2,14 +2,14 @@
 	import Card from '$lib/Card.svelte';
 	import { cards } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import type { CardData, FoilPreset, Rarity } from '$lib/types';
+	import type { CardData, FactionId, FoilPreset, Rarity } from '$lib/types';
 
 	// Le Lab est la charte design incarnée : on règle la matière en live,
 	// puis on reporte les choix dans charter.json / les presets.
 
-	const foilPresets: FoilPreset[] = ['mat', 'holo', 'prismatic', 'galaxy'];
+	const foilPresets: FoilPreset[] = ['mat', 'holo', 'prismatic', 'galaxy', 'prism'];
 	const rarities = Object.keys(charter.rarities) as Rarity[];
-	const factions = Object.keys(charter.factions);
+	const factions = Object.keys(charter.factions) as FactionId[];
 
 	let base = $state(structuredClone($state.snapshot(cards[0]) as CardData));
 	let cardW = $state(380);
@@ -88,6 +88,11 @@
 			{#each base.gene.palette as _, i (i)}
 				<input type="color" bind:value={base.gene.palette[i]} />
 			{/each}
+		</fieldset>
+
+		<fieldset>
+			<legend>Accent (l'unique couleur saturée — conduits, Synchro, glow)</legend>
+			<input type="color" bind:value={base.gene.accent} />
 		</fieldset>
 
 		<label>

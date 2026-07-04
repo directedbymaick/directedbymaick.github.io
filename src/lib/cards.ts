@@ -6,7 +6,7 @@ import type { CardData } from '$lib/types';
  */
 const modules = import.meta.glob<{ default: CardData }>('../../cards/*.json', { eager: true });
 
-const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 } as const;
+const rarityOrder = { prism: 0, legendary: 1, epic: 2, rare: 3, common: 4 } as const;
 
 export const cards: CardData[] = Object.values(modules)
 	.map((m) => m.default)

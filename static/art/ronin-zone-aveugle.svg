@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12100c"/><stop offset="0.55" stop-color="#1e1a13"/><stop offset="1" stop-color="#2a241a"/>
+    </linearGradient>
+    <radialGradient id="moon" cx="0.68" cy="0.24" r="0.22">
+      <stop offset="0" stop-color="#d8cfb8" stop-opacity="0.85"/><stop offset="0.7" stop-color="#d8cfb8" stop-opacity="0.15"/><stop offset="1" stop-color="#d8cfb8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="99"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.16"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="545" cy="145" r="150" fill="url(#moon)"/>
+  <g stroke="#171410" stroke-width="10" opacity="0.9" fill="none">
+    <path d="M120 600 C 130 480 110 420 140 340 M 680 600 C 670 500 690 430 660 360"/>
+  </g>
+  <g>
+    <path d="M400 210 C 374 210 364 234 367 258 C 369 276 382 287 400 287 C 418 287 431 276 433 258 C 436 234 426 210 400 210 Z" fill="#191510" stroke="#3d3425" stroke-width="4"/>
+    <path d="M340 500 C 342 410 364 340 400 332 C 436 340 458 410 460 500 Z" fill="#151209" stroke="#3d3425" stroke-width="4"/>
+    <path d="M436 330 L 560 240 L 566 250 L 446 344 Z" fill="#8d8574"/>
+    <path d="M556 236 L 574 222 L 580 232 L 564 246 Z" fill="#b08d57"/>
+    <path d="M352 356 C 360 380 362 404 358 430" stroke="#b08d57" stroke-width="4" fill="none" opacity="0.8"/>
+  </g>
+  <rect width="800" height="600" filter="url(#rough)" opacity="0.6"/>
+</svg>

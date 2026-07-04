@@ -1,0 +1,17 @@
+{
+	"id": "protocole-transfert",
+	"name": "Transfert d'urgence",
+	"kind": "protocole",
+	"cost": 2,
+	"text": "Renvoyez un Traveler allié dans votre main. Son prochain Transfert coûte (1) de moins.",
+	"flavor": "La Centrale n'aime pas les retours imprévus. Elle les autorise quand même.",
+	"rarity": "rare",
+	"faction": "rikken",
+	"art": "/art/protocole-transfert.svg",
+	"gene": {
+		"palette": ["#151d2e", "#090b10", "#7fb4e8"],
+		"foilPreset": "holo",
+		"accent": "#3d8fd6",
+		"seed": 520999
+	}
+}

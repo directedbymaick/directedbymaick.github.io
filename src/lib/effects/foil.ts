@@ -55,6 +55,7 @@ export function resolveFoil(card: CardData, frameColor: string): FoilParams {
 		'--c1': c1,
 		'--c2': c2,
 		'--frame': frameColor,
+		'--accent': card.gene.accent ?? frameColor,
 		'--band-angle': `${bandAngle}deg`,
 		'--hue-shift': `${hueShift}deg`,
 		'--grain': noiseMaskUri(card.gene.seed, grainFreq, 2),

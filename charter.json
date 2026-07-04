@@ -1,59 +1,74 @@
 {
 	"game": {
-		"name": "Online TCG (nom de travail)",
-		"tagline": "Des cartes vivantes, forgées par la machine, choisies par la main."
+		"name": "TRAVELERS TCG",
+		"tagline": "Le passé est déjà écrit. Pas vos parties."
 	},
 	"rarities": {
 		"common": {
-			"name": "Commune",
+			"name": "Standard",
+			"material": "carbone",
 			"foilPreset": "mat",
-			"gemColor": "#9aa3b2",
-			"statBudgetPerCost": 2.0
+			"statBudgetPerCost": 2.0,
+			"maxCopies": 3
 		},
 		"rare": {
 			"name": "Rare",
+			"material": "nacre",
 			"foilPreset": "holo",
-			"gemColor": "#4da3ff",
-			"statBudgetPerCost": 2.2
+			"statBudgetPerCost": 2.2,
+			"maxCopies": 2
 		},
 		"epic": {
 			"name": "Épique",
+			"material": "argent",
 			"foilPreset": "prismatic",
-			"gemColor": "#b45dff",
-			"statBudgetPerCost": 2.4
+			"statBudgetPerCost": 2.4,
+			"maxCopies": 2
 		},
 		"legendary": {
 			"name": "Légendaire",
+			"material": "or",
 			"foilPreset": "galaxy",
-			"gemColor": "#ffb347",
-			"statBudgetPerCost": 2.6
+			"statBudgetPerCost": 2.6,
+			"maxCopies": 1
+		},
+		"prism": {
+			"name": "Prismatique",
+			"material": "prisme",
+			"foilPreset": "prism",
+			"statBudgetPerCost": 2.8,
+			"maxCopies": 1
 		}
 	},
 	"factions": {
-		"forge": {
-			"name": "La Forge",
-			"color": "#d4552a",
-			"loreTone": "industriel, braises, métal en fusion, artisans obstinés"
+		"rikken": {
+			"name": "RIKKEN",
+			"color": "#3d8fd6",
+			"sigil": "◆",
+			"loreTone": "institut secret, rigueur scientifique, élite loyale, sacrifice pour la connaissance ; Travelers du programme, techniciens de la Centrale, protocoles officiels"
 		},
-		"marees": {
-			"name": "Les Marées",
-			"color": "#2a9dd4",
-			"loreTone": "abysses, courants, patience minérale, secrets engloutis"
+		"kairos": {
+			"name": "KAIROS",
+			"color": "#c23b4e",
+			"sigil": "◈",
+			"loreTone": "réseau infiltré à tous les niveaux, ambition froide, le moment opportun, la fin justifie tout ; agents doubles, CELL volés, protocoles détournés — dirigé par Sōma"
 		},
-		"ronces": {
-			"name": "Les Ronces",
-			"color": "#3fae5a",
-			"loreTone": "croissance sauvage, symbiose, forêt qui reprend ses droits"
-		},
-		"voile": {
-			"name": "Le Voile",
-			"color": "#8a5dd4",
-			"loreTone": "entre-mondes, illusions, prix à payer pour savoir"
+		"epoques": {
+			"name": "Les Époques",
+			"color": "#b08d57",
+			"sigil": "◉",
+			"loreTone": "figures des zones aveugles : guerriers, artisans et âmes de tous les siècles, jamais documentés par l'Histoire ; sépia, poussière, dignité des oubliés"
 		}
+	},
+	"artDirection": {
+		"rule": "Monochrome dominant + UN seul accent saturé par image (règle d'or de la bible Travelers). Lumière contenue, jamais de néon partout. Peinture épique sombre.",
+		"basePrompt": "dark epic digital painting, dramatic chiaroscuro lighting, muted monochrome palette with a single saturated accent color, cinematic composition, painterly brushstrokes, sleek biotech suit with modular plates and contained light lines, realistic adult proportions, seinen atmosphere, masterpiece",
+		"negativePrompt": "saturated rainbow colors, neon everywhere, glowing circuits everywhere, Iron Man style, Power Rangers, giant mecha, chibi, moe, kawaii, flat lighting, comic book style, text, watermark, blurry"
 	},
 	"constraints": {
 		"minCost": 0,
 		"maxCost": 10,
-		"maxTextLength": 140
+		"maxTextLength": 160,
+		"deckSize": 30
 	}
 }

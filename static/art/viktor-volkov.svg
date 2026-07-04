@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0c0d10"/><stop offset="0.6" stop-color="#16181d"/><stop offset="1" stop-color="#1f2127"/>
+    </linearGradient>
+    <linearGradient id="trail" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e07b2a" stop-opacity="0"/><stop offset="1" stop-color="#e07b2a" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="21"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <g stroke="#22252c" stroke-width="3" opacity="0.8" fill="none">
+    <path d="M60 480 L740 480 M60 510 L740 510"/>
+  </g>
+  <g>
+    <path d="M150 300 L 380 285 L 360 305 L 140 318 Z" fill="url(#trail)"/>
+    <path d="M180 360 L 400 350 L 385 368 L 170 376 Z" fill="url(#trail)" opacity="0.7"/>
+    <path d="M470 160 C 440 162 428 190 432 218 C 435 242 450 254 472 253 C 494 252 508 238 509 214 C 511 186 498 158 470 160 Z" fill="#15161b" stroke="#3c4048" stroke-width="4"/>
+    <path d="M430 470 C 420 380 435 300 472 282 C 520 292 540 370 545 460 Z" fill="#111217" stroke="#3c4048" stroke-width="4"/>
+    <path d="M448 320 L 400 360 M500 300 L 540 250" stroke="#3c4048" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M446 452 L 438 468 M528 440 L 540 456" stroke="#e07b2a" stroke-width="6" stroke-linecap="round"/>
+    <path d="M452 366 C 448 380 448 392 452 404 M492 360 C 498 374 500 388 498 402" stroke="#e07b2a" stroke-width="3.5" fill="none" opacity="0.9"/>
+  </g>
+  <rect width="800" height="600" filter="url(#rough)" opacity="0.5"/>
+</svg>

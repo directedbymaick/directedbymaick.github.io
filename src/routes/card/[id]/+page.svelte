@@ -21,8 +21,13 @@
 	<Card {card} />
 	<aside class="meta">
 		<h1>{card.name}</h1>
-		<p class="tags">{factionName} · {rarityName} · coût {card.cost} · {card.attack}/{card.health}</p>
-		<p>{card.text}</p>
+		<p class="tags">
+		{factionName} · {rarityName} · coût {card.cost}{#if card.kind !== 'protocole'}
+			· {card.attack}/{card.health}{/if}{#if card.cell}
+			· {card.cell}{/if}
+	</p>
+		{#if card.text}<p>{card.text}</p>{/if}
+		{#if card.synchro}<p>⟟ Synchro ({card.synchro.cost}) : {card.synchro.text}</p>{/if}
 		{#if card.flavor}<p class="flavor">« {card.flavor} »</p>{/if}
 		<p class="gene">
 			gène : foil <code>{card.gene.foilPreset}</code> · seed <code>{card.gene.seed}</code> ·

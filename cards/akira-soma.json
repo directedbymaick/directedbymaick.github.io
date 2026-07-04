@@ -1,0 +1,20 @@
+{
+	"id": "akira-soma",
+	"name": "Akira Sōma",
+	"kind": "traveler",
+	"cost": 7,
+	"attack": 4,
+	"health": 6,
+	"cell": "Directeur du DRFT",
+	"text": "À l'arrivée : prenez le contrôle d'un Traveler ennemi non-synchronisé coûtant 3 ou moins.",
+	"flavor": "Je vois plus loin. J'ai donc le droit de choisir pour eux.",
+	"rarity": "legendary",
+	"faction": "kairos",
+	"art": "/art/akira-soma.svg",
+	"gene": {
+		"palette": ["#241419", "#0d0a0b", "#8d95a6"],
+		"foilPreset": "galaxy",
+		"accent": "#c23b4e",
+		"seed": 731108
+	}
+}

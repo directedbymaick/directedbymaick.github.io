@@ -1,0 +1,24 @@
+{
+	"id": "mariam-diallo",
+	"name": "Mariam Diallo",
+	"kind": "traveler",
+	"cost": 3,
+	"attack": 2,
+	"health": 4,
+	"cell": "CELL Caduceus",
+	"synchro": {
+		"cost": 1,
+		"text": "Nano-fluide : restaurez 4 Intégrité à une unité alliée."
+	},
+	"text": "",
+	"flavor": "Sauver autrui la vide. Elle recommence quand même.",
+	"rarity": "rare",
+	"faction": "rikken",
+	"art": "/art/mariam-diallo.svg",
+	"gene": {
+		"palette": ["#1a242b", "#0a0d10", "#35c4c9"],
+		"foilPreset": "holo",
+		"accent": "#35c4c9",
+		"seed": 230814
+	}
+}

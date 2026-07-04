@@ -1,0 +1,24 @@
+{
+	"id": "genjiro-hayashi",
+	"name": "Genjiro Hayashi",
+	"kind": "traveler",
+	"cost": 6,
+	"attack": 4,
+	"health": 7,
+	"cell": "Proto-CELL · 2000",
+	"synchro": {
+		"cost": 2,
+		"text": "Onde percussive : inflige 2 dégâts à toutes les unités ennemies."
+	},
+	"text": "Garde.",
+	"flavor": "Sa puissance use son passé. Il paye ses années sans discuter.",
+	"rarity": "legendary",
+	"faction": "rikken",
+	"art": "/art/genjiro-hayashi.svg",
+	"gene": {
+		"palette": ["#282318", "#0e0d0b", "#c9973d"],
+		"foilPreset": "galaxy",
+		"accent": "#c9973d",
+		"seed": 200005
+	}
+}

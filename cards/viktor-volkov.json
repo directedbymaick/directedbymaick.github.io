@@ -1,0 +1,24 @@
+{
+	"id": "viktor-volkov",
+	"name": "Viktor Volkov",
+	"kind": "traveler",
+	"cost": 3,
+	"attack": 3,
+	"health": 2,
+	"cell": "CELL Phaeton",
+	"synchro": {
+		"cost": 1,
+		"text": "Nitro : +2 Attaque jusqu'à la fin du tour."
+	},
+	"text": "Célérité.",
+	"flavor": "Il agit. Il pense après. Dans cet ordre-là, toujours.",
+	"rarity": "epic",
+	"faction": "rikken",
+	"art": "/art/viktor-volkov.svg",
+	"gene": {
+		"palette": ["#1f2127", "#0c0d10", "#e07b2a"],
+		"foilPreset": "prismatic",
+		"accent": "#e07b2a",
+		"seed": 240301
+	}
+}
