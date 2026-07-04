@@ -70,7 +70,7 @@ Effet immédiat, puis défaussé. RIKKEN et KAIROS ont leurs protocoles ; certai
 ## 7. Équilibrage — repères pour le pipeline
 
 - Budget de stats : `attack + health ≈ statBudgetPerCost × cost` (voir charter.json par rareté).
-- Un effet À l'arrivée / Synchro « vaut » ~1 point de budget par 2 points d'impact estimé.
+- **Barème détaillé du coût des effets : docs/SET01.md §2** (source de vérité pour le design de cartes).
 - Les Époques : +1 de budget à coût égal (compensation de l'absence de Synchro).
 - Contrainte du lore : **pas de magie** — tout effet doit être exprimable en termes CELL/tech/temporel.
 
