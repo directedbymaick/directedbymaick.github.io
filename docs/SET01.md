@@ -116,6 +116,8 @@ La discipline des couleurs. Un effet hors identité = carte refusée, même équ
 
 ✅ = forgée · ⬜ = artwork à générer. Les noms/effets des ⬜ sont des **briefs** — ils se finalisent à la forge, l'artwork peut les faire évoluer.
 
+> **Source d'autorité pour la production visuelle : docs/LORE.md (l'histoire, les 7 zones aveugles) et docs/PROMPTS.md (les 60 prompts définitifs).** En cas d'écart entre un concept ci-dessous et LORE/PROMPTS, ces derniers font foi (ex. E04 : maçon de cathédrale → maçon du col, zone Z-04).
+
 ### RIKKEN (22)
 
 | # | St | Rareté | Type | Coût | Rôle | Concept & brief visuel |

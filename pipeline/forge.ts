@@ -29,7 +29,10 @@ const { values: args } = parseArgs({
 		faction: { type: 'string', default: 'epoques' },
 		rarity: { type: 'string', default: 'common' },
 		kind: { type: 'string', default: 'traveler' },
-		name: { type: 'string' }
+		name: { type: 'string' },
+		/** Régénération : si la carte existe, remplace SEULEMENT l'artwork
+		 *  (art, palette, seed) — stats et textes intacts. */
+		replace: { type: 'boolean', default: false }
 	}
 });
 
@@ -64,7 +67,27 @@ function uniqueSlug(base: string): string {
 }
 
 async function processImage(file: string): Promise<void> {
-	const slug = uniqueSlug(slugify(args.name ?? path.basename(file, path.extname(file))));
+	const baseSlug = slugify(args.name ?? path.basename(file, path.extname(file)));
+	const existingPath = path.join(CARDS_DIR, `${baseSlug}.json`);
+
+	// Mode --replace : nouvel artwork pour une carte existante, tout le reste intact.
+	if (args.replace && fs.existsSync(existingPath)) {
+		const artPath = path.join(ART_DIR, `${baseSlug}.webp`);
+		await sharp(file)
+			.resize(1200, 1500, { fit: 'inside', withoutEnlargement: true })
+			.webp({ quality: 82 })
+			.toFile(artPath);
+		const palette = await extractPalette(artPath);
+		const card = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
+		card.art = `/art/${baseSlug}.webp`;
+		card.gene.palette = palette;
+		card.gene.seed = Math.floor(Math.random() * 1_000_000);
+		fs.writeFileSync(existingPath, JSON.stringify(card, null, '\t') + '\n');
+		console.log(`↻ ${baseSlug} · artwork remplacé · palette ${palette.join(' ')} (stats/textes conservés)`);
+		return;
+	}
+
+	const slug = uniqueSlug(baseSlug);
 	const artPath = path.join(ART_DIR, `${slug}.webp`);
 
 	// Optimisation : WebP ≤ 1200px de large (cf. DESIGN.md, ~100-200 Ko)
