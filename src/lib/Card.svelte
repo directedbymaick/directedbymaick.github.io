@@ -717,17 +717,19 @@
 
 	.glare {
 		z-index: 6;
+		/* halo diffus : retombée très progressive, aucun cercle lisible */
 		background: radial-gradient(
-			farthest-corner circle at var(--px) var(--py),
-			rgba(255, 255, 255, 0.65) 5%,
-			rgba(255, 255, 255, 0.12) 35%,
-			transparent 75%
+			130cqw 130cqw at var(--px) var(--py),
+			rgba(255, 255, 255, 0.22) 0%,
+			rgba(255, 255, 255, 0.13) 25%,
+			rgba(255, 255, 255, 0.06) 48%,
+			rgba(255, 255, 255, 0.02) 68%,
+			transparent 88%
 		);
 		mix-blend-mode: overlay;
-		filter: brightness(0.9) contrast(1.6);
 	}
 	.card.hover .glare {
-		opacity: calc(0.45 + var(--from-center) * 0.4);
+		opacity: calc(0.55 + var(--from-center) * 0.3);
 		transition: opacity 0.25s ease;
 	}
 </style>
