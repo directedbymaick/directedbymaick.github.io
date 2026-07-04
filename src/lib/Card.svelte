@@ -63,7 +63,7 @@
 		data-material={rarityDef.material}
 		data-foil={foil.preset}
 		data-kind={card.kind}
-		style="{styleString(foil.vars)}; {pointerVars}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -281,6 +281,8 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		/* préserve le haut des portraits (têtes) — surcharge par carte via artPosition */
+		object-position: var(--art-pos, center 12%);
 		display: block;
 	}
 	.scrim {

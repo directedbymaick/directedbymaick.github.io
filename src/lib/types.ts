@@ -60,6 +60,8 @@ export interface CardData {
 	faction: FactionId;
 	/** Chemin de l'artwork (servi depuis static/). */
 	art: string;
+	/** Cadrage de l'art dans sa fenêtre (object-position CSS). Défaut : 'center 12%' — préserve le haut des portraits. */
+	artPosition?: string;
 	gene: CardGene;
 }
 
