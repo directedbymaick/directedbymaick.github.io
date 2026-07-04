@@ -81,7 +81,7 @@ Au repos, la carte est sobre (matériau + art). Au survol (= mode local) :
 - **Chromatique** : monochrome dominant + un accent (cf. §3) — le prompt l'impose.
 - **Sujets** : Travelers en suit CELL (sleek, plaques modulaires, lumière contenue), agents KAIROS, figures des époques (zones aveugles), lieux RIKKEN.
 - **Prompt de base et negative** : voir `charter.json → artDirection` (source machine).
-- **Format cible** : 4:5 minimum (l'art est croppé en ~4:3.4 full-bleed sur la carte).
+- **Format cible : portrait 4:5, toujours** — la Forge normalise chaque artwork en 1200×1500 exact (crop `cover` avec détection de zone d'intérêt) ; une source paysage est recadrée avec perte. Sur la carte, l'art est croppé en ~4:3.4 (standard) ou plein cadre (full art).
 
 ## 7. Checklist de curation (avant d'accepter un artwork)
 

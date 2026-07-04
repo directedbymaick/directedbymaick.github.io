@@ -9,6 +9,8 @@
 3. Télécharge et **renomme le fichier avec le slug indiqué** (ex. `recrue-du-cycle.png`) → dépose dans `drop/`.
 4. Dis-le moi : je forge et j'écris/révise les cartes.
 
+**Format : portrait 4:5 OBLIGATOIRE** (tous les prompts portent `--ar 4:5` — ne le retire jamais). La Forge normalise chaque image en 1200×1500 exact ; une source paysage serait recadrée automatiquement, avec perte.
+
 **Accents** : RIKKEN bleu `#3d8fd6` · KAIROS rouge `#c23b4e` · Époques bronze `#b08d57`.
 **Rappels bible** : lumière contenue (jamais de néon partout) · suits type voiture de sport (pas Iron Man) · Époques = zéro personnage historique célèbre, le « marqueur d'effacement » (brume, neige, crue…) visible dans l'image.
 

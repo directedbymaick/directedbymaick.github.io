@@ -66,6 +66,24 @@ function uniqueSlug(base: string): string {
 	return slug;
 }
 
+/**
+ * Règle absolue : les illustrations sont TOUJOURS en portrait 4:5.
+ * Toute image entrante est normalisée en 1200×1500 WebP — une source paysage
+ * est recadrée (crop 'attention' : sharp centre sur la zone d'intérêt).
+ */
+async function normalizePortrait(input: string, outPath: string): Promise<void> {
+	const meta = await sharp(input).metadata();
+	if ((meta.width ?? 0) > (meta.height ?? 0)) {
+		console.warn(
+			`  ⚠ ${path.basename(input)} est en paysage (${meta.width}×${meta.height}) — recadrée en portrait 4:5.`
+		);
+	}
+	await sharp(input)
+		.resize(1200, 1500, { fit: 'cover', position: sharp.strategy.attention })
+		.webp({ quality: 82 })
+		.toFile(outPath);
+}
+
 async function processImage(file: string): Promise<void> {
 	const baseSlug = slugify(args.name ?? path.basename(file, path.extname(file)));
 	const existingPath = path.join(CARDS_DIR, `${baseSlug}.json`);
@@ -73,10 +91,7 @@ async function processImage(file: string): Promise<void> {
 	// Mode --replace : nouvel artwork pour une carte existante, tout le reste intact.
 	if (args.replace && fs.existsSync(existingPath)) {
 		const artPath = path.join(ART_DIR, `${baseSlug}.webp`);
-		await sharp(file)
-			.resize(1200, 1500, { fit: 'inside', withoutEnlargement: true })
-			.webp({ quality: 82 })
-			.toFile(artPath);
+		await normalizePortrait(file, artPath);
 		const palette = await extractPalette(artPath);
 		const card = JSON.parse(fs.readFileSync(existingPath, 'utf8'));
 		card.art = `/art/${baseSlug}.webp`;
@@ -89,12 +104,7 @@ async function processImage(file: string): Promise<void> {
 
 	const slug = uniqueSlug(baseSlug);
 	const artPath = path.join(ART_DIR, `${slug}.webp`);
-
-	// Optimisation : WebP ≤ 1200px de large (cf. DESIGN.md, ~100-200 Ko)
-	await sharp(file)
-		.resize(1200, 1500, { fit: 'inside', withoutEnlargement: true })
-		.webp({ quality: 82 })
-		.toFile(artPath);
+	await normalizePortrait(file, artPath);
 
 	const palette = await extractPalette(artPath);
 	const seed = Math.floor(Math.random() * 1_000_000);
