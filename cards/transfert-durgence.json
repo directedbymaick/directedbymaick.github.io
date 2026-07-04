@@ -8,6 +8,11 @@
 	"rarity": "rare",
 	"faction": "rikken",
 	"art": "/art/transfert-durgence.webp",
+	"alts": [
+		"/art/alt/transfert-durgence-alt2.webp",
+		"/art/alt/transfert-durgence-alt3.webp",
+		"/art/alt/transfert-durgence-alt4.webp"
+	],
 	"gene": {
 		"palette": [
 			"#182426",

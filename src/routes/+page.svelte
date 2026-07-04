@@ -15,6 +15,19 @@
 			.filter((c) => c.faction === f)
 			.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
 	}
+
+	/** Grille d'affichage : chaque carte, suivie de ses versions alternatives. */
+	function entriesFor(f: FactionId) {
+		return byFaction(f).flatMap((card) => [
+			{ key: card.id, card, alt: 0, href: `/card/${card.id}` },
+			...(card.alts ?? []).map((art, i) => ({
+				key: `${card.id}--alt${i + 2}`,
+				card: { ...card, art, gene: { ...card.gene, seed: card.gene.seed + 97 * (i + 1) } },
+				alt: i + 1,
+				href: `/card/${card.id}?v=alt${i + 2}`
+			}))
+		]);
+	}
 </script>
 
 <svelte:head>
@@ -43,10 +56,13 @@
 				<span class="fcount">{list.length.toString().padStart(2, '0')}</span>
 			</h2>
 			<div class="wall">
-				{#each list as card (card.id)}
+				{#each entriesFor(f) as e (e.key)}
 					<div class="cell">
-						<Card {card} />
-						<a class="cardlink" href="/card/{card.id}">{card.name}</a>
+						<Card card={e.card} />
+						<a class="cardlink" href={e.href}>
+							{e.card.name}
+							{#if e.alt}<span class="altchip">ALT {e.alt}</span>{/if}
+						</a>
 					</div>
 				{/each}
 			</div>
@@ -172,5 +188,15 @@
 	}
 	.cardlink:hover {
 		color: #ece8e1;
+	}
+	.altchip {
+		display: inline-block;
+		margin-left: 0.4em;
+		padding: 0.12em 0.5em;
+		font-size: 0.85em;
+		letter-spacing: 0.14em;
+		color: #0f1923;
+		background: #ffb454;
+		clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
 	}
 </style>

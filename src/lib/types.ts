@@ -64,6 +64,8 @@ export interface CardData {
 	artPosition?: string;
 	/** Full art : l'artwork couvre toute la carte, panneaux en verre flouté par-dessus. Par défaut pour légendaire/prismatique. */
 	fullArt?: boolean;
+	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
+	alts?: string[];
 	gene: CardGene;
 }
 

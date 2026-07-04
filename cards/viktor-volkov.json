@@ -15,6 +15,9 @@
 	"rarity": "epic",
 	"faction": "rikken",
 	"art": "/art/viktor-volkov.webp",
+	"alts": [
+		"/art/alt/viktor-volkov-alt2.webp"
+	],
 	"gene": {
 		"palette": [
 			"#1a222a",

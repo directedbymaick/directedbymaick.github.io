@@ -11,6 +11,9 @@
 	"rarity": "common",
 	"faction": "rikken",
 	"art": "/art/analyste-du-drft.webp",
+	"alts": [
+		"/art/alt/analyste-du-drft-alt2.webp"
+	],
 	"gene": {
 		"palette": [
 			"#1a2525",

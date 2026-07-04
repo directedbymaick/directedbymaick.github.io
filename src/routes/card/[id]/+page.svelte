@@ -1,11 +1,45 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import { charter } from '$lib/charter';
+	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
 	const card = $derived(data.card);
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const faction = $derived(charter.factions[card.faction]);
+
+	/** Versions de la carte : cadre standard, full art, et les arts alternatifs. */
+	interface Variant {
+		key: string;
+		label: string;
+		view: CardData;
+	}
+	const variants: Variant[] = $derived.by(() => {
+		const list: Variant[] = [
+			{ key: 'base', label: card.fullArt ? 'Full art' : 'Standard', view: card },
+			{
+				key: 'flip',
+				label: card.fullArt ? 'Standard' : 'Full art',
+				view: { ...card, fullArt: !card.fullArt }
+			}
+		];
+		(card.alts ?? []).forEach((art, i) => {
+			list.push({
+				key: `alt${i + 2}`,
+				label: `Alt ${i + 1}`,
+				view: { ...card, art, gene: { ...card.gene, seed: card.gene.seed + 97 * (i + 1) } }
+			});
+		});
+		return list;
+	});
+
+	let sel = $state('base');
+	$effect(() => {
+		card.id; // reset à chaque navigation de carte
+		const v = new URLSearchParams(location.search).get('v');
+		sel = v && variants.some((x) => x.key === v) ? v : 'base';
+	});
+	const shown = $derived(variants.find((v) => v.key === sel)?.view ?? card);
 </script>
 
 <svelte:head>
@@ -19,7 +53,22 @@
 
 <section class="stage">
 	<div class="showcase">
-		<Card {card} />
+		{#key sel}
+			<Card card={shown} />
+		{/key}
+		<div class="variants" role="tablist" aria-label="Versions de la carte">
+			{#each variants as v (v.key)}
+				<button
+					class="vbtn"
+					class:active={sel === v.key}
+					role="tab"
+					aria-selected={sel === v.key}
+					onclick={() => (sel = v.key)}
+				>
+					{v.label}
+				</button>
+			{/each}
+		</div>
 	</div>
 
 	<aside class="meta" style="--fc: {faction?.color ?? '#8892a6'}">
@@ -82,6 +131,38 @@
 	}
 	.showcase {
 		--card-w: min(380px, 90vw);
+	}
+
+	.variants {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-top: 1.3rem;
+	}
+	.vbtn {
+		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		padding: 0.4rem 0.9rem;
+		border: none;
+		cursor: pointer;
+		color: rgba(236, 232, 225, 0.6);
+		background: rgba(236, 232, 225, 0.07);
+		clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
+	}
+	.vbtn:hover {
+		color: #ece8e1;
+		background: rgba(236, 232, 225, 0.14);
+	}
+	.vbtn.active {
+		color: #0f1923;
+		background: #ffb454;
 	}
 
 	.meta {
