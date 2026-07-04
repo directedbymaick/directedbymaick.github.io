@@ -47,9 +47,8 @@ Règle d'or de la bible appliquée aux cartes :
 
 Par-dessus l'anatomie, le corps de la carte est traité comme un **terminal CRT d'archive RIKKEN** :
 
-- **L'ambre système `#ffb454`** — la couleur du HUD (référence EVA/Blade Runner), distincte de l'accent de faction : cellule de coût, brackets, labels, hachures, micro-texte. Deux couleurs par carte maximum : l'ambre système + l'accent de faction.
-- **Scanlines CRT** + vignette chaude subtile sur tout le corps.
-- **Brackets de visée** aux quatre coins de la fenêtre d'art (viseur NERV).
+- **L'ambre système `#ffb454`** — la couleur du HUD (référence EVA/Blade Runner), distincte de l'accent de faction : cellule de coût, labels, hachures, micro-texte. Deux couleurs par carte maximum : l'ambre système + l'accent de faction.
+- **Scanlines CRT** + vignette chaude subtile — **uniquement sur la fenêtre d'illustration** (décision user : la moitié inférieure reste nette). Pas de brackets de visée (retirés — surcharge).
 - **Numéro de série vertical** (`RIK·S01//SLUG`) le long de l'art — le dossier d'archive incarné.
 - **Hachures d'avertissement** (repeating 45°) sous la plaque de nom.
 - **Monospace phosphore** (Consolas) pour les micro-labels : ⟨CELL⟩, ATQ/INT, SYNCHRO — avec léger glow.

@@ -75,7 +75,7 @@
 					<div class="foil-b" aria-hidden="true"></div>
 					<div class="sparkles" aria-hidden="true"></div>
 					<div class="scrim" aria-hidden="true"></div>
-					<div class="hud-brackets" aria-hidden="true"></div>
+					<div class="crt" aria-hidden="true"></div>
 					<span class="serial" aria-hidden="true"
 						>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 16).toUpperCase()}</span
 					>
@@ -273,25 +273,6 @@
 		flex-direction: column;
 		color: #e8e6df;
 	}
-	/* CRT : scanlines + vignette chaude — l'écran rétro par-dessus tout */
-	.body::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 8;
-		pointer-events: none;
-		background:
-			repeating-linear-gradient(
-				180deg,
-				rgba(255, 255, 255, 0.025) 0 1px,
-				transparent 1px 3px
-			),
-			radial-gradient(
-				130% 100% at 50% 0%,
-				transparent 60%,
-				rgba(255, 180, 84, 0.05) 100%
-			);
-	}
 
 	/* ---------- art full-bleed ---------- */
 
@@ -318,23 +299,19 @@
 		pointer-events: none;
 	}
 
-	/* brackets de visée (viseur NERV) aux coins de la fenêtre d'art */
-	.hud-brackets {
-		--bk: color-mix(in srgb, var(--sys) 75%, transparent);
+	/* filtre TV : scanlines + vignette chaude — UNIQUEMENT sur l'illustration */
+	.crt {
 		position: absolute;
-		inset: 1.8cqw;
+		inset: 0;
 		pointer-events: none;
 		z-index: 2;
 		background:
-			linear-gradient(var(--bk), var(--bk)) left 0 top 0 / 5cqw 0.35cqw,
-			linear-gradient(var(--bk), var(--bk)) left 0 top 0 / 0.35cqw 5cqw,
-			linear-gradient(var(--bk), var(--bk)) right 0 top 0 / 5cqw 0.35cqw,
-			linear-gradient(var(--bk), var(--bk)) right 0 top 0 / 0.35cqw 5cqw,
-			linear-gradient(var(--bk), var(--bk)) left 0 bottom 0 / 5cqw 0.35cqw,
-			linear-gradient(var(--bk), var(--bk)) left 0 bottom 0 / 0.35cqw 5cqw,
-			linear-gradient(var(--bk), var(--bk)) right 0 bottom 0 / 5cqw 0.35cqw,
-			linear-gradient(var(--bk), var(--bk)) right 0 bottom 0 / 0.35cqw 5cqw;
-		background-repeat: no-repeat;
+			repeating-linear-gradient(
+				180deg,
+				rgba(255, 255, 255, 0.03) 0 1px,
+				transparent 1px 3px
+			),
+			radial-gradient(120% 120% at 50% 30%, transparent 55%, rgba(255, 180, 84, 0.06) 100%);
 	}
 
 	/* numéro de série vertical — le dossier d'archive incarné (sous le sigil) */
@@ -368,6 +345,11 @@
 			#14161d;
 		font-size: 6.4cqw;
 		font-weight: 700;
+		/* centrage optique du chiffre : ligne à 1 + correction du décalage
+		   vertical des chiffres Bahnschrift dans leur em-box */
+		line-height: 1;
+		padding-top: 0.5cqw;
+		font-variant-numeric: tabular-nums;
 		color: #fff;
 	}
 	.cost::before {
