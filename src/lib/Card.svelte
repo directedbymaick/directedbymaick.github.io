@@ -93,7 +93,7 @@
 							{:else}
 								<span class="cell">Zone aveugle</span>
 							{/if}
-							<span class="fname" style="color: var(--accent)">{faction.name}</span>
+							<span class="fname">{faction.name}</span>
 						</p>
 					</header>
 
@@ -289,22 +289,6 @@
 			inset 0 1px 0 rgba(255, 255, 255, 0.08),
 			inset 0 -1px 0 rgba(0, 0, 0, 0.5);
 	}
-	/* trame de demi-teinte sur la moitié basse (texture d'impression) */
-	.body::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 1;
-		pointer-events: none;
-		background-image: radial-gradient(
-			circle,
-			color-mix(in srgb, var(--accent) 30%, rgba(255, 255, 255, 0.14)) 0.9px,
-			transparent 1.1px
-		);
-		background-size: 7px 7px;
-		opacity: 0.16;
-		mask-image: linear-gradient(180deg, transparent 42%, #000 78%);
-	}
 
 	/* ---------- art full-bleed ---------- */
 
@@ -469,18 +453,34 @@
 		position: relative;
 		align-self: flex-start;
 		max-width: 100%;
-		padding: 1.4cqw 3cqw 1.6cqw 2.2cqw;
-		/* plaque embossée : gradient vertical + filet lumineux en tête */
-		background: linear-gradient(
-			180deg,
-			rgba(34, 36, 46, 0.94) 0%,
-			rgba(13, 14, 20, 0.9) 100%
-		);
+		padding: 1.5cqw 5.2cqw 1.6cqw 2.4cqw;
+		/* plaque à pan coupé : verre sombre, coin haut-droit biseauté.
+		   Le clip-path avale box-shadow → relief via filter + filets internes. */
+		clip-path: polygon(0 0, calc(100% - 4.2cqw) 0, 100% 4.2cqw, 100% 100%, 0 100%);
+		background:
+			radial-gradient(
+				60% 100% at 0% 50%,
+				color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+				transparent 70%
+			),
+			linear-gradient(180deg, rgba(32, 34, 45, 0.94) 0%, rgba(11, 12, 17, 0.9) 100%);
 		border-left: 0.7cqw solid var(--accent);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.12),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.55),
-			0 0.5cqw 1.2cqw rgba(0, 0, 0, 0.45);
+		filter: drop-shadow(0 0.5cqw 1cqw rgba(0, 0, 0, 0.5));
+	}
+	/* filet lumineux en tête, qui suit le pan coupé */
+	.plate::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.3) 0%,
+			rgba(255, 255, 255, 0.08) 70%,
+			transparent 100%
+		);
 	}
 	/* hachures d'avertissement (EVA) sous la plaque de nom */
 	.plate::after {
@@ -506,25 +506,30 @@
 		text-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.8);
 	}
 	.cellline {
-		margin: 0.7cqw 0 0;
+		margin: 1cqw 0 0;
 		display: flex;
-		gap: 2.2cqw;
-		align-items: baseline;
+		gap: 1.8cqw;
+		align-items: center;
 		font-family: Consolas, 'Cascadia Mono', monospace;
-		font-size: 2.9cqw;
+		font-size: 2.7cqw;
 		text-transform: uppercase;
 		letter-spacing: 0.14em;
 	}
+	/* le CELL est un chip taillé — accent en fond, pas de chevrons typographiques */
 	.cell {
-		color: color-mix(in srgb, var(--sys) 72%, #fff);
+		padding: 0.45cqw 1.6cqw 0.4cqw;
+		clip-path: polygon(1.1cqw 0, 100% 0, calc(100% - 1.1cqw) 100%, 0 100%);
+		background: linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--accent) 40%, #171821) 0%,
+			color-mix(in srgb, var(--accent) 22%, #10111a) 100%
+		);
+		color: color-mix(in srgb, var(--accent) 45%, #fff);
+		text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 	}
-	.cell::before {
-		content: '⟨';
-		opacity: 0.55;
-	}
-	.cell::after {
-		content: '⟩';
-		opacity: 0.55;
+	.fname {
+		color: rgba(236, 232, 225, 0.5);
+		letter-spacing: 0.22em;
 	}
 	.fname {
 		font-weight: 700;
@@ -914,9 +919,6 @@
 		inset: 0;
 		height: 100%;
 		z-index: 0;
-	}
-	.card[data-fullart='true'] .body::before {
-		display: none; /* la trame d'impression céderait sur l'artwork */
 	}
 	.card[data-fullart='true'] .scrim {
 		background: linear-gradient(
