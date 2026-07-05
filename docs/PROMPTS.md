@@ -64,9 +64,9 @@ young franco-senegalese medic in a matte black segmented exosuit running through
 young japanese woman in a matte black segmented exosuit standing on the top beam of a radio tower at dawn, wind whipping her hair, HUD visor streaming blue data against the pale gold sky, clouds far below, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**R11 · `porteur-cell-pyros`** — l'escalier qui s'effondre
+**R11 · `porteur-cell-pyros`** — la torche entre les tours
 ```
-male traveler in a matte black segmented exosuit sprinting up a collapsing stairwell, ember-orange channels blazing along his arms, burning debris falling around him, cool blue smoke above, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, fire everywhere, text, watermark
+male traveler wreathed in roaring orange flames diving between new york style skyscrapers, matte black segmented exosuit visible through the fire, fist cocked mid-strike trailing a comet tail of embers, shattered glass glittering around him, cool blue city dusk against the blazing heat, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
 **R12 · `senior-descorte`** — tenir la brèche
