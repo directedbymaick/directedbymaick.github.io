@@ -104,9 +104,9 @@ traveler in a matte black segmented exosuit walking slowly across a cratered anc
 vertical view up the throat of a colossal energy core mid-overload, rings of machinery blazing blue-white, engineers zip-lining away on cables, steam and amber strobes, industrial cathedral scale, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no spaceship, explosion, text, watermark
 ```
 
-**R19 · `yuriko-watanabe`** — le jury, l'éclat prismatique *(FULL ART · légendaire)*
+**R19 · `yuriko-watanabe`** — le mur des noms *(FULL ART · légendaire · canon : première génération de Travelers, CELL éteint porté en apparat, œil gauche délavé)*
 ```
-regal japanese woman in her fifties in a prestigious dark ceremonial uniform with fine silver embroidery and rank insignia, standing on an elevated jury dais in a monumental hall at dusk, hundreds of holographic candidate portraits shattering into prismatic light shards swirling around her, only three portraits still glowing, iridescent reflections catching her uniform, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
+dignified japanese woman in her fifties, one pale bleached eye, wearing a decommissioned first-generation exosuit with dead pearl-grey conduits under a formal dark coat, standing in the rain before a monumental memorial wall engraved with hundreds of names, her fingers resting on one name, prismatic reflections in the wet stone, dusk, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
 **R20 · `genjiro-hayashi`** — la locomotive *(FULL ART · légendaire)*
