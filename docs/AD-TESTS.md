@@ -239,6 +239,45 @@ Dépôt : `drop/_tests/` → `j1.png` … `j3.png`. Comparer J1-J3 (JoJo) vs V1-
 
 ---
 
+## v4 — ABANDON DU RÉTRO : splash art anime/manga/jeu vidéo moderne
+
+Constat : tout vocabulaire « retro/vintage/90s/film grain » ramène un rendu peinture-brush. On vise
+le **splash art moderne de jeu anime** (key visuals type Arknights / Genshin / jaquettes d'anime
+actuelles) : cel net, ligne crisp, couleurs vives, lumière cinématique, ZÉRO grain.
+
+**Acquis conservés** des rounds précédents :
+- une scène = une phrase, zéro accumulation de VFX (v2.1) ;
+- pose flamboyante mais STATIQUE (v3.3) ;
+- duo de couleurs complémentaires par carte + fond lumineux — contrainte foils (v3.2) ;
+- hiérarchie sujet net > décor atmosphérique (principe 4) ;
+- profil de personnalisation ON, moodboard OFF.
+
+**Bloc de style v4** :
+```
+anime video game splash art, official key visual style, clean cel shading, crisp line art, vibrant saturated colors, cinematic lighting
+```
+
+### Tests v4 (mêmes 3 scènes, pour comparaison propre)
+
+**K1 — Viktor**
+```
+young russian traveler in a sleek black biotech suit striking a confident pose on a rooftop edge, chin raised, insolent grin, vivid orange sunset sky over a teal city skyline, orange glow from his calf conduits, anime video game splash art, official key visual style, clean cel shading, crisp line art, vibrant saturated colors, cinematic lighting --no text, watermark, painterly, brush strokes
+```
+
+**K2 — KAIROS**
+```
+masked kairos operative standing with theatrical confidence in a rainy alley at night, one hand adjusting his collar, bright red neon sign with cool cyan reflections in the puddles, red conduits glowing through his black coat, anime video game splash art, official key visual style, clean cel shading, crisp line art, vibrant saturated colors, cinematic lighting --no text, watermark, painterly, brush strokes
+```
+
+**K3 — éclaireuse 1888**
+```
+female scout in a sleek dark biotech suit posing on wooden scaffolding in a 19th century parisian construction site at dusk, warm amber gaslights through blue evening fog, luminous violet sky behind the ironwork, blue light lines on her suit, anime video game splash art, official key visual style, clean cel shading, crisp line art, vibrant saturated colors, cinematic lighting --no eiffel tower, text, watermark, painterly, brush strokes
+```
+
+Dépôt : `drop/_tests/` → `k1.png` … `k3.png`. Noter le `--no painterly, brush strokes` : on verrouille la sortie du rendu peinture.
+
+---
+
 ## ROUND 1 (rejeté — archive)
 
 *Contexte : présent = Terre, 2049. Les Travelers visitent des époques différentes → chaque époque doit être identifiable par son décor ET sa palette. On garde le grain rétro (Evangelion / GITS / Blade Runner), on abandonne le monochrome strict : palette riche par époque, contrôlée, jamais arc-en-ciel.*
