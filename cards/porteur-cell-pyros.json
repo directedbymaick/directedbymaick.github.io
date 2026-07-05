@@ -1,0 +1,32 @@
+{
+	"id": "porteur-cell-pyros",
+	"name": "Porteur CELL Pyros",
+	"kind": "traveler",
+	"cost": 4,
+	"attack": 4,
+	"health": 4,
+	"cell": "CELL Pyros",
+	"synchro": {
+		"cost": 2,
+		"text": "Surchauffe : infligez 3 dégâts à une unité."
+	},
+	"text": "",
+	"flavor": "Le feu ne le brûle plus. C'est tout le reste qui brûle.",
+	"rarity": "rare",
+	"faction": "rikken",
+	"art": "/art/porteur-cell-pyros.webp",
+	"alts": [
+		"/art/alt/porteur-cell-pyros-alt2.webp",
+		"/art/alt/porteur-cell-pyros-alt3.webp"
+	],
+	"gene": {
+		"palette": [
+			"#1c2838",
+			"#0d1219",
+			"#f5d788"
+		],
+		"foilPreset": "holo",
+		"accent": "#e07b2a",
+		"seed": 3560
+	}
+}
