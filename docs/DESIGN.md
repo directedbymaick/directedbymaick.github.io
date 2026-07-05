@@ -63,9 +63,9 @@ Par-dessus l'anatomie, le corps de la carte est traité comme un **terminal CRT 
 - **Les pills étiquetées** — la Synchro est une pill accent à texte sombre (`⟟ SYNCHRO n`), pas un label flottant.
 - **Le filigrane** — le sigil de faction en grand, fantômé (~10%) dans le coin du cartouche de texte.
 
-## 4ter. Le full art (légendaires et prismatiques)
+## 4ter. Le full art (TOUTES les cartes)
 
-Les hautes raretés abandonnent la fenêtre d'art : **l'artwork couvre toute la carte**, les foils s'étendent avec lui, et les panneaux (plaque de nom, cartouche) deviennent du **verre flouté** (backdrop-blur) posé sur l'image, avec un scrim sombre progressif sur le tiers inférieur pour la lisibilité. Champ `fullArt: true` dans le JSON — posé automatiquement par la Forge pour légendaire/prismatique, activable à la main sur n'importe quelle carte (toggle dans /lab). Contrainte artwork : sujet dans les 55% supérieurs (cf. PROMPTS.md).
+**Toutes les cartes sont full art** (décision : refonte v5.2) : l'artwork couvre toute la carte, les foils s'étendent avec lui, et les panneaux (plaque de nom, cartouche) sont du **verre flouté** (backdrop-blur) posé sur l'image, avec un scrim sombre progressif sur le tiers inférieur pour la lisibilité. Le champ `fullArt` du JSON est obsolète (ignoré par Card.svelte). L'ancien format à fenêtre d'art est retiré. Contrainte artwork : sujet dans les 55% supérieurs (cf. PROMPTS.md).
 
 ## 5. La lumière ne s'allume qu'à l'activation
 

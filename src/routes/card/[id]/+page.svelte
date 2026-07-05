@@ -27,13 +27,10 @@
 	]);
 
 	let artSel = $state('base');
-	let fullArt = $state(false);
 	$effect(() => {
 		card.id; // reset à chaque navigation de carte
-		const p = new URLSearchParams(location.search);
-		const v = p.get('v');
+		const v = new URLSearchParams(location.search).get('v');
 		artSel = v && artOptions.some((o) => o.key === v) ? v : 'base';
-		fullArt = p.get('fa') === '1' ? true : (card.fullArt ?? false);
 	});
 
 	const shown: CardData = $derived.by(() => {
@@ -41,7 +38,6 @@
 		return {
 			...card,
 			art: opt.art,
-			fullArt,
 			gene: { ...card.gene, seed: card.gene.seed + opt.seedShift }
 		};
 	});
@@ -58,31 +54,24 @@
 
 <section class="stage">
 	<div class="showcase">
-		{#key `${artSel}|${fullArt}`}
+		{#key artSel}
 			<Card card={shown} />
 		{/key}
-		<div class="variants" role="tablist" aria-label="Versions de la carte">
-			{#each artOptions as o (o.key)}
-				<button
-					class="vbtn"
-					class:active={artSel === o.key}
-					role="tab"
-					aria-selected={artSel === o.key}
-					onclick={() => (artSel = o.key)}
-				>
-					{o.label}
-				</button>
-			{/each}
-			<span class="vsep" aria-hidden="true"></span>
-			<button
-				class="vbtn toggle"
-				class:active={fullArt}
-				aria-pressed={fullArt}
-				onclick={() => (fullArt = !fullArt)}
-			>
-				Full art
-			</button>
-		</div>
+		{#if artOptions.length > 1}
+			<div class="variants" role="tablist" aria-label="Versions de la carte">
+				{#each artOptions as o (o.key)}
+					<button
+						class="vbtn"
+						class:active={artSel === o.key}
+						role="tab"
+						aria-selected={artSel === o.key}
+						onclick={() => (artSel = o.key)}
+					>
+						{o.label}
+					</button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 
 	<aside class="meta" style="--fc: {faction?.color ?? '#8892a6'}">
@@ -177,16 +166,6 @@
 	.vbtn.active {
 		color: #0f1923;
 		background: #ffb454;
-	}
-	.vsep {
-		width: 1px;
-		align-self: stretch;
-		margin: 0 0.25rem;
-		background: rgba(236, 232, 225, 0.2);
-	}
-	.vbtn.toggle.active {
-		background: #c23b4e;
-		color: #ece8e1;
 	}
 
 	.meta {

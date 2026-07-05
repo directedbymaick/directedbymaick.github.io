@@ -100,11 +100,6 @@
 			<button type="button" onclick={reroll}>Relancer le seed</button>
 		</label>
 
-		<label class="row">
-			<input type="checkbox" bind:checked={base.fullArt} />
-			Full art (l'artwork couvre toute la carte)
-		</label>
-
 		<label>
 			Largeur de carte : {cardW}px
 			<input type="range" min="220" max="560" bind:value={cardW} />

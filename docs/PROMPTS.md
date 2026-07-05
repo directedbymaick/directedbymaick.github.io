@@ -13,7 +13,7 @@
 
 **Duos de couleur** : RIKKEN bleu/ambre (variantes cyan, orange/teal) · KAIROS rouge/cyan · Époques bronze/or + contrepoint froid (brume teal, neige bleue, crépuscule violet).
 
-**⚠️ Slots FULL ART** (R19–R22, K19–K22, E16) : l'artwork couvre toute la carte → sujet et détails clés dans les **55 % supérieurs**, tiers bas atmosphérique (brume, matière, décor).
+**⚠️ TOUTES les cartes sont FULL ART** : l'artwork couvre toute la carte, les panneaux (nom, cartouche) se posent en verre flouté sur le tiers inférieur → sujet et détails clés dans les **55 % supérieurs**, tiers bas atmosphérique (brume, matière, décor). Sur la grille MJ, choisis l'image dont le bas est le moins chargé.
 
 **Rappels bible** : Époques = zéro personnage historique célèbre, marqueur d'effacement (brume, neige, crue…) visible · le suit du Traveler est le seul élément moderne dans les époques visitées.
 

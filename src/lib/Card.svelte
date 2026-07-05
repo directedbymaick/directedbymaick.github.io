@@ -67,7 +67,7 @@
 		data-material={rarityDef.material}
 		data-foil={foil.preset}
 		data-kind={card.kind}
-		data-fullart={card.fullArt ? 'true' : 'false'}
+		data-fullart="true"
 		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
