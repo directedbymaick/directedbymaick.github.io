@@ -15,6 +15,9 @@
 	"rarity": "rare",
 	"faction": "rikken",
 	"art": "/art/mariam-diallo.webp",
+	"alts": [
+		"/art/alt/mariam-diallo-alt2.webp"
+	],
 	"gene": {
 		"palette": [
 			"#493337",
