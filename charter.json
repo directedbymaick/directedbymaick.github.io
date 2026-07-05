@@ -62,7 +62,7 @@
 	},
 	"artDirection": {
 		"rule": "Monochrome dominant + UN seul accent saturé par image (règle d'or de la bible Travelers). Lumière contenue, jamais de néon partout. Peinture épique sombre.",
-		"basePrompt": "dark epic digital painting, dramatic chiaroscuro lighting, muted monochrome palette with a single saturated accent color, cinematic composition, painterly brushstrokes, sleek biotech suit with modular plates and contained light lines, realistic adult proportions, seinen atmosphere, masterpiece",
+		"basePrompt": "dramatic chiaroscuro lighting, muted monochrome palette with a single saturated accent color, cinematic composition, sleek biotech suit with modular plates and contained light lines, realistic adult proportions, seinen atmosphere, masterpiece",
 		"negativePrompt": "saturated rainbow colors, neon everywhere, glowing circuits everywhere, Iron Man style, Power Rangers, giant mecha, chibi, moe, kawaii, flat lighting, comic book style, text, watermark, blurry"
 	},
 	"constraints": {
