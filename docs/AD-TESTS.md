@@ -204,6 +204,39 @@ female scout in a sleek dark biotech suit in a 19th century parisian constructio
 
 Dépôt : `drop/_tests/` → `v1.png` … `v3.png`.
 
+### v3.3 — L'ancre JoJo (vintage + ultra coloré)
+
+Référence décisive : **JoJo's Bizarre Adventure** — vintage assumé ET couleurs pop sans peur
+(ciels roses, verts acides, violets francs), lignes épaisses propres, et des poses **théâtrales
+mais statiques** (la flamboyance immobile : stable pour MJ, parfaite pour les foils).
+Ça réconcilie le swag du moodboard avec la contrainte couleur des foils.
+
+Amendement à la règle des poses : théâtral OK, tant que c'est STATIQUE (posture tenue, pas de vol plané).
+
+**Bloc de style v3.3** :
+```
+1990s retro anime style, jojo's bizarre adventure color energy, bold pop-art palette with unconventional color combinations, clean thick linework, flamboyant static pose, subtle film grain
+```
+
+### Tests JoJo (3 prompts)
+
+**J1 — Viktor, pose flamboyante, ciel rose/orange**
+```
+young russian traveler in a sleek black biotech suit striking a flamboyant pose on a rooftop edge, chin raised, insolent grin, vivid pink and orange sunset sky over a violet city skyline, orange glow from his calf conduits, 1990s retro anime style, jojo's bizarre adventure color energy, bold pop-art palette with unconventional color combinations, clean thick linework, flamboyant static pose, subtle film grain --no text, watermark
+```
+
+**J2 — KAIROS, menace posée, rouge/vert acide**
+```
+masked kairos operative standing with theatrical confidence in a rainy alley, one hand adjusting his collar, bright red neon sign against acid green mist, red conduits glowing through his black coat, 1990s retro anime style, jojo's bizarre adventure color energy, bold pop-art palette with unconventional color combinations, clean thick linework, flamboyant static pose, subtle film grain --no text, watermark
+```
+
+**J3 — éclaireuse 1888, ambre/violet**
+```
+female scout in a sleek dark biotech suit posing dramatically on wooden scaffolding in a 19th century parisian construction site, amber gaslights glowing through violet dusk fog, luminous sky behind the ironwork, blue light lines on her suit, 1990s retro anime style, jojo's bizarre adventure color energy, bold pop-art palette with unconventional color combinations, clean thick linework, flamboyant static pose, subtle film grain --no eiffel tower, text, watermark
+```
+
+Dépôt : `drop/_tests/` → `j1.png` … `j3.png`. Comparer J1-J3 (JoJo) vs V1-V3 (Bebop/Akira) : le duel final des deux formules.
+
 ---
 
 ## ROUND 1 (rejeté — archive)
