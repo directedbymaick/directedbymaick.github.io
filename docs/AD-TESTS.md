@@ -73,24 +73,35 @@ L'ADN commun des trois gagnants = **la formule v2** :
 retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition
 ```
 
-### Confirmation (3 prompts) — la formule doit généraliser aux cas non testés
+### Règle d'écriture v2.1 — SOBRIÉTÉ (correction après essais)
 
-**C1 — duel (S3 refait avec l'ADN v2)**
+Les prompts chargés en VFX (« debris frozen in time », « light trails », « shockwave », « smearing into light trails ») produisent du fouillis linéaire, des traînées partout et des poses cassées. Désormais :
+
+- **Une scène = une phrase.** Un sujet, une action lisible, un décor. C'est tout.
+- **Zéro accumulation de VFX.** Un seul élément d'énergie par image, maximum — et seulement s'il EST le sujet.
+- **Poses naturelles.** Debout, accroupi, marchant, tendant la main — les poses « photo d'action » cassent moins que les vols planés.
+- Le moment d'AVANT l'action est souvent plus fort (et plus stable) que l'action elle-même.
+
+**Bloc de style commun v2.1** (inchangé) : `retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors` + hiérarchie sujet/décor si besoin.
+
+### Confirmation (3 prompts, version sobre)
+
+**C1 — duel : l'instant d'avant, pas le choc**
 ```
-epic splash art of two travelers clashing mid-air above a shattered transfer platform, young hero in a blue-lit biotech suit blocking a strike from a masked figure with glitching red conduits, shockwave of energy at the point of impact, debris frozen in time, dramatic low angle, intense expressions, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition --no text, watermark
+two travelers facing each other on a cracked transfer platform, one in a blue-lit biotech suit, the other masked with faulty red conduits, a heartbeat before the clash, dark hall, tense stillness, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors --no text, watermark
 ```
 
-**C2 — protocole sans héros (S6 refait avec l'ADN v2)**
+**C2 — transfert d'urgence : un civil aspiré par accident, désintégré car sans combinaison**
 ```
-epic splash art of a traveler being violently yanked backward into a column of blue-white light, body arched, hand reaching toward the viewer, transfer platform fracturing beneath, cables and debris sucked into the light, dramatic wide angle, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition --no text, watermark
-```
-
-**C3 — présent 2049 (l'époque « moderne » doit porter la même signature)**
-```
-epic splash art of a traveler in a sleek black biotech suit diving off a mag-lev platform in 2049 tokyo at night, rain streaks and holographic signage smearing into light trails behind her, blue conduits flaring, dramatic vertical composition from above, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition --no cyberpunk pink purple overload, text, watermark
+a man in civilian clothes being pulled off his feet into a column of blue-white light, one arm already dissolving into light, terrified face turned toward the viewer, dark transfer chamber, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors --no text, watermark
 ```
 
-Si C1/C2/C3 confirment → choisir LA meilleure image des 6 (S2/S4/S5/C1/C2/C3) comme **ancre `--sref`**, puis réécriture des 60 prompts : composition + époque + palette dans le texte, bloc v2 en signature, moodboard + sref en style.
+**C3 — présent 2049 : simple et identifiable**
+```
+a traveler in a sleek black biotech suit standing on a rain-soaked elevated platform, 2049 tokyo skyline behind her softened by rain haze, blue conduits glowing faintly, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors --no cyberpunk pink purple overload, text, watermark
+```
+
+Si C1/C2/C3 confirment → choisir LA meilleure image comme **ancre `--sref`**, puis réécriture des 60 prompts en v2.1 : une phrase de scène + époque/palette + bloc de style, moodboard + sref pour le reste.
 
 ---
 
