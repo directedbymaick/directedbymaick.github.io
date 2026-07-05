@@ -296,6 +296,46 @@ female scout in a sleek biotech suit with glossy panels posing on wooden scaffol
 
 ---
 
+## v5 — CIBLE FINALE : splash art Riot (moodboard LoL mono-style)
+
+Recentrage décisif. Nouveau moodboard MJ **100 % splashs League of Legends** — mono-style, donc
+MJ a une cible cohérente (le premier moodboard échouait parce qu'il MÉLANGEAIT quinze styles,
+pas parce que les moodboards sont mauvais). La cible : le rendu Riot —
+**peinture numérique polie semi-réaliste, très haut niveau de détail, lumière dramatique** —
+le « painterly » raté d'avant était du brush lâche ; Riot, c'est du painterly tenu.
+
+Config : **moodboard LoL ON** (`--p`), tester `--stylize` 200/400. Le `--no painterly, brush
+strokes` de v4 SAUTE (il combattrait la cible).
+
+**Acquis conservés** : une scène = une phrase · pose confiante tenue · duo de complémentaires +
+fond lumineux (foils) · sujet éclairé et net, décor riche mais atmosphérique (v4.1).
+
+**Bloc de style v5** :
+```
+league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background
+```
+
+### Tests v5 (les 3 scènes canoniques)
+
+**R1 — Viktor**
+```
+young russian traveler in a sleek black biotech suit standing confidently on a rooftop edge, chin raised, insolent grin, orange sunset key light on his face and shoulders, glossy suit panels catching the light, teal-shadowed 2049 tokyo skyline behind him, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no text, watermark
+```
+
+**R2 — KAIROS**
+```
+masked kairos operative standing with quiet menace in a rainy alley at night, strong red key light from a neon sign on his face and shoulders, glossy black coat catching red and cyan reflections, red conduits glowing beneath the fabric, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no text, watermark
+```
+
+**R3 — éclaireuse 1888**
+```
+female scout in a sleek biotech suit with glossy panels standing on wooden scaffolding in a 19th century parisian construction site at dusk, warm amber gaslight beside her illuminating her face, blue light lines glowing on her suit, violet evening sky behind the ironwork, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no eiffel tower, text, watermark
+```
+
+Dépôt : `drop/_tests/` → `r1.png` … `r3.png`. Si validé → réécriture des 60 en v5.
+
+---
+
 ## ROUND 1 (rejeté — archive)
 
 *Contexte : présent = Terre, 2049. Les Travelers visitent des époques différentes → chaque époque doit être identifiable par son décor ET sa palette. On garde le grain rétro (Evangelion / GITS / Blade Runner), on abandonne le monochrome strict : palette riche par époque, contrôlée, jamais arc-en-ciel.*
