@@ -84,9 +84,9 @@ a man in civilian clothes yanked off his feet toward a blazing blue-white light 
 squad of travelers in matte black exosuits kneeling under a translucent blue energy dome in a raging desert sandstorm, ancient arrows and debris shattering against the shield in amber bursts, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, creatures, text, watermark
 ```
 
-**R15 · `coordinatrice-descouade`** — le balcon de mission
+**R15 · `coordinatrice-descouade`** — le triple départ
 ```
-female coordinator in dark officer uniform leaning over the rail of a floating gantry, pointing sharply, a ring of giant mission screens glowing around her showing three different eras, blue light from below and amber comm lights, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
+female squad coordinator in dark officer uniform standing at the heart of a vast launch bay as three columns of blue-white light fire simultaneously around her, squads dissolving into each column, her coat and checklist pages whipped by the energy wind, one arm raised giving the go signal, warm amber deck lights, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
 **R16 · `viktor-volkov`** — plein vol
