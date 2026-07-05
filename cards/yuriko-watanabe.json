@@ -1,0 +1,24 @@
+{
+	"id": "yuriko-watanabe",
+	"name": "Yuriko Watanabe",
+	"kind": "traveler",
+	"cost": 5,
+	"attack": 3,
+	"health": 5,
+	"cell": "CELL 1re génération · éteint",
+	"text": "À la fin de votre tour, piochez une carte.",
+	"flavor": "Elle connaît le prix de chaque nom sur le mur. Elle signe quand même.",
+	"rarity": "legendary",
+	"faction": "rikken",
+	"art": "/art/yuriko-watanabe.webp",
+	"gene": {
+		"palette": [
+			"#182726",
+			"#13140d",
+			"#fdf8e5"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#3d8fd6",
+		"seed": 854111
+	}
+}
