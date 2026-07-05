@@ -354,6 +354,27 @@ sleek matte black high-tech exosuit, segmented mechanical armor plates like alit
 R1–R3 : remplacer « sleek black biotech suit with glossy panels » par le descripteur ci-dessus
 et ajouter le négatif étendu. Le reste ne bouge pas.
 
+### v5.2 — Réinjecter l'identité rétro-futuriste (le moodboard peint, le texte dit le monde)
+
+Constat : avec le moodboard LoL seul, on glisse vers le fantastique — l'identité Travelers
+disparaît. Le rétro-futurisme revient DANS LE TEXTE, mais par le **monde** (décors, objets,
+matières — cassette futurism), pas par un grading vintage (qui ramenait le brush, cf. v4).
+
+**Couche d'identité monde** (à insérer dans chaque prompt, adaptée à la scène) :
+```
+retro-futuristic world, cassette futurism technology, CRT screens and thick cables, brutalist concrete and steel, sodium and neon practical lights, blade runner evangelion atmosphere
+```
+
+**Assemblage final d'un prompt v5.2** :
+`[scène en une phrase] + [descripteur suit v5.1] + [couche monde adaptée] + [duo couleur / key light sujet] + [bloc style v5] + [négatifs v5.1]`
+
+**Exemple — R2 réassemblé :**
+```
+masked kairos operative standing with quiet menace in a rainy alley at night, sleek matte black high-tech exosuit, segmented mechanical armor plates like alita battle angel, subtle glowing red seams, strong red key light from a buzzing neon sign, cyan reflections in the puddles, CRT screens flickering in a shop window, thick cables overhead, brutalist concrete walls, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, shiny silver plate armor, ornate gold trim, cape, text, watermark
+```
+
+Tests : RF1–RF3 = R1–R3 réassemblés ainsi. Dépôt `drop/_tests/rf1.png` … `rf3.png`.
+
 ---
 
 ## ROUND 1 (rejeté — archive)
