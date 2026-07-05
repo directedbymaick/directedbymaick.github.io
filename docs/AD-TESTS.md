@@ -1,5 +1,64 @@
 # Tests de direction artistique v2 — avant refonte des 60 prompts
 
+> **ROUND 1 REJETÉ** (les 10 tests ci-dessous, conservés pour mémoire). Cap corrigé : **splash art type League of Legends + touche vintage rétro**, porté par le moodboard MJ de Maïck. Voir « Round 2 » ci-dessous.
+
+---
+
+## ROUND 2 — Splash art × vintage (6 tests)
+
+*Le moodboard (profil de personnalisation MJ nourri de splashs LoL) porte le style. Les prompts décrivent l'action, la composition, la lumière et l'époque. Active la personnalisation (`--p`) sur TOUS ces tests.*
+
+### Paramètres
+
+- **S1 en A/B/C** : `--p --stylize 200` vs `--p --stylize 600` vs `--p --stylize 1000` — avec un profil, `--stylize` dose l'influence du moodboard. C'est LE réglage à trancher en premier.
+- Si le style dérive encore : ajoute en plus `--sref` avec les URLs de tes 2-3 splashs préférés du moodboard (ceinture + bretelles).
+- Pas de `--style raw` : le raw éteint exactement le jus qu'on cherche.
+- La dose vintage est DANS les prompts (grain, halation, grading) — S2 teste la version chargée, compare avec S1 pour choisir la dose.
+
+### S1 — Héros solo, action pure (Viktor, nitro) — test de référence
+
+```
+epic splash art of a young russian traveler in a sleek black biotech suit leaping between rooftops of 2049 tokyo at night, orange nitro flames bursting from his calf conduits, dramatic foreshortening from below, insolent grin, debris and sparks trailing, volumetric city light, deep shadows with vibrant orange and teal, dynamic action pose, cinematic composition, subtle film grain --no text, watermark
+```
+
+### S2 — Même sujet, dose vintage chargée (A/B de la touche rétro)
+
+```
+epic splash art of a young russian traveler in a sleek black biotech suit leaping between rooftops of 2049 tokyo at night, orange nitro flames bursting from his calf conduits, dramatic foreshortening from below, insolent grin, debris and sparks trailing, volumetric city light, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, dynamic action pose --no text, watermark --seed 2049
+```
+
+### S3 — Duel (Hugo vs Kuroda) — composition à deux, le clash des accents bleu/rouge
+
+```
+epic splash art of two travelers clashing mid-air above a shattered transfer platform, young hero in a blue-lit biotech suit blocking a strike from a masked figure with glitching red conduits, shockwave of blue and red energy at the point of impact, debris frozen in time around them, dramatic low angle, intense expressions, cinematic rim light, vintage film grain --no text, watermark
+```
+
+### S4 — Splash en époque (éclaireuse, Paris 1888) — l'ère doit rester lisible à pleine énergie
+
+```
+epic splash art of a female scout in a sleek dark biotech suit sprinting up collapsing wooden scaffolding in a 19th century parisian construction site, gaslight ambers and stone dust exploding around her, blue light lines of her suit cutting through the sepia dusk, dramatic diagonal composition, planks and rivets flying, cinematic motion energy, subtle film grain --no eiffel tower, text, watermark
+```
+
+### S5 — KAIROS (Kuroda, désactivation) — le rouge signature en mode splash
+
+```
+epic splash art of a masked kairos operative crouched on a rain-soaked 2049 rooftop, red glitching conduits flaring as he crushes a glowing CELL core in his fist, sparks and rain frozen in dramatic slow motion, deep noir shadows with controlled crimson highlights, menacing calm, low dutch angle, cinematic composition, subtle film grain --no text, watermark
+```
+
+### S6 — Protocole/scène (transfert d'urgence) — vérifier que les cartes sans héros gardent le niveau
+
+```
+epic splash art of a traveler being violently yanked backward into a column of blue-white light, body arched, hand reaching toward the viewer, transfer platform fracturing beneath, cables and debris sucked into the light, dramatic wide angle, blinding core against deep shadows, emotional intensity, subtle film grain --no text, watermark
+```
+
+### Dépôt
+
+`drop/_tests/` → `s1.png` … `s6.png` (+ variantes stylize `s1-s200.png`, `s1-s600.png`, `s1-s1000.png`). L'image gagnante devient l'ancre du set (`--sref` + moodboard).
+
+---
+
+## ROUND 1 (rejeté — archive)
+
 *Contexte : présent = Terre, 2049. Les Travelers visitent des époques différentes → chaque époque doit être identifiable par son décor ET sa palette. On garde le grain rétro (Evangelion / GITS / Blade Runner), on abandonne le monochrome strict : palette riche par époque, contrôlée, jamais arc-en-ciel.*
 
 ## Protocole
