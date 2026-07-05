@@ -133,9 +133,9 @@ broad-shouldered chinese man in a heavy matte black exosuit frozen at the instan
 unremarkable agent in RIKKEN staff uniform walking through a crowded bright lobby, every other person motion-blurred, his badge catching a tiny red glint, cold daylight through glass, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K02 · `taupe-du-recrutement`** — le sprint du test
+**K02 · `taupe-du-recrutement`** — la piste à l'aube
 ```
-young candidate sprinting a fitness test among other recruits in a bright training hall, all straining except him, effortless, eyes sliding sideways toward the viewer, one thin red thread bracelet, harsh white light, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
+young athlete running effortlessly on an outdoor track at dawn, exhausted runners collapsing far behind him, thin red thread bracelet on his wrist, cold morning light, league of legends splash art, highly detailed, cinematic lighting --no text, watermark
 ```
 
 **K03 · `executant-de-nuit`** — la chute silencieuse
