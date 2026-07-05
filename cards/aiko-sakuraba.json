@@ -15,6 +15,9 @@
 	"rarity": "rare",
 	"faction": "rikken",
 	"art": "/art/aiko-sakuraba.webp",
+	"alts": [
+		"/art/alt/aiko-sakuraba-alt2.webp"
+	],
 	"gene": {
 		"palette": [
 			"#162826",
