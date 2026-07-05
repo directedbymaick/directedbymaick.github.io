@@ -64,6 +64,8 @@ L'ADN commun des trois gagnants = **la formule v2** :
 1. **Énergie splash** (pose/action dynamique, composition cinématique) — mais jamais « pur jus » sans ancrage.
 2. **Couche vintage MARQUÉE** : `retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors` — c'est elle qui signe le set (S2 > S1).
 3. **Palette d'époque contrôlée** qui raconte le lieu/temps : sépia + ambres gaz (1888), noir + cramoisi (KAIROS), etc. (S4, S5).
+4. **Hiérarchie sujet > décor** : le background est travaillé et identifiable (c'est lui qui date l'époque) mais reste SECOND — le sujet doit accrocher l'œil en premier. Dans les prompts : sujet net et dominant, décor riche mais en profondeur atmosphérique.
+   Tokens : `subject in sharp focus dominating the frame, richly detailed background softened by atmospheric depth, background slightly hazed and desaturated relative to subject`.
 
 **Bloc de style commun v2** (fin de chaque prompt, avant les --no) :
 
