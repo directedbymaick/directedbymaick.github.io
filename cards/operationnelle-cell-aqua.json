@@ -17,12 +17,12 @@
 	"art": "/art/operationnelle-cell-aqua.webp",
 	"gene": {
 		"palette": [
-			"#2c3448",
-			"#242826",
-			"#ebe5d8"
+			"#28241b",
+			"#191819",
+			"#caab74"
 		],
 		"foilPreset": "mat",
 		"accent": "#35c4c9",
-		"seed": 886330
+		"seed": 968552
 	}
 }

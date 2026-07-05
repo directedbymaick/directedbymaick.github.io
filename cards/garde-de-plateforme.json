@@ -13,12 +13,12 @@
 	"art": "/art/garde-de-plateforme.webp",
 	"gene": {
 		"palette": [
-			"#3d4456",
-			"#33373b",
-			"#ccd2de"
+			"#3a4456",
+			"#1a151a",
+			"#aab3ab"
 		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 627491
+		"seed": 592290
 	}
 }

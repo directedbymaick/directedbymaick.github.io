@@ -13,12 +13,12 @@
 	"art": "/art/technicienne-de-la-centrale.webp",
 	"gene": {
 		"palette": [
-			"#262c34",
-			"#161a18",
-			"#fdfdfe"
+			"#293437",
+			"#050707",
+			"#e7a757"
 		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 998617
+		"seed": 94989
 	}
 }

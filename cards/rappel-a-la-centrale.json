@@ -10,12 +10,12 @@
 	"art": "/art/rappel-a-la-centrale.webp",
 	"gene": {
 		"palette": [
-			"#1c2538",
-			"#161b17",
-			"#a9b6d5"
+			"#4a5d65",
+			"#050404",
+			"#fbfffe"
 		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 913767
+		"seed": 307488
 	}
 }

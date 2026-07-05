@@ -13,12 +13,12 @@
 	"art": "/art/recrue-du-cycle.webp",
 	"gene": {
 		"palette": [
-			"#232d36",
-			"#02090b",
-			"#fefce4"
+			"#332c25",
+			"#191715",
+			"#9ab6b6"
 		],
 		"foilPreset": "mat",
 		"accent": "#3d8fd6",
-		"seed": 349759
+		"seed": 312015
 	}
 }
