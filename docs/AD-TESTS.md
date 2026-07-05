@@ -150,6 +150,19 @@ a man in civilian clothes being pulled off his feet into a column of blue-white 
 
 Dépôt : `drop/_tests/` → `m1.png` … `m5.png`. La gagnante = ancre `--sref` du set, et les 60 prompts se réécrivent sur ce squelette.
 
+### Amendement round 3 — MOODBOARD OFF, PROFIL ON
+
+Constat après essais : le **moodboard** moyenne les références en un rendu « AI slop ». Le **profil de personnalisation** (nourri par les likes) tire vers des styles réels — Cowboy Bebop, Akira, cel anime 90s — et donne des images bien plus crédibles.
+
+Nouvelle config :
+- **Moodboard : OFF.** Profil de personnalisation : ON (c'est lui le moteur de style).
+- Le texte ancre l'époque stylistique réelle. **Bloc de style v3.1** :
+```
+1990s retro anime film still, hand-drawn cel animation look, muted colors, subtle film grain
+```
+- Les scènes M1–M5 restent valables telles quelles : remplace juste le bloc v3 par le bloc v3.1 en fin de prompt.
+- Si une image sort parfaite : elle devient l'ancre `--sref` en complément du profil.
+
 ---
 
 ## ROUND 1 (rejeté — archive)
