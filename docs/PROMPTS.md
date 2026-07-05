@@ -1,338 +1,329 @@
-# SET 01 — Les 60 prompts Midjourney (v5.2)
+# SET 01 — Les 60 prompts Midjourney (v6)
 
-*Prompts définitifs en formule v5.2 (voir AD-TESTS.md) : splash art qualité Riot × monde rétro-futuriste Travelers. Présent = Terre, 2049. Un prompt = un slot de SET01.md §6.*
+*Formule v6 : courts (~50 mots), UN mouvement par image, décors tous différents (heure, météo, angle, lieu), raretés hautes = compositions signature. Moodboard LoL ON, `--stylize 200-400`. Présent = 2049.*
 
 ## Mode d'emploi
 
-1. **Moodboard LoL : ON** (`--p`) — c'est lui qui donne le rendu splash. `--stylize 200` par défaut, monte à 400 si le style s'affadit.
-2. Copie-colle le prompt tel quel. Format portrait : dans tes réglages MJ (pas de `--ar` dans les prompts).
-3. Sur la grille de 4 : sujet net et dominant, **sujet dans la moitié haute**, l'époque lisible en une seconde, suit façon Alita (jamais chevalier).
-4. Renomme avec le slug (`recrue-du-cycle.png`) → dépose dans `drop/` → dis-le moi : je forge.
+1. Moodboard LoL actif. Copie-colle tel quel (portrait dans tes réglages, pas de `--ar`).
+2. Grille de 4 : sujet net et dominant, **sujet dans les 55 % supérieurs** (toutes les cartes sont full art — le tiers bas sera sous les panneaux de verre), suit façon Alita jamais chevalier, l'époque lisible en une seconde.
+3. Renomme avec le slug → `drop/` → je forge. Préfixe `ALT1-` = version alternative.
 
-**Anatomie d'un prompt v5.2** : scène en une phrase · suit Alita carbone mat (si personnage équipé) · monde rétro-futuriste (CRT, câbles, béton, sodium) ou monde d'époque · duo de couleurs complémentaires + key light du sujet nommée · bloc splash Riot · négatifs anti-fantasy.
-
-**Duos de couleur** : RIKKEN bleu/ambre (variantes cyan, orange/teal) · KAIROS rouge/cyan · Époques bronze/or + contrepoint froid (brume teal, neige bleue, crépuscule violet).
-
-**⚠️ TOUTES les cartes sont FULL ART** : l'artwork couvre toute la carte, les panneaux (nom, cartouche) se posent en verre flouté sur le tiers inférieur → sujet et détails clés dans les **55 % supérieurs**, tiers bas atmosphérique (brume, matière, décor). Sur la grille MJ, choisis l'image dont le bas est le moins chargé.
-
-**Rappels bible** : Époques = zéro personnage historique célèbre, marqueur d'effacement (brume, neige, crue…) visible · le suit du Traveler est le seul élément moderne dans les époques visitées.
+**Duos** : RIKKEN bleu/ambre · KAIROS rouge/cyan · Époques bronze/or + froid.
 
 ---
 
-## RIKKEN — Acte I, le Cycle
+## RIKKEN
 
-**R01 · `recrue-du-cycle`** — recrue du cycle d'Hugo, salle d'entraînement souterraine
+**R01 · `recrue-du-cycle`** — l'entraînement, en plein effort
 ```
-young female recruit in a matte black pre-CELL training bodysuit with sensor pads, standing alert in an underground RIKKEN training hall, cold blue key light from a hovering training drone on her face, warm amber target lights glowing behind her, CRT monitors and thick cables along brutalist concrete walls, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, text, watermark
-```
-
-**R02 · `technicienne-de-la-centrale`** — les entrailles de la Centrale, sous Odaiba
-```
-female engineer in a dark RIKKEN work uniform and cap repairing a massive energy conduit deep under odaiba, blue-white core glow lighting her face from below, warm amber work lamps and CRT gauges around her, cathedral-scale machinery and thick cables, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
+young female recruit in a matte black training bodysuit vaulting over an obstacle wall, morning light shafts through high skylights, dust motes, instructors watching from a gantry, blue and amber training lights, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**R03 · `operationnelle-cell-aqua`** — CELL Aqua, micro-pompes et conduits d'eau
+**R02 · `technicienne-de-la-centrale`** — la descente dans le puits
 ```
-female operative in a sleek matte black high-tech exosuit with segmented mechanical armor plates like alita battle angel, thin water conduits glowing cyan along her forearms, fine mist condensing around her open hands, cyan key light from her own conduits on her face, warm sodium lights and thick cables in the concrete hall behind, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, ornate gold trim, text, watermark
-```
-
-**R04 · `eclaireuse-temporelle`** — mission dans une zone aveugle (le Chantier, 1888)
-```
-female scout in a sleek matte black high-tech exosuit with segmented armor plates like alita battle angel, faint blue glowing seams, crouched on wooden scaffolding above a foggy 19th century parisian construction site at dusk, warm amber gaslight beside her illuminating her face, violet evening sky behind the iron beams, her futuristic suit the only modern element in the era, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no eiffel tower, medieval knight armor, fantasy armor, text, watermark
+female engineer in dark work uniform riding an open elevator platform down a colossal glowing core shaft, hair blown upward, wrench on her shoulder, blue-white light rising from far below, amber safety beacons flashing past, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**R05 · `garde-de-plateforme`** — sentinelle devant une plateforme de transfert
+**R03 · `operationnelle-cell-aqua`** — sortie de l'eau
 ```
-towering broad man in a heavy matte black segmented exosuit with thick mechanical shoulder plates, helmet off revealing a scarred stern face, arms crossed before a circular transfer platform, blue-white ring glow rising behind him, amber warning lights and thick cables on the brutalist concrete walls, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, giant robot, full helmet covering face, text, watermark
-```
-
-**R06 · `analyste-du-drft`** — le DRFT épluche les dossiers de candidats
-```
-stern analyst in a dark institutional uniform at a desk stacked with candidate files, round glasses reflecting pale blue light from a wall of CRT screens showing personnel records, warm amber desk lamp on his face, dark recruitment office at night with thick cables, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, cyberpunk pink purple, text, watermark
+female operative in a matte black segmented exosuit walking out of the sea at dawn, ribbons of water spiraling off her cyan-lit conduits, wet sand mirroring the pink sky, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, medieval knight armor, text, watermark
 ```
 
-**R07 · `rappel-a-la-centrale`** — protocole : un Traveler rappelé en urgence
+**R04 · `eclaireuse-temporelle`** — le saut au-dessus de Paris 1888
 ```
-human silhouette dissolving upward into a column of blue-white light on a circular transfer platform, a dropped coffee mug still falling where the person stood, dark empty facility hall with CRT control panels and amber standby lights, the light column blazing as the only bright source, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic portal, text, watermark
-```
-
-**R08 · `briefing-de-mission`** — protocole : choisir son siècle
-```
-holographic briefing table projecting layered blue maps of seven historical eras, gloved hands of unseen officers pointing at one blank unmapped region, warm amber light from scattered papers and cold coffee cups, dark war-room with CRT screens and thick cables, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic, text, watermark
+female scout in a matte black segmented exosuit leaping between wooden scaffolding beams above the rooftops of 1888 paris at sunrise, blue suit seams trailing, sea of fog below, golden light on iron beams, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no eiffel tower, fantasy armor, text, watermark
 ```
 
-**R09 · `mariam-diallo`** — CELL Caduceus (conduits cyan, diffuseurs aux paumes)
+**R05 · `garde-de-plateforme`** — encaisser l'onde
 ```
-young franco-senegalese woman medic kneeling beside a wounded soldier in a dark field hospital tent, open palm emitting soft cyan light from fine diffuser pores in her matte black segmented exosuit glove, cyan conduits glowing along her forearm, warm lantern light against the cyan glow on her calm face, green CRT medical monitors behind her, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, text, watermark
-```
-
-**R10 · `aiko-sakuraba`** — CELL Stratos (fractales bleues, visière HUD)
-```
-young japanese woman in a sleek matte black high-tech exosuit with segmented armor plates like alita battle angel, wide HUD visor over her eyes reflecting cascading blue probability data, standing in a dark analysis room lit by a wall of CRT screens, deep blue key light on her face, amber standby lights and thick cables in the background, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, ornate gold trim, text, watermark
+massive guard in a heavy matte black exosuit bracing wide-stance against a shockwave of blue light from an activating transfer platform, sparks streaming past him, his scarred face gritted and lit blue, amber alarms spinning, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, giant robot, full helmet, text, watermark
 ```
 
-**R11 · `porteur-cell-pyros`** — combustion contenue
+**R06 · `analyste-du-drft`** — l'archive blanche
 ```
-male traveler in a sleek matte black segmented exosuit like alita battle angel with contained ember-orange combustion channels along his arms and shoulders, heat shimmer rising from his gauntlets, embers drifting in a dark testing chamber, warm orange key light from his own conduits on his calm face, cool teal shadows and CRT monitors behind, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, fire everywhere, text, watermark
-```
-
-**R12 · `senior-descorte`** — vétéran, plaques épaisses
-```
-veteran traveler with grey temples in a heavy matte black segmented exosuit with thick worn armor plates and old mission scars, standing protectively in a steel doorway, warm amber corridor light behind him, faint blue glowing seams on his suit, tired unshakable eyes lit by a cool overhead lamp, brutalist concrete and thick cables, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, ornate gold trim, text, watermark
+stern analyst with round glasses striding down a bright white archive hall, an armful of dossiers, loose pages flying behind him, holographic candidate faces flickering along the walls, cold daylight with one red rejected stamp, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**R13 · `transfert-durgence`** — protocole : le civil aspiré par accident
+**R07 · `rappel-a-la-centrale`** — rappelé en pleine rue
 ```
-a man in 2049 civilian clothes being pulled off his feet toward a blazing column of blue-white light, one arm already dissolving into particles of light, terrified face turned toward the viewer, dark transfer chamber with CRT control panels flashing red alerts, thick cables whipping toward the column, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy magic portal, text, watermark
-```
-
-**R14 · `bouclier-de-plateforme`** — protocole : dôme de protection
-```
-translucent blue energy dome protecting a squad of travelers in matte black segmented exosuits kneeling on a transfer platform, warm amber sparks flaring where impacts hit the dome surface, dark brutalist hall with CRT panels and cables beyond, the dome glow lighting the squad from above, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no medieval knight armor, fantasy armor, creatures, monsters, text, watermark
+a runner dissolving into ascending blue-white light streaks mid-stride on a busy 2049 tokyo crosswalk in daylight, pedestrians turning in shock, his coffee cup suspended mid-air, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy magic, text, watermark
 ```
 
-**R15 · `coordinatrice-descouade`** — la salle de contrôle des équipes
+**R08 · `briefing-de-mission`** — la table des siècles, vue du ciel
 ```
-female squad coordinator in a dark RIKKEN officer uniform standing before a wall of CRT mission screens showing three teams in three different eras, headset on, one hand raised mid-order, pale blue monitor light on her face, warm amber comm lights and thick cables around the dark control room, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
-```
-
-**R16 · `viktor-volkov`** — CELL Phaeton (nitros mollets/dos, lignes orange)
-```
-young russian traveler with slicked blond hair grinning insolently, crouched low on a rooftop edge ready to launch, orange combustion glow flaring from the calf conduits of his matte black segmented exosuit like alita battle angel, orange key light from his own conduits on his face, teal-shadowed 2049 tokyo skyline with distant neon signs behind him, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, fire everywhere, ornate gold trim, text, watermark
+top-down view of officers standing on a glass floor above a huge rotating holographic map of seven historical eras, one era glowing blank and white, coffee cups and files scattered on the glass, blue glow lighting them from below, league of legends splash art, highly detailed, cinematic lighting --no fantasy magic, text, watermark
 ```
 
-**R17 · `porteur-cell-magnus`** — magnétokinésie en zone aveugle
+**R09 · `mariam-diallo`** — l'évacuation sous la pluie
 ```
-traveler in a sleek matte black segmented exosuit like alita battle angel standing in a foggy historical battlefield, rusted iron debris and broken blades levitating in a slow orbit around him, pale blue glowing seams lighting his face from below, warm bronze fog and eroded earthworks behind, his futuristic suit the only modern element in the era, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, fantasy magic, text, watermark
-```
-
-**R18 · `allocation-denergie`** — protocole : la Centrale en surcharge
-```
-colossal underground transfer core beneath tokyo blazing with blue-white overload, tiny engineers running on steel gantries silhouetted against the light, cathedral-scale machinery with thick cables and amber warning strobes, steam venting from brutalist concrete walls, retro-futuristic evangelion industrial atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic, spaceship, explosion, text, watermark
+young franco-senegalese medic in a matte black segmented exosuit running through warm rain carrying a wounded soldier on her back, her palm glowing cyan against his chest, field camp lanterns smearing in the wet dusk, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**R19 · `yuriko-watanabe`** — la vétérane du jury *(FULL ART)*
+**R10 · `aiko-sakuraba`** — la vigie dans le vent
 ```
-stern japanese woman in her fifties in an impeccable dark RIKKEN uniform seated at an elevated jury desk in a white immaculate test center, evaluating gaze cutting down at the viewer, cold clinical white key light on her face, one glowing blue insignia on her collar, warm amber file lamps on the desk, subject in the upper half of the frame, lower third calm and atmospheric, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
-```
-
-**R20 · `genjiro-hayashi`** — proto-CELL 2000, cuivre et pistons *(FULL ART)*
-```
-imposing japanese man in his sixties with a granite face and grey brush cut wearing a first-generation exosuit with patinated copper conductors, thick old-school plates and mechanical piston joints, standing like a rock in a dark hangar, warm brass key light from his suit's aged conductors on his face, cool blue hangar lights and thick cables behind, subject in the upper half of the frame, lower third atmospheric, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, ornate gold trim, text, watermark
+young japanese woman in a matte black segmented exosuit standing on the top beam of a radio tower at dawn, wind whipping her hair, HUD visor streaming blue data against the pale gold sky, clouds far below, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**R21 · `liang-chen`** — CELL Brutus, le poing hyper-dense *(FULL ART)*
+**R11 · `porteur-cell-pyros`** — l'escalier qui s'effondre
 ```
-broad-shouldered chinese man in a heavy matte black segmented exosuit like alita battle angel, forearm and chest plates condensed into liquid-stone density, one massive fist wrapped in a subtle compressive distortion, cracked concrete radiating under his feet in a dark testing arena, blue key light from arena floodlights on his face, warm dust haze behind, subject in the upper half of the frame, lower third atmospheric, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, hulk, giant robot, text, watermark
+male traveler in a matte black segmented exosuit sprinting up a collapsing stairwell, ember-orange channels blazing along his arms, burning debris falling around him, cool blue smoke above, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, fire everywhere, text, watermark
 ```
 
-**R22 · `hugo-tachibana`** — CELL-T, le prototype *(FULL ART · signature du set)*
+**R12 · `senior-descorte`** — tenir la brèche
 ```
-19 year old slim french-japanese young man with light beige tousled hair, one single vivid red strand over his right brow and a thin scar on his right cheekbone, standing at the center of a transfer platform in a sleek matte black prototype exosuit with modular reconfiguring panels, a small engraved golden circle glowing on his chest, blue-white light column rising behind him, blue key light on his determined face, CRT monitors and thick cables around the platform ring, subject in the upper half of the frame, lower third atmospheric, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, ornate gold trim, text, watermark
+grey-templed veteran in a scarred matte black exosuit bracing his shoulder against a buckling steel door, impact flare blooming through the gap, debris flying past him, his blue seams flickering under the strain, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
+```
+
+**R13 · `transfert-durgence`** — l'accident
+```
+a man in civilian clothes yanked off his feet toward a blazing blue-white light column, one arm dissolving into particles, terrified eyes meeting the viewer, morning light through tall lab windows, red alerts blinking, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy magic, text, watermark
+```
+
+**R14 · `bouclier-de-plateforme`** — le dôme dans la tempête
+```
+squad of travelers in matte black exosuits kneeling under a translucent blue energy dome in a raging desert sandstorm, ancient arrows and debris shattering against the shield in amber bursts, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, creatures, text, watermark
+```
+
+**R15 · `coordinatrice-descouade`** — le balcon de mission
+```
+female coordinator in dark officer uniform leaning over the rail of a floating gantry, pointing sharply, a ring of giant mission screens glowing around her showing three different eras, blue light from below and amber comm lights, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
+```
+
+**R16 · `viktor-volkov`** — plein vol
+```
+young russian traveler grinning mid-leap high between two rooftops, orange nitro flames roaring from his calf conduits, 2049 tokyo spread far below in teal evening haze, his silhouette against the blazing sunset, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
+```
+
+**R17 · `porteur-cell-magnus`** — la pluie de fer inversée
+```
+traveler in a matte black segmented exosuit walking slowly across a cratered ancient battlefield as thousands of rusted blades and iron shards rise from the mud around him like reversed rain, bronze fog, his blue seams the only cold light, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, fantasy magic, text, watermark
+```
+
+**R18 · `allocation-denergie`** — la surcharge, vue du fond
+```
+vertical view up the throat of a colossal energy core mid-overload, rings of machinery blazing blue-white, engineers zip-lining away on cables, steam and amber strobes, industrial cathedral scale, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no spaceship, explosion, text, watermark
+```
+
+**R19 · `yuriko-watanabe`** — le jury, l'extinction *(FULL ART · légendaire)*
+```
+stern japanese woman in an impeccable dark uniform standing in a vast white amphitheater as hundreds of holographic candidate portraits flicker out around her, only three still lit, her red pen paused over a list, cold daylight, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
+```
+
+**R20 · `genjiro-hayashi`** — la locomotive *(FULL ART · légendaire)*
+```
+huge japanese man in his sixties charging through a collapsing wall in a first-generation exosuit of patinated copper and brass, steam pistons venting, rubble bouncing off his shoulders, warm brass light through the dust, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no medieval knight armor, fantasy armor, text, watermark
+```
+
+**R21 · `liang-chen`** — le poing et l'eau *(FULL ART · légendaire)*
+```
+broad-shouldered chinese man in a heavy matte black exosuit frozen at the instant his fist meets a flooded arena floor, a crown of water erupting around the impact, shockwave rings in the shallow water, floodlights refracting through the spray, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, hulk, text, watermark
+```
+
+**R22 · `hugo-tachibana`** — la chute entre les siècles *(FULL ART · prismatique · signature du set)*
+```
+19 year old french-japanese young man with light beige hair and one red strand falling backward through a shattering sky of seven eras, fragments showing paris scaffolds, snowy trenches, feudal bridges and ice seas, his prototype exosuit syncing with multi-hued light, calm eyes reaching upward, golden circle glowing on his chest, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
 ---
 
-## KAIROS — Acte II, l'Infiltration
+## KAIROS
 
-**K01 · `agent-kairos`** — le badge authentique
+**K01 · `agent-kairos`** — le seul net dans la foule
 ```
-unremarkable middle-aged agent in a dark RIKKEN staff uniform standing in a facility corridor at 3am, authentic institute badge on his chest, half his face in shadow, one tiny red LED reflected in his eye, cold blue corridor light and a distant red security light down the hall, CRT panels and thick cables on the walls, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
-```
-
-**K02 · `taupe-du-recrutement`** — candidat au regard double
-```
-young candidate in recruit fatigues standing in line at the white RIKKEN test center, posture identical to the others but eyes measuring the room like a professional, thin red thread bracelet under his sleeve, cold clinical white key light, other candidates softly blurred around him, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
+unremarkable agent in RIKKEN staff uniform walking through a crowded bright lobby, every other person motion-blurred, his badge catching a tiny red glint, cold daylight through glass, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K03 · `executant-de-nuit`** — le suit volé dans les couloirs
+**K02 · `taupe-du-recrutement`** — le sprint du test
 ```
-operative in a stolen matte black segmented exosuit moving silently through an empty facility corridor at night, suit seams flickering red and miscalibrated, one hand trailing along the wall, a dead security camera behind him, cold blue emergency lighting with his red seams as the warm counterpoint, brutalist concrete and cables, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, text, watermark
-```
-
-**K04 · `guetteur-du-moment`** — celui qui attend l'activation
-```
-patient watcher in dark 2049 civilian clothes standing on a rooftop overlooking tokyo bay at night, binoculars lowered, wind in his coat, the city lights muted and grey except one distant red aircraft beacon, cool blue night key light on his face with the red beacon reflected in his eyes, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, cyberpunk pink purple overload, text, watermark
+young candidate sprinting a fitness test among other recruits in a bright training hall, all straining except him, effortless, eyes sliding sideways toward the viewer, one thin red thread bracelet, harsh white light, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K05 · `porteur-de-cell-vole`** — le calibrage qui grésille
+**K03 · `executant-de-nuit`** — la chute silencieuse
 ```
-kairos fighter in a mismatched stolen exosuit with segmented panels from different CELL generations bolted together, red seams sputtering and glitching, aggressive hunched stance in a dark parking structure, red key light from his own faulty conduits on his face, warm sodium lights and thick pillars behind, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, text, watermark
-```
-
-**K06 · `nettoyeuse`** — professionnelle froide
-```
-cold professional woman in a tailored dark coat standing over an open briefcase of precise tech instruments, surgical calm, dark hotel room with the muted tokyo night skyline behind glass, one red instrument light on her face against cool blue window light, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, blood, text, watermark
+operative in a stolen matte black exosuit dropping from a ceiling vent into a server aisle, coat flaring, red miscalibrated seams sputtering, cool blue server glow below him, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K07 · `cadre-corrompu`** — l'étage de verre
+**K04 · `guetteur-du-moment`** — le perchoir
 ```
-executive in an impeccable suit standing in a glass corner office above tokyo at night, back to the viewer, his unreadable face reflected in the window, red seal stamp resting on signed documents, warm desk lamp against the cool blue city glow, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
-```
-
-**K08 · `chantage`** — protocole : la main tendue
-```
-close-up of a gloved hand sliding a thin red-sealed dossier across a polished dark table toward a trembling bare hand, tea untouched, faces out of frame, warm lamp light pooling on the table with the red seal as the sharpest color, dark meeting room with a CRT glowing in the background, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the hands, atmospheric detailed background --no fantasy magic, text, watermark
+patient watcher in dark civilian clothes sitting on the roof of a ferris wheel cabin at dusk over tokyo bay, binoculars resting on his knee, wind in his coat, the fairground lights violet and gold below, one red beacon blinking far across the water, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K09 · `sabotage-de-plateforme`** — protocole : la plateforme meurt
+**K05 · `porteur-de-cell-vole`** — la charge
 ```
-circular transfer platform short-circuiting in a dark hall, its blue ring guttering out while red warning strobes sweep the walls, sparks raining from severed thick cables, a small sabotage device blinking red at the platform base, no people, CRT panels flashing errors, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic, explosion, text, watermark
-```
-
-**K10 · `brouilleuse`** — anti-Synchro
-```
-female kairos operative in a dark tech coat over a matte black segmented exosuit raising a small parasite emitter, translucent red interference waves rippling from it, a distant traveler's blue suit seams visibly stuttering and dying, red key light from the emitter on her focused face, dark facility hall with cables and CRT panels, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, text, watermark
+kairos fighter in a mismatched bolted exosuit charging straight at the viewer down a parking ramp, sparks bursting from misfiring red calf conduits, sodium lights streaking overhead, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K11 · `duelliste-cell-tempest`** — CELL volé · Tempest
+**K06 · `nettoyeuse`** — sortie propre
 ```
-lean duelist in a stolen matte black segmented exosuit like alita battle angel, contained electric arcs crawling between his gauntlets, red-tinged capacitor seams pulsing along his spine, combat stance in a rain-slick dark alley, white-blue arc light on his face against the red seams, cyan reflections in the puddles, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, lightning storm, text, watermark
-```
-
-**K12 · `recruteur-double`** — l'entretien piégé
-```
-charming recruiter in RIKKEN colors leaning across an interview table toward an unseen candidate, warm practiced smile that stops below the eyes, red pen turning slowly between his fingers, warm desk lamp on his face against the cool dark interview room, a CRT recorder blinking in the corner, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
+cold professional woman in a tailored coat walking away from a hotel entrance through light rain, steel case in hand, neon reds and cyans smearing in the wet street around her unhurried stride, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, blood, text, watermark
 ```
 
-**K13 · `colosse-de-laile-grise`** — la brute des sous-sols
+**K07 · `cadre-corrompu`** — l'heure dorée du dernier étage
 ```
-huge enforcer in a reinforced matte black segmented exosuit filling a narrow basement corridor, head bowed under the ceiling, knuckles wrapped in red-lit compression bands, steam from pipes catching the red glow, warm sodium light behind him and cold shadows ahead, brutalist concrete and thick cables, retro-futuristic atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, hulk, giant robot, text, watermark
-```
-
-**K14 · `brouillage`** — protocole : l'onde rouge
-```
-a traveler's matte black exosuit mid-activation abruptly failing, its blue glowing seams shattering into static as a translucent red interference wave passes through the frame, the traveler's silhouette frozen mid-gesture in a dark hall, blue light dying into red across the scene, CRT panels glitching behind, retro-futuristic evangelion atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic, text, watermark
+executive signing documents at a boardroom table in golden hour light high above tokyo, his fountain pen scratching, a faint red emergency glow from the city reflected in the glass behind him, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K15 · `extraction-forcee`** — protocole : arraché à la trame
+**K08 · `chantage`** — l'échange dans le train
 ```
-human figure being torn backward out of a warm historical street scene into red-black static, fingers clawing at air, the era continuing undisturbed around the void he leaves, warm bronze daylight in the scene against the cold red-black tear, sense of violent temporal removal, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy magic portal, gore, text, watermark
-```
-
-**K16 · `pilleuse-depoques`** — KAIROS profane les zones aveugles
-```
-female kairos agent in a stolen matte black segmented exosuit kneeling in a foggy blind-zone battlefield, prying a relic from the mud into a red-lit containment case, red case light on her hurried face against the warm bronze fog of the era, disturbed ancient earth around her, her modern suit profane against the historical dead ground, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, gore, skeletons, text, watermark
+close-up of a gloved hand passing a red-sealed dossier between seats of a moving maglev train, countryside smearing past the window in morning light, the other hand hesitating, league of legends splash art, highly detailed, cinematic lighting --no fantasy magic, text, watermark
 ```
 
-**K17 · `interrogateur-du-drft`** — la salle blanche, la chaise vide
+**K09 · `sabotage-de-plateforme`** — partir sans se retourner
 ```
-interrogator in an immaculate dark uniform standing beside an empty steel chair in a blinding white interrogation room, his long shadow falling across the chair, one red recording light on the wall reflected in his glasses, cold white key light with the red light as the only color, quiet menace, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
-```
-
-**K18 · `porteur-cell-codex`** — CELL volé · Codex, l'essaim
-```
-kairos operative in a sleek stolen matte black segmented exosuit standing calmly while a swarm of palm-sized drones orbits him in a slow constellation, each drone eye a tiny red point, red drone lights rimming his silhouette against the cool blue glow of a dark server hall, thick cables and blinking racks behind, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, text, watermark
+silhouette walking calmly toward the viewer as a transfer platform erupts in blue sparks and dying light behind, red strobes sweeping the smoke, shards raining, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no explosion fireball, text, watermark
 ```
 
-**K19 · `le-moment-opportun`** — protocole épique : l'horloge fracturée *(FULL ART)*
+**K10 · `brouilleuse`** — l'onde sur le train
 ```
-monumental cracked clock face suspended in darkness, thin red light bleeding through the fracture lines, a single silhouette stepping through the largest crack as through a door, cold grey clockwork detail against the red glow, subject in the upper half of the frame, lower third dark and atmospheric, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic portal, text, watermark
-```
-
-**K20 · `akira-soma`** — le sourire trop doux *(FULL ART)*
-```
-distinguished japanese director in his fifties in a flawless dark suit seated at a directorial desk high above the tokyo night, hands calmly folded, warm gentle smile slightly too perfect to be true, warm desk lamp key light on his face, red seal ring catching the light, cool blue city glow through the glass behind him, subject in the upper half of the frame, lower third atmospheric, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, villain sneer, text, watermark
+female kairos operative crouched on the roof of a speeding maglev at night deploying a red pulse emitter, the interference wave rippling backward along the train as blue window lights die car by car, wind tearing at her coat, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**K21 · `la-comptable`** — le théâtre d'ombres financier *(FULL ART)*
+**K11 · `duelliste-cell-tempest`** — la fente
 ```
-austere woman in a dark tailored suit standing in a shadowed archive of ledgers and red-stamped files, holding a single page up into a thin blade of warm light, faces of debtors pinned on threads behind her like a silent web, warm amber blade of light on her face against the cold dark stacks, red stamps as the sharpest color, subject in the upper half of the frame, lower third atmospheric, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, text, watermark
-```
-
-**K22 · `renji-kuroda`** — CELL Kuroda, la désactivation *(FULL ART · signature KAIROS)*
-```
-tall gaunt japanese man with hollow calm eyes in a long black coat over a matte black segmented exosuit, standing in falling snow at night, one raised hand crushing a glowing blue CELL core that dies between his fingers, red glowing seams under the coat, sodium street lights and a flickering CRT billboard behind, brutalist government building in the snow haze, subject in the upper half of the frame, lower third atmospheric, retro-futuristic blade runner atmosphere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no medieval knight armor, fantasy armor, cape flowing dramatically, text, watermark
+lean duelist in a stolen matte black exosuit lunging across a rain-flooded intersection at night, white-blue arc light trailing his gauntlet, red capacitor seams blazing down his spine, neon reflections shattering under his splash, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, lightning storm, text, watermark
 ```
 
----
-
-## LES ÉPOQUES — Acte III, la Traque
-
-**E01 · `gamin-des-ruelles`** — Z-01 Le Chantier, Paris 1888
+**K12 · `recruteur-double`** — le couloir des promesses
 ```
-street kid in patched wool clothes and an oversized cap standing in a fog-drowned parisian alley in 1888, sharp knowing eyes, warm gaslight from a lantern above him against the cool teal fog, iron scaffolding as vague shapes in the mist erasing every landmark, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no eiffel tower, modern elements, text, watermark
+charming recruiter guiding a nervous candidate down a bright corridor, arm around his shoulder, practiced warm smile, a red pen spinning in his free hand behind his back, morning light, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**E02 · `lavandiere-du-fleuve`** — Z-01, la Seine sous la brume
+**K13 · `colosse-de-laile-grise`** — à travers le mur
 ```
-laundress in rough 19th century workclothes wringing linen at a river bank at dawn, strong tired hands, her breath visible, warm bronze dawn light on her face through the thick fog that hides the far shore and every monument, cold blue-grey water, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no recognizable landmarks, modern elements, text, watermark
-```
-
-**E03 · `ronin-zone-aveugle`** — Z-02 Le Pont sans nom
-```
-masterless samurai in worn dark travel clothes standing at the foot of a wooden bridge swallowed by river mist, hand resting on a chipped saya, warm lantern light from a post beside him against the cold teal mist, the far end of the bridge invisible, no banners no crest, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no famous castle, modern elements, text, watermark
+huge enforcer in a reinforced matte black exosuit shouldering through a concrete wall, rebar bending around him, dust exploding into shafts of basement sunlight, red compression bands glowing on his knuckles, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, hulk, giant robot, text, watermark
 ```
 
-**E04 · `macon-du-col`** — Z-04 La Passe, la chapelle inachevée
+**K14 · `brouillage`** — coupé en plein élan
 ```
-weathered stonemason in medieval work clothes laying stones of a small unfinished mountain chapel as snow buries the pass, mallet in cracked hands, warm firelight from a brazier beside him against the blue whiteout erasing the valley below, creaking wooden scaffold, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no recognizable cathedral, modern elements, text, watermark
-```
-
-**E05 · `legionnaire-sans-stele`** — Z-03 La Colonne perdue, Germanie an 9
-```
-lone roman legionary in mud-caked worn armor standing in a dark primeval forest, shield split, exhausted defiance on his rain-streaked face, pale bronze light breaking through colossal trees while fog swallows the rest of his column, moss green shadows, no standard visible, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no roman monument, modern elements, fantasy armor, text, watermark
+a traveler stumbling mid-sprint as his blue suit seams shatter into static, a translucent red wave passing through the frame, his momentum carrying him toward the ground, dusk street, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy magic, text, watermark
 ```
 
-**E06 · `baleinier-du-pack`** — Z-05 Le Détroit, mer d'Okhotsk
+**K15 · `extraction-forcee`** — arraché au marché
 ```
-harpooner in heavy oilskins standing at the icy bow of a whaling boat locked in pack ice, harpoon planted, frost in his beard, warm oil lamp light on his face against the vast teal ice and the grey fog wall where sea and sky fuse, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no modern ships, text, watermark
-```
-
-**E07 · `ours-des-steppes`** — Z-06 La Steppe blanche
-```
-colossal prehistoric steppe bear rearing in a blizzard on an endless white plain, fur crusted with ice, breath like smoke, pale gold dawn light catching its silhouette against the blue snowstorm that erases the horizon, primal and indifferent, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no modern elements, text, watermark
+man yanked backward off his feet into a tear of red-black static above a sunlit historical market street, fruit scattering from a knocked stall, bystanders frozen unaware, warm bronze daylight against the cold red tear, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no gore, text, watermark
 ```
 
-**E08 · `poussiere-des-siecles`** — protocole : ce que le temps efface
+**K16 · `pilleuse-depoques`** — la fuite au reliquaire
 ```
-a bare human hand dissolving into drifting golden dust motes inside a single blade of late afternoon light, dark empty barn interior, the dust rising and scattering like memory, warm gold light against deep brown shadows, quiet and sad, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no skeleton, gore, text, watermark
-```
-
-**E09 · `temoin-manquant`** — protocole : la chaise vide
-```
-crowded historical tavern scene with every figure softly blurred except one perfectly sharp empty chair at the center table, a still-steaming cup before it, warm hearth light pooling on the empty seat against the cool blurred crowd, the absence louder than the noise, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no modern elements, text, watermark
+female kairos agent sprinting out of a bronze fog battlefield clutching a red-lit relic case, mud kicking from her boots, ghostly still silhouettes of the era watching motionless from the mist behind her, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, gore, text, watermark
 ```
 
-**E10 · `messagere-aux-pieds-nus`** — la course avant l'aube
+**K17 · `interrogateur-du-drft`** — le tour de la chaise
 ```
-barefoot young messenger girl sprinting through a narrow ancient market street before dawn, sealed letter clutched to her chest, dust rising behind her heels, warm lantern glows in the awnings against the violet pre-dawn sky, no era landmark visible, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no modern elements, text, watermark
-```
-
-**E11 · `griot-sans-archive`** — la mémoire orale
-```
-old griot storyteller mid-tale at a night fire, hands spread wide casting long shadows, sparks rising like his words, warm fire light on his animated face against the deep blue night, circle of captivated listeners leaning in from the darkness, no monument no writing anywhere, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no modern elements, text, watermark
+interrogator in an immaculate dark uniform circling an empty steel chair in a blinding white room, one gloved hand trailing along its back, his long shadow sweeping the floor, a single red recording light, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**E12 · `gardienne-du-col`** — Z-04 La Passe
+**K18 · `porteur-cell-codex`** — la colonne de l'essaim *(épique)*
 ```
-mountain woman warrior in furs and iron standing alone in a snowstorm at a narrow alpine pass, long spear planted, ice in her braids, immovable calm, warm bronze light from a watch fire beside her against the blue whiteout that erases the path behind, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no fantasy armor, ornate gold trim, modern elements, text, watermark
-```
-
-**E13 · `zone-aveugle`** — protocole signature : le non-écrit
-```
-wide historical landscape whose center is simply unwritten, a soft pale void swallowing the middle of the scene, the world fraying into nothing at its edges, birds flying around the absence, warm bronze countryside against the cold blank void, eerie and calm, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no fantasy magic portal, modern elements, text, watermark
+kairos operative standing on a data-center rooftop at night, arms open as his drone swarm spirals upward into a towering red constellation column above the city, cyan server glow venting from the roof hatches, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
-**E14 · `duelliste-du-pont`** — Z-02, l'autre bout du pont
+**K19 · `le-moment-opportun`** — briser l'horloge *(FULL ART · épique)*
 ```
-lean swordsman in dark simple garb waiting at the far end of a mist-drowned wooden bridge, blade still sheathed, one hand raised in silent invitation, coiled stillness, cold steel-blue mist with a warm paper lantern glow at his feet, the river fog erasing everything beyond ten paces, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no famous landmark, modern elements, text, watermark
-```
-
-**E15 · `cuirasse-du-detroit`** — Z-05, le navire sans épave
-```
-early 1900s battleship emerging half-real from a wall of sea fog, hull streaked with rust, gun turrets silent, no flag identifiable, warm rust and bronze tones of the hull against the cold teal fog actively swallowing its stern as if unwriting it, heavy dark sea, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, atmospheric detailed background --no modern warships, explosion, text, watermark
+silhouette leaping through a monumental shattering clock face, shards of glass and time exploding outward frozen mid-burst, thin red light bleeding through every crack, darkness beyond, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy magic portal, text, watermark
 ```
 
-**E16 · `larchiviste-oublie`** — Z-07 L'Interstice *(FULL ART · mystère du set)*
+**K20 · `akira-soma`** — l'ovation des ombres *(FULL ART · légendaire)*
 ```
-ageless figure in layered robes from no single era standing in an impossible library where shelves curve into fog, holding an open book whose pages are blank, face half-lost in shadow beneath a deep hood, warm golden dust motes orbiting like slow time against the cold violet fog between the shelves, subject in the upper half of the frame, lower third atmospheric, league of legends splash art style, highly detailed semi-realistic digital illustration, dramatic cinematic lighting, sharp focus on the subject, atmospheric detailed background --no wizard fantasy, glowing runes, modern elements, text, watermark
+distinguished japanese director descending a grand marble staircase amid an audience of standing shadowed figures applauding, only his warm too-perfect smile fully lit, red seal ring catching the chandelier light, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, villain sneer, text, watermark
+```
+
+**K21 · `la-comptable`** — le cyclone de papier *(FULL ART · légendaire)*
+```
+austere woman standing calm at the center of a slow cyclone of ledger pages in a shadowed vault, red-stamped sheets orbiting her, one page pinched precisely between two fingers, a blade of warm light cutting the dust, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy magic, text, watermark
+```
+
+**K22 · `renji-kuroda`** — l'assaut dans le blizzard *(FULL ART · prismatique · signature KAIROS)*
+```
+gaunt japanese man in a long black coat over a matte black exosuit lunging through a night blizzard, twin adaptive blades extended, red seams blazing through the snow, a dying blue CELL core crushed in his trailing hand, sodium lights haloing the storm, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, cape, text, watermark
 ```
 
 ---
 
-## Refonte v5.2 — régénération
+## LES ÉPOQUES
 
-**Les 23 cartes forgées se régénèrent toutes** (les artworks actuels sont issus des DA v1) :
-même slug → `npm run forge -- --local ./drop --replace` conserve stats/textes, remplace artwork/palette/seed.
-Les 37 autres slots sont de nouvelles cartes.
+**E01 · `gamin-des-ruelles`** — le voleur des toits, 1888
+```
+street kid in patched wool clothes sprinting across the rooftops of 1888 paris with a stolen loaf, pigeons bursting around him, chimney smoke and morning fog below, warm gaslight amber against cool blue slate roofs, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no eiffel tower, modern elements, text, watermark
+```
+
+**E02 · `lavandiere-du-fleuve`** — contre le courant
+```
+laundress in rough 19th century workclothes wading thigh-deep in a river at sunrise, hauling heavy linen against the current, spray catching the gold light, fog erasing the far shore, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no recognizable landmarks, modern elements, text, watermark
+```
+
+**E03 · `ronin-zone-aveugle`** — l'iaijutsu
+```
+masterless samurai mid-draw on a mist-drowned wooden bridge, blade a silver arc, river spray and maple leaves swirling, warm lantern light against the cold teal fog, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no famous castle, modern elements, text, watermark
+```
+
+**E04 · `macon-du-col`** — la pierre et la tempête
+```
+weathered stonemason hauling a stone block up a creaking rope pulley in driving snow, scaffold swaying against the unfinished mountain chapel, his brazier sparking orange in the blue whiteout, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no modern elements, text, watermark
+```
+
+**E05 · `legionnaire-sans-stele`** — la dernière charge
+```
+lone roman legionary charging through giant ferns in a dark primeval forest, split shield raised, mud flying from his boots, pale bronze light breaking through the canopy onto his roaring face, fog swallowing everything behind, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no roman monument, modern elements, text, watermark
+```
+
+**E06 · `baleinier-du-pack`** — le lancer
+```
+harpooner in heavy oilskins hurling his harpoon from the icy bow as a wave bursts against the hull, spray freezing mid-air, teal icebergs and grey fog wall behind, his oil lantern swinging gold, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no modern ships, text, watermark
+```
+
+**E07 · `ours-des-steppes`** — la charge blanche
+```
+colossal prehistoric steppe bear charging toward the viewer through a blizzard, snow exploding from each stride, ice-crusted fur, pale gold dawn cutting through the blue storm, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no modern elements, text, watermark
+```
+
+**E08 · `poussiere-des-siecles`** — ce que le temps efface
+```
+a bare hand dissolving into golden dust motes inside one blade of afternoon light, dark barn interior, the dust drifting upward like memory, league of legends splash art, highly detailed, cinematic lighting --no skeleton, gore, text, watermark
+```
+
+**E09 · `temoin-manquant`** — la chaise vide
+```
+crowded historical tavern in warm hearth light, every figure softly blurred in motion except one perfectly sharp empty chair, a still-steaming cup before it, league of legends splash art, highly detailed, cinematic lighting --no modern elements, text, watermark
+```
+
+**E10 · `messagere-aux-pieds-nus`** — avant l'aube
+```
+barefoot messenger girl sprinting low through a narrow ancient market street before dawn, sealed letter clutched to her chest, dust and startled doves in her wake, violet sky over warm lantern awnings, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no modern elements, text, watermark
+```
+
+**E11 · `griot-sans-archive`** — les mots en étincelles
+```
+old griot mid-tale at a night fire, arms sweeping wide as the rising sparks swirl into fleeting shapes of warriors and rivers above the flames, entranced listeners leaning in from the deep blue dark, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no modern elements, text, watermark
+```
+
+**E12 · `gardienne-du-col`** — le balayage
+```
+mountain woman warrior sweeping her long spear in a wide arc through the snowstorm at a narrow alpine pass, snow carving off the blade's path, furs whipping, warm watch-fire light against the blue whiteout, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, modern elements, text, watermark
+```
+
+**E13 · `zone-aveugle`** — le non-écrit
+```
+wide historical landscape whose center is simply unwritten, a soft pale void swallowing the middle of the scene, birds wheeling around the absence, warm bronze countryside fraying into blank nothing, league of legends splash art, highly detailed, cinematic lighting --no fantasy magic portal, modern elements, text, watermark
+```
+
+**E14 · `duelliste-du-pont`** — la course sur les planches
+```
+lean swordsman sprinting across the planks of a mist-drowned bridge toward the viewer, scabbard flung aside spinning mid-air, blade low and trailing, cold steel mist parting around him, one warm lantern flare, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no famous landmark, modern elements, text, watermark
+```
+
+**E15 · `cuirasse-du-detroit`** — la proue dans la brume
+```
+early 1900s battleship bursting its rusted prow through a wall of sea fog toward the viewer, bow wave exploding, no flag, the fog visibly unwriting its stern into nothing, cold teal sea and warm rust, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no modern warships, text, watermark
+```
+
+**E16 · `larchiviste-oublie`** — la bibliothèque en vortex *(FULL ART · légendaire · mystère du set)*
+```
+ageless hooded figure looking up from an open blank book as thousands of books spiral upward around him into a vortex of golden dust and violet fog, impossible curved shelves dissolving into the sky, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no wizard fantasy, glowing runes, modern elements, text, watermark
+```
+
+---
+
+## Refonte — régénération
+
+Les cartes déjà forgées se régénèrent par simple re-drop (`--replace` conserve stats/textes). Préfixe `ALT1-` sur le fichier = version alternative au lieu d'un remplacement.
