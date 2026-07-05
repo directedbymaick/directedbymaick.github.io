@@ -57,6 +57,41 @@ epic splash art of a traveler being violently yanked backward into a column of b
 
 ---
 
+## ROUND 2 — VERDICT : S2 · S4 · S5 retenus
+
+L'ADN commun des trois gagnants = **la formule v2** :
+
+1. **Énergie splash** (pose/action dynamique, composition cinématique) — mais jamais « pur jus » sans ancrage.
+2. **Couche vintage MARQUÉE** : `retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors` — c'est elle qui signe le set (S2 > S1).
+3. **Palette d'époque contrôlée** qui raconte le lieu/temps : sépia + ambres gaz (1888), noir + cramoisi (KAIROS), etc. (S4, S5).
+
+**Bloc de style commun v2** (fin de chaque prompt, avant les --no) :
+
+```
+retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition
+```
+
+### Confirmation (3 prompts) — la formule doit généraliser aux cas non testés
+
+**C1 — duel (S3 refait avec l'ADN v2)**
+```
+epic splash art of two travelers clashing mid-air above a shattered transfer platform, young hero in a blue-lit biotech suit blocking a strike from a masked figure with glitching red conduits, shockwave of energy at the point of impact, debris frozen in time, dramatic low angle, intense expressions, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition --no text, watermark
+```
+
+**C2 — protocole sans héros (S6 refait avec l'ADN v2)**
+```
+epic splash art of a traveler being violently yanked backward into a column of blue-white light, body arched, hand reaching toward the viewer, transfer platform fracturing beneath, cables and debris sucked into the light, dramatic wide angle, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition --no text, watermark
+```
+
+**C3 — présent 2049 (l'époque « moderne » doit porter la même signature)**
+```
+epic splash art of a traveler in a sleek black biotech suit diving off a mag-lev platform in 2049 tokyo at night, rain streaks and holographic signage smearing into light trails behind her, blue conduits flaring, dramatic vertical composition from above, retro 90s anime poster grading, halation glow, heavy film grain, slightly faded print colors, cinematic composition --no cyberpunk pink purple overload, text, watermark
+```
+
+Si C1/C2/C3 confirment → choisir LA meilleure image des 6 (S2/S4/S5/C1/C2/C3) comme **ancre `--sref`**, puis réécriture des 60 prompts : composition + époque + palette dans le texte, bloc v2 en signature, moodboard + sref en style.
+
+---
+
 ## ROUND 1 (rejeté — archive)
 
 *Contexte : présent = Terre, 2049. Les Travelers visitent des époques différentes → chaque époque doit être identifiable par son décor ET sa palette. On garde le grain rétro (Evangelion / GITS / Blade Runner), on abandonne le monochrome strict : palette riche par époque, contrôlée, jamais arc-en-ciel.*
