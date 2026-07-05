@@ -276,6 +276,24 @@ female scout in a sleek dark biotech suit posing on wooden scaffolding in a 19th
 
 Dépôt : `drop/_tests/` → `k1.png` … `k3.png`. Noter le `--no painterly, brush strokes` : on verrouille la sortie du rendu peinture.
 
+### v4.1 — Le sujet doit être ÉCLAIRÉ (correction K2/K3)
+
+K2/K3 : sujet sombre et effacé. Cause : « black suit » + fond lumineux = MJ rend une silhouette
+éteinte. Règle : **le sujet reçoit sa propre lumière, nommée dans le prompt** —
+`strong key light on the subject, bright rim light` — et sa matière **réfléchit** la couleur du
+décor (`glossy suit panels catching the light`) au lieu de l'absorber. Le noir du suit devient
+noir brillant, jamais noir mat plein.
+
+**K2 corrigé**
+```
+masked kairos operative standing with theatrical confidence in a rainy alley at night, strong red key light on his face and shoulders from a bright neon sign, glossy black coat catching red and cyan reflections, red conduits glowing, subject brightly lit against the softer background, anime video game splash art, official key visual style, clean cel shading, crisp line art, vibrant saturated colors, cinematic lighting --no text, watermark, painterly, brush strokes
+```
+
+**K3 corrigé**
+```
+female scout in a sleek biotech suit with glossy panels posing on wooden scaffolding at dusk, warm amber key light from a gaslight just beside her illuminating her face and suit, blue light lines glowing, luminous violet sky behind, subject brightly lit against the atmospheric background, 19th century parisian construction site, anime video game splash art, official key visual style, clean cel shading, crisp line art, vibrant saturated colors, cinematic lighting --no eiffel tower, text, watermark, painterly, brush strokes
+```
+
 ---
 
 ## ROUND 1 (rejeté — archive)
