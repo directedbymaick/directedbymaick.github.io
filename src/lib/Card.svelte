@@ -329,14 +329,14 @@
 		background:
 			repeating-linear-gradient(
 				180deg,
-				rgba(255, 255, 255, 0.03) 0 1px,
-				transparent 1px 3px
+				rgba(255, 255, 255, 0.014) 0 1px,
+				transparent 1px 4px
 			),
-			radial-gradient(120% 120% at 50% 30%, transparent 55%, rgba(255, 180, 84, 0.06) 100%);
+			radial-gradient(120% 120% at 50% 30%, transparent 68%, rgba(255, 180, 84, 0.035) 100%);
 		box-shadow:
-			inset 0 0 0 1px rgba(0, 0, 0, 0.6),
-			inset 0 0.8cqw 2cqw rgba(0, 0, 0, 0.42),
-			inset 0 -0.6cqw 1.6cqw rgba(0, 0, 0, 0.3);
+			inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+			inset 0 0.8cqw 2cqw rgba(0, 0, 0, 0.26),
+			inset 0 -0.6cqw 1.6cqw rgba(0, 0, 0, 0.18);
 	}
 
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
