@@ -1,0 +1,31 @@
+{
+	"id": "liang-chen",
+	"name": "Liang Chen",
+	"kind": "traveler",
+	"cost": 7,
+	"attack": 6,
+	"health": 7,
+	"cell": "CELL Brutus",
+	"synchro": {
+		"cost": 3,
+		"text": "Onde de choc : infligez 2 dégâts à toutes les unités adverses."
+	},
+	"text": "",
+	"flavor": "Le sol se souvient de chacun de ses pas.",
+	"rarity": "legendary",
+	"faction": "rikken",
+	"art": "/art/liang-chen.webp",
+	"alts": [
+		"/art/alt/liang-chen-alt2.webp"
+	],
+	"gene": {
+		"palette": [
+			"#1c2326",
+			"#262829",
+			"#e9e8f9"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#3d8fd6",
+		"seed": 397895
+	}
+}
