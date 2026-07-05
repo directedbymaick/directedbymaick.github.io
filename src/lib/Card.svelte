@@ -513,12 +513,14 @@
 	.cellline {
 		margin: 1cqw 0 0;
 		display: flex;
-		gap: 1.6cqw;
+		flex-wrap: nowrap;
+		gap: 1.2cqw;
 		align-items: center;
 		font-family: Consolas, 'Cascadia Mono', monospace;
 		font-size: 2.7cqw;
 		text-transform: uppercase;
 		letter-spacing: 0.14em;
+		white-space: nowrap;
 	}
 	/* taxonomie affichée : TRAVELER ◆ — l'ambre du HUD */
 	.kindlabel {
@@ -532,7 +534,8 @@
 		opacity: 0.7;
 	}
 	.hairline {
-		flex: 1;
+		flex: 1 1 0;
+		min-width: 0;
 		height: 1px;
 		background: linear-gradient(
 			90deg,
@@ -542,8 +545,14 @@
 	}
 	/* le CELL est un chip taillé — accent en fond, pas de chevrons typographiques */
 	.cell {
-		padding: 0.45cqw 1.6cqw 0.4cqw;
+		padding: 0.45cqw 1.4cqw 0.4cqw;
 		clip-path: polygon(1.1cqw 0, 100% 0, calc(100% - 1.1cqw) 100%, 0 100%);
+		/* jamais deux lignes : le chip se compresse (tracking réduit) puis ellipse */
+		letter-spacing: 0.05em;
+		min-width: 0;
+		flex-shrink: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		background: linear-gradient(
 			180deg,
 			color-mix(in srgb, var(--accent) 40%, #171821) 0%,

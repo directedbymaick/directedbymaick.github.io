@@ -5,7 +5,7 @@
 	"cost": 5,
 	"attack": 3,
 	"health": 5,
-	"cell": "CELL 1re génération · éteint",
+	"cell": "CELL 1G · éteint",
 	"text": "À la fin de votre tour, piochez une carte.",
 	"flavor": "Elle connaît le prix de chaque nom sur le mur. Elle signe quand même.",
 	"rarity": "legendary",
