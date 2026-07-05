@@ -104,9 +104,9 @@ traveler in a matte black segmented exosuit walking slowly across a cratered anc
 vertical view up the throat of a colossal energy core mid-overload, rings of machinery blazing blue-white, engineers zip-lining away on cables, steam and amber strobes, industrial cathedral scale, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no spaceship, explosion, text, watermark
 ```
 
-**R19 · `yuriko-watanabe`** — le jury, l'extinction *(FULL ART · légendaire)*
+**R19 · `yuriko-watanabe`** — le jury, l'éclat prismatique *(FULL ART · légendaire)*
 ```
-stern japanese woman in an impeccable dark uniform standing in a vast white amphitheater as hundreds of holographic candidate portraits flicker out around her, only three still lit, her red pen paused over a list, cold daylight, league of legends splash art, highly detailed, cinematic lighting --no fantasy armor, text, watermark
+regal japanese woman in her fifties in a prestigious dark ceremonial uniform with fine silver embroidery and rank insignia, standing on an elevated jury dais in a monumental hall at dusk, hundreds of holographic candidate portraits shattering into prismatic light shards swirling around her, only three portraits still glowing, iridescent reflections catching her uniform, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
 ```
 
 **R20 · `genjiro-hayashi`** — la locomotive *(FULL ART · légendaire)*
