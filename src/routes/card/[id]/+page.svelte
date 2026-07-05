@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import { charter } from '$lib/charter';
+	import { altView } from '$lib/cards';
 	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
@@ -8,21 +9,18 @@
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const faction = $derived(charter.factions[card.faction]);
 
-	/** Deux axes indépendants : quel artwork (base / alts), et le mode full art.
-	 *  On peut donc voir la full art de n'importe quelle version alternative. */
+	/** Choix de l'artwork : base ou versions alternatives (toujours foil). */
 	interface ArtOption {
 		key: string;
 		label: string;
-		art: string;
-		seedShift: number;
+		view: CardData;
 	}
 	const artOptions: ArtOption[] = $derived([
-		{ key: 'base', label: 'Standard', art: card.art, seedShift: 0 },
+		{ key: 'base', label: 'Standard', view: card },
 		...(card.alts ?? []).map((art, i) => ({
 			key: `alt${i + 2}`,
 			label: `Alt ${i + 1}`,
-			art,
-			seedShift: 97 * (i + 1)
+			view: altView(card, art, i)
 		}))
 	]);
 
@@ -33,14 +31,7 @@
 		artSel = v && artOptions.some((o) => o.key === v) ? v : 'base';
 	});
 
-	const shown: CardData = $derived.by(() => {
-		const opt = artOptions.find((o) => o.key === artSel) ?? artOptions[0];
-		return {
-			...card,
-			art: opt.art,
-			gene: { ...card.gene, seed: card.gene.seed + opt.seedShift }
-		};
-	});
+	const shown: CardData = $derived(artOptions.find((o) => o.key === artSel)?.view ?? card);
 </script>
 
 <svelte:head>

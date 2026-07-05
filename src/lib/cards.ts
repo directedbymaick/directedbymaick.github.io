@@ -15,3 +15,20 @@ export const cards: CardData[] = Object.values(modules)
 export function getCard(id: string): CardData | undefined {
 	return cards.find((c) => c.id === id);
 }
+
+/**
+ * Vue « art alternatif » d'une carte : les alts sont TOUJOURS foil
+ * (holo minimum — les raretés déjà foil gardent leur preset), avec un
+ * seed décalé pour que leur brillance diffère de la version de base.
+ */
+export function altView(card: CardData, art: string, index: number): CardData {
+	return {
+		...card,
+		art,
+		gene: {
+			...card.gene,
+			foilPreset: card.gene.foilPreset === 'mat' ? 'holo' : card.gene.foilPreset,
+			seed: card.gene.seed + 97 * (index + 1)
+		}
+	};
+}

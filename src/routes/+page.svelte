@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
-	import { cards } from '$lib/cards';
+	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import type { FactionId } from '$lib/types';
 
@@ -16,13 +16,13 @@
 			.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
 	}
 
-	/** Grille d'affichage : chaque carte, suivie de ses versions alternatives. */
+	/** Grille d'affichage : chaque carte, suivie de ses versions alternatives (toujours foil). */
 	function entriesFor(f: FactionId) {
 		return byFaction(f).flatMap((card) => [
 			{ key: card.id, card, alt: 0, href: `/card/${card.id}` },
 			...(card.alts ?? []).map((art, i) => ({
 				key: `${card.id}--alt${i + 2}`,
-				card: { ...card, art, gene: { ...card.gene, seed: card.gene.seed + 97 * (i + 1) } },
+				card: altView(card, art, i),
 				alt: i + 1,
 				href: `/card/${card.id}?v=alt${i + 2}`
 			}))
