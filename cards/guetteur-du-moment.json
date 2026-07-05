@@ -1,0 +1,24 @@
+{
+	"id": "guetteur-du-moment",
+	"name": "Guetteur du moment",
+	"kind": "traveler",
+	"cost": 3,
+	"attack": 2,
+	"health": 3,
+	"cell": "Sans CELL · observateur",
+	"text": "Quand un Traveler adverse active une Synchro, infligez-lui 2 dégâts.",
+	"flavor": "Il ne regarde pas la ville. Il regarde ce qui s'allume.",
+	"rarity": "common",
+	"faction": "kairos",
+	"art": "/art/guetteur-du-moment.webp",
+	"gene": {
+		"palette": [
+			"#263546",
+			"#0b1419",
+			"#e6e9ed"
+		],
+		"foilPreset": "mat",
+		"accent": "#c23b4e",
+		"seed": 307942
+	}
+}
