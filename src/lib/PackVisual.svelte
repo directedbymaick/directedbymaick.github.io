@@ -65,12 +65,18 @@
 	<div class="tearline"></div>
 
 	<div class="body">
+		<img class="cover" src="/pack/zones-aveugles-cover.webp" alt="" draggable="false" />
+		<div class="scrim"></div>
+		<div class="plastic"></div>
 		<div class="sheen"></div>
 		<p class="brand">Travelers TCG</p>
-		<h3 class="title">Zones<br />Aveugles</h3>
-		<p class="setline">Set 01 · 5 cartes</p>
-		<p class="sigils"><span class="s-r">◆</span><span class="s-k">◈</span><span class="s-e">◉</span></p>
-		<p class="footline">Contient 5 cartes authentiques du registre</p>
+		<span class="count-chip">5<small>cartes</small></span>
+		<div class="bottom">
+			<h3 class="title">Zones<br />Aveugles</h3>
+			<p class="setline">Set 01 · Booster</p>
+			<p class="sigils"><span class="s-r">◆</span><span class="s-k">◈</span><span class="s-e">◉</span></p>
+			<p class="footline">Contient 5 cartes authentiques du registre</p>
+		</div>
 	</div>
 
 	<div class="crimp bottom"></div>
@@ -166,7 +172,7 @@
 		border-top: 2px dashed rgba(255, 180, 84, 0.3);
 	}
 
-	/* ---------- corps du sachet ---------- */
+	/* ---------- corps du sachet : l'artwork couvre tout ---------- */
 	.body {
 		position: absolute;
 		top: 14.5%;
@@ -174,23 +180,55 @@
 		left: 0;
 		right: 0;
 		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 2cqw;
 		text-align: center;
-		background:
-			radial-gradient(120% 70% at 50% 0%, rgba(255, 180, 84, 0.08), transparent 55%),
-			radial-gradient(100% 60% at 50% 110%, rgba(194, 59, 78, 0.12), transparent 60%),
-			repeating-linear-gradient(45deg, #151a21 0 3px, #0f131a 3px 6px),
-			#10141a;
+		background: #10141a;
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.07),
 			inset 0 0 40px rgba(0, 0, 0, 0.45);
 		transition:
 			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
 			opacity 0.5s ease;
+	}
+	.cover {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 22%;
+		user-select: none;
+	}
+	/* lisibilité de la typo : scrim progressif sur le tiers inférieur */
+	.scrim {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			180deg,
+			rgba(10, 14, 20, 0.42) 0%,
+			transparent 16%,
+			transparent 52%,
+			rgba(8, 11, 16, 0.62) 76%,
+			rgba(6, 9, 13, 0.88) 100%
+		);
+		pointer-events: none;
+	}
+	/* le film plastique : arrondi du sachet (ombres latérales + rehaut central) */
+	.plastic {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(
+				90deg,
+				rgba(0, 0, 0, 0.4) 0%,
+				transparent 9%,
+				rgba(255, 255, 255, 0.05) 18%,
+				transparent 30%,
+				transparent 70%,
+				rgba(255, 255, 255, 0.04) 82%,
+				transparent 91%,
+				rgba(0, 0, 0, 0.42) 100%
+			);
+		pointer-events: none;
 	}
 	.pack.torn .crimp.top {
 		transform: translateY(-160%) rotate(-2deg);
@@ -229,38 +267,83 @@
 	}
 
 	.brand {
+		position: absolute;
+		top: 3cqw;
+		left: 0;
+		right: 0;
 		margin: 0;
 		font-family: Consolas, monospace;
 		font-size: 3cqw;
 		letter-spacing: 0.5em;
 		text-indent: 0.5em;
 		text-transform: uppercase;
-		color: rgba(255, 180, 84, 0.75);
+		color: rgba(255, 180, 84, 0.9);
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+	}
+	/* pastille « 5 cartes » — le badge coin des vrais boosters */
+	.count-chip {
+		position: absolute;
+		top: 8.5cqw;
+		right: 4cqw;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		line-height: 1;
+		padding: 1.8cqw 2.6cqw 1.6cqw;
+		font-weight: 800;
+		font-size: 5.4cqw;
+		color: #ece8e1;
+		background: rgba(8, 11, 16, 0.85);
+		border: 1px solid rgba(236, 232, 225, 0.18);
+		border-radius: 1.6cqw;
+		rotate: 4deg;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+	}
+	.count-chip small {
+		font-size: 2cqw;
+		font-weight: 700;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: rgba(236, 232, 225, 0.6);
+	}
+	.bottom {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 2.6cqw;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1.2cqw;
 	}
 	.title {
 		margin: 0;
 		font-stretch: 68%;
 		font-weight: 800;
-		font-size: 15cqw;
-		line-height: 0.9;
+		font-size: 13.5cqw;
+		line-height: 0.88;
 		text-transform: uppercase;
 		color: #ece8e1;
-		text-shadow: 0 0 8cqw rgba(255, 180, 84, 0.25);
+		text-shadow:
+			0 2px 10px rgba(0, 0, 0, 0.85),
+			0 0 8cqw rgba(61, 143, 214, 0.35);
 	}
 	.setline {
-		margin: 0.6cqw 0 0;
-		font-size: 3.6cqw;
+		margin: 0.4cqw 0 0;
+		font-size: 3.2cqw;
 		font-weight: 700;
-		letter-spacing: 0.3em;
-		text-indent: 0.3em;
+		letter-spacing: 0.34em;
+		text-indent: 0.34em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.6);
+		color: rgba(236, 232, 225, 0.75);
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 	}
 	.sigils {
-		margin: 2.4cqw 0 0;
+		margin: 1.2cqw 0 0;
 		display: flex;
 		gap: 4cqw;
-		font-size: 5.4cqw;
+		font-size: 4.6cqw;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
 	}
 	.s-r {
 		color: #3d8fd6;
@@ -272,15 +355,12 @@
 		color: #b08d57;
 	}
 	.footline {
-		position: absolute;
-		bottom: 3cqw;
-		left: 0;
-		right: 0;
-		margin: 0;
+		margin: 1cqw 0 0;
 		font-family: Consolas, monospace;
-		font-size: 2.4cqw;
+		font-size: 2.2cqw;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.3);
+		color: rgba(236, 232, 225, 0.42);
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 	}
 </style>
