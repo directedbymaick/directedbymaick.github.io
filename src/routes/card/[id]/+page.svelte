@@ -8,38 +8,43 @@
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const faction = $derived(charter.factions[card.faction]);
 
-	/** Versions de la carte : cadre standard, full art, et les arts alternatifs. */
-	interface Variant {
+	/** Deux axes indépendants : quel artwork (base / alts), et le mode full art.
+	 *  On peut donc voir la full art de n'importe quelle version alternative. */
+	interface ArtOption {
 		key: string;
 		label: string;
-		view: CardData;
+		art: string;
+		seedShift: number;
 	}
-	const variants: Variant[] = $derived.by(() => {
-		const list: Variant[] = [
-			{ key: 'base', label: card.fullArt ? 'Full art' : 'Standard', view: card },
-			{
-				key: 'flip',
-				label: card.fullArt ? 'Standard' : 'Full art',
-				view: { ...card, fullArt: !card.fullArt }
-			}
-		];
-		(card.alts ?? []).forEach((art, i) => {
-			list.push({
-				key: `alt${i + 2}`,
-				label: `Alt ${i + 1}`,
-				view: { ...card, art, gene: { ...card.gene, seed: card.gene.seed + 97 * (i + 1) } }
-			});
-		});
-		return list;
-	});
+	const artOptions: ArtOption[] = $derived([
+		{ key: 'base', label: 'Standard', art: card.art, seedShift: 0 },
+		...(card.alts ?? []).map((art, i) => ({
+			key: `alt${i + 2}`,
+			label: `Alt ${i + 1}`,
+			art,
+			seedShift: 97 * (i + 1)
+		}))
+	]);
 
-	let sel = $state('base');
+	let artSel = $state('base');
+	let fullArt = $state(false);
 	$effect(() => {
 		card.id; // reset à chaque navigation de carte
-		const v = new URLSearchParams(location.search).get('v');
-		sel = v && variants.some((x) => x.key === v) ? v : 'base';
+		const p = new URLSearchParams(location.search);
+		const v = p.get('v');
+		artSel = v && artOptions.some((o) => o.key === v) ? v : 'base';
+		fullArt = p.get('fa') === '1' ? true : (card.fullArt ?? false);
 	});
-	const shown = $derived(variants.find((v) => v.key === sel)?.view ?? card);
+
+	const shown: CardData = $derived.by(() => {
+		const opt = artOptions.find((o) => o.key === artSel) ?? artOptions[0];
+		return {
+			...card,
+			art: opt.art,
+			fullArt,
+			gene: { ...card.gene, seed: card.gene.seed + opt.seedShift }
+		};
+	});
 </script>
 
 <svelte:head>
@@ -53,21 +58,30 @@
 
 <section class="stage">
 	<div class="showcase">
-		{#key sel}
+		{#key `${artSel}|${fullArt}`}
 			<Card card={shown} />
 		{/key}
 		<div class="variants" role="tablist" aria-label="Versions de la carte">
-			{#each variants as v (v.key)}
+			{#each artOptions as o (o.key)}
 				<button
 					class="vbtn"
-					class:active={sel === v.key}
+					class:active={artSel === o.key}
 					role="tab"
-					aria-selected={sel === v.key}
-					onclick={() => (sel = v.key)}
+					aria-selected={artSel === o.key}
+					onclick={() => (artSel = o.key)}
 				>
-					{v.label}
+					{o.label}
 				</button>
 			{/each}
+			<span class="vsep" aria-hidden="true"></span>
+			<button
+				class="vbtn toggle"
+				class:active={fullArt}
+				aria-pressed={fullArt}
+				onclick={() => (fullArt = !fullArt)}
+			>
+				Full art
+			</button>
 		</div>
 	</div>
 
@@ -163,6 +177,16 @@
 	.vbtn.active {
 		color: #0f1923;
 		background: #ffb454;
+	}
+	.vsep {
+		width: 1px;
+		align-self: stretch;
+		margin: 0 0.25rem;
+		background: rgba(236, 232, 225, 0.2);
+	}
+	.vbtn.toggle.active {
+		background: #c23b4e;
+		color: #ece8e1;
 	}
 
 	.meta {
