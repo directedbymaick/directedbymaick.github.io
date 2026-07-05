@@ -66,7 +66,7 @@ young japanese woman in a matte black segmented exosuit standing on the top beam
 
 **R11 · `porteur-cell-pyros`** — la torche entre les tours
 ```
-male traveler wreathed in roaring orange flames diving between new york style skyscrapers, matte black segmented exosuit visible through the fire, fist cocked mid-strike trailing a comet tail of embers, shattered glass glittering around him, cool blue city dusk against the blazing heat, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, text, watermark
+male traveler in a clearly visible matte black segmented exosuit with glowing ember channels, diving between new york style skyscrapers, flames streaming from his forearms and shoulders like a fiery wake behind him, his armor plates crisp and unobscured against the fire, fist cocked mid-strike, shattered glass glittering, cool blue city dusk against the blazing orange, league of legends splash art, highly detailed, dynamic composition, cinematic lighting --no fantasy armor, body fully engulfed in fire, text, watermark
 ```
 
 **R12 · `senior-descorte`** — tenir la brèche
