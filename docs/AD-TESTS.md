@@ -105,6 +105,53 @@ Si C1/C2/C3 confirment → choisir LA meilleure image comme **ancre `--sref`**, 
 
 ---
 
+## ROUND 3 — Lecture du moodboard (la vraie cible)
+
+Le moodboard MJ de Maïck décode en 6 ingrédients :
+
+1. **Character-first** : le personnage porte l'image. Cadrages plan américain / plein pied / buste, souvent frontal ou 3/4.
+2. **Poses calmes et sûres** : debout, marchant vers nous, main au col, regard par-dessus l'épaule. Zéro vol plané. Le swag > l'action.
+3. **Rendu encre + cel propre** (manga/manhwa) : formes nettes, noirs profonds, pas de peinture texturée.
+4. **Tenues tactiques noires** : sangles, gants, masques, manteaux — silhouettes lisibles.
+5. **Palette noir désaturée + UN accent tenu** (lueur rouge, ambre, enseigne, mèche colorée). Le monochrome ne tue pas le wow — le manque de contraste et d'attitude, si.
+6. **Ambiances noir** : pluie, neige, fumée, nuit, néons lointains. Décor présent mais atmosphérique (cf. principe 4).
+
+**Bloc de style v3** (remplace le bloc v2.1) :
+```
+dark seinen manga cover illustration, clean ink and cel shading, muted noir palette with a single controlled accent, subtle film grain
+```
+
+### Tests round 3 (5 prompts, moodboard `--p` actif partout)
+
+**M1 — solo swagger (Viktor, toit, nuit)**
+```
+young russian traveler in a sleek black tactical biotech suit standing at the edge of a rooftop at night, hands in pockets, insolent grin, light snow falling, faint orange glow from his calf conduits, dark seinen manga cover illustration, clean ink and cel shading, muted noir palette with a single controlled accent, subtle film grain --no text, watermark
+```
+
+**M2 — menace KAIROS (masqué, enseigne rouge, pluie)**
+```
+masked kairos operative standing under a flickering red sign in a rainy alley at night, hands relaxed at his sides, faulty red conduits glowing through his black coat, dark seinen manga cover illustration, clean ink and cel shading, muted noir palette with a single controlled accent, subtle film grain --no text, watermark
+```
+
+**M3 — l'organisation (groupe KAIROS marchant dans la neige)**
+```
+four kairos agents in dark coats walking toward the viewer across a snowy airfield at night, confident stride, one adjusting his glove, distant government building with red lights, dark seinen manga cover illustration, clean ink and cel shading, muted noir palette with a single controlled accent, subtle film grain --no text, watermark
+```
+
+**M4 — époque (éclaireuse, Paris 1888, calme)**
+```
+female scout in a sleek dark biotech suit standing in a foggy 19th century parisian construction site at dusk, looking over her shoulder, warm gaslight in the mist behind her, faint blue lines on her suit, dark seinen manga cover illustration, clean ink and cel shading, muted noir palette with a single controlled accent, subtle film grain --no text, watermark
+```
+
+**M5 — protocole (transfert d'urgence, civil aspiré)**
+```
+a man in civilian clothes being pulled off his feet into a column of blue-white light, one arm already dissolving, terrified face, dark transfer chamber, dark seinen manga cover illustration, clean ink and cel shading, muted noir palette with a single controlled accent, subtle film grain --no text, watermark
+```
+
+Dépôt : `drop/_tests/` → `m1.png` … `m5.png`. La gagnante = ancre `--sref` du set, et les 60 prompts se réécrivent sur ce squelette.
+
+---
+
 ## ROUND 1 (rejeté — archive)
 
 *Contexte : présent = Terre, 2049. Les Travelers visitent des époques différentes → chaque époque doit être identifiable par son décor ET sa palette. On garde le grain rétro (Evangelion / GITS / Blade Runner), on abandonne le monochrome strict : palette riche par époque, contrôlée, jamais arc-en-ciel.*
