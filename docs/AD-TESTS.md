@@ -163,6 +163,47 @@ Nouvelle config :
 - Les scènes M1–M5 restent valables telles quelles : remplace juste le bloc v3 par le bloc v3.1 en fin de prompt.
 - Si une image sort parfaite : elle devient l'ancre `--sref` en complément du profil.
 
+### Correction v3.2 — LA COULEUR (contrainte produit)
+
+Le noir seinen était trop sombre. Contrainte technique en plus du goût : les foils de la carte
+(`color-dodge`) n'accrochent que sur des valeurs moyennes/claires, et le foil est teinté par la
+palette extraite de l'artwork — **une image sombre = un holo mort**. La DA doit fournir de la
+couleur et de la lumière.
+
+La cel anime 90s EST colorée (Akira : rouges/bleus saturés ; Bebop : oranges/teals). On garde le
+squelette rétro anime, on pousse la couleur :
+
+- **Chaque carte reçoit un duo de couleurs complémentaires** (teal/orange, rouge/cyan, violet/ambre,
+  vert/magenta) — c'est le duo qui fait le « wow » ET nourrit le foil.
+- **Fond lumineux obligatoire** : ciel, enseigne, brasier, neige éclairée, colonne de transfert —
+  jamais de noir plein cadre.
+- Le noir reste dans la silhouette du sujet (le suit) : le contraste sujet sombre / fond lumineux
+  remplace le dark global.
+
+**Bloc de style v3.2** :
+```
+1990s retro anime film still, hand-drawn cel animation look, rich vivid colors, complementary color lighting, luminous background, subtle film grain
+```
+
+### Re-tests couleur (3 prompts)
+
+**V1 — Viktor, golden hour (teal/orange)**
+```
+young russian traveler in a sleek black biotech suit standing on a rooftop edge at golden hour, hands in pockets, insolent grin, glowing orange sunset sky over a teal-shadowed 2049 tokyo skyline, faint orange glow from his calf conduits, 1990s retro anime film still, hand-drawn cel animation look, rich vivid colors, complementary color lighting, luminous background, subtle film grain --no text, watermark
+```
+
+**V2 — KAIROS, néon rouge sous la pluie (rouge/cyan)**
+```
+masked kairos operative standing under a bright red neon sign in a rainy alley at night, red light flooding the wet street, cool cyan reflections in the puddles, red conduits glowing through his black coat, 1990s retro anime film still, hand-drawn cel animation look, rich vivid colors, complementary color lighting, luminous background, subtle film grain --no text, watermark
+```
+
+**V3 — éclaireuse 1888, gaz et crépuscule (ambre/bleu)**
+```
+female scout in a sleek dark biotech suit in a 19th century parisian construction site at dusk, warm amber gaslights glowing through blue evening fog, scaffolding silhouettes against a luminous violet sky, blue light lines on her suit, 1990s retro anime film still, hand-drawn cel animation look, rich vivid colors, complementary color lighting, luminous background, subtle film grain --no eiffel tower, text, watermark
+```
+
+Dépôt : `drop/_tests/` → `v1.png` … `v3.png`.
+
 ---
 
 ## ROUND 1 (rejeté — archive)
