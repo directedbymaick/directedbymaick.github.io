@@ -334,6 +334,26 @@ female scout in a sleek biotech suit with glossy panels standing on wooden scaff
 
 Dépôt : `drop/_tests/` → `r1.png` … `r3.png`. Si validé → réécriture des 60 en v5.
 
+### v5.1 — Le suit : futuriste, jamais chevalier
+
+Dérive constatée : le moodboard LoL tire vers l'armure fantasy (plates brillantes, métal poli,
+ornements). Le token « glossy suit panels » (v4.1) aggravait. Références suit :
+**Alita Battle Angel, Iron Man noir, Batman mécanique** — armure high-tech segmentée, mate,
+mécanique, moulante.
+
+**Descripteur de suit standard** (remplace toute mention de suit dans les prompts) :
+```
+sleek matte black high-tech exosuit, segmented mechanical armor plates like alita battle angel, carbon fiber texture, fitted silhouette, subtle glowing seams, semi-matte sheen catching colored light
+```
+
+**Négatif standard étendu** (tous les prompts avec personnage en suit) :
+```
+--no medieval knight armor, fantasy armor, shiny silver plate armor, ornate gold trim, cape
+```
+
+R1–R3 : remplacer « sleek black biotech suit with glossy panels » par le descripteur ci-dessus
+et ajouter le négatif étendu. Le reste ne bouge pas.
+
 ---
 
 ## ROUND 1 (rejeté — archive)
