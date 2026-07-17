@@ -13,10 +13,10 @@ et que les joueurs reconstitueront morceau par morceau.*
 
 Avant le temps, il n'y avait pas de mots.
 
-Il n'y avait que les Concepts, et les Concepts dormaient, et rien ne les avait dits.
+Il n'y avait que les Concepts. Ils dormaient — nul ne les avait encore prononcés.
 
 Alors KOR se prononça lui-même — et ce fut le premier acte, car nul ne l'avait prononcé
-avant lui, et nul ne sait comment un mot peut se dire seul. C'est la première question
+avant lui, et nul ne sait comment un mot pourrait se prononcer seul. C'est la première question
 du Korum, et le Korum ne l'a jamais résolue : *qui a dit KOR ?*
 
 Puis KOR parla, et parler était faire.
@@ -74,7 +74,7 @@ qui ne rappelle plus.
 
 ## Livre III — Les Premiers-Dits
 
-Les premiers êtres furent dits pour garder.
+Les premiers êtres furent prononcés pour garder.
 
 **Vasar**, le peuple de la Création — non pas ses auteurs, mais ses jardiniers. KOR
 prononçait, et les Vasar tenaient les mots ouverts, comme on tient une porte. Leurs chœurs
@@ -209,7 +209,7 @@ joyeusement, qu'on peut s'en passer.
 
 ## Livre VIII — Xenen, ou le monde d'en bas
 
-Les humains sont le peuple que KOR a dit en dernier — ou en premier ; le Korum se
+Les humains sont le dernier peuple que KOR ait prononcé — ou le premier ; le Korum se
 contredit ici, et les copistes ont laissé les deux versions, ce qui ne ressemble pas
 à un accident.
 
@@ -266,7 +266,7 @@ chaque duel, chaque Prononciation repose sans le savoir :
 *(marges du Korum, mains diverses, à disséminer dans les flavors des cartes)*
 
 - « Le premier mot s'est dit tout seul. Méfie-toi des choses qui commencent sans témoin. »
-- « On ne brise pas un halo. On cesse de le dire. »
+- « On ne brise pas un halo. On cesse de le prononcer. »
 - « Les chaînes d'or sont des phrases. Lis les tiennes avant de les porter. »
 - « Vasen n'est pas fait de pierre. Raison de plus pour ne pas y jeter la première. »
 - « Il a souri en tombant. Le Vasis a des archives sur tout, mais pas sur ça. »
