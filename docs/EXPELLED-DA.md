@@ -59,7 +59,25 @@ cercle pâle, espace négatif généreux. Le pôle « peinture dense » (X1, mag
 - **G4** (densité légendaire, violet/or) : ✅ — halo BRISÉ en fragments, chaînes d'or, craquelures
   incandescentes : dense mais indiscutablement le même monde graphique. **La hiérarchie par densité fonctionne.**
 
-**→ DA VALIDÉE COMPLÈTE.** Prochaine étape : atelier histoire.
+**→ DA VALIDÉE COMPLÈTE.**
+
+## Les KITS de génération (VALIDÉS — tests combinatoires P1-P4 × C1-C10)
+
+La bibliothèque étant mono-style, les combos de refs ne changent pas le style — ils changent
+la **palette et l'émotion**. La production fonctionne par kits de 3 refs, un kit par peuple
+(mapping lore : EXPELLED-LORE.md §III) :
+
+| Kit | Peuple | Refs | Palette |
+|---|---|---|---|
+| SACRÉ | **Vasar** | noir-or + alanguie + ange-mécanique | ors, ivoires, cathédrales |
+| MENACE | **Exar** | vampire + scène-rouge + noir-or | rouges, os, coulures |
+| SPECTRE | **Eshar** | globe-fleurs + papillon-violet + raven | violets, lunes, brumes |
+| EXIL | **Morar** | ange-branche + zero-zero + poteau | pastels, streetwear |
+| SOLEIL | **Velar** | motarde-king + ange-mécanique + batteuse | ors francs, plein jour |
+
+Hybrides (personnages entre deux camps) : mixer deux kits. `--sw 200` partout.
+Écartées du moteur principal : corbeaux + lanternes + sorcière-lapin = **sref des arts
+alternatifs premium** ; Lucy = référence design cadre/UI, jamais en génération.
 
 ## À faire après validation G1-G4
 
