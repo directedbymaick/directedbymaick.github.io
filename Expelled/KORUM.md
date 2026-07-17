@@ -62,8 +62,8 @@ C'est pourquoi le halo n'est pas une récompense, ni une couronne, ni un honneur
 
 Le halo est une phrase en cours.
 
-Qu'on cesse de vous prononcer — et le cercle ternit. Qu'on vous retranche du monde — et il
-se fêle. Qu'on vous mette *hors* — et il se brise, et les fragments d'or tombent avec vous.
+Un nom qu'on ne prononce plus se ternit, et son halo avec lui. Un nom retranché se fêle.
+Un nom banni se brise — et les fragments d'or tombent avec celui qui le portait.
 
 Les Vasar disent : le halo est la preuve que KOR nous aime.
 Les Exar disent : le halo est la laisse.
@@ -81,11 +81,11 @@ prononçait, et les Vasar tenaient les mots ouverts, comme on tient une porte. L
 répétaient les Concepts sans fin, et le monde, entendant son propre nom, continuait d'exister.
 
 Ils bâtirent **Vasen**, le domaine d'en haut — des cathédrales dont les rosaces sont des
-glyphes, des tours dont chaque pierre porte une syllabe. Vasen n'est pas fait de pierre :
-Vasen est fait de grammaire.
+glyphes, des tours dont chaque pierre porte une syllabe. Car Vasen n'est pas vraiment fait de pierre :
+il est fait de grammaire, et la pierre n'y est qu'une manière de tenir les mots.
 
 Et ils fondèrent le **Vasis**, l'ordre-tribunal, pour que la récitation ne dévie jamais.
-Le Korum note, sans commentaire, que le Vasis fut créé avant qu'il existât la moindre
+Le Korum note, sans commentaire, que le Vasis fut créé avant même qu'existe la moindre
 déviation. Les Vasar avaient inventé le juge avant la faute.
 
 La faute est venue. Elle vient toujours, quand le juge attend.
