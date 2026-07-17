@@ -8,6 +8,7 @@ technique (il sera archivé sous le tag git `travelers-legacy`).*
 
 | Fichier | Contenu |
 |---|---|
+| **[KORUM.md](KORUM.md)** | **Le Silmarillion d'Expelled** — le livre mythologique lui-même, en neuf Livres + Fragments (source des flavors de cartes et du lore à décoder par les joueurs). |
 | **[LORE.md](LORE.md)** | Le lore fondateur : la Langue Première (canon Maïck v0.1), la Fracture, les 5 peuples, la mécanique Prononcer, le lexique, les décisions arbitrées. |
 | **[DA.md](DA.md)** | La direction artistique : analyse des références, les 7 invariants, le style validé, la bibliothèque des 19 refs, **les 5 kits de génération** (un par peuple), le journal des tests MJ. |
 | **[SET01.md](SET01.md)** | Le set 01 « Le Silence » : composition 22/22/6/5/5, vocabulaire de jeu, identités de gameplay, barème, protocole de production. |
