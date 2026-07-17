@@ -65,7 +65,7 @@ cercle pâle, espace négatif généreux. Le pôle « peinture dense » (X1, mag
 
 La bibliothèque étant mono-style, les combos de refs ne changent pas le style — ils changent
 la **palette et l'émotion**. La production fonctionne par kits de 3 refs, un kit par peuple
-(mapping lore : EXPELLED-LORE.md §III) :
+(mapping lore : LORE.md §III) :
 
 | Kit | Peuple | Refs | Palette |
 |---|---|---|---|

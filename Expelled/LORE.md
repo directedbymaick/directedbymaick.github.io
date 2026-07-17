@@ -1,6 +1,6 @@
 # EXPELLED — Lore fondateur (v1)
 
-*Développé à partir du document de Maïck « The First Language of Expelled v0.1 » (canon) et de la DA validée (EXPELLED-DA.md). La Langue Première n'est pas un habillage : c'est la physique de cet univers, la grammaire du jeu et le système de nommage de toutes les cartes.*
+*Développé à partir du document de Maïck « The First Language of Expelled v0.1 » (canon) et de la DA validée (DA.md). La Langue Première n'est pas un habillage : c'est la physique de cet univers, la grammaire du jeu et le système de nommage de toutes les cartes.*
 
 ---
 
@@ -74,7 +74,7 @@ Les expulsés portent leur sentence sur eux :
 ## III. Les cinq peuples (= les cinq kits visuels)
 
 *Jamais « anges » ni « démons ». Chaque peuple porte le nom de sa fonction cosmique.
-Chaque peuple EST un kit de génération (EXPELLED-DA.md) : sa palette est son identité.*
+Chaque peuple EST un kit de génération (DA.md) : sa palette est son identité.*
 
 ### VASAR — les Gardiens de la Création
 **Racine VAS · Kit SACRÉ (ors, ivoires, cathédrales de lumière)**

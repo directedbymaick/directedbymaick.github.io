@@ -25,7 +25,7 @@ Raretés : 26 communes · 16 rares · 10 épiques · 6 légendaires · 2 prismat
 - **Intégrité (XEN)** — les points de vie (unités et Trône/Centrale → nom à fixer : le **Korum** ?).
 - **Être** — carte unité. **Verbe** — carte sort/effet (un Concept prononcé et consumé).
 - **Prononcer (n)** — la mécanique signature : effet one-shot, carte exilée définitivement,
-  halo brisé à l'écran (cf. EXPELLED-LORE.md §IV).
+  halo brisé à l'écran (cf. LORE.md §IV).
 - Mots-clés hérités à rethématiser : Garde → **Serment** ? Célérité → **Élan** ? (à fixer avec les règles.)
 
 ## Identités de gameplay
@@ -47,7 +47,7 @@ Effets : pioche = 2 pts · X dégâts = X pts · AoE = 2.5×X · mot-clé simple
 
 ## Production artistique
 
-Formule EXPELLED-DA.md : kit du peuple en `--sref` (`--sw 200`), prompt ≤ 40 mots
+Formule DA.md : kit du peuple en `--sref` (`--sw 200`), prompt ≤ 40 mots
 (sujet + symboles + cercle/halo + palette du kit), `--no text, watermark`.
 Full art systématique : sujet dans les 55 % supérieurs. Raretés par densité d'ornement.
 Alts premium : sref peinture (corbeaux + lanternes + sorcière), toujours foil.
