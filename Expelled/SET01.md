@@ -245,7 +245,7 @@ conceptuelle). Les accroches renvoient au KORUM.*
 
 | Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
 |---|---|---|---|---:|---|---|
-| V01 | Choriste de Vasen | Être | C | 1 | Petite unité de début de partie (1 ATQ / 2 Intégrité). | Une des mille voix qui tiennent le monde ouvert. |
+| V01 | Choriste de Vasen | Être | C | 1 | Sans effet. 1 ATQ / 2 Intégrité. | Une des mille voix qui tiennent le monde ouvert. |
 | V02 | Copiste des registres | Être | C | 2 | Quand il entre en jeu : vous piochez une carte. | Il note les noms. Tous les noms. |
 | V03 | Porte-syllabe | Être | C | 2 | Quand elle entre en jeu : un autre de vos Êtres gagne +1/+1. | Elle livre les mots aux chœurs, sans jamais les lire. |
 | V04 | Gardien des lignes | Être | C | 3 | Serment : l'ennemi doit l'attaquer lui avant vos autres cibles. | Chaque chose à la place où KOR l'a dite. |
@@ -254,10 +254,10 @@ conceptuelle). Les accroches renvoient au KORUM.*
 | V07 | Récitation | Verbe | C | 2 | Tous vos Êtres gagnent +0/+2. | Le monde, entendant son nom, continue d'exister. |
 | V08 | Appel à l'ordre | Verbe | C | 3 | Renvoie un Être en main : un allié pour le rejouer, ou un ennemi pour le retarder. | La ligne se referme. |
 | V09 | Chant d'aube | Verbe | C | 1 | Soigne 2 Intégrité et vous piochez une carte. | Le premier vers du jour est toujours juste. |
-| V10 | Novice du Vasis | Être | C | 1 | Unité simple et agressive (2 ATQ / 1 Intégrité). | Un juge de plus. On riait, aux premiers jours. |
+| V10 | Novice du Vasis | Être | C | 1 | Sans effet. 2 ATQ / 1 Intégrité. | Un juge de plus. On riait, aux premiers jours. |
 | V11 | Chef de chœur | Être | R | 3 | Vos autres Êtres Vasar gagnent +1 ATQ tant qu'il est en jeu. | La mesure avant la beauté. |
 | V12 | Juge de cercle | Être | R | 4 | Chaque Prononcer adverse coûte 1 Volonté de plus. | La loi s'élargit toujours. |
-| V13 | Aile de la loi | Être | R | 5 | Grand mur défensif (2 ATQ / 7 Intégrité) avec Serment. | L'Ordre a des ailes, et elles ne plient pas. |
+| V13 | Aile de la loi | Être | R | 5 | Serment. 2 ATQ / 7 Intégrité. | L'Ordre a des ailes, et elles ne plient pas. |
 | V14 | Sentence d'or | Verbe | R | 3 | Enchaîne un Être adverse : il est neutralisé pour le reste de la partie. | Chaque maillon est un mot du verdict. |
 | V15 | Les Tours de grammaire | Lieu | R | 3 | Tant que ce Lieu est actif, vos Verbes coûtent 1 Volonté de moins. | Koren y monte seul, la nuit, mesurer l'élan. |
 | V16 | La Première Chaîne | Relique | R | 2 | S'attache à un Être adverse : il ne peut plus attaquer. | Celle de Rasen. Revenue de l'envers — nul ne sait comment. |
@@ -272,11 +272,11 @@ conceptuelle). Les accroches renvoient au KORUM.*
 
 | Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
 |---|---|---|---|---:|---|---|
-| X01 | Banni de fraîche date | Être | C | 1 | Attaquant rapide et fragile (2 ATQ / 1 Intégrité). | Sa chaîne est encore chaude. |
-| X02 | Porteur de chaîne | Être | C | 2 | Frappe fort, encaisse mal (3 ATQ / 1 Intégrité). | Le poids ne l'a pas plié. Il l'a aiguisé. |
+| X01 | Banni de fraîche date | Être | C | 1 | Sans effet. 2 ATQ / 1 Intégrité. | Sa chaîne est encore chaude. |
+| X02 | Porteur de chaîne | Être | C | 2 | Sans effet. 3 ATQ / 1 Intégrité. | Le poids ne l'a pas plié. Il l'a aiguisé. |
 | X03 | Halo renversé | Être | C | 2 | Gagne +1/+1 chaque fois qu'une carte alliée est détruite. | Une bannière prise à l'ennemi. |
-| X04 | Griffe de l'envers | Être | C | 3 | Unité d'échange solide (3 ATQ / 3 Intégrité). | L'envers du monde a des mains. |
-| X05 | Marquée du trait | Être | C | 3 | Très forte (4 ATQ / 2 Intégrité) mais se blesse d'1 point en attaquant. | La marée noire s'est retirée. La ligne est restée. |
+| X04 | Griffe de l'envers | Être | C | 3 | Sans effet. 3 ATQ / 3 Intégrité. | L'envers du monde a des mains. |
+| X05 | Marquée du trait | Être | C | 3 | 4 ATQ / 2 Intégrité. Se blesse d'1 point quand elle attaque. | La marée noire s'est retirée. La ligne est restée. |
 | X06 | Rompre | Verbe | C | 2 | Inflige 2 dégâts à une cible. | Un mot suffit. |
 | X07 | Messe basse | Verbe | C | 1 | Vous piochez une carte. | Dehors, on prêche à voix basse. |
 | X08 | Écho du dixième mot | Verbe | C | 3 | Sacrifiez un de vos Êtres : vous piochez 2 cartes. | Il résonne encore. Il résonnera toujours. |
@@ -285,10 +285,10 @@ conceptuelle). Les accroches renvoient au KORUM.*
 | X11 | Prêcheuse de la question | Être | R | 3 | Vos Prononcer coûtent 1 Volonté de moins. | Elle pose la question de Rasen aux foules. |
 | X12 | Briseuse de cercles | Être | R | 4 | Quand elle entre en jeu : détruit une Relique ou un Lieu adverse. | Les cercles aussi peuvent se briser. |
 | X13 | Couronne d'os | Relique | R | 3 | S'attache à un de vos Êtres : il gagne +2/+1. | Le premier roi du dehors n'a pas eu droit à l'or. |
-| X14 | Apôtre de l'envers | Être | R | 5 | Grosse menace à gérer vite (5 ATQ / 4 Intégrité). | Il a appris à aimer la chute. C'est le plus dangereux. |
+| X14 | Apôtre de l'envers | Être | R | 5 | Sans effet. 5 ATQ / 4 Intégrité. | Il a appris à aimer la chute. C'est le plus dangereux. |
 | X15 | Sentence retournée | Verbe | R | 3 | Libère un de vos Êtres neutralisé ou enchaîné, et il gagne +1/+1. | Lisez la vôtre, avant de la porter. |
 | X16 | Clameur d'Exen | Verbe | R | 2 | Un de vos Êtres gagne +2 ATQ jusqu'à la fin du tour. | L'envers a aussi ses chœurs. |
-| X17 | Bouche de l'Abîme | Être | E | 6 | Grosse unité. Prononcer (3) : inflige 5 dégâts, répartis comme vous voulez. | Elle prononce pour ceux qui n'osent pas. |
+| X17 | Bouche de l'Abîme | Être | E | 6 | Prononcer (3) : inflige 5 dégâts, répartis comme vous voulez. | Elle prononce pour ceux qui n'osent pas. |
 | X18 | Finir la phrase | Verbe | E | 5 | Inflige 3 dégâts à tous les Êtres adverses. | La dernière syllabe est la plus lourde. |
 | X19 | La Première Armée | Verbe | E | 6 | Invoque trois Bannis (jetons 2/1). | Levée par son propre juge. |
 | X20 | Exen, l'Envers | Lieu | L | 5 | Chaque fois que vous sacrifiez un Être : vous piochez une carte. | Bâti là où le monde ne se regarde pas. |
@@ -299,7 +299,7 @@ conceptuelle). Les accroches renvoient au KORUM.*
 
 | Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
 |---|---|---|---|---:|---|---|
-| E01 | Écho à visage | Être | C | 2 | Défenseur (1 ATQ / 3 Intégrité). Quand il entre en jeu : regardez la carte du dessus de votre deck. | Il te ressemble un peu trop. |
+| E01 | Écho à visage | Être | C | 2 | 1 ATQ / 3 Intégrité. Quand il entre en jeu : regardez la carte du dessus de votre deck. | Il te ressemble un peu trop. |
 | E02 | Ramasseuse de syllabes | Être | C | 3 | Quand elle entre en jeu : récupérez une carte de votre défausse dans votre main. | Tout se garde. Surtout ce qui tombe. |
 | E03 | Brume mémorielle | Verbe | R | 2 | Regardez les 3 prochaines cartes de votre deck, piochez-en une. | La brume se souvient à ta place. |
 | E04 | Collecteur d'exil | Être | R | 4 | Quand il entre en jeu : récupérez une carte exilée. La seule carte du set capable de cela. | Il sait ce qu'on peut faire d'un nom entier. |
@@ -320,11 +320,11 @@ conceptuelle). Les accroches renvoient au KORUM.*
 
 | Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
 |---|---|---|---|---:|---|---|
-| S01 | Plongeuse du bord | Être | C | 2 | Élan : peut attaquer dès le tour où elle arrive (2 ATQ / 1 Intégrité). | Le bord du monde est un plongeoir. |
+| S01 | Plongeuse du bord | Être | C | 2 | Élan (peut attaquer dès son arrivée). 2 ATQ / 1 Intégrité. | Le bord du monde est un plongeoir. |
 | S02 | Brûler le jour | Verbe | C | 3 | Inflige 3 dégâts directement au Korum adverse (le joueur). | La journée est une torche. Autant l'allumer. |
-| S03 | Rieur en chute libre | Être | R | 3 | Élan (3 ATQ / 2 Intégrité). | On l'a entendu rire avant de le voir. |
+| S03 | Rieur en chute libre | Être | R | 3 | Élan. 3 ATQ / 2 Intégrité. | On l'a entendu rire avant de le voir. |
 | S04 | Le Bord du monde | Lieu | E | 4 | Tous vos Êtres ont Élan. | Pas de garde-fou. Exprès. |
-| S05 | Velna, la Première à Sauter | Être | L | 6 | Élan (5 ATQ / 4 Intégrité). Gagne +1 ATQ pour chaque autre allié avec Élan. | « Tu tiens la porte d'une maison vide. » |
+| S05 | Velna, la Première à Sauter | Être | L | 6 | Élan. 5 ATQ / 4 Intégrité. Gagne +1 ATQ pour chaque autre allié avec Élan. | « Tu tiens la porte d'une maison vide. » |
 
 ---
 
