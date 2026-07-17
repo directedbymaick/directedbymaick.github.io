@@ -50,8 +50,16 @@ cercle pâle, espace négatif généreux. Le pôle « peinture dense » (X1, mag
 
 - **X1** (ange déchu, sref SET-A peinture, sw 200) : ✅ magnifique mais « du Riot » → réservé aux alts premium.
 - **X2** (même sujet, sref SET-B graphique, sw 200) : ✅ VALIDÉ comme style du set. Streetwear émergent.
-- **G1-G4** (en cours) : couverture des archétypes en style verrouillé — démone pop, esprit masqué,
-  sainte corrompue, densité légendaire.
+- **G1** (démone pop, halftone orange) : ✅ — cornes, peluche, chaînes, cercle halftone. MJ génère
+  spontanément des **bordures de cadre** dans l'image (écho « carte comme édition » — à assumer ou cropper).
+- **G2** (esprit masqué, cramoisi) : ✅ — la couleur-âme saturée tient en flat, masque kitsune + colombe
+  + lune pâle + pétales. Variante masculine naturelle.
+- **G3** (sainte corrompue, ivoire) : ✅ — probablement le sommet du lot : marquages noirs organiques,
+  halo fin, rosace, silhouettes de mode structurées. L'archétype « figures anciennes en drapés » est prouvé.
+- **G4** (densité légendaire, violet/or) : ✅ — halo BRISÉ en fragments, chaînes d'or, craquelures
+  incandescentes : dense mais indiscutablement le même monde graphique. **La hiérarchie par densité fonctionne.**
+
+**→ DA VALIDÉE COMPLÈTE.** Prochaine étape : atelier histoire.
 
 ## À faire après validation G1-G4
 
