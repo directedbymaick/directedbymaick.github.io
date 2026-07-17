@@ -62,8 +62,9 @@ C'est pourquoi le halo n'est pas une récompense, ni une couronne, ni un honneur
 
 Le halo est une phrase en cours.
 
-Un nom qu'on ne prononce plus se ternit, et son halo avec lui. Un nom retranché se fêle.
-Un nom banni se brise — et les fragments d'or tombent avec celui qui le portait.
+Un nom qu'on ne prononce plus se ternit, et son halo ternit avec lui. Un nom retranché
+se fêle, et le cercle se fêle avec. Un nom banni se brise — alors le halo vole en éclats,
+et ses fragments d'or tombent avec celui qui le portait.
 
 Les Vasar disent : le halo est la preuve que KOR nous aime.
 Les Exar disent : le halo est la laisse.
