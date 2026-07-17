@@ -29,8 +29,7 @@ Dans Expelled, **les mots ne décrivent pas la réalité : ils la créent.**
 - Mots **courts, durs, mémorisables** — 3 syllabes maximum. Imprimables sur une carte.
 - Sonorités privilégiées : Kor, Dor, Xen, Vas, Ren, Tal, Nor, Sen, Vel, Ex, Mor.
 - **Interdits** (fantasy classique) : Ae, Yth, Iel, Khar, Dra, Vor, Umbra.
-  - ⚠ Arbitrage en attente : « Voren » figure dans les exemples de style mais « Vor » dans les interdits.
-    En attendant, le canon évite les dérivés de Vor-.
+  - Arbitrage rendu : **Vor- banni intégralement**, dérivés compris (« Voren » retiré du canon).
 - **Suffixes fonctionnels** : `-ar` peuple · `-an` individu · `-is` ordre · `-um` essence · `-en` domaine.
 - **Règle d'or** : chaque nom doit répondre à « quelle est sa racine conceptuelle ? ».
   Le lecteur ne le saura peut-être jamais — mais il le *sentira*.
@@ -122,13 +121,13 @@ Les cinq peuples surveillent ces accidents. Chacun pour ses raisons.
 
 ---
 
-## IV. La mécanique signature — Prononcer l'EX
+## IV. La mécanique signature — Prononcer
 
-Héritière directe de l'ADN « one-shot définitif » (ex-Synchro, ex-briser-son-halo) :
+Héritière directe de l'ADN « one-shot définitif » (ex-Synchro). Mot d'interface : **Prononcer**.
 
-> **EX (n)** : payez n de Volonté, prononcez l'EX — l'effet se déclenche, et la carte est
-> **exilée définitivement** (hors du duel, hors du deck). Une fois par carte. Le halo de
-> l'illustration se brise à l'activation (état visuel foil).
+> **Prononcer (n)** : payez n de Volonté — l'être prononce l'EX, l'effet se déclenche, et la
+> carte est **exilée définitivement** (hors du duel, hors du deck). Une fois par carte.
+> Le halo de l'illustration se brise à l'activation (état visuel foil).
 
 Prononcer le mot impossible donne un pouvoir que rien d'autre n'égale — et vous met *hors*.
 Chaque activation est le mythe fondateur rejoué en miniature. Les Vasar l'interdisent (et
@@ -146,17 +145,21 @@ Xenar/Xenan/Xenen.
 **Banque de noms de personnages** (style canon — racine reconnaissable, ≤3 syllabes) :
 Koren · Dasen · Velor · Xeran · Moras · Thalen · Rasen · Korven · Noren · Eshel · Doran ·
 Velna · Morek · Thessa (THA+ESH) · Exil-noms (les bannis renommés) : Exan-Kor, Exved…
+(« Voren » retiré — Vor- banni.)
 
 **Titres/objets types** : le Vasis (l'ordre-tribunal) · les Korum (reliques : essence d'origine) ·
 un Thaen (champ de duel) · le Nerum (réserve de volonté).
 
 ---
 
-## VI. Questions ouvertes (arbitrages Maïck)
+## VI. Décisions structurantes (arbitrées)
 
-1. **Vor/Voren** : interdit ou toléré ? (contradiction du doc v0.1)
-2. **Cinq factions jouables** (modèle 5 couleurs MTG) ou 2 majeures + 3 mineures ?
-3. KOR silencieux : garde-t-on le mystère absolu (recommandé) ou un plan de retour dans les sets futurs ?
-4. Nom de la mécanique sur carte : « **EX (n)** » sec, ou un mot d'interface (« Prononcer », « Rupture ») ?
-5. Le set 01 : quel angle ? (proposition : **« Le Silence »** — le moment juste après la Fracture,
-   les premières expulsions, chaque peuple en train de devenir ce qu'il est.)
+1. **Vor- banni intégralement** (dérivés compris). Les interdits phonétiques sont sans exception.
+2. **Deux factions majeures : VASAR et EXAR** (l'axe dramatique de la Fracture — les deux decks
+   jouables du set 01). **Trois mineures : ESHAR, MORAR, VELAR** (pool de renfort, à la manière
+   des couleurs d'appoint — chacune spliceable dans les decks majeurs).
+3. **KOR reste un mystère absolu.** Aucun plan de retour écrit. Son silence est le décor permanent.
+4. Mot d'interface de la mécanique : **« Prononcer (n) »**.
+5. **Set 01 : « Le Silence »** — le moment juste après la Fracture : les premières expulsions,
+   chaque peuple en train de devenir ce qu'il est. Les cartes racontent des *premières fois*
+   (premier halo brisé, première sentence, premier Morar à sourire en tombant).
