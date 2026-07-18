@@ -67,6 +67,9 @@
 		{@render children()}
 	</main>
 
+	<!-- grain de pellicule : unifie toutes les surfaces, très discret -->
+	<div class="grain" aria-hidden="true"></div>
+
 	<footer>
 		<p>{charter.game.tagline}</p>
 	</footer>
@@ -167,9 +170,29 @@
 		box-sizing: border-box;
 	}
 
+	.grain {
+		position: fixed;
+		inset: 0;
+		z-index: 200;
+		pointer-events: none;
+		opacity: 0.05;
+		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+		background-size: 240px 240px;
+	}
+
 	footer {
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
-		padding: 2.4rem 2rem 3rem;
+		position: relative;
+		padding: 5rem 2rem 3rem;
+	}
+	/* jamais de coupure nette : le footer se fond dans la page */
+	footer::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 20%;
+		right: 20%;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, rgba(201, 164, 69, 0.35), transparent);
 	}
 	footer p {
 		max-width: 1240px;
