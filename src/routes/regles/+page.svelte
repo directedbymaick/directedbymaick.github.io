@@ -137,19 +137,18 @@
 
 <style>
 	.hero {
-		margin: 1rem 0 3rem;
+		margin: 4rem 0 4rem;
 	}
 	.kicker {
 		display: flex;
 		align-items: center;
 		gap: 0.55rem;
-		margin: 0 0 0.6rem;
-		font-family: Cinzel, Georgia, serif;
+		margin: 0 0 1rem;
 		font-size: 0.78rem;
 		font-weight: 600;
-		letter-spacing: 0.28em;
+		letter-spacing: 0.3em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.55);
+		color: rgba(242, 240, 234, 0.4);
 	}
 	.k-diamond {
 		color: #c9a445;
@@ -157,42 +156,38 @@
 	}
 	h1 {
 		margin: 0;
-		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
-		font-size: clamp(3rem, 8vw, 5.6rem);
-		line-height: 0.9;
-		text-transform: uppercase;
+		font-size: clamp(2.8rem, 6.5vw, 4.6rem);
+		letter-spacing: -0.03em;
+		line-height: 1;
 	}
 	.tagline {
-		margin: 1rem 0 0;
+		margin: 1.2rem 0 0;
 		max-width: 60ch;
-		color: rgba(236, 232, 225, 0.65);
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: rgba(242, 240, 234, 0.55);
 	}
 
 	section {
-		margin-bottom: 3.2rem;
+		margin-bottom: 4.2rem;
 	}
 	h2 {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
-		margin: 0 0 1.6rem;
+		gap: 1.2rem;
+		margin: 0 0 1.8rem;
 	}
 	.tab {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 1rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: #0c0a13;
-		background: #ece8e1;
-		padding: 0.42rem 1.15rem 0.38rem;
-		border-radius: 999px;
+		font-size: 1.15rem;
+		font-weight: 650;
+		letter-spacing: 0.01em;
+		white-space: nowrap;
 	}
 	.rule {
 		flex: 1;
 		height: 1px;
-		background: rgba(236, 232, 225, 0.15);
+		background: rgba(255, 255, 255, 0.07);
 	}
 
 	.grid {
@@ -201,33 +196,34 @@
 		gap: 1rem;
 	}
 	.block {
-		padding: 1.1rem 1.2rem;
-		background: rgba(236, 232, 225, 0.045);
-		border-left: 3px solid #c9a445;
+		padding: 1.3rem 1.4rem;
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 16px;
 	}
 	.block h3 {
-		margin: 0 0 0.4rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.95rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
+		margin: 0 0 0.45rem;
+		font-size: 0.98rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 	}
 	.block p {
 		margin: 0 0 0.4rem;
-		line-height: 1.5;
-		color: rgba(236, 232, 225, 0.78);
-		font-size: 0.95rem;
+		line-height: 1.55;
+		color: rgba(242, 240, 234, 0.65);
+		font-size: 0.92rem;
 	}
 	.block.faction {
-		border-left-color: var(--fc);
+		border-top: 2px solid var(--fc);
 	}
 	.sigil {
 		color: var(--fc);
 	}
 	.ftag {
+		font-family: 'Cormorant Garamond', Georgia, serif;
 		font-style: italic;
-		color: rgba(236, 232, 225, 0.55);
+		font-size: 1.02rem;
+		color: rgba(242, 240, 234, 0.5);
 	}
 
 	.keywords {
@@ -237,49 +233,49 @@
 		gap: 0.8rem;
 	}
 	.keywords div {
-		padding: 0.8rem 1rem;
-		background: rgba(236, 232, 225, 0.045);
+		padding: 1rem 1.2rem;
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 14px;
 	}
 	.keywords dt {
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		font-size: 0.85rem;
+		font-weight: 600;
+		font-size: 0.88rem;
 		color: #c9a445;
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.3rem;
 	}
 	.keywords dd {
 		margin: 0;
-		font-size: 0.92rem;
-		line-height: 1.45;
-		color: rgba(236, 232, 225, 0.75);
+		font-size: 0.9rem;
+		line-height: 1.5;
+		color: rgba(242, 240, 234, 0.65);
 	}
 
 	table {
 		width: 100%;
 		border-collapse: collapse;
-		font-size: 0.95rem;
+		font-size: 0.92rem;
 	}
 	th,
 	td {
 		text-align: left;
-		padding: 0.55rem 0.8rem;
-		border-bottom: 1px solid rgba(236, 232, 225, 0.12);
+		padding: 0.65rem 0.8rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 	}
 	th {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.78rem;
-		letter-spacing: 0.16em;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.55);
+		color: rgba(242, 240, 234, 0.4);
 	}
 	code {
+		font-family: inherit;
 		color: #c9a445;
 	}
 	.note {
-		margin: 1.2rem 0 0;
-		color: rgba(236, 232, 225, 0.55);
-		font-size: 0.92rem;
+		margin: 1.4rem 0 0;
+		color: rgba(242, 240, 234, 0.45);
+		font-size: 0.9rem;
 	}
 </style>

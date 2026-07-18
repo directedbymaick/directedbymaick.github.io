@@ -166,19 +166,18 @@
 
 <style>
 	.hero {
-		margin: 1rem 0 2.4rem;
+		margin: 4rem 0 3rem;
 	}
 	.kicker {
 		display: flex;
 		align-items: center;
 		gap: 0.55rem;
-		margin: 0 0 0.6rem;
-		font-family: Cinzel, Georgia, serif;
+		margin: 0 0 1rem;
 		font-size: 0.78rem;
 		font-weight: 600;
-		letter-spacing: 0.28em;
+		letter-spacing: 0.3em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.55);
+		color: rgba(242, 240, 234, 0.4);
 	}
 	.k-diamond {
 		color: #c9a445;
@@ -186,40 +185,39 @@
 	}
 	h1 {
 		margin: 0;
-		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
-		font-size: clamp(3rem, 8vw, 5.6rem);
-		line-height: 0.9;
-		text-transform: uppercase;
+		font-size: clamp(2.8rem, 6.5vw, 4.6rem);
+		letter-spacing: -0.03em;
+		line-height: 1;
 	}
 	.tagline {
-		margin: 1rem 0 0;
+		margin: 1.2rem 0 0;
 		max-width: 56ch;
-		color: rgba(236, 232, 225, 0.65);
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: rgba(242, 240, 234, 0.55);
 	}
 	.colstat {
-		margin: 0.8rem 0 0;
-		font-family: Consolas, monospace;
+		margin: 1rem 0 0;
 		font-size: 0.85rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.45);
+		font-variant-numeric: tabular-nums;
+		color: rgba(242, 240, 234, 0.45);
 	}
 	.colstat-n {
 		color: #c9a445;
-		font-weight: 700;
+		font-weight: 650;
 	}
 
 	/* ---------- stage ---------- */
 	.stage {
 		position: relative;
-		margin-bottom: 3rem;
-		padding: 3rem 1.5rem;
+		margin-bottom: 4rem;
+		padding: 3.5rem 1.5rem;
 		background:
-			radial-gradient(60% 80% at 50% 30%, rgba(255, 180, 84, 0.07), transparent 70%),
-			radial-gradient(80% 60% at 50% 100%, rgba(194, 59, 78, 0.06), transparent 65%),
-			rgba(236, 232, 225, 0.02);
-		border: 1px solid rgba(236, 232, 225, 0.08);
+			radial-gradient(60% 80% at 50% 30%, rgba(201, 164, 69, 0.05), transparent 70%),
+			rgba(255, 255, 255, 0.025);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 24px;
 	}
 	.stage-inner {
 		display: flex;
@@ -229,11 +227,11 @@
 	}
 	.hint {
 		margin: 0;
-		font-family: Consolas, monospace;
-		font-size: 0.82rem;
-		letter-spacing: 0.28em;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.22em;
 		text-transform: uppercase;
-		color: rgba(255, 180, 84, 0.75);
+		color: rgba(201, 164, 69, 0.8);
 		animation: pulse 2.4s ease-in-out infinite;
 	}
 	@keyframes pulse {
@@ -264,12 +262,11 @@
 		}
 	}
 	.reveal-name {
-		margin: 0 0 0.5rem;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 800;
-		font-size: clamp(1.8rem, 4.5vw, 3rem);
-		line-height: 0.95;
-		text-transform: uppercase;
+		margin: 0 0 0.6rem;
+		font-weight: 750;
+		font-size: clamp(1.7rem, 4vw, 2.6rem);
+		letter-spacing: -0.02em;
+		line-height: 1;
 	}
 	.reveal-chips {
 		margin: 0;
@@ -279,23 +276,20 @@
 		flex-wrap: wrap;
 	}
 	.chip {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		padding: 0.3rem 0.7rem;
-		color: #0c0a13;
-		background: var(--tint, #ece8e1);
+		font-size: 0.78rem;
+		font-weight: 600;
+		padding: 0.3rem 0.8rem;
+		color: #0a0a0d;
+		background: var(--tint, #f2f0ea);
 		border-radius: 999px;
 	}
 	.chip.faction {
-		background: rgba(236, 232, 225, 0.1);
-		color: rgba(236, 232, 225, 0.85);
+		background: rgba(255, 255, 255, 0.08);
+		color: rgba(242, 240, 234, 0.85);
 	}
 	.chip.new {
 		background: #c9a445;
-		color: #ece8e1;
+		color: #0a0a0d;
 	}
 
 	.flipper {
@@ -351,48 +345,47 @@
 		justify-content: center;
 	}
 	.counter {
-		font-family: Consolas, monospace;
 		font-size: 0.85rem;
-		letter-spacing: 0.2em;
-		color: rgba(236, 232, 225, 0.5);
+		font-variant-numeric: tabular-nums;
+		color: rgba(242, 240, 234, 0.45);
 	}
 	.primary,
 	.ghost {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
+		font-family: inherit;
+		font-size: 0.88rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 		text-decoration: none;
-		padding: 0.6rem 1.3rem;
+		padding: 0.65rem 1.4rem;
 		border: none;
 		cursor: pointer;
 		border-radius: 999px;
+		transition:
+			background 0.18s ease,
+			color 0.18s ease;
 	}
 	.primary {
-		color: #0c0a13;
-		background: #ece8e1;
+		color: #0a0a0d;
+		background: #f2f0ea;
 	}
 	.primary:hover {
 		background: #c9a445;
-		color: #ece8e1;
 	}
 	.ghost {
-		color: rgba(236, 232, 225, 0.65);
-		background: rgba(236, 232, 225, 0.08);
+		color: rgba(242, 240, 234, 0.65);
+		background: rgba(255, 255, 255, 0.07);
 	}
 	.ghost:hover {
-		color: #ece8e1;
-		background: rgba(236, 232, 225, 0.15);
+		color: #f2f0ea;
+		background: rgba(255, 255, 255, 0.12);
 	}
 
 	/* ---------- recap ---------- */
 	.recap-title {
 		margin: 0;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 800;
-		font-size: clamp(1.6rem, 4vw, 2.4rem);
-		text-transform: uppercase;
+		font-weight: 750;
+		font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+		letter-spacing: -0.02em;
 	}
 	.recap-grid {
 		display: grid;
@@ -413,27 +406,22 @@
 		position: absolute;
 		top: -0.6rem;
 		z-index: 5;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		padding: 0.24rem 0.65rem;
-		color: #ece8e1;
+		font-size: 0.7rem;
+		font-weight: 650;
+		padding: 0.22rem 0.65rem;
+		color: #0a0a0d;
 		background: #c9a445;
 		border-radius: 999px;
 	}
 	.recap-link {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.72rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
+		font-size: 0.78rem;
+		font-weight: 550;
 		text-decoration: none;
-		color: rgba(236, 232, 225, 0.6);
+		color: rgba(242, 240, 234, 0.5);
+		transition: color 0.15s ease;
 	}
 	.recap-link:hover {
-		color: #ece8e1;
+		color: #f2f0ea;
 	}
 
 	/* ---------- odds ---------- */
@@ -447,20 +435,15 @@
 		margin: 0 0 1.4rem;
 	}
 	.tab {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 1rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: #0c0a13;
-		background: #ece8e1;
-		padding: 0.42rem 1.15rem 0.38rem;
-		border-radius: 999px;
+		font-size: 1.15rem;
+		font-weight: 650;
+		letter-spacing: 0.01em;
+		white-space: nowrap;
 	}
 	.rule {
 		flex: 1;
 		height: 1px;
-		background: rgba(236, 232, 225, 0.15);
+		background: rgba(255, 255, 255, 0.07);
 	}
 	.odds-grid {
 		display: grid;
@@ -468,17 +451,16 @@
 		gap: 1rem;
 	}
 	.odds-card {
-		padding: 1rem 1.2rem;
-		background: rgba(236, 232, 225, 0.045);
-		border-left: 3px solid #c9a445;
+		padding: 1.2rem 1.4rem;
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 16px;
 	}
 	.odds-slot {
 		margin: 0 0 0.7rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.85rem;
-		font-weight: 700;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
+		font-size: 0.95rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 	}
 	.odds-card ul {
 		margin: 0;
@@ -494,16 +476,16 @@
 		font-size: 0.9rem;
 	}
 	.odds-rarity {
-		color: var(--tint, #ece8e1);
+		color: var(--tint, #f2f0ea);
 	}
 	.odds-p {
-		font-family: Consolas, monospace;
-		color: rgba(236, 232, 225, 0.7);
+		font-variant-numeric: tabular-nums;
+		color: rgba(242, 240, 234, 0.65);
 	}
 	.odds-note {
-		margin: 1rem 0 0;
+		margin: 1.2rem 0 0;
 		font-size: 0.88rem;
-		color: rgba(236, 232, 225, 0.5);
+		color: rgba(242, 240, 234, 0.45);
 		max-width: 70ch;
 	}
 </style>

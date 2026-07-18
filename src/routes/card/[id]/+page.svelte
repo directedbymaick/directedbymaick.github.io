@@ -112,7 +112,7 @@
 			{/each}
 		</p>
 
-		<a class="back" href="/">◄ Retour au mur</a>
+		<a class="back" href="/">← Retour au mur</a>
 	</aside>
 </section>
 
@@ -120,167 +120,163 @@
 	.stage {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 3.4rem;
+		gap: 4rem;
 		align-items: center;
 		justify-content: center;
-		padding-top: 1.4rem;
+		padding-top: 3.5rem;
 	}
 	.showcase {
 		--card-w: min(380px, 90vw);
 	}
 
+	/* sélecteur de version — segmented control */
 	.variants {
-		display: flex;
-		flex-wrap: wrap;
+		display: inline-flex;
 		justify-content: center;
-		gap: 0.5rem;
-		margin-top: 1.3rem;
+		gap: 0.25rem;
+		margin-top: 1.4rem;
+		padding: 0.25rem;
+		background: rgba(255, 255, 255, 0.06);
+		border-radius: 999px;
 	}
 	.vbtn {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.72rem;
-		font-weight: 700;
-		letter-spacing: 0.18em;
-		text-transform: uppercase;
-		padding: 0.4rem 0.9rem;
+		font-family: inherit;
+		font-size: 0.8rem;
+		font-weight: 550;
+		padding: 0.38rem 1rem;
 		border: none;
 		cursor: pointer;
-		color: rgba(236, 232, 225, 0.6);
-		background: rgba(236, 232, 225, 0.07);
+		color: rgba(242, 240, 234, 0.55);
+		background: transparent;
 		border-radius: 999px;
 		transition:
-			background 0.15s ease,
-			color 0.15s ease;
+			background 0.18s ease,
+			color 0.18s ease;
 	}
 	.vbtn:hover {
-		color: #ece8e1;
-		background: rgba(236, 232, 225, 0.14);
+		color: #f2f0ea;
 	}
 	.vbtn.active {
-		color: #0c0a13;
-		background: #c9a445;
+		color: #0a0a0d;
+		background: #f2f0ea;
 	}
 
 	.meta {
-		max-width: 380px;
+		max-width: 400px;
 		min-width: 300px;
 	}
 	.role {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		margin: 0 0 0.3rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.78rem;
+		margin: 0 0 0.8rem;
+		font-size: 0.76rem;
 		font-weight: 600;
-		letter-spacing: 0.26em;
+		letter-spacing: 0.22em;
 		text-transform: uppercase;
-		color: color-mix(in srgb, var(--fc) 75%, #fff);
+		color: rgba(242, 240, 234, 0.45);
 	}
 	.r-sigil {
 		color: var(--fc);
 	}
 	.r-sep {
-		color: rgba(236, 232, 225, 0.3);
+		color: rgba(242, 240, 234, 0.25);
 	}
 	h1 {
-		margin: 0 0 1.1rem;
-		font-family: Cinzel, Georgia, serif;
+		margin: 0 0 1.3rem;
 		font-weight: 800;
-		font-size: clamp(2.4rem, 5vw, 3.6rem);
-		line-height: 0.92;
-		text-transform: uppercase;
-		color: #ece8e1;
+		font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+		letter-spacing: -0.025em;
+		line-height: 1.05;
+		color: #f2f0ea;
 	}
 
 	.statline {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.5rem;
-		margin-bottom: 1.4rem;
+		margin-bottom: 1.6rem;
 	}
 	.chip {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.74rem;
-		font-weight: 600;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-		padding: 0.34rem 0.7rem;
-		background: rgba(236, 232, 225, 0.07);
+		font-size: 0.8rem;
+		font-weight: 550;
+		padding: 0.34rem 0.8rem;
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		border-radius: 999px;
-		color: rgba(236, 232, 225, 0.85);
+		color: rgba(242, 240, 234, 0.8);
 	}
 	.chip.cell {
-		background: color-mix(in srgb, var(--fc) 18%, transparent);
+		background: color-mix(in srgb, var(--fc) 14%, transparent);
+		border-color: color-mix(in srgb, var(--fc) 30%, transparent);
 		color: color-mix(in srgb, var(--fc) 80%, #fff);
 	}
 
 	.block {
-		margin-bottom: 1rem;
-		padding: 0.85rem 1rem;
-		background: rgba(236, 232, 225, 0.05);
-		border-left: 3px solid rgba(236, 232, 225, 0.25);
+		margin-bottom: 0.9rem;
+		padding: 1.1rem 1.3rem;
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 16px;
 	}
 	.block.synchro {
-		border-left-color: var(--fc);
-		background: color-mix(in srgb, var(--fc) 8%, transparent);
+		background: color-mix(in srgb, var(--fc) 7%, transparent);
+		border-color: color-mix(in srgb, var(--fc) 25%, transparent);
 	}
 	.block-label {
-		margin: 0 0 0.3rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.24em;
+		margin: 0 0 0.35rem;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.5);
+		color: rgba(242, 240, 234, 0.45);
 	}
 	.block.synchro .block-label {
 		color: color-mix(in srgb, var(--fc) 80%, #fff);
 	}
 	.block-body {
 		margin: 0;
-		line-height: 1.45;
+		font-size: 0.95rem;
+		line-height: 1.55;
+		color: rgba(242, 240, 234, 0.85);
 	}
 
 	.flavor {
-		margin: 1.2rem 0;
+		margin: 1.4rem 0;
+		font-family: 'Cormorant Garamond', Georgia, serif;
 		font-style: italic;
-		color: rgba(236, 232, 225, 0.55);
+		font-size: 1.15rem;
+		line-height: 1.5;
+		color: rgba(242, 240, 234, 0.5);
 	}
 
 	.gene {
-		font-size: 0.8rem;
-		color: rgba(236, 232, 225, 0.4);
+		font-size: 0.78rem;
+		color: rgba(242, 240, 234, 0.35);
 	}
 	.gene code {
-		color: rgba(236, 232, 225, 0.65);
+		font-family: inherit;
+		color: rgba(242, 240, 234, 0.55);
 	}
 	.swatch {
 		display: inline-block;
-		width: 0.85em;
-		height: 0.85em;
-		rotate: 45deg;
+		width: 0.8em;
+		height: 0.8em;
+		border-radius: 50%;
 		margin-left: 0.45em;
-		border: 1px solid rgba(236, 232, 225, 0.25);
+		border: 1px solid rgba(255, 255, 255, 0.2);
 	}
 
 	.back {
-		display: inline-block;
-		margin-top: 1.6rem;
-		padding: 0.6rem 1.3rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.76rem;
-		font-weight: 700;
-		letter-spacing: 0.22em;
-		text-transform: uppercase;
+		display: inline-flex;
+		margin-top: 1.8rem;
+		font-size: 0.88rem;
+		font-weight: 550;
 		text-decoration: none;
-		color: #0c0a13;
-		background: #ece8e1;
-		border-radius: 999px;
-		transition: background 0.15s ease;
+		color: rgba(242, 240, 234, 0.55);
+		transition: color 0.15s ease;
 	}
 	.back:hover {
-		background: #c9a445;
-		color: #ece8e1;
+		color: #f2f0ea;
 	}
 </style>

@@ -101,19 +101,18 @@
 
 <style>
 	.hero {
-		margin: 1rem 0 3rem;
+		margin: 4rem 0 4rem;
 	}
 	.kicker {
 		display: flex;
 		align-items: center;
 		gap: 0.55rem;
-		margin: 0 0 0.6rem;
-		font-family: Cinzel, Georgia, serif;
+		margin: 0 0 1rem;
 		font-size: 0.78rem;
 		font-weight: 600;
-		letter-spacing: 0.28em;
+		letter-spacing: 0.3em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.55);
+		color: rgba(242, 240, 234, 0.4);
 	}
 	.k-diamond {
 		color: #c9a445;
@@ -121,42 +120,38 @@
 	}
 	h1 {
 		margin: 0;
-		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
-		font-size: clamp(3rem, 8vw, 5.6rem);
-		line-height: 0.9;
-		text-transform: uppercase;
+		font-size: clamp(2.8rem, 6.5vw, 4.6rem);
+		letter-spacing: -0.03em;
+		line-height: 1;
 	}
 	.tagline {
-		margin: 1rem 0 0;
+		margin: 1.2rem 0 0;
 		max-width: 56ch;
-		color: rgba(236, 232, 225, 0.65);
+		font-size: 1.05rem;
+		line-height: 1.6;
+		color: rgba(242, 240, 234, 0.55);
 	}
 
 	section {
-		margin-bottom: 3.2rem;
+		margin-bottom: 4.2rem;
 	}
 	h2 {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
-		margin: 0 0 1.6rem;
+		gap: 1.2rem;
+		margin: 0 0 1.8rem;
 	}
 	.tab {
-		font-family: Cinzel, Georgia, serif;
-		font-size: 1rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: #0c0a13;
-		background: #ece8e1;
-		padding: 0.42rem 1.15rem 0.38rem;
-		border-radius: 999px;
+		font-size: 1.15rem;
+		font-weight: 650;
+		letter-spacing: 0.01em;
+		white-space: nowrap;
 	}
 	.rule {
 		flex: 1;
 		height: 1px;
-		background: rgba(236, 232, 225, 0.15);
+		background: rgba(255, 255, 255, 0.07);
 	}
 
 	.anatomy {
@@ -188,33 +183,31 @@
 		flex: none;
 		display: grid;
 		place-items: center;
-		width: 1.7rem;
-		height: 1.7rem;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 700;
-		font-size: 0.85rem;
-		color: #0c0a13;
-		background: #c9a445;
+		width: 1.6rem;
+		height: 1.6rem;
+		font-weight: 600;
+		font-size: 0.78rem;
+		font-variant-numeric: tabular-nums;
+		color: #c9a445;
+		border: 1px solid rgba(201, 164, 69, 0.5);
 		border-radius: 50%;
 	}
 	.lt {
-		margin: 0 0 0.15rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.85rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
+		margin: 0 0 0.2rem;
+		font-size: 0.92rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 	}
 	.ld {
 		margin: 0;
-		font-size: 0.92rem;
-		line-height: 1.45;
-		color: rgba(236, 232, 225, 0.72);
+		font-size: 0.9rem;
+		line-height: 1.5;
+		color: rgba(242, 240, 234, 0.6);
 	}
 	.note {
-		margin: 1.2rem 0 0;
-		color: rgba(236, 232, 225, 0.55);
-		font-size: 0.92rem;
+		margin: 1.4rem 0 0;
+		color: rgba(242, 240, 234, 0.45);
+		font-size: 0.9rem;
 	}
 
 	.steps {
@@ -224,46 +217,45 @@
 	}
 	.step {
 		display: flex;
-		gap: 1rem;
-		padding: 1.1rem 1.2rem;
-		background: rgba(236, 232, 225, 0.045);
-		border-left: 3px solid #c9a445;
+		gap: 1.1rem;
+		padding: 1.3rem 1.4rem;
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 16px;
 	}
 	.step-n {
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 800;
-		font-size: 1.9rem;
-		line-height: 1;
-		color: rgba(236, 232, 225, 0.25);
+		font-weight: 700;
+		font-size: 1.5rem;
+		line-height: 1.1;
+		font-variant-numeric: tabular-nums;
+		color: rgba(242, 240, 234, 0.22);
 	}
 	.step h3 {
 		margin: 0 0 0.4rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.95rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
+		font-size: 0.98rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 	}
 	.step p {
 		margin: 0;
-		line-height: 1.5;
-		color: rgba(236, 232, 225, 0.78);
-		font-size: 0.95rem;
+		line-height: 1.55;
+		color: rgba(242, 240, 234, 0.65);
+		font-size: 0.92rem;
 	}
 
 	.cta {
-		display: inline-block;
-		margin-top: 1.6rem;
-		padding: 0.6rem 1.3rem;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
+		display: inline-flex;
+		align-items: center;
+		margin-top: 1.8rem;
+		padding: 0.65rem 1.4rem;
+		font-size: 0.88rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
 		text-decoration: none;
-		color: #0c0a13;
-		background: #ece8e1;
+		color: #0a0a0d;
+		background: #f2f0ea;
 		border-radius: 999px;
+		transition: background 0.18s ease;
 	}
 	.cta:hover {
 		background: #c9a445;
