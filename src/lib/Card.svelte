@@ -17,13 +17,13 @@
 			name: card.faction,
 			color: '#8892a6',
 			loreTone: '',
-			sigil: '◯'
+			sigil: '◆'
 		}
 	);
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const foil = $derived(resolveFoil(card, faction.color));
 
-	// Springs : le pointeur cible, la carte suit avec inertie.
+	// Springs : le pointeur cible, la carte suit avec inertie (mode local).
 	const pointer = new Spring({ x: 0.5, y: 0.5 }, { stiffness: 0.12, damping: 0.5 });
 	let hover = $state(false);
 
@@ -54,8 +54,8 @@
 
 	const px = $derived(pointer.current.x);
 	const py = $derived(pointer.current.y);
-	const rx = $derived(hover ? (py - 0.5) * -16 : 0);
-	const ry = $derived(hover ? (px - 0.5) * 19 : 0);
+	const rx = $derived(hover ? (py - 0.5) * -20 : 0);
+	const ry = $derived(hover ? (px - 0.5) * 24 : 0);
 	const fromCenter = $derived(hover ? Math.min(1, Math.hypot(px - 0.5, py - 0.5) * 2.2) : 0);
 
 	const pointerVars = $derived(
@@ -72,49 +72,80 @@
 		class:hover
 		data-material={rarityDef.material}
 		data-foil={foil.preset}
-		style="{styleString(foil.vars)}; {pointerVars}; --fc: {faction.color}{card.artPosition
-			? `; --art-pos: ${card.artPosition}`
-			: ''}"
+		data-kind={card.kind}
+		data-fullart="true"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
-		<div class="art">
-			<img src={card.art} alt={card.name} draggable="false" />
-			<div class="foil-a" aria-hidden="true"></div>
-			<div class="foil-b" aria-hidden="true"></div>
-			<div class="sparkles" aria-hidden="true"></div>
-			<div class="prism-veil" aria-hidden="true"></div>
-			<div class="scrim" aria-hidden="true"></div>
-			<div class="glare" aria-hidden="true"></div>
-		</div>
-
-		<span class="cost">{card.cost}</span>
-		<span class="sigil" style="color: {faction.color}" title={faction.name}>{faction.sigil}</span>
-
-		<div class="panel">
-			<h2 class="name">{card.name}</h2>
-			<p class="typeline">
-				{kindLabel} <span class="dot">·</span> {faction.name}
-			</p>
-			{#if card.text}
-				<p class="text">{card.text}</p>
-			{/if}
-			{#if card.prononcer}
-				<p class="pron"><span class="pron-tag">◯ Prononcer {card.prononcer.cost}</span> {card.prononcer.text}</p>
-			{/if}
-			{#if card.flavor}
-				<p class="flavor">{card.flavor}</p>
-			{/if}
-			{#if card.kind === 'etre'}
-				<div class="stats">
-					<span class="stat"><b>{card.attack}</b><small>ATQ</small></span>
-					<span class="stat"><b>{card.health}</b><small>INT</small></span>
+		<div class="face">
+			<div class="body">
+				<div class="art">
+					<img src={card.art} alt={card.name} draggable="false" />
+					<div class="foil-a" aria-hidden="true"></div>
+					<div class="foil-b" aria-hidden="true"></div>
+					<div class="sparkles" aria-hidden="true"></div>
+					<div class="scrim" aria-hidden="true"></div>
+					<div class="crt" aria-hidden="true"></div>
 				</div>
-			{/if}
-		</div>
 
-		<span class="edge" aria-hidden="true"></span>
-		<span class="rarity-line" aria-hidden="true"></span>
+				<span class="cost" title="Coût en Énergie">{card.cost}</span>
+				<span class="sigil" title={faction.name}>{faction.sigil}</span>
+
+				<div class="content">
+					<header class="plate">
+						<h2 class="name">{card.name}</h2>
+						<p class="cellline">
+							<span class="kindlabel">{kindLabel}</span>
+							{#if card.cell}
+								<span class="cell">{card.cell}</span>
+							{/if}
+							<span class="hairline"></span>
+							<span class="fname">{faction.name}</span>
+						</p>
+					</header>
+
+					<div class="cartouche">
+						<span class="watermark" aria-hidden="true">{faction.sigil}</span>
+						{#if card.text}
+							<p class="rules">{card.text}</p>
+						{/if}
+						{#if card.prononcer}
+							<p class="synchro">
+								<span class="synchro-tag">◯ Prononcer {card.prononcer.cost}</span>
+								{card.prononcer.text}
+							</p>
+						{/if}
+						{#if card.flavor}
+							<p class="flavor">{card.flavor}</p>
+						{/if}
+					</div>
+
+					{#if card.kind === 'etre'}
+						<footer class="statbar">
+							<span class="stat"><span class="hex">{card.attack}</span><small>ATQ</small></span>
+							<span class="rarity-dot" title={rarityDef.name}></span>
+							<span class="stat"><small>INT</small><span class="hex">{card.health}</span></span>
+						</footer>
+					{:else}
+						<footer class="statbar protocol-bar">
+							<span class="rarity-dot" title={rarityDef.name}></span>
+						</footer>
+					{/if}
+				</div>
+
+				<div class="prism-veil" aria-hidden="true"></div>
+				<div class="etch" aria-hidden="true"></div>
+				<div class="glare" aria-hidden="true"></div>
+			</div>
+			<footer class="frame-footer" aria-hidden="true">
+				<span class="ff-serial"
+					>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 18).toUpperCase()}</span
+				>
+				<span class="ff-rarity">◯ {rarityDef.name} · SIL-01</span>
+			</footer>
+			<div class="conduits" aria-hidden="true"></div>
+		</div>
 	</article>
 </div>
 
@@ -125,221 +156,585 @@
 	}
 
 	.card {
-		position: relative;
 		width: 100%;
 		aspect-ratio: 63 / 88;
 		container-type: inline-size;
-		border-radius: 5.4cqw;
-		overflow: hidden;
-		background: #0b0b10;
+		/* l'or du halo : la couleur système d'Expelled — distincte de l'accent
+		   de faction qui reste sur les conduits */
+		--sys: #c9a445;
 		transform: translate3d(0, 0, 0.01px) rotateX(var(--rx)) rotateY(var(--ry));
 		transform-style: preserve-3d;
 		will-change: transform;
 		touch-action: none;
 		user-select: none;
 		-webkit-user-select: none;
-		font-family: 'Inter Variable', Inter, system-ui, sans-serif;
-		box-shadow:
-			0 24px 60px rgba(0, 0, 0, 0.55),
-			0 4px 14px rgba(0, 0, 0, 0.4);
-		transition: box-shadow 0.35s ease;
-	}
-	.card.hover {
-		box-shadow:
-			0 32px 80px rgba(0, 0, 0, 0.6),
-			0 6px 18px rgba(0, 0, 0, 0.45);
+		font-family: Bahnschrift, 'Segoe UI', system-ui, sans-serif;
 	}
 
-	/* ---------- artwork plein cadre ---------- */
-	.art {
+	/* ============ LE CADRE : la rareté est un matériau ============ */
+
+	.face {
 		position: absolute;
 		inset: 0;
+		padding: 2.3cqw 2.3cqw 5.4cqw;
+		border-radius: 4.6cqw;
+		box-shadow:
+			0 2.5cqw 6cqw rgba(0, 0, 0, 0.5),
+			inset 0 0.2cqw 0.4cqw rgba(255, 255, 255, 0.25),
+			inset 0 -0.3cqw 0.5cqw rgba(0, 0, 0, 0.4);
+		transition: box-shadow 0.4s ease;
+	}
+
+	/* carbone (standard) : tissage anthracite mat */
+	.card[data-material='carbone'] .face {
+		background:
+			repeating-linear-gradient(45deg, #191a1f 0 3px, #1f2127 3px 6px),
+			repeating-linear-gradient(-45deg, #17181d 0 3px, #1d1f25 3px 6px),
+			#191a1f;
+		background-blend-mode: overlay;
+	}
+
+	/* nacre (rare) : blanc perle, reflets froids */
+	.card[data-material='nacre'] .face {
+		background:
+			conic-gradient(
+				from 210deg at 50% 50%,
+				rgba(190, 215, 235, 0.35),
+				rgba(235, 220, 240, 0.3),
+				rgba(205, 235, 225, 0.3),
+				rgba(190, 215, 235, 0.35)
+			),
+			linear-gradient(135deg, #f0eee9 0%, #cfd3da 38%, #ece8ee 58%, #d5dade 100%);
+		background-blend-mode: soft-light, normal;
+	}
+
+	/* argent (épique) : métal brossé */
+	.card[data-material='argent'] .face {
+		background:
+			repeating-linear-gradient(
+				92deg,
+				rgba(255, 255, 255, 0.09) 0 1px,
+				transparent 1px 3px
+			),
+			linear-gradient(180deg, #d6dae0 0%, #969da8 30%, #c2c7cf 50%, #838a96 72%, #c9ced6 100%);
+	}
+
+	/* or (légendaire) : or brossé chaud */
+	.card[data-material='or'] .face {
+		background:
+			repeating-linear-gradient(
+				88deg,
+				rgba(255, 245, 200, 0.14) 0 1px,
+				transparent 1px 3px
+			),
+			linear-gradient(165deg, #f2d98a 0%, #b9862f 32%, #e6c05e 52%, #8f6420 74%, #d5ac52 100%);
+	}
+
+	/* prisme (prismatique) : irisation contenue sur graphite */
+	.card[data-material='prisme'] .face {
+		background:
+			conic-gradient(
+				from calc(var(--hue-shift) + var(--pxn) * 60deg) at 50% 50%,
+				rgba(200, 120, 140, 0.5),
+				rgba(210, 180, 110, 0.5),
+				rgba(120, 200, 160, 0.5),
+				rgba(110, 160, 210, 0.5),
+				rgba(170, 120, 210, 0.5),
+				rgba(200, 120, 140, 0.5)
+			),
+			linear-gradient(170deg, #2a2b33, #17181d 60%, #24252c);
+		background-blend-mode: color-dodge, normal;
+	}
+
+	/* glow d'activation : l'accent irradie (lumière contenue → libérée) */
+	.card.hover .face {
+		box-shadow:
+			0 2.5cqw 8cqw rgba(0, 0, 0, 0.55),
+			0 0 calc(3cqw + var(--from-center) * 9cqw)
+				color-mix(in srgb, var(--accent) 50%, transparent),
+			inset 0 0.2cqw 0.4cqw rgba(255, 255, 255, 0.25),
+			inset 0 -0.3cqw 0.5cqw rgba(0, 0, 0, 0.4);
+	}
+
+	/* conduits : lignes fines qui s'allument à l'activation seulement */
+	.conduits {
+		position: absolute;
+		inset: 1.1cqw;
+		border-radius: 3.9cqw;
+		border: 0.26cqw solid transparent;
+		pointer-events: none;
+		transition:
+			border-color 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	.card.hover .conduits {
+		border-color: color-mix(in srgb, var(--accent) 75%, transparent);
+		box-shadow:
+			0 0 1.6cqw color-mix(in srgb, var(--accent) 55%, transparent),
+			inset 0 0 2cqw color-mix(in srgb, var(--accent) 25%, transparent);
+	}
+
+	/* ============ LE CORPS : verre sombre ============ */
+
+	.body {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		border-radius: 3cqw;
+		overflow: hidden;
+		/* corps teinté faction : riche, jamais plat */
+		background:
+			radial-gradient(
+				120% 60% at 50% 108%,
+				color-mix(in srgb, var(--accent) 14%, transparent) 0%,
+				transparent 60%
+			),
+			linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, #12131b) 0%, #0d0e14 55%, #101119 100%);
+		display: flex;
+		flex-direction: column;
+		color: #e8e6df;
+		/* sertissage : liseré sombre + filet lumineux (relief imprimé) */
+		box-shadow:
+			0 0 0 1px rgba(0, 0, 0, 0.7),
+			inset 0 1px 0 rgba(255, 255, 255, 0.08),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+	}
+
+	/* ---------- art full-bleed ---------- */
+
+	.art {
+		position: relative;
+		flex: none;
+		height: 55%;
+		overflow: hidden;
 	}
 	.art img {
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		/* préserve le haut des portraits (têtes) — surcharge par carte via artPosition */
 		object-position: var(--art-pos, center 12%);
 		display: block;
 	}
 	.scrim {
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			180deg,
-			rgba(8, 8, 12, 0.18) 0%,
-			transparent 16%,
-			transparent 44%,
-			rgba(8, 8, 12, 0.78) 74%,
-			rgba(7, 7, 11, 0.94) 100%
-		);
+		background: linear-gradient(180deg, rgba(16, 17, 23, 0.25) 0%, transparent 22%, transparent 68%, #101117 100%);
+		pointer-events: none;
 	}
 
-	/* ---------- chrome minimal ---------- */
+	/* filtre TV : scanlines + vignette chaude — UNIQUEMENT sur l'illustration.
+	   Porte aussi le sertissage de la fenêtre (écran enchâssé dans la carte). */
+	.crt {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		z-index: 2;
+		background:
+			repeating-linear-gradient(
+				180deg,
+				rgba(255, 255, 255, 0.014) 0 1px,
+				transparent 1px 4px
+			),
+			radial-gradient(120% 120% at 50% 30%, transparent 68%, rgba(201, 164, 69, 0.035) 100%);
+		box-shadow:
+			inset 0 0 0 1px rgba(0, 0, 0, 0.55),
+			inset 0 0.8cqw 2cqw rgba(0, 0, 0, 0.26),
+			inset 0 -0.6cqw 1.6cqw rgba(0, 0, 0, 0.18);
+	}
 
-	/* le coût : un halo — anneau d'or fin, verre sombre */
+	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
+	   L'encre s'adapte au matériau (claire sur carbone/prisme, sombre sur métaux). */
+	.frame-footer {
+		position: absolute;
+		left: 3.2cqw;
+		right: 3.2cqw;
+		bottom: 0;
+		height: 5.4cqw;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 2cqw;
+		letter-spacing: 0.16em;
+		color: var(--frame-ink, rgba(236, 232, 225, 0.55));
+		text-shadow: 0 1px 0 var(--frame-ink-relief, rgba(0, 0, 0, 0.35));
+		pointer-events: none;
+	}
+	.ff-rarity {
+		text-transform: uppercase;
+	}
+	.card[data-material='carbone'] {
+		--frame-ink: rgba(236, 232, 225, 0.55);
+		--frame-ink-relief: rgba(0, 0, 0, 0.5);
+	}
+	.card[data-material='nacre'] {
+		--frame-ink: rgba(24, 30, 40, 0.65);
+		--frame-ink-relief: rgba(255, 255, 255, 0.5);
+	}
+	.card[data-material='argent'] {
+		--frame-ink: rgba(18, 22, 30, 0.62);
+		--frame-ink-relief: rgba(255, 255, 255, 0.45);
+	}
+	.card[data-material='or'] {
+		--frame-ink: rgba(46, 30, 8, 0.68);
+		--frame-ink-relief: rgba(255, 235, 180, 0.5);
+	}
+	.card[data-material='prisme'] {
+		--frame-ink: rgba(236, 232, 225, 0.6);
+		--frame-ink-relief: rgba(0, 0, 0, 0.5);
+	}
+
+	/* ---------- coût / sigil ---------- */
+
 	.cost {
 		position: absolute;
-		top: 3.6cqw;
-		left: 3.6cqw;
-		z-index: 8;
+		top: 3.2cqw;
+		left: 3.2cqw;
+		z-index: 4;
 		display: grid;
 		place-items: center;
-		width: 10.5cqw;
-		height: 10.5cqw;
-		border-radius: 50%;
-		border: 1px solid rgba(201, 164, 69, 0.85);
-		background: rgba(8, 8, 12, 0.45);
-		backdrop-filter: blur(6px);
-		font-family: Cinzel, Georgia, serif;
+		width: 11.5cqw;
+		height: 13cqw;
+		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+		/* cellule d'énergie : verre sombre bombé (gloss haut, ombre basse) */
+		background:
+			radial-gradient(90% 55% at 50% 6%, rgba(255, 255, 255, 0.28), transparent 60%),
+			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--sys) 30%, transparent), transparent 60%),
+			linear-gradient(180deg, #22242e 0%, #101219 100%);
+		font-size: 6.4cqw;
 		font-weight: 700;
-		font-size: 4.8cqw;
-		color: #f2ead6;
-		box-shadow: 0 0 14px rgba(201, 164, 69, 0.25);
+		/* centrage optique du chiffre : ligne à 1 + correction du décalage
+		   vertical des chiffres Bahnschrift dans leur em-box */
+		line-height: 1;
+		padding-top: 0.5cqw;
+		font-variant-numeric: tabular-nums;
+		color: #fff;
+		text-shadow:
+			0 0.35cqw 0.5cqw rgba(0, 0, 0, 0.65),
+			0 0 2.2cqw color-mix(in srgb, var(--sys) 60%, transparent);
+		/* le clip-path avale box-shadow : l'ombre portée passe par filter */
+		filter: drop-shadow(0 0.5cqw 0.9cqw rgba(0, 0, 0, 0.55));
 	}
-
+	/* anneau d'or brossé (la Volonté est or — le halo) */
+	.cost::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		clip-path: polygon(
+			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
+			50% 0, 50% 5.5%, 5% 27.5%, 5% 72.5%, 50% 94.5%, 95% 72.5%, 95% 27.5%, 50% 5.5%
+		);
+		background: linear-gradient(
+			165deg,
+			#f2d98a 0%,
+			#c9a445 28%,
+			#8f6420 52%,
+			#e6c05e 74%,
+			#a97f2c 100%
+		);
+	}
+	/* sigil de faction : le glyphe accent, seul */
 	.sigil {
 		position: absolute;
-		top: 4.4cqw;
-		right: 4.2cqw;
-		z-index: 8;
-		font-size: 4.6cqw;
-		opacity: 0.9;
-		text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+		top: 3.2cqw;
+		right: 3.2cqw;
+		z-index: 4;
+		font-size: 5cqw;
+		line-height: 1;
+		color: color-mix(in srgb, var(--accent) 80%, #fff);
+		text-shadow:
+			0 0 2.2cqw color-mix(in srgb, var(--accent) 70%, transparent),
+			0 0.3cqw 0.6cqw rgba(0, 0, 0, 0.55);
 	}
 
-	/* ---------- panneau bas : typographie nue sur le scrim ---------- */
-	.panel {
+	/* gravure : un filet fin, sous les badges et le contenu (z2) —
+	   il encadre, il ne croise rien. */
+	.etch {
 		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 7;
-		padding: 0 5.4cqw 5.2cqw;
+		inset: 1.4cqw;
+		z-index: 2;
+		pointer-events: none;
+		border-radius: 2cqw;
+		border: 1px solid color-mix(in srgb, var(--sys) 28%, transparent);
+	}
+
+	/* ---------- contenu ---------- */
+
+	.content {
+		position: relative;
+		z-index: 3;
+		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 1.5cqw;
+		margin-top: -7cqw;
+		/* respire à l'intérieur de la gravure (filet à 1.4cqw + pastilles) */
+		padding: 0 3.4cqw 3.2cqw;
+	}
+
+	.plate {
+		position: relative;
+		align-self: flex-start;
+		max-width: 100%;
+		padding: 1.5cqw 5.2cqw 1.6cqw 2.4cqw;
+		/* plaque à pan coupé : verre sombre, coin haut-droit biseauté.
+		   Le clip-path avale box-shadow → relief via filter + filets internes. */
+		clip-path: polygon(0 0, calc(100% - 4.2cqw) 0, 100% 4.2cqw, 100% 100%, 0 100%);
+		background:
+			radial-gradient(
+				60% 100% at 0% 50%,
+				color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+				transparent 70%
+			),
+			linear-gradient(180deg, rgba(32, 34, 45, 0.94) 0%, rgba(11, 12, 17, 0.9) 100%);
+		border-left: 0.7cqw solid var(--accent);
+		filter: drop-shadow(0 0.5cqw 1cqw rgba(0, 0, 0, 0.5));
+	}
+	/* filet lumineux en tête, qui suit le pan coupé */
+	.plate::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.3) 0%,
+			rgba(255, 255, 255, 0.08) 70%,
+			transparent 100%
+		);
 	}
 	.name {
 		margin: 0;
 		font-family: Cinzel, Georgia, serif;
-		font-weight: 600;
-		font-size: 5.2cqw;
-		line-height: 1.12;
-		letter-spacing: 0.02em;
-		color: #f4edda;
-		text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
-	}
-	.typeline {
-		margin: 0 0 0.6cqw;
-		font-size: 2.5cqw;
-		font-weight: 600;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
-		color: rgba(242, 234, 214, 0.55);
-	}
-	.typeline .dot {
-		color: var(--fc);
-	}
-	.text {
-		margin: 0;
-		font-size: 3.2cqw;
-		font-weight: 450;
-		line-height: 1.45;
-		color: rgba(244, 240, 228, 0.95);
-	}
-	.pron {
-		margin: 0;
-		font-size: 3.1cqw;
-		line-height: 1.45;
-		color: rgba(244, 240, 228, 0.95);
-	}
-	.pron-tag {
+		font-size: 4.8cqw;
 		font-weight: 700;
-		letter-spacing: 0.06em;
-		color: #d9b45c;
+		letter-spacing: 0.02em;
+		line-height: 1.12;
+		text-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.8);
+	}
+	.cellline {
+		margin: 1cqw 0 0;
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 1.2cqw;
+		align-items: center;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 2.7cqw;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		white-space: nowrap;
+	}
+	/* taxonomie affichée : ÊTRE ◯ — l'or du halo */
+	.kindlabel {
+		color: color-mix(in srgb, var(--sys) 78%, #fff);
+		font-weight: 700;
+		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--sys) 35%, transparent);
+	}
+	.kindlabel::after {
+		content: ' ◯';
+		font-size: 0.8em;
+		opacity: 0.7;
+	}
+	.hairline {
+		flex: 1 1 0;
+		min-width: 0;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--sys) 35%, transparent),
+			transparent 90%
+		);
+	}
+	/* le CELL est un chip taillé — accent en fond, pas de chevrons typographiques */
+	.cell {
+		padding: 0.45cqw 1.4cqw 0.4cqw;
+		clip-path: polygon(1.1cqw 0, 100% 0, calc(100% - 1.1cqw) 100%, 0 100%);
+		/* jamais deux lignes : le chip se compresse (tracking réduit) puis ellipse */
+		letter-spacing: 0.05em;
+		min-width: 0;
+		flex-shrink: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		background: linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--accent) 40%, #171821) 0%,
+			color-mix(in srgb, var(--accent) 22%, #10111a) 100%
+		);
+		color: color-mix(in srgb, var(--accent) 45%, #fff);
+		text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+	}
+	.fname {
+		color: rgba(236, 232, 225, 0.5);
+		letter-spacing: 0.22em;
+	}
+	.fname {
+		font-weight: 700;
+	}
+
+	.cartouche {
+		flex: 1;
+		margin-top: 1.8cqw;
+		padding: 2.2cqw 2.6cqw;
+		border-radius: 0 0 1.8cqw 1.8cqw;
+		/* panneau en creux : plus sombre en haut, remonte vers le bas */
+		background: linear-gradient(
+			180deg,
+			rgba(0, 0, 0, 0.34) 0%,
+			rgba(255, 255, 255, 0.035) 85%
+		);
+		border: 0.22cqw solid rgba(0, 0, 0, 0.45);
+		/* barre de titre terminal */
+		border-top: 0.45cqw solid color-mix(in srgb, var(--sys) 45%, #3a2c14);
+		box-shadow:
+			inset 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.5),
+			inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+		overflow: hidden;
+		font-family: 'Segoe UI', system-ui, sans-serif;
+	}
+	/* filigrane de faction derrière le texte (cf. le watermark MTG) */
+	.watermark {
+		position: absolute;
+		right: -2.4cqw;
+		bottom: -4.4cqw;
+		font-size: 19cqw;
+		line-height: 1;
+		color: color-mix(in srgb, var(--accent) 55%, transparent);
+		opacity: 0.1;
+		pointer-events: none;
+		user-select: none;
+	}
+	.cartouche {
+		position: relative;
+	}
+	.rules {
+		margin: 0;
+		font-size: 3.6cqw;
+		line-height: 1.32;
+		position: relative;
+	}
+	.synchro {
+		margin: 1.4cqw 0 0;
+		padding: 1.2cqw 1.8cqw;
+		font-size: 3.5cqw;
+		line-height: 1.3;
+		border-left: 0.5cqw solid var(--accent);
+		background: color-mix(in srgb, var(--accent) 9%, transparent);
+		border-radius: 0 1cqw 1cqw 0;
+	}
+	/* pill étiquetée (cf. les chips "Déclenchement" de One Piece) */
+	.synchro-tag {
+		display: inline-block;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 2.6cqw;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		padding: 0.45cqw 1.7cqw 0.4cqw;
+		margin-bottom: 0.7cqw;
+		clip-path: polygon(1cqw 0, 100% 0, calc(100% - 1cqw) 100%, 0 100%);
+		background: linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--accent) 85%, #fff) 0%,
+			color-mix(in srgb, var(--accent) 80%, #000) 100%
+		);
+		color: #0e0f15;
+		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
 	}
 	.flavor {
-		margin: 0.4cqw 0 0;
+		margin: 1.4cqw 0 0;
 		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: 3.5cqw;
+		line-height: 1.3;
 		font-style: italic;
-		font-size: 3.1cqw;
-		line-height: 1.4;
-		color: rgba(236, 229, 211, 0.55);
+		color: #8d8a80;
 	}
-	.stats {
+
+	.statbar {
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
-		align-items: baseline;
-		margin-top: 1.8cqw;
+		margin-top: 2cqw;
 	}
+	.protocol-bar {
+		justify-content: center;
+	}
+	/* stats : mini-cellules hexagonales — le même objet que la cellule de coût,
+	   serti d'acier au lieu d'ambre. Un seul langage de badge sur la carte. */
 	.stat {
 		display: flex;
-		align-items: baseline;
-		gap: 1.4cqw;
+		align-items: center;
+		gap: 1.3cqw;
 	}
-	.stat b {
-		font-family: Cinzel, Georgia, serif;
+	.stat .hex {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 8.6cqw;
+		height: 9.8cqw;
+		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+		background:
+			radial-gradient(90% 55% at 50% 6%, rgba(255, 255, 255, 0.26), transparent 60%),
+			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 60%),
+			linear-gradient(180deg, #22242e 0%, #101219 100%);
+		font-size: 4.6cqw;
 		font-weight: 700;
-		font-size: 6cqw;
 		line-height: 1;
-		color: #f2ead6;
+		padding-top: 0.4cqw;
+		font-variant-numeric: tabular-nums;
+		color: #fff;
+		text-shadow: 0 0.3cqw 0.45cqw rgba(0, 0, 0, 0.6);
+		filter: drop-shadow(0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5));
 	}
-	.stat small {
-		font-size: 2.1cqw;
-		font-weight: 700;
-		letter-spacing: 0.26em;
-		color: rgba(242, 234, 214, 0.45);
-	}
-	.stat:last-child {
-		flex-direction: row-reverse;
-	}
-
-	/* ---------- bord et rareté ---------- */
-
-	/* hairline du cadre, teinté par le matériau */
-	.edge {
+	.stat .hex::before {
+		content: '';
 		position: absolute;
 		inset: 0;
-		z-index: 9;
-		border-radius: inherit;
-		border: 1px solid var(--edge-c, rgba(255, 255, 255, 0.14));
-		pointer-events: none;
+		clip-path: polygon(
+			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
+			50% 0, 50% 6.5%, 6% 28%, 6% 72%, 50% 93.5%, 94% 72%, 94% 28%, 50% 6.5%
+		);
+		/* sertissage acier brossé */
+		background: linear-gradient(
+			165deg,
+			#eef1f6 0%,
+			#9aa2b0 30%,
+			#5d6473 55%,
+			#d5dae2 78%,
+			#7e8694 100%
+		);
 	}
-	.card[data-material='carbone'] {
-		--edge-c: rgba(255, 255, 255, 0.13);
+	.stat small {
+		font-family: Cinzel, Georgia, serif;
+		font-size: 2.2cqw;
+		font-weight: 700;
+		letter-spacing: 0.24em;
+		color: rgba(236, 232, 225, 0.5);
 	}
-	.card[data-material='nacre'] {
-		--edge-c: rgba(240, 240, 248, 0.4);
+	.rarity-dot {
+		width: 3.4cqw;
+		height: 3.4cqw;
+		rotate: 45deg;
+		border-radius: 0.7cqw;
+		background: var(--rarity-gem, #666);
+		/* gemme sertie : reflet + assise */
+		box-shadow:
+			inset 0.4cqw 0.4cqw 0.7cqw rgba(255, 255, 255, 0.55),
+			inset -0.4cqw -0.4cqw 0.7cqw rgba(0, 0, 0, 0.45),
+			0 0.3cqw 0.8cqw rgba(0, 0, 0, 0.5);
 	}
-	.card[data-material='argent'] {
-		--edge-c: rgba(215, 222, 235, 0.55);
-	}
-	.card[data-material='or'] {
-		--edge-c: rgba(201, 164, 69, 0.8);
-	}
-	.card[data-material='prisme'] {
-		--edge-c: rgba(255, 255, 255, 0.55);
+	.card[data-material='carbone'] .rarity-dot { --rarity-gem: linear-gradient(135deg, #3a3d46, #23252c); background: #33363e; }
+	.card[data-material='nacre'] .rarity-dot { background: linear-gradient(135deg, #f2f0ea, #c9cdd6); }
+	.card[data-material='argent'] .rarity-dot { background: linear-gradient(135deg, #dfe3e9, #8d949f); }
+	.card[data-material='or'] .rarity-dot { background: linear-gradient(135deg, #f2d98a, #a97f2c); }
+	.card[data-material='prisme'] .rarity-dot {
+		background: conic-gradient(#c87a8c, #d2b46e, #78c8a0, #6ea0d2, #aa78d2, #c87a8c);
 	}
 
-	/* la ligne de rareté : un fil discret au bas de la carte */
-	.rarity-line {
-		position: absolute;
-		left: 5.4cqw;
-		right: 5.4cqw;
-		bottom: 2.6cqw;
-		height: 1px;
-		z-index: 8;
-		background: var(--edge-c, rgba(255, 255, 255, 0.14));
-		opacity: 0.55;
-		pointer-events: none;
-	}
-	.card[data-material='prisme'] .rarity-line {
-		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
-		opacity: 0.8;
-	}
-
-	/* ============ FOILS (machinerie conservée) ============ */
+	/* ============ MATIÈRE : foils (dans la fenêtre d'art) ============ */
 
 	.foil-a,
 	.foil-b,
@@ -350,6 +745,7 @@
 		inset: 0;
 		pointer-events: none;
 		opacity: 0;
+		/* hors activation, la couche ne coûte rien au compositeur */
 		visibility: hidden;
 	}
 	.card.hover .foil-a,
@@ -360,6 +756,7 @@
 		visibility: visible;
 	}
 
+	/* holo (rare) : bandes irisées double couche en contre-parallaxe */
 	.card[data-foil='holo'] .foil-a {
 		background:
 			radial-gradient(
@@ -405,6 +802,7 @@
 		filter: brightness(0.9) contrast(1.3) saturate(1.3);
 	}
 
+	/* prismatic (épique) : roue conique + bandes en contre-parallaxe */
 	.card[data-foil='prismatic'] .foil-a {
 		background:
 			radial-gradient(
@@ -447,6 +845,7 @@
 		filter: brightness(0.95) contrast(1.25) saturate(1.4);
 	}
 
+	/* galaxy (légendaire) : nébuleuse + bandes lentes + paillettes */
 	.card[data-foil='galaxy'] .foil-a {
 		background:
 			radial-gradient(
@@ -491,6 +890,8 @@
 		filter: contrast(2.2) brightness(0.9);
 	}
 
+	/* prism (prismatique) : l'art reçoit le foil conique ET un voile irise
+	   toute la carte — seule rareté où la matière déborde du cadre d'art. */
 	.card[data-foil='prism'] .foil-a {
 		background:
 			radial-gradient(
@@ -567,6 +968,7 @@
 		transition: opacity 0.25s ease;
 	}
 
+	/* mat (standard) : aucun foil — la matière, c'est l'absence de matière */
 	.card[data-foil='mat'] .foil-a,
 	.card[data-foil='mat'] .foil-b,
 	.card[data-foil='mat'] .sparkles,
@@ -574,8 +976,48 @@
 		display: none;
 	}
 
+	/* ============ FULL ART : l'artwork couvre toute la carte ============
+	   Les panneaux deviennent du verre flouté posé sur l'image ; les foils,
+	   logés dans .art, s'étendent naturellement à toute la carte. */
+
+	.card[data-fullart='true'] .art {
+		position: absolute;
+		inset: 0;
+		height: 100%;
+		z-index: 0;
+	}
+	.card[data-fullart='true'] .scrim {
+		background: linear-gradient(
+			180deg,
+			rgba(16, 17, 23, 0.3) 0%,
+			transparent 18%,
+			transparent 46%,
+			rgba(10, 11, 16, 0.82) 78%,
+			rgba(9, 10, 15, 0.94) 100%
+		);
+	}
+	.card[data-fullart='true'] .content {
+		margin-top: auto;
+		flex: none;
+	}
+	.card[data-fullart='true'] .plate {
+		background: rgba(10, 11, 16, 0.66);
+		backdrop-filter: blur(6px);
+	}
+	.card[data-fullart='true'] .cartouche {
+		flex: none;
+		background: rgba(8, 9, 14, 0.6);
+		backdrop-filter: blur(9px);
+		box-shadow:
+			inset 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.35),
+			inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+	}
+
+	/* ---------- glare : reflet, toutes raretés ---------- */
+
 	.glare {
 		z-index: 6;
+		/* halo diffus : retombée très progressive, aucun cercle lisible */
 		background: radial-gradient(
 			130cqw 130cqw at var(--px) var(--py),
 			rgba(255, 255, 255, 0.22) 0%,
