@@ -45,10 +45,6 @@
 		return [...list].sort((a, b) => (RANK[b.rarity] ?? 0) - (RANK[a.rarity] ?? 0))[0].art;
 	}
 
-	// galerie asymétrique : tailles et vitesses de parallax qui se répondent
-	const SIZES = ['m', 'l', 's', 'm', 's', 'l', 'm', 's'];
-	const SPEEDS = [0, 26, -18, 12, -24, 8, -12, 20];
-
 	const heroArt = bannerArt('vasar');
 
 	let container: HTMLElement;
@@ -129,7 +125,7 @@
 					});
 				});
 
-				// ---- galerie : les cartes émergent puis dérivent chacune à sa vitesse
+				// ---- galerie : les cartes émergent en vagues, puis restent en place
 				gsap.set('.cell', { autoAlpha: 0 });
 				ScrollTrigger.batch('.cell', {
 					start: 'top 92%',
@@ -137,22 +133,9 @@
 					onEnter: (els) =>
 						gsap.fromTo(
 							els,
-							{ autoAlpha: 0, y: 44 },
-							{ autoAlpha: 1, y: 0, duration: 1.4, ease: 'expo.out', stagger: 0.08 }
+							{ autoAlpha: 0, y: 36 },
+							{ autoAlpha: 1, y: 0, duration: 1.2, ease: 'expo.out', stagger: 0.06 }
 						)
-				});
-				gsap.utils.toArray<HTMLElement>('.cell[data-speed]').forEach((cell) => {
-					const sp = parseFloat(cell.dataset.speed ?? '0');
-					if (!sp) return;
-					gsap.fromTo(
-						cell,
-						{ y: sp },
-						{
-							y: -sp,
-							ease: 'none',
-							scrollTrigger: { trigger: cell, start: 'top bottom', end: 'bottom top', scrub: 1.2 }
-						}
-					);
 				});
 
 				ScrollTrigger.refresh();
@@ -215,11 +198,8 @@
 				{/if}
 
 				<div class="galerie">
-					{#each entriesFor(f) as e, i (e.key)}
-						<div
-							class="cell sz-{SIZES[i % SIZES.length]}"
-							data-speed={SPEEDS[i % SPEEDS.length]}
-						>
+					{#each entriesFor(f) as e (e.key)}
+						<div class="cell">
 							<Card card={e.card} />
 							<a class="cardlink" href={e.href}>
 								{e.card.name}
@@ -464,38 +444,19 @@
 		transform-origin: bottom;
 	}
 
-	/* ---------- galerie asymétrique ---------- */
+	/* ---------- galerie : grille propre, toutes les cartes à la même taille ---------- */
 
 	.galerie {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-start;
-		justify-content: center;
-		gap: 4.5rem 3.4rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 3.2rem 1.8rem;
 	}
 	.cell {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 1rem;
-	}
-	/* les tailles se répondent — jamais deux fois la même côte à côte */
-	.cell.sz-s {
-		--card-w: min(230px, 84vw);
-		margin-top: 4.5rem;
-	}
-	.cell.sz-m {
-		--card-w: min(280px, 88vw);
-	}
-	.cell.sz-l {
-		--card-w: min(330px, 92vw);
-		margin-top: 2rem;
-	}
-	@media (max-width: 700px) {
-		.cell.sz-s,
-		.cell.sz-l {
-			margin-top: 0;
-		}
+		--card-w: min(290px, 100%);
 	}
 	.cardlink {
 		font-size: 0.8rem;
