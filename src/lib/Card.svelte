@@ -86,10 +86,9 @@
 					<div class="foil-b" aria-hidden="true"></div>
 					<div class="sparkles" aria-hidden="true"></div>
 					<div class="scrim" aria-hidden="true"></div>
-					<div class="crt" aria-hidden="true"></div>
 				</div>
 
-				<span class="cost" title="Coût en Énergie">{card.cost}</span>
+				<span class="cost" title="Coût en Volonté">{card.cost}</span>
 				<span class="sigil" title={faction.name}>{faction.sigil}</span>
 
 				<div class="content">
@@ -139,10 +138,8 @@
 				<div class="glare" aria-hidden="true"></div>
 			</div>
 			<footer class="frame-footer" aria-hidden="true">
-				<span class="ff-serial"
-					>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 18).toUpperCase()}</span
-				>
-				<span class="ff-rarity">◯ {rarityDef.name} · SIL-01</span>
+				<span class="ff-serial">{faction.name} · {card.id.slice(0, 14).toUpperCase()}</span>
+				<span class="ff-rarity">◯ {rarityDef.name} · Le Silence</span>
 			</footer>
 			<div class="conduits" aria-hidden="true"></div>
 		</div>
@@ -168,7 +165,7 @@
 		touch-action: none;
 		user-select: none;
 		-webkit-user-select: none;
-		font-family: Bahnschrift, 'Segoe UI', system-ui, sans-serif;
+		font-family: 'Inter Variable', Inter, 'Segoe UI', system-ui, sans-serif;
 	}
 
 	/* ============ LE CADRE : la rareté est un matériau ============ */
@@ -325,26 +322,6 @@
 		pointer-events: none;
 	}
 
-	/* filtre TV : scanlines + vignette chaude — UNIQUEMENT sur l'illustration.
-	   Porte aussi le sertissage de la fenêtre (écran enchâssé dans la carte). */
-	.crt {
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		z-index: 2;
-		background:
-			repeating-linear-gradient(
-				180deg,
-				rgba(255, 255, 255, 0.014) 0 1px,
-				transparent 1px 4px
-			),
-			radial-gradient(120% 120% at 50% 30%, transparent 68%, rgba(201, 164, 69, 0.035) 100%);
-		box-shadow:
-			inset 0 0 0 1px rgba(0, 0, 0, 0.55),
-			inset 0 0.8cqw 2cqw rgba(0, 0, 0, 0.26),
-			inset 0 -0.6cqw 1.6cqw rgba(0, 0, 0, 0.18);
-	}
-
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
 	   L'encre s'adapte au matériau (claire sur carbone/prisme, sombre sur métaux). */
 	.frame-footer {
@@ -396,45 +373,52 @@
 		z-index: 4;
 		display: grid;
 		place-items: center;
-		width: 11.5cqw;
-		height: 13cqw;
-		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-		/* cellule d'énergie : verre sombre bombé (gloss haut, ombre basse) */
+		width: 12cqw;
+		height: 12cqw;
+		border-radius: 50%;
+		/* le halo : verre sombre bombé, lueur d'or qui monte du bas */
 		background:
-			radial-gradient(90% 55% at 50% 6%, rgba(255, 255, 255, 0.28), transparent 60%),
-			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--sys) 30%, transparent), transparent 60%),
-			linear-gradient(180deg, #22242e 0%, #101219 100%);
-		font-size: 6.4cqw;
+			radial-gradient(90% 55% at 50% 8%, rgba(255, 255, 255, 0.22), transparent 60%),
+			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--sys) 32%, transparent), transparent 62%),
+			radial-gradient(120% 120% at 50% 50%, #1a1b22 0%, #0e0f15 100%);
+		font-family: Cinzel, Georgia, serif;
+		font-size: 6cqw;
 		font-weight: 700;
-		/* centrage optique du chiffre : ligne à 1 + correction du décalage
-		   vertical des chiffres Bahnschrift dans leur em-box */
 		line-height: 1;
-		padding-top: 0.5cqw;
 		font-variant-numeric: tabular-nums;
-		color: #fff;
+		color: #f5edd8;
 		text-shadow:
 			0 0.35cqw 0.5cqw rgba(0, 0, 0, 0.65),
 			0 0 2.2cqw color-mix(in srgb, var(--sys) 60%, transparent);
-		/* le clip-path avale box-shadow : l'ombre portée passe par filter */
-		filter: drop-shadow(0 0.5cqw 0.9cqw rgba(0, 0, 0, 0.55));
+		/* filet d'or intérieur, en retrait de l'anneau */
+		box-shadow:
+			inset 0 0 0 1px color-mix(in srgb, var(--sys) 40%, transparent),
+			0 0.5cqw 1cqw rgba(0, 0, 0, 0.55);
 	}
-	/* anneau d'or brossé (la Volonté est or — le halo) */
+	/* l'anneau d'or brossé : le halo de la Volonté */
 	.cost::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		clip-path: polygon(
-			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
-			50% 0, 50% 5.5%, 5% 27.5%, 5% 72.5%, 50% 94.5%, 95% 72.5%, 95% 27.5%, 50% 5.5%
+		border-radius: 50%;
+		padding: 0.75cqw;
+		background: conic-gradient(
+			from 210deg,
+			#f2d98a,
+			#c9a445 22%,
+			#8f6420 45%,
+			#e6c05e 68%,
+			#a97f2c 85%,
+			#f2d98a
 		);
-		background: linear-gradient(
-			165deg,
-			#f2d98a 0%,
-			#c9a445 28%,
-			#8f6420 52%,
-			#e6c05e 74%,
-			#a97f2c 100%
-		);
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
 	}
 	/* sigil de faction : le glyphe accent, seul */
 	.sigil {
@@ -478,32 +462,33 @@
 		position: relative;
 		align-self: flex-start;
 		max-width: 100%;
-		padding: 1.5cqw 5.2cqw 1.6cqw 2.4cqw;
-		/* plaque à pan coupé : verre sombre, coin haut-droit biseauté.
-		   Le clip-path avale box-shadow → relief via filter + filets internes. */
-		clip-path: polygon(0 0, calc(100% - 4.2cqw) 0, 100% 4.2cqw, 100% 100%, 0 100%);
+		padding: 1.6cqw 3.4cqw 1.7cqw 2.6cqw;
+		/* plaque gravée : verre sombre serti d'un filet d'or, lueur de faction à gauche */
+		border-radius: 1.4cqw;
 		background:
 			radial-gradient(
 				60% 100% at 0% 50%,
 				color-mix(in srgb, var(--accent) 16%, transparent) 0%,
 				transparent 70%
 			),
-			linear-gradient(180deg, rgba(32, 34, 45, 0.94) 0%, rgba(11, 12, 17, 0.9) 100%);
-		border-left: 0.7cqw solid var(--accent);
-		filter: drop-shadow(0 0.5cqw 1cqw rgba(0, 0, 0, 0.5));
+			linear-gradient(180deg, rgba(30, 31, 40, 0.94) 0%, rgba(11, 12, 17, 0.9) 100%);
+		border: 1px solid color-mix(in srgb, var(--sys) 38%, transparent);
+		box-shadow:
+			0 0.5cqw 1cqw rgba(0, 0, 0, 0.5),
+			inset 0 1px 0 rgba(255, 255, 255, 0.1);
 	}
-	/* filet lumineux en tête, qui suit le pan coupé */
+	/* filet d'or en tête : l'écriture est sertie, pas affichée */
 	.plate::before {
 		content: '';
 		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
+		top: -1px;
+		left: 1.4cqw;
+		right: 1.4cqw;
 		height: 1px;
 		background: linear-gradient(
 			90deg,
-			rgba(255, 255, 255, 0.3) 0%,
-			rgba(255, 255, 255, 0.08) 70%,
+			transparent 0%,
+			color-mix(in srgb, var(--sys) 85%, #fff) 50%,
 			transparent 100%
 		);
 	}
@@ -549,21 +534,18 @@
 			transparent 90%
 		);
 	}
-	/* le CELL est un chip taillé — accent en fond, pas de chevrons typographiques */
+	/* le CELL est un cartel serti — filet d'accent, fond de verre */
 	.cell {
-		padding: 0.45cqw 1.4cqw 0.4cqw;
-		clip-path: polygon(1.1cqw 0, 100% 0, calc(100% - 1.1cqw) 100%, 0 100%);
+		padding: 0.45cqw 1.6cqw 0.4cqw;
+		border-radius: 999px;
+		border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
 		/* jamais deux lignes : le chip se compresse (tracking réduit) puis ellipse */
 		letter-spacing: 0.05em;
 		min-width: 0;
 		flex-shrink: 1;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		background: linear-gradient(
-			180deg,
-			color-mix(in srgb, var(--accent) 40%, #171821) 0%,
-			color-mix(in srgb, var(--accent) 22%, #10111a) 100%
-		);
+		background: color-mix(in srgb, var(--accent) 14%, rgba(10, 11, 16, 0.6));
 		color: color-mix(in srgb, var(--accent) 45%, #fff);
 		text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
 	}
@@ -587,13 +569,12 @@
 			rgba(255, 255, 255, 0.035) 85%
 		);
 		border: 0.22cqw solid rgba(0, 0, 0, 0.45);
-		/* barre de titre terminal */
+		/* tranche dorée : le panneau est relié, comme une page du Korum */
 		border-top: 0.45cqw solid color-mix(in srgb, var(--sys) 45%, #3a2c14);
 		box-shadow:
 			inset 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.5),
 			inset 0 -1px 0 rgba(255, 255, 255, 0.07);
 		overflow: hidden;
-		font-family: 'Segoe UI', system-ui, sans-serif;
 	}
 	/* filigrane de faction derrière le texte (cf. le watermark MTG) */
 	.watermark {
@@ -621,11 +602,11 @@
 		padding: 1.2cqw 1.8cqw;
 		font-size: 3.5cqw;
 		line-height: 1.3;
-		border-left: 0.5cqw solid var(--accent);
-		background: color-mix(in srgb, var(--accent) 9%, transparent);
+		border-left: 0.5cqw solid var(--sys);
+		background: color-mix(in srgb, var(--sys) 9%, transparent);
 		border-radius: 0 1cqw 1cqw 0;
 	}
-	/* pill étiquetée (cf. les chips "Déclenchement" de One Piece) */
+	/* le sceau du Prononcer : pill d'or — le geste signature est doré, pas faction */
 	.synchro-tag {
 		display: inline-block;
 		font-family: Cinzel, Georgia, serif;
@@ -633,15 +614,15 @@
 		font-weight: 700;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		padding: 0.45cqw 1.7cqw 0.4cqw;
+		padding: 0.45cqw 1.9cqw 0.4cqw;
 		margin-bottom: 0.7cqw;
-		clip-path: polygon(1cqw 0, 100% 0, calc(100% - 1cqw) 100%, 0 100%);
+		border-radius: 999px;
 		background: linear-gradient(
 			180deg,
-			color-mix(in srgb, var(--accent) 85%, #fff) 0%,
-			color-mix(in srgb, var(--accent) 80%, #000) 100%
+			color-mix(in srgb, var(--sys) 80%, #fff) 0%,
+			color-mix(in srgb, var(--sys) 88%, #000) 100%
 		);
-		color: #0e0f15;
+		color: #14100a;
 		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
 	}
 	.flavor {
@@ -662,8 +643,8 @@
 	.protocol-bar {
 		justify-content: center;
 	}
-	/* stats : mini-cellules hexagonales — le même objet que la cellule de coût,
-	   serti d'acier au lieu d'ambre. Un seul langage de badge sur la carte. */
+	/* stats : médaillons — le même halo que la cellule de coût, en plus petit.
+	   Un seul langage de badge sur la carte. */
 	.stat {
 		display: flex;
 		align-items: center;
@@ -673,39 +654,46 @@
 		position: relative;
 		display: grid;
 		place-items: center;
-		width: 8.6cqw;
-		height: 9.8cqw;
-		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+		width: 9cqw;
+		height: 9cqw;
+		border-radius: 50%;
 		background:
-			radial-gradient(90% 55% at 50% 6%, rgba(255, 255, 255, 0.26), transparent 60%),
-			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 60%),
-			linear-gradient(180deg, #22242e 0%, #101219 100%);
-		font-size: 4.6cqw;
+			radial-gradient(90% 55% at 50% 8%, rgba(255, 255, 255, 0.2), transparent 60%),
+			radial-gradient(100% 70% at 50% 115%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 62%),
+			radial-gradient(120% 120% at 50% 50%, #1a1b22 0%, #0e0f15 100%);
+		font-family: Cinzel, Georgia, serif;
+		font-size: 4.3cqw;
 		font-weight: 700;
 		line-height: 1;
-		padding-top: 0.4cqw;
 		font-variant-numeric: tabular-nums;
-		color: #fff;
+		color: #f5edd8;
 		text-shadow: 0 0.3cqw 0.45cqw rgba(0, 0, 0, 0.6);
-		filter: drop-shadow(0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5));
+		box-shadow: 0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5);
 	}
 	.stat .hex::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		clip-path: polygon(
-			50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%,
-			50% 0, 50% 6.5%, 6% 28%, 6% 72%, 50% 93.5%, 94% 72%, 94% 28%, 50% 6.5%
+		border-radius: 50%;
+		padding: 0.55cqw;
+		/* sertissage d'or brossé */
+		background: conic-gradient(
+			from 210deg,
+			#f2d98a,
+			#c9a445 22%,
+			#8f6420 45%,
+			#e6c05e 68%,
+			#a97f2c 85%,
+			#f2d98a
 		);
-		/* sertissage acier brossé */
-		background: linear-gradient(
-			165deg,
-			#eef1f6 0%,
-			#9aa2b0 30%,
-			#5d6473 55%,
-			#d5dae2 78%,
-			#7e8694 100%
-		);
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
 	}
 	.stat small {
 		font-family: Cinzel, Georgia, serif;
@@ -717,10 +705,9 @@
 	.rarity-dot {
 		width: 3.4cqw;
 		height: 3.4cqw;
-		rotate: 45deg;
-		border-radius: 0.7cqw;
+		border-radius: 50%;
 		background: var(--rarity-gem, #666);
-		/* gemme sertie : reflet + assise */
+		/* gemme-halo sertie : reflet + assise */
 		box-shadow:
 			inset 0.4cqw 0.4cqw 0.7cqw rgba(255, 255, 255, 0.55),
 			inset -0.4cqw -0.4cqw 0.7cqw rgba(0, 0, 0, 0.45),
