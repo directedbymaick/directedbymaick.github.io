@@ -1,14 +1,41 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import favicon from '$lib/assets/favicon.svg';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
 	import '@fontsource-variable/inter/index.css';
+	import '@fontsource/cinzel/400.css';
 	import '@fontsource/cinzel/600.css';
 	import '@fontsource/cinzel/700.css';
+	import '@fontsource/cormorant-garamond/400.css';
 	import '@fontsource/cormorant-garamond/400-italic.css';
 
 	let { children } = $props();
+
+	// Lenis : le poids du scroll (cf. IZANAMI-CODES.md §2) — piloté par le ticker GSAP.
+	onMount(() => {
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		let cleanup = () => {};
+		(async () => {
+			const [{ default: Lenis }, { gsap }, { ScrollTrigger }] = await Promise.all([
+				import('lenis'),
+				import('gsap'),
+				import('gsap/ScrollTrigger')
+			]);
+			gsap.registerPlugin(ScrollTrigger);
+			const lenis = new Lenis({ lerp: 0.09 });
+			lenis.on('scroll', ScrollTrigger.update);
+			const tick = (time: number) => lenis.raf(time * 1000);
+			gsap.ticker.add(tick);
+			gsap.ticker.lagSmoothing(0);
+			cleanup = () => {
+				gsap.ticker.remove(tick);
+				lenis.destroy();
+			};
+		})();
+		return () => cleanup();
+	});
 
 	const links = [
 		{ href: '/', label: 'Registre' },

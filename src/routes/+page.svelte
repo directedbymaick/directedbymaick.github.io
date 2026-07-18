@@ -10,6 +10,14 @@
 	const factions = Object.keys(charter.factions) as FactionId[];
 	const pct = Math.round((cards.length / SET_SIZE) * 100);
 
+	const FACTION_TAG: Record<FactionId, string> = {
+		vasar: "L'Ordre qui récite",
+		exar: 'La Rupture qui achève',
+		eshar: 'La mémoire des syllabes',
+		morar: 'La chute devenue arrivée',
+		velar: 'La Volonté suffit'
+	};
+
 	function byFaction(f: FactionId) {
 		return cards
 			.filter((c) => c.faction === f)
@@ -29,6 +37,20 @@
 		]);
 	}
 
+	/** L'artwork du bandeau de chapitre : la carte la plus rare du peuple. */
+	const RANK = { common: 0, rare: 1, epic: 2, legendary: 3, prism: 4 };
+	function bannerArt(f: FactionId) {
+		const list = byFaction(f);
+		if (!list.length) return null;
+		return [...list].sort((a, b) => (RANK[b.rarity] ?? 0) - (RANK[a.rarity] ?? 0))[0].art;
+	}
+
+	// galerie asymétrique : tailles et vitesses de parallax qui se répondent
+	const SIZES = ['m', 'l', 's', 'm', 's', 'l', 'm', 's'];
+	const SPEEDS = [0, 26, -18, 12, -24, 8, -12, 20];
+
+	const heroArt = bannerArt('vasar');
+
 	let container: HTMLElement;
 
 	onMount(() => {
@@ -39,24 +61,100 @@
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
 			ctx = gsap.context(() => {
-				gsap.from('.hero > *', {
-					autoAlpha: 0,
-					y: 26,
-					duration: 0.9,
-					ease: 'power3.out',
-					stagger: 0.09
+				// ---- hero : l'émergence (l'image sort du noir, le titre se dit ligne à ligne)
+				gsap.fromTo(
+					'.hero-art img',
+					{ autoAlpha: 0, scale: 1.07 },
+					{ autoAlpha: 1, scale: 1, duration: 3, ease: 'quart.out' }
+				);
+				gsap.fromTo(
+					'.hero .line',
+					{ autoAlpha: 0, y: 34 },
+					{ autoAlpha: 1, y: 0, duration: 1.4, ease: 'expo.out', stagger: 0.14, delay: 0.5 }
+				);
+				gsap.fromTo(
+					'.hero .quiet',
+					{ autoAlpha: 0 },
+					{ autoAlpha: 1, duration: 1.4, ease: 'quart.out', delay: 1.5, stagger: 0.12 }
+				);
+				// l'auréole se dessine en dernier
+				gsap.fromTo(
+					'.aureole',
+					{ autoAlpha: 0, y: 10 },
+					{ autoAlpha: 1, y: 0, duration: 1.4, ease: 'circ.out', delay: 1.2 }
+				);
+				// parallax interne du hero au scroll
+				gsap.to('.hero-art img', {
+					yPercent: 10,
+					ease: 'none',
+					scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
 				});
+
+				// ---- letterbox : le rideau s'ouvre sur chaque bandeau de chapitre
+				gsap.utils.toArray<HTMLElement>('.bandeau').forEach((b) => {
+					gsap.set(b.querySelectorAll('.shutter'), { scaleY: 1 });
+					ScrollTrigger.create({
+						trigger: b,
+						start: 'top 72%',
+						once: true,
+						onEnter: () =>
+							gsap.to(b.querySelectorAll('.shutter'), {
+								scaleY: 0,
+								duration: 1.4,
+								ease: 'expo.inOut'
+							})
+					});
+					const img = b.querySelector('img');
+					if (img)
+						gsap.fromTo(
+							img,
+							{ yPercent: -8 },
+							{
+								yPercent: 8,
+								ease: 'none',
+								scrollTrigger: { trigger: b, start: 'top bottom', end: 'bottom top', scrub: 1 }
+							}
+						);
+				});
+
+				// ---- chapitres : index + titre
+				gsap.utils.toArray<HTMLElement>('.chapter-head').forEach((h) => {
+					gsap.from(h.children, {
+						autoAlpha: 0,
+						y: 26,
+						duration: 1.4,
+						ease: 'expo.out',
+						stagger: 0.1,
+						scrollTrigger: { trigger: h, start: 'top 82%', once: true }
+					});
+				});
+
+				// ---- galerie : les cartes émergent puis dérivent chacune à sa vitesse
+				gsap.set('.cell', { autoAlpha: 0 });
 				ScrollTrigger.batch('.cell', {
-					start: 'top 90%',
+					start: 'top 92%',
 					once: true,
 					onEnter: (els) =>
 						gsap.fromTo(
 							els,
-							{ autoAlpha: 0, y: 34 },
-							{ autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.07 }
+							{ autoAlpha: 0, y: 44 },
+							{ autoAlpha: 1, y: 0, duration: 1.4, ease: 'expo.out', stagger: 0.08 }
 						)
 				});
-				gsap.set('.cell', { autoAlpha: 0 });
+				gsap.utils.toArray<HTMLElement>('.cell[data-speed]').forEach((cell) => {
+					const sp = parseFloat(cell.dataset.speed ?? '0');
+					if (!sp) return;
+					gsap.fromTo(
+						cell,
+						{ y: sp },
+						{
+							y: -sp,
+							ease: 'none',
+							scrollTrigger: { trigger: cell, start: 'top bottom', end: 'bottom top', scrub: 1.2 }
+						}
+					);
+				});
+
 				ScrollTrigger.refresh();
 			}, container);
 		})();
@@ -70,27 +168,58 @@
 </svelte:head>
 
 <div bind:this={container}>
+	<!-- ============ HERO : l'émergence ============ -->
 	<header class="hero">
-		<p class="kicker">Set 01</p>
-		<h1>Le Silence</h1>
-		<p class="tagline">{charter.game.tagline}</p>
-		<div class="meter" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
-			<span class="meter-fill" style="width: {pct}%"></span>
+		{#if heroArt}
+			<div class="hero-art" aria-hidden="true"><img src={heroArt} alt="" /></div>
+		{/if}
+		<div class="hero-inner">
+			<p class="quiet kicker">Set 01</p>
+			<span class="aureole" aria-hidden="true"></span>
+			<h1><span class="line">Le Silence</span></h1>
+			<p class="tagline">
+				<span class="line">Le Créateur se tait.</span>
+				<span class="line em">Pas vous.</span>
+			</p>
+			<div class="quiet meter" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
+				<span class="meter-fill" style="width: {pct}%"></span>
+			</div>
+			<p class="quiet meter-label">{cards.length} / {SET_SIZE} cartes forgées</p>
 		</div>
-		<p class="meter-label">{cards.length} / {SET_SIZE} cartes</p>
+		<p class="quiet scrollhint">Défiler</p>
 	</header>
 
-	{#each factions as f (f)}
+	<!-- ============ CHAPITRES : un peuple, un écran ============ -->
+	{#each factions as f, fi (f)}
 		{@const list = byFaction(f)}
 		{#if list.length > 0}
-			<section class="faction-block">
-				<header class="fhead" style="--fc: {charter.factions[f].color}">
-					<h2><span class="fsigil">{charter.factions[f].sigil}</span> {charter.factions[f].name}</h2>
-					<span class="fcount">{list.length} carte{list.length > 1 ? 's' : ''}</span>
+			{@const banner = bannerArt(f)}
+			<section class="chapter" style="--fc: {charter.factions[f].color}">
+				<span class="vlabel" aria-hidden="true">{charter.factions[f].name}</span>
+
+				<header class="chapter-head">
+					<span class="index">0{fi + 1}</span>
+					<h2>{charter.factions[f].name}</h2>
+					<p class="ftag">{FACTION_TAG[f]}</p>
+					<span class="fcount"
+						>{charter.factions[f].sigil} {list.length} carte{list.length > 1 ? 's' : ''}</span
+					>
 				</header>
-				<div class="wall">
-					{#each entriesFor(f) as e (e.key)}
-						<div class="cell">
+
+				{#if banner}
+					<div class="bandeau" aria-hidden="true">
+						<img src={banner} alt="" />
+						<i class="shutter top"></i>
+						<i class="shutter bottom"></i>
+					</div>
+				{/if}
+
+				<div class="galerie">
+					{#each entriesFor(f) as e, i (e.key)}
+						<div
+							class="cell sz-{SIZES[i % SIZES.length]}"
+							data-speed={SPEEDS[i % SPEEDS.length]}
+						>
 							<Card card={e.card} />
 							<a class="cardlink" href={e.href}>
 								{e.card.name}
@@ -105,130 +234,268 @@
 </div>
 
 <style>
-	/* ---------- hero ---------- */
+	/* ============ HERO ============ */
 
 	.hero {
 		position: relative;
-		padding: 7rem 0 5.5rem;
+		min-height: 92vh;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		text-align: center;
+		margin: 0 -2rem;
+		overflow: hidden;
 	}
-	/* l'auréole : une ellipse penchée qui flotte au-dessus du titre, comme sur une tête */
-	.hero::before {
-		content: '';
+	/* l'image émerge du noir : masquée sur tous les bords, jamais de cadre */
+	.hero-art {
 		position: absolute;
-		left: 50%;
-		top: 4.2rem;
-		width: min(230px, 46vw);
-		height: 54px;
-		transform: translateX(-50%) rotate(-7deg);
-		border-radius: 50%;
-		border: 2px solid rgba(232, 200, 118, 0.75);
-		border-bottom-color: rgba(232, 200, 118, 0.2);
-		filter: blur(0.6px) drop-shadow(0 0 22px rgba(201, 164, 69, 0.55));
+		inset: 0;
 		pointer-events: none;
 	}
-	/* la lumière qu'elle projette, très diffuse */
-	.hero::after {
-		content: '';
-		position: absolute;
-		left: 50%;
-		top: 30%;
-		transform: translate(-50%, -50%);
-		width: min(680px, 95vw);
-		height: 320px;
-		background: radial-gradient(50% 50% at 50% 50%, rgba(201, 164, 69, 0.1), transparent 70%);
-		pointer-events: none;
+	.hero-art img {
+		width: 100%;
+		height: 112%;
+		object-fit: cover;
+		object-position: center 20%;
+		opacity: 0.5;
+		-webkit-mask-image: radial-gradient(95% 75% at 50% 38%, #000 30%, transparent 74%);
+		mask-image: radial-gradient(95% 75% at 50% 38%, #000 30%, transparent 74%);
+	}
+	.hero-inner {
+		position: relative;
+		padding: 0 2rem;
 	}
 	.kicker {
-		margin: 0 0 1.2rem;
-		font-size: 0.8rem;
+		margin: 0 0 3.4rem;
+		font-size: 0.78rem;
 		font-weight: 600;
-		letter-spacing: 0.3em;
+		letter-spacing: 0.34em;
 		text-transform: uppercase;
-		color: rgba(242, 240, 234, 0.4);
+		color: rgba(242, 240, 234, 0.5);
+	}
+	/* l'auréole penchée, au-dessus du titre */
+	.aureole {
+		position: absolute;
+		left: 50%;
+		top: 1.6rem;
+		width: min(210px, 44vw);
+		height: 48px;
+		transform: translateX(-50%) rotate(-7deg);
+		border-radius: 50%;
+		border: 2px solid rgba(232, 200, 118, 0.8);
+		border-bottom-color: rgba(232, 200, 118, 0.2);
+		filter: blur(0.6px) drop-shadow(0 0 24px rgba(201, 164, 69, 0.6));
+		pointer-events: none;
 	}
 	h1 {
 		margin: 0;
-		font-size: clamp(3.6rem, 9vw, 7rem);
-		font-weight: 800;
-		letter-spacing: -0.035em;
-		line-height: 1;
-		background: linear-gradient(180deg, #ffffff 20%, #e8ddba 75%, #c9a445 130%);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 400;
+		font-size: clamp(3.4rem, 8.5vw, 6.6rem);
+		letter-spacing: 0.04em;
+		line-height: 1.05;
+		color: #f5f3ec;
+		text-shadow: 0 0 60px rgba(201, 164, 69, 0.25);
 	}
+	.line {
+		display: block;
+	}
+	/* la tagline en escalier — jamais empilée-centrée */
 	.tagline {
-		margin: 1.6rem 0 0;
+		margin: 2.2rem 0 0;
 		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+		line-height: 1.35;
+		color: rgba(242, 240, 234, 0.7);
+	}
+	.tagline .line {
+		transform: translateX(-2.5ch);
+	}
+	.tagline .line.em {
+		transform: translateX(3.5ch);
 		font-style: italic;
-		font-size: 1.4rem;
-		color: rgba(242, 240, 234, 0.55);
+		color: #e2c069;
 	}
 	.meter {
-		width: min(280px, 70vw);
+		width: min(240px, 60vw);
 		height: 2px;
-		margin: 2.6rem auto 0;
+		margin: 3rem auto 0;
 		border-radius: 2px;
-		background: rgba(242, 240, 234, 0.1);
+		background: rgba(242, 240, 234, 0.12);
 		overflow: hidden;
 	}
 	.meter-fill {
 		display: block;
 		height: 100%;
-		border-radius: 2px;
 		background: #c9a445;
 	}
 	.meter-label {
 		margin: 0.7rem 0 0;
 		font-size: 0.78rem;
 		font-variant-numeric: tabular-nums;
-		color: rgba(242, 240, 234, 0.38);
+		color: rgba(242, 240, 234, 0.4);
+	}
+	.scrollhint {
+		position: absolute;
+		bottom: 2rem;
+		left: 50%;
+		transform: translateX(-50%);
+		margin: 0;
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.4em;
+		text-transform: uppercase;
+		color: rgba(242, 240, 234, 0.35);
+		animation: breathe 3.2s ease-in-out infinite;
+	}
+	@keyframes breathe {
+		0%,
+		100% {
+			opacity: 0.35;
+		}
+		50% {
+			opacity: 0.85;
+		}
 	}
 
-	/* ---------- sections ---------- */
+	/* ============ CHAPITRES ============ */
 
-	.faction-block {
-		margin-bottom: 5rem;
+	.chapter {
+		position: relative;
+		/* un écran de noir entre les peuples : le silence entre deux syllabes */
+		padding: 22vh 0 10vh;
 	}
-	.fhead {
+	.vlabel {
+		position: absolute;
+		top: 24vh;
+		left: -1.2rem;
+		writing-mode: vertical-rl;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 0.72rem;
+		letter-spacing: 0.5em;
+		text-transform: uppercase;
+		color: rgba(242, 240, 234, 0.22);
+		pointer-events: none;
+	}
+	@media (max-width: 900px) {
+		.vlabel {
+			display: none;
+		}
+	}
+
+	.chapter-head {
 		display: flex;
 		align-items: baseline;
-		justify-content: space-between;
-		padding-bottom: 0.9rem;
-		margin-bottom: 2.2rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		gap: 1.4rem;
+		margin-bottom: 3rem;
 	}
-	.fhead h2 {
+	.index {
+		font-size: 0.85rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.2em;
+		color: rgba(242, 240, 234, 0.32);
+	}
+	.chapter-head h2 {
 		margin: 0;
-		font-size: 1.15rem;
-		font-weight: 650;
-		letter-spacing: 0.01em;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 400;
+		font-size: clamp(2rem, 4.5vw, 3.2rem);
+		letter-spacing: 0.05em;
+		color: #f2f0ea;
 	}
-	.fsigil {
-		color: var(--fc);
-		margin-right: 0.35rem;
+	.ftag {
+		margin: 0;
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-style: italic;
+		font-size: 1.15rem;
+		color: rgba(242, 240, 234, 0.45);
 	}
 	.fcount {
-		font-size: 0.82rem;
-		color: rgba(242, 240, 234, 0.38);
+		margin-left: auto;
+		font-size: 0.8rem;
 		font-variant-numeric: tabular-nums;
+		color: color-mix(in srgb, var(--fc) 70%, #fff);
+		opacity: 0.7;
+		white-space: nowrap;
+	}
+	@media (max-width: 700px) {
+		.chapter-head {
+			flex-wrap: wrap;
+		}
+		.ftag {
+			width: 100%;
+		}
 	}
 
-	/* ---------- grille ---------- */
+	/* ---------- bandeau letterbox ---------- */
+	.bandeau {
+		position: relative;
+		height: 38vh;
+		min-height: 240px;
+		margin: 0 0 5rem;
+		overflow: hidden;
+	}
+	.bandeau img {
+		width: 100%;
+		height: 130%;
+		margin-top: -8%;
+		object-fit: cover;
+		object-position: center 25%;
+		opacity: 0.55;
+		-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+		mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+	}
+	.shutter {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 51%;
+		background: #0a0a0d;
+		transform: scaleY(0);
+	}
+	.shutter.top {
+		top: 0;
+		transform-origin: top;
+	}
+	.shutter.bottom {
+		bottom: 0;
+		transform-origin: bottom;
+	}
 
-	.wall {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 3rem 1.6rem;
+	/* ---------- galerie asymétrique ---------- */
+
+	.galerie {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		justify-content: center;
+		gap: 4.5rem 3.4rem;
 	}
 	.cell {
-		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.95rem;
-		--card-w: min(290px, 100%);
+		gap: 1rem;
+	}
+	/* les tailles se répondent — jamais deux fois la même côte à côte */
+	.cell.sz-s {
+		--card-w: min(230px, 84vw);
+		margin-top: 4.5rem;
+	}
+	.cell.sz-m {
+		--card-w: min(280px, 88vw);
+	}
+	.cell.sz-l {
+		--card-w: min(330px, 92vw);
+		margin-top: 2rem;
+	}
+	@media (max-width: 700px) {
+		.cell.sz-s,
+		.cell.sz-l {
+			margin-top: 0;
+		}
 	}
 	.cardlink {
 		font-size: 0.8rem;
