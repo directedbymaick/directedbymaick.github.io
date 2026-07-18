@@ -1,0 +1,23 @@
+{
+	"id": "doras",
+	"name": "Doras, gardien des lignes",
+	"kind": "etre",
+	"cost": 3,
+	"attack": 2,
+	"health": 3,
+	"text": "Serment.",
+	"flavor": "Chaque chose à la place où KOR l'a dite.",
+	"rarity": "common",
+	"faction": "vasar",
+	"art": "/art/doras.webp",
+	"gene": {
+		"palette": [
+			"#29231b",
+			"#383936",
+			"#c6c8c9"
+		],
+		"foilPreset": "mat",
+		"accent": "#c9a445",
+		"seed": 3913
+	}
+}

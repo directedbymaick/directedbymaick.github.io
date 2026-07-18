@@ -1,0 +1,21 @@
+{
+	"id": "doublement-des-choeurs",
+	"name": "Doublement des chœurs",
+	"kind": "verbe",
+	"cost": 4,
+	"text": "Invoquez deux Choristes 1/2.",
+	"flavor": "Ce que Koren a lu dans les tours, il ne l'a dit à personne.",
+	"rarity": "epic",
+	"faction": "vasar",
+	"art": "/art/doublement-des-choeurs.webp",
+	"gene": {
+		"palette": [
+			"#372a25",
+			"#271818",
+			"#c8a679"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#c9a445",
+		"seed": 744931
+	}
+}

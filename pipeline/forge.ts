@@ -26,9 +26,9 @@ const charter: Charter = JSON.parse(fs.readFileSync(path.join(ROOT, 'charter.jso
 const { values: args } = parseArgs({
 	options: {
 		local: { type: 'string', default: './drop' },
-		faction: { type: 'string', default: 'epoques' },
+		faction: { type: 'string', default: 'vasar' },
 		rarity: { type: 'string', default: 'common' },
-		kind: { type: 'string', default: 'traveler' },
+		kind: { type: 'string', default: 'etre' },
 		name: { type: 'string' },
 		/** Régénération : si la carte existe, remplace SEULEMENT l'artwork
 		 *  (art, palette, seed) — stats et textes intacts. */
@@ -43,11 +43,10 @@ function fail(msg: string): never {
 
 const faction = args.faction as FactionId;
 const rarity = args.rarity as Rarity;
-const kind = args.kind as 'traveler' | 'epoque' | 'protocole';
+const kind = args.kind as 'etre' | 'verbe' | 'relique' | 'lieu';
 if (!charter.factions[faction]) fail(`Faction inconnue : ${faction} (${Object.keys(charter.factions).join(', ')})`);
 if (!charter.rarities[rarity]) fail(`Rareté inconnue : ${rarity} (${Object.keys(charter.rarities).join(', ')})`);
-if (!['traveler', 'epoque', 'protocole'].includes(kind)) fail(`Kind inconnu : ${kind}`);
-if (kind === 'epoque' && faction !== 'epoques') fail('Les unités epoque appartiennent à la faction epoques.');
+if (!['etre', 'verbe', 'relique', 'lieu'].includes(kind)) fail(`Kind inconnu : ${kind}`);
 
 function slugify(name: string): string {
 	return name

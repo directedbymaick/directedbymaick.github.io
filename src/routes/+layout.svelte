@@ -58,7 +58,7 @@
 		font-family: 'Segoe UI', system-ui, sans-serif;
 	}
 	:global(::selection) {
-		background: #c23b4e;
+		background: #c9a445;
 		color: #ece8e1;
 	}
 	:global(a) {
@@ -97,7 +97,7 @@
 		text-transform: uppercase;
 	}
 	.brand-mark {
-		color: #c23b4e;
+		color: #c9a445;
 		font-size: 0.8em;
 	}
 	.links {
@@ -131,7 +131,7 @@
 		right: 1.1rem;
 		bottom: -1px;
 		height: 3px;
-		background: #c23b4e;
+		background: #c9a445;
 		clip-path: polygon(0 0, 100% 0, calc(100% - 3px) 100%, 3px 100%);
 	}
 	.setchip {
@@ -180,7 +180,7 @@
 		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
 	}
 	.f-diamond {
-		color: #c23b4e;
+		color: #c9a445;
 		font-size: 0.7em;
 	}
 </style>

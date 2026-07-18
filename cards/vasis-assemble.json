@@ -1,0 +1,21 @@
+{
+	"id": "vasis-assemble",
+	"name": "Le Vasis assemblé",
+	"kind": "verbe",
+	"cost": 6,
+	"text": "Neutralisez tous les Êtres adverses jusqu'à votre prochain tour.",
+	"flavor": "Mille sentences prononcées d'une seule voix.",
+	"rarity": "epic",
+	"faction": "vasar",
+	"art": "/art/vasis-assemble.webp",
+	"gene": {
+		"palette": [
+			"#373529",
+			"#181816",
+			"#a7c7d7"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#c9a445",
+		"seed": 458175
+	}
+}

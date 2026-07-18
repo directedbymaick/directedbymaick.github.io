@@ -1,0 +1,23 @@
+{
+	"id": "senel",
+	"name": "Senel, sentinelle des lisières",
+	"kind": "etre",
+	"cost": 3,
+	"attack": 2,
+	"health": 2,
+	"text": "Quand un Prononcer adverse est activé : infligez 2 dégâts au Nom adverse.",
+	"flavor": "Formée par Thalen. Elle écoute ce que les chœurs couvrent.",
+	"rarity": "common",
+	"faction": "vasar",
+	"art": "/art/senel.webp",
+	"gene": {
+		"palette": [
+			"#374456",
+			"#171819",
+			"#b8b7d6"
+		],
+		"foilPreset": "mat",
+		"accent": "#c9a445",
+		"seed": 453443
+	}
+}

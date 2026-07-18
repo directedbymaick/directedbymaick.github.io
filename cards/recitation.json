@@ -1,0 +1,21 @@
+{
+	"id": "recitation",
+	"name": "Récitation",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Vos Êtres gagnent +0/+2.",
+	"flavor": "Le monde, entendant son nom, continue d'exister.",
+	"rarity": "common",
+	"faction": "vasar",
+	"art": "/art/recitation.webp",
+	"gene": {
+		"palette": [
+			"#593528",
+			"#191818",
+			"#c9a996"
+		],
+		"foilPreset": "mat",
+		"accent": "#c9a445",
+		"seed": 212322
+	}
+}

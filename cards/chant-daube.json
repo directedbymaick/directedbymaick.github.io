@@ -1,0 +1,21 @@
+{
+	"id": "chant-daube",
+	"name": "Chant d'aube",
+	"kind": "verbe",
+	"cost": 1,
+	"text": "Restaurez 2 Intégrité. Piochez une carte.",
+	"flavor": "Le premier vers du jour est toujours juste.",
+	"rarity": "common",
+	"faction": "vasar",
+	"art": "/art/chant-daube.webp",
+	"gene": {
+		"palette": [
+			"#241d19",
+			"#383936",
+			"#b7a898"
+		],
+		"foilPreset": "mat",
+		"accent": "#c9a445",
+		"seed": 267888
+	}
+}

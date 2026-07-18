@@ -1,0 +1,23 @@
+{
+	"id": "dorin",
+	"name": "Dorin, novice du Vasis",
+	"kind": "etre",
+	"cost": 1,
+	"attack": 2,
+	"health": 1,
+	"text": "",
+	"flavor": "Un juge de plus. On riait, aux premiers jours.",
+	"rarity": "common",
+	"faction": "vasar",
+	"art": "/art/dorin.webp",
+	"gene": {
+		"palette": [
+			"#372b25",
+			"#181a15",
+			"#e9a876"
+		],
+		"foilPreset": "mat",
+		"accent": "#c9a445",
+		"seed": 470455
+	}
+}

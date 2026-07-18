@@ -43,7 +43,13 @@
 	}
 
 	const kindLabel = $derived(
-		card.kind === 'traveler' ? 'Traveler' : card.kind === 'protocole' ? 'Protocole' : 'Époque'
+		card.kind === 'etre'
+			? 'Être'
+			: card.kind === 'verbe'
+				? 'Verbe'
+				: card.kind === 'relique'
+					? 'Relique'
+					: 'Lieu'
 	);
 
 	const px = $derived(pointer.current.x);
@@ -104,10 +110,10 @@
 						{#if card.text}
 							<p class="rules">{card.text}</p>
 						{/if}
-						{#if card.synchro}
+						{#if card.prononcer}
 							<p class="synchro">
-								<span class="synchro-tag">⟟ Synchro {card.synchro.cost}</span>
-								{card.synchro.text}
+								<span class="synchro-tag">◯ Prononcer {card.prononcer.cost}</span>
+								{card.prononcer.text}
 							</p>
 						{/if}
 						{#if card.flavor}
@@ -115,7 +121,7 @@
 						{/if}
 					</div>
 
-					{#if card.kind !== 'protocole'}
+					{#if card.kind === 'etre'}
 						<footer class="statbar">
 							<span class="stat"><span class="hex">{card.attack}</span><small>ATQ</small></span>
 							<span class="rarity-dot" title={rarityDef.name}></span>
@@ -136,7 +142,7 @@
 				<span class="ff-serial"
 					>{card.faction.slice(0, 3).toUpperCase()}·S01//{card.id.slice(0, 18).toUpperCase()}</span
 				>
-				<span class="ff-rarity">◆ {rarityDef.name} · ZA-01</span>
+				<span class="ff-rarity">◯ {rarityDef.name} · SIL-01</span>
 			</footer>
 			<div class="conduits" aria-hidden="true"></div>
 		</div>

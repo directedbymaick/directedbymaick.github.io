@@ -1,0 +1,23 @@
+{
+	"id": "doran",
+	"name": "Doran, le Juge",
+	"kind": "etre",
+	"cost": 7,
+	"attack": 5,
+	"health": 6,
+	"text": "À l'arrivée : exilez l'Être adverse le plus puissant.",
+	"flavor": "Sa peur ne dit jamais son nom. Elle se déguise en devoir.",
+	"rarity": "prism",
+	"faction": "vasar",
+	"art": "/art/doran.webp",
+	"gene": {
+		"palette": [
+			"#062935",
+			"#05242a",
+			"#fdfdfb"
+		],
+		"foilPreset": "prism",
+		"accent": "#c9a445",
+		"seed": 525723
+	}
+}

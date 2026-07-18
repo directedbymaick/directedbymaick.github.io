@@ -1,0 +1,21 @@
+{
+	"id": "premiere-chaine",
+	"name": "La Première Chaîne",
+	"kind": "relique",
+	"cost": 2,
+	"text": "Attachez à un Être adverse : il ne peut pas attaquer.",
+	"flavor": "Celle de Rasen. Revenue de l'envers — nul ne sait comment.",
+	"rarity": "rare",
+	"faction": "vasar",
+	"art": "/art/premiere-chaine.webp",
+	"gene": {
+		"palette": [
+			"#b7a489",
+			"#393b39",
+			"#b4ada7"
+		],
+		"foilPreset": "holo",
+		"accent": "#c9a445",
+		"seed": 197243
+	}
+}

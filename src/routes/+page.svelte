@@ -31,13 +31,13 @@
 </script>
 
 <svelte:head>
-	<title>{charter.game.name} — Zones Aveugles</title>
+	<title>{charter.game.name} — Le Silence</title>
 	<meta name="description" content={charter.game.tagline} />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◆</span> Set 01 · {cards.length}/{SET_SIZE} cartes</p>
-	<h1>Zones<br />Aveugles</h1>
+	<p class="kicker"><span class="k-diamond">◯</span> Set 01 · {cards.length}/{SET_SIZE} cartes</p>
+	<h1>Le<br />Silence</h1>
 	<p class="tagline">{charter.game.tagline}</p>
 	<div class="progress" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
 		{#each Array(SEGMENTS) as _, i (i)}
@@ -89,7 +89,7 @@
 		color: rgba(236, 232, 225, 0.55);
 	}
 	.k-diamond {
-		color: #c23b4e;
+		color: #c9a445;
 		font-size: 0.75em;
 	}
 	h1 {
@@ -122,7 +122,7 @@
 		clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
 	}
 	.seg.on {
-		background: #c23b4e;
+		background: #c9a445;
 	}
 
 	/* ---------- sections de faction ---------- */

@@ -1,0 +1,23 @@
+{
+	"id": "dorvel",
+	"name": "Dorvel, maître-copiste",
+	"kind": "etre",
+	"cost": 4,
+	"attack": 2,
+	"health": 2,
+	"text": "À la fin de votre tour : piochez une carte.",
+	"flavor": "Il connaît les listes par cœur. C'est bien le problème.",
+	"rarity": "epic",
+	"faction": "vasar",
+	"art": "/art/dorvel.webp",
+	"gene": {
+		"palette": [
+			"#372719",
+			"#171618",
+			"#b5b6c9"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#c9a445",
+		"seed": 167548
+	}
+}

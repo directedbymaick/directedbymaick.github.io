@@ -75,12 +75,14 @@
 		<h1>{card.name}</h1>
 
 		<div class="statline">
-			<span class="chip">Coût {card.cost}</span>
-			{#if card.kind !== 'protocole'}
+			<span class="chip">Volonté {card.cost}</span>
+			{#if card.kind === 'etre'}
 				<span class="chip">{card.attack} ATQ</span>
 				<span class="chip">{card.health} INT</span>
 			{:else}
-				<span class="chip">Protocole</span>
+				<span class="chip"
+					>{card.kind === 'verbe' ? 'Verbe' : card.kind === 'relique' ? 'Relique' : 'Lieu'}</span
+				>
 			{/if}
 			{#if card.cell}
 				<span class="chip cell">{card.cell}</span>
@@ -93,10 +95,10 @@
 				<p class="block-body">{card.text}</p>
 			</div>
 		{/if}
-		{#if card.synchro}
+		{#if card.prononcer}
 			<div class="block synchro">
-				<p class="block-label">⟟ Synchro ({card.synchro.cost})</p>
-				<p class="block-body">{card.synchro.text}</p>
+				<p class="block-label">◯ Prononcer ({card.prononcer.cost})</p>
+				<p class="block-body">{card.prononcer.text}</p>
 			</div>
 		{/if}
 		{#if card.flavor}
@@ -279,7 +281,7 @@
 		transition: background 0.15s ease;
 	}
 	.back:hover {
-		background: #c23b4e;
+		background: #c9a445;
 		color: #ece8e1;
 	}
 </style>

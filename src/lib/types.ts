@@ -14,9 +14,9 @@ export type FoilPreset = 'mat' | 'holo' | 'prismatic' | 'galaxy' | 'prism';
 /** Matériau du cadre — la rareté EST un matériau. */
 export type FrameMaterial = 'carbone' | 'nacre' | 'argent' | 'or' | 'prisme';
 
-export type CardKind = 'traveler' | 'protocole' | 'epoque';
+export type CardKind = 'etre' | 'verbe' | 'relique' | 'lieu';
 
-export type FactionId = 'rikken' | 'kairos' | 'epoques';
+export type FactionId = 'vasar' | 'exar' | 'eshar' | 'morar' | 'velar';
 
 export interface CardGene {
 	/** Couleurs dominantes extraites de l'artwork (hex), de la plus à la moins présente. */
@@ -31,10 +31,10 @@ export interface CardGene {
 	promptRef?: string;
 }
 
-export interface SynchroDef {
-	/** Coût d'Énergie pour activer le CELL (mode local). */
+export interface PrononcerDef {
+	/** Coût en Volonté pour prononcer l'EX. */
 	cost: number;
-	/** Effet déclenché à la Synchro. */
+	/** Effet déclenché — puis la carte est exilée définitivement. */
 	text: string;
 }
 
@@ -43,15 +43,15 @@ export interface CardData {
 	id: string;
 	name: string;
 	kind: CardKind;
-	/** Coût d'Énergie (allocation de la Centrale). */
+	/** Coût en Volonté (NER). */
 	cost: number;
-	/** Stats de combat — absentes sur les protocoles. */
+	/** Stats de combat — Êtres uniquement (ATQ / Intégrité). */
 	attack?: number;
 	health?: number;
-	/** Nom du CELL porté (travelers uniquement). */
+	/** Sous-titre optionnel (racine conceptuelle, titre honorifique…). */
 	cell?: string;
-	/** Synchro : activation du CELL (travelers uniquement — les Époques n'en ont pas). */
-	synchro?: SynchroDef;
+	/** Prononcer (n) : one-shot définitif, la carte est exilée après l'effet. */
+	prononcer?: PrononcerDef;
 	/** Texte d'effet affiché dans le cartouche. */
 	text: string;
 	/** Une ligne de lore, italique sous le texte d'effet. */

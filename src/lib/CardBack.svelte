@@ -1,5 +1,5 @@
 <script lang="ts">
-	// Le dos de carte : un objet CELL au repos. Carbone, filet ambre, glyphe Synchro.
+	// Le dos de carte Expelled : carbone, filet or, le cercle de KOR.
 </script>
 
 <div class="scene">
@@ -7,8 +7,8 @@
 		<div class="face">
 			<div class="etch"></div>
 			<div class="emblem">
-				<span class="glyph">⟟</span>
-				<span class="wordmark">Travelers</span>
+				<span class="glyph">◯</span>
+				<span class="wordmark">Expelled</span>
 				<span class="sub">Trading Card Game</span>
 			</div>
 			<span class="corner tl">S01</span>

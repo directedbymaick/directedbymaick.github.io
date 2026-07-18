@@ -3,71 +3,63 @@
 	import { getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
 
-	// L'Opérationnelle porte tout ce qu'il faut montrer : coût, CELL, Synchro, stats.
-	const demo = getCard('operationnelle-cell-aqua');
+	// Korven porte tout ce qu'il faut montrer : coût, type, effet, stats.
+	const demo = getCard('korven');
 
 	const ANATOMY = [
-		{ n: 1, t: 'Le coût', d: "L'Énergie à payer pour le Transfert (poser la carte). La cellule ambre, en haut à gauche." },
-		{ n: 2, t: 'Le sigil', d: 'La faction de la carte : ◆ RIKKEN, ◈ KAIROS, ◉ Les Époques.' },
-		{ n: 3, t: 'La plaque', d: 'Le nom, le type (Traveler / Époque / Protocole) et le CELL porté.' },
-		{ n: 4, t: 'Le cartouche', d: "L'effet permanent, la Synchro (l'étiquette colorée) et une ligne de lore en italique." },
-		{ n: 5, t: 'Les stats', d: "ATQ (les dégâts qu'elle inflige) et INT (ce qu'elle encaisse avant de tomber)." },
+		{ n: 1, t: 'La Volonté', d: 'Le coût à payer pour prononcer la carte (la jouer). La cellule en haut à gauche.' },
+		{ n: 2, t: 'Le sigil', d: 'Le peuple de la carte : ◯ Vasar, ⊘ Exar, ☽ Eshar, ◐ Morar, ☀ Velar.' },
+		{ n: 3, t: 'La plaque', d: 'Le nom, le type (Être / Verbe / Relique / Lieu) et le sous-titre.' },
+		{ n: 4, t: 'Le cartouche', d: "L'effet, le Prononcer éventuel (l'étiquette au cercle), et une ligne du Korum en italique." },
+		{ n: 5, t: 'Les stats', d: "ATQ (les dégâts qu'il inflige) et INT (l'Intégrité qu'il encaisse). Êtres uniquement." },
 		{ n: 6, t: 'La bordure', d: 'Le numéro de série, la rareté et le code du set — gravés dans le cadre.' }
 	];
 
 	const STEPS = [
 		{
 			n: '01',
-			t: 'L’objectif',
-			d: "Ta Centrale a 30 points d'Intégrité. Celle d'en face aussi. Fais tomber la sienne d'abord — avec les dégâts de tes unités, tour après tour."
+			t: "L'objectif",
+			d: 'Votre Nom a 30 Intégrité. Celui d’en face aussi. Faites taire le sien d’abord — avec les attaques de vos Êtres, tour après tour.'
 		},
 		{
 			n: '02',
-			t: 'La mise en place',
-			d: 'Deck de 30 cartes. Tu pioches 3 cartes (4 si tu joues en second, plus une Cellule d’Énergie : +1 Énergie, une fois). Tu peux remplacer une fois chaque carte de ta main de départ.'
+			t: 'La Volonté',
+			d: 'Votre Volonté se recharge et augmente de 1 chaque tour (max 10). Tout se paye avec : les Êtres, les Verbes, les Prononcer.'
 		},
 		{
 			n: '03',
-			t: 'Ton tour',
-			d: "Ton Énergie se recharge et augmente de 1 (max 10). Au tour 1 tu as 1 Énergie, au tour 5 tu en as 5. Tout se paye avec : les Transferts, les protocoles, les Synchros. Dépense bien."
+			t: 'Prononcer une carte',
+			d: "Payer le coût d'une carte de votre main = elle entre en jeu (Être, Relique, Lieu) ou fait son effet et disparaît (Verbe)."
 		},
 		{
 			n: '04',
-			t: 'Le Transfert',
-			d: "Payer le coût d'une carte de ta main = elle arrive en jeu. Un Traveler arrive « en civil » : il ne peut pas attaquer ce tour-ci (mal du transfert), sauf s'il a Célérité. Son effet « À l'arrivée : » se déclenche immédiatement."
+			t: 'Le combat',
+			d: 'Chaque Être peut attaquer une fois par tour : un Être adverse ou le Nom. Les dégâts sont simultanés. Un Serment en face doit être frappé d’abord.'
 		},
 		{
 			n: '05',
-			t: 'La Synchro',
-			d: "Le geste signature. Un Traveler en jeu avec « Synchro (X) » : paye X, son CELL s'active, l'effet part, et la carte s'embrase — définitivement. Une fois par carte. Choisis ton moment : KAIROS sait éteindre les CELL allumés."
+			t: 'Prononcer (n)',
+			d: "Le geste signature. Payez n : l'effet part, le halo se brise, et la carte est exilée définitivement. Une fois par carte. Choisissez votre moment."
 		},
 		{
 			n: '06',
-			t: 'Le combat',
-			d: "À chaque tour, chaque unité peut attaquer une fois : une unité adverse ou la Centrale. Les dégâts sont simultanés — attaquer un 4/4 avec un 2/3, c'est perdre son unité. S'il y a une Garde en face, c'est elle que tu dois frapper d'abord."
-		},
-		{
-			n: '07',
 			t: 'La victoire',
-			d: 'Centrale adverse à 0 : gagné. C’est tout. Le reste — les identités de faction, les raretés, le barème — t’attend dans les Règles.'
+			d: 'Nom adverse à 0 : la partie est dite. Le reste — peuples, raretés, mots-clés — vous attend dans les Règles.'
 		}
 	];
 </script>
 
 <svelte:head>
 	<title>Tuto — {charter.game.name}</title>
-	<meta name="description" content="Ton premier transfert : apprendre à jouer à {charter.game.name} en 7 étapes." />
+	<meta name="description" content="Votre première Prononciation : apprendre à jouer à {charter.game.name} en 6 étapes." />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◆</span> Premier transfert</p>
+	<p class="kicker"><span class="k-diamond">◯</span> Première prononciation</p>
 	<h1>Tuto</h1>
-	<p class="tagline">
-		Sept étapes pour ton premier duel. Dix minutes, pas plus — le mal du transfert passe vite.
-	</p>
+	<p class="tagline">Six étapes pour votre premier duel. Le Créateur se tait — à vous de parler.</p>
 </header>
 
-<!-- ============ LIRE UNE CARTE ============ -->
 <section>
 	<h2><span class="tab">Lire une carte</span><span class="rule"></span></h2>
 	<div class="anatomy">
@@ -88,12 +80,11 @@
 			{/each}
 		</ol>
 	</div>
-	<p class="note">Survole la carte : le tilt et le foil réagissent — c'est l'aura du mode local.</p>
+	<p class="note">Survole la carte : le tilt et le foil réagissent — le halo répond à qui le regarde.</p>
 </section>
 
-<!-- ============ LES 7 ÉTAPES ============ -->
 <section>
-	<h2><span class="tab">Ton premier duel</span><span class="rule"></span></h2>
+	<h2><span class="tab">Votre premier duel</span><span class="rule"></span></h2>
 	<div class="steps">
 		{#each STEPS as s (s.n)}
 			<div class="step">
@@ -125,7 +116,7 @@
 		color: rgba(236, 232, 225, 0.55);
 	}
 	.k-diamond {
-		color: #c23b4e;
+		color: #c9a445;
 		font-size: 0.75em;
 	}
 	h1 {
@@ -170,7 +161,6 @@
 		background: rgba(236, 232, 225, 0.15);
 	}
 
-	/* ---------- anatomie ---------- */
 	.anatomy {
 		display: flex;
 		flex-wrap: wrap;
@@ -206,8 +196,8 @@
 		font-weight: 700;
 		font-size: 0.85rem;
 		color: #0f1923;
-		background: #ffb454;
-		clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+		background: #c9a445;
+		border-radius: 50%;
 	}
 	.lt {
 		margin: 0 0 0.15rem;
@@ -229,7 +219,6 @@
 		font-size: 0.92rem;
 	}
 
-	/* ---------- étapes ---------- */
 	.steps {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -240,7 +229,7 @@
 		gap: 1rem;
 		padding: 1.1rem 1.2rem;
 		background: rgba(236, 232, 225, 0.045);
-		border-left: 3px solid #c23b4e;
+		border-left: 3px solid #c9a445;
 	}
 	.step-n {
 		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
@@ -280,7 +269,6 @@
 		clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
 	}
 	.cta:hover {
-		background: #c23b4e;
-		color: #ece8e1;
+		background: #c9a445;
 	}
 </style>

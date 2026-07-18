@@ -1,0 +1,23 @@
+{
+	"id": "thalen",
+	"name": "Thalen, la Sentinelle",
+	"kind": "etre",
+	"cost": 5,
+	"attack": 4,
+	"health": 4,
+	"text": "À l'arrivée : l'adversaire révèle sa main.",
+	"flavor": "Le premier à entendre le mot. Il ne s'en est jamais remis.",
+	"rarity": "epic",
+	"faction": "vasar",
+	"art": "/art/thalen.webp",
+	"gene": {
+		"palette": [
+			"#382419",
+			"#373839",
+			"#e7d5c9"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#c9a445",
+		"seed": 398707
+	}
+}

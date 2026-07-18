@@ -1,0 +1,23 @@
+{
+	"id": "talvas",
+	"name": "Talvas, aile de la loi",
+	"kind": "etre",
+	"cost": 5,
+	"attack": 2,
+	"health": 7,
+	"text": "Serment.",
+	"flavor": "L'Ordre a des ailes, et elles ne plient pas.",
+	"rarity": "rare",
+	"faction": "vasar",
+	"art": "/art/talvas.webp",
+	"gene": {
+		"palette": [
+			"#56392a",
+			"#392624",
+			"#d7aa87"
+		],
+		"foilPreset": "holo",
+		"accent": "#c9a445",
+		"seed": 192481
+	}
+}

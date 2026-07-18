@@ -1,87 +1,223 @@
-# EXPELLED — Direction artistique (fondation)
+# EXPELLED — Direction artistique
 
-*Pivot acté : l'univers Travelers est abandonné. Nouveau nom : **Expelled**. Histoire à écrire (atelier à venir). Ce doc capture l'analyse des références et la formule MJ validée par les tests.*
+Objectif : définir une identité visuelle claire, reproductible et distincte de Travelers.
 
-## Les 5 références fondatrices
+Expelled doit ressembler à une **édition sacrée profanée** : des figures calmes, des halos, des
+glyphes, des fonds graphiques, des ornements et une tension permanente entre pureté et rupture.
 
-1. **La femme aux corbeaux** (Prywinko) — divinité funèbre, disque d'or, ailes noires, noir/rouge/or, fond abstrait ornemental.
-2. **ZERO ZERO Vol.2** (Kelvin Law) — cover éditoriale Y2K, démone streetwear, halftone orange, la carte comme objet édité.
-3. **Le splash aux lanternes rouges** — esprit masqué, rouge saturé, pétales, monde spectral.
-4. **L'ange sur la branche** — graphique minimal, fond bleu plat, cercle, espace négatif, mélancolie.
-5. **La sainte alanguie** — hétérochromie, marquages noirs organiques, robe blanche, rosace, dualité sur la peau.
+---
 
-## Les 7 invariants graphiques
+## 1. Principe central
 
-1. **Le cercle derrière la tête** (halo, disque, halftone, rosace, lune) — motif signature, 5/5 images.
-2. **Sacré × profane** : halos + cornes, ailes + streetwear, blanc + marquages noirs. Chaque personnage porte sa chute.
-3. **Character-first** : poses calmes et souveraines, zéro combat, l'attitude est l'action.
-4. **Une couleur-âme par personnage** (pas d'ambiance globale) : noir/or, orange crème, cramoisi, bleu plat, blanc ivoire.
-5. **L'ornement remplace le décor** : chaînes, pétales, plumes, typographie — fonds abstraits ou plats, jamais d'environnements narratifs.
-6. Rendu **graphique propre** (voir style verrouillé) avec accents symboliques nets.
-7. **La carte comme édition** : typographie, labels techniques, numérotation — pochette de disque plus que cadre de TCG.
+La carte Expelled n'est pas seulement un support d'illustration.  
+C'est un objet imprimé issu d'un monde où les mots ont une matière.
 
-## STYLE VERROUILLÉ (test X2, validé)
+Chaque visuel doit donc faire sentir :
 
-**Le rendu unique du set = le pôle graphique** : illustration nette, fonds plats bicolores,
-cercle pâle, espace négatif généreux. Le pôle « peinture dense » (X1, magnifique mais
-« ça ressemble à du Riot ») est réservé aux **arts alternatifs premium** (toujours foil).
+- un nom visible ;
+- un halo lié à KOR ;
+- une trace de sentence ou de rupture ;
+- une couleur-âme claire ;
+- une composition éditoriale, presque musicale.
 
-### Formule MJ
+---
 
-- `--sref [zero-zero] [ange-branche] --sw 200` — SET-B uniquement, jamais les 5 refs ensemble.
-- **Personnalisation OFF** (le profil rétro-anime Travelers pollue).
-- Prompt : sujet + symboles en ~30 mots + `clean graphic illustration, flat [couleur] background, generous negative space` + `--no text, watermark`.
-- Portrait dans les réglages (pas de --ar).
+## 2. Invariants graphiques
 
-### Hiérarchie de rareté = DENSITÉ, pas rendu
+### 1. Le cercle
 
-- Commune : fond plat nu, halo simple.
-- Rare : + un cercle/objet symbolique.
-- Épique : + ornements (chaînes, pétales, fragments).
-- Légendaire/Prism : composition dense, halo complexe (brisé, double, éclipse) — même rendu graphique.
+Le cercle est le glyphe de **KOR**. Il doit apparaître sous forme de halo, disque, lune, rosace,
+éclipse, cercle brisé ou motif de cadre.
 
-### Codes émergents assumés
+### 2. Sacré contre profane
 
-- **Streetwear par défaut** (sneakers, bombers, chaînes) — les déchus portent leur exil comme un style.
-  Contrôlable carte par carte (figures anciennes = drapés/robes).
-- Mixité des genres naturelle dans le sref.
+Expelled mélange le religieux et le contemporain :
 
-## Journal des tests
+- halo + streetwear ;
+- ailes + chaînes ;
+- drapés + marquages noirs ;
+- beauté calme + menace cosmique.
 
-- **X1** (ange déchu, sref SET-A peinture, sw 200) : ✅ magnifique mais « du Riot » → réservé aux alts premium.
-- **X2** (même sujet, sref SET-B graphique, sw 200) : ✅ VALIDÉ comme style du set. Streetwear émergent.
-- **G1** (démone pop, halftone orange) : ✅ — cornes, peluche, chaînes, cercle halftone. MJ génère
-  spontanément des **bordures de cadre** dans l'image (écho « carte comme édition » — à assumer ou cropper).
-- **G2** (esprit masqué, cramoisi) : ✅ — la couleur-âme saturée tient en flat, masque kitsune + colombe
-  + lune pâle + pétales. Variante masculine naturelle.
-- **G3** (sainte corrompue, ivoire) : ✅ — probablement le sommet du lot : marquages noirs organiques,
-  halo fin, rosace, silhouettes de mode structurées. L'archétype « figures anciennes en drapés » est prouvé.
-- **G4** (densité légendaire, violet/or) : ✅ — halo BRISÉ en fragments, chaînes d'or, craquelures
-  incandescentes : dense mais indiscutablement le même monde graphique. **La hiérarchie par densité fonctionne.**
+### 3. Character-first
 
-**→ DA VALIDÉE COMPLÈTE.**
+Les personnages dominent l'image.  
+Pas de scènes de combat inutiles. L'attitude raconte l'action.
 
-## Les KITS de génération (VALIDÉS — tests combinatoires P1-P4 × C1-C10)
+### 4. Couleur-âme
 
-La bibliothèque étant mono-style, les combos de refs ne changent pas le style — ils changent
-la **palette et l'émotion**. La production fonctionne par kits de 3 refs, un kit par peuple
-(mapping lore : LORE.md §III) :
+Chaque carte doit avoir une couleur dominante lisible.  
+On évite les ambiances arc-en-ciel ou les palettes trop générales.
 
-| Kit | Peuple | Refs | Palette |
-|---|---|---|---|
-| SACRÉ | **Vasar** | noir-or + alanguie + ange-mécanique | ors, ivoires, cathédrales |
-| MENACE | **Exar** | vampire + scène-rouge + noir-or | rouges, os, coulures |
-| SPECTRE | **Eshar** | globe-fleurs + papillon-violet + raven | violets, lunes, brumes |
-| EXIL | **Morar** | ange-branche + zero-zero + poteau | pastels, streetwear |
-| SOLEIL | **Velar** | motarde-king + ange-mécanique + batteuse | ors francs, plein jour |
+### 5. Ornement plutôt que décor
 
-Hybrides (personnages entre deux camps) : mixer deux kits. `--sw 200` partout.
-Écartées du moteur principal : corbeaux + lanternes + sorcière-lapin = **sref des arts
-alternatifs premium** ; Lucy = référence design cadre/UI, jamais en génération.
+Les fonds sont plats, abstraits ou symboliques. Les détails narratifs passent par :
 
-## À faire après validation G1-G4
+- halos ;
+- chaînes ;
+- pétales ;
+- fragments ;
+- plumes ;
+- glyphes ;
+- marques noires.
 
-1. Atelier histoire (qui expulse qui, factions, mécanique signature).
-2. Renommage TCG → Expelled (charter.json, site, docs).
-3. Refonte du cadre de carte (motif halo, esprit « édition »), du dos, du booster.
-4. Nouveaux 60 slots + prompts. Purge des cartes Travelers.
+### 6. Graphisme net
+
+Le set de base privilégie un rendu propre, lisible, graphique.  
+Le rendu peinture dense est réservé aux arts alternatifs premium.
+
+### 7. Carte comme édition
+
+L'objet doit évoquer une pochette, une estampe, un tirage numéroté ou un fragment liturgique
+imprimé. Les labels, numéros et micro-textes appartiennent au cadre, pas à l'illustration générée.
+
+---
+
+## 3. Style du set de base
+
+Le style validé pour le set de base :
+
+- illustration nette ;
+- fond plat ou bicolore ;
+- espace négatif généreux ;
+- halo/cercle clairement lisible ;
+- silhouette calme et souveraine ;
+- densité adaptée à la rareté.
+
+À éviter dans le set de base :
+
+- peinture trop dense façon splash art ;
+- scènes d'action ;
+- décors complexes ;
+- texte visible dans l'image ;
+- logos, signatures ou watermark ;
+- rendu trop proche d'un jeu vidéo AAA.
+
+---
+
+## 4. Hiérarchie de rareté
+
+La rareté ne change pas le style général. Elle change la **densité d'ornement**.
+
+| Rareté | Densité visuelle |
+|---|---|
+| Commune | Fond simple, halo clair, peu d'ornement. |
+| Rare | Ajout d'un symbole secondaire ou d'un objet rituel. |
+| Épique | Chaînes, fragments, pétales, glyphes ou marques plus présents. |
+| Légendaire | Composition plus dense, halo complexe, tension mythologique forte. |
+| Prismatique | Visage du set, halo exceptionnel, traitement foil majeur. |
+
+---
+
+## 5. Kits de peuple
+
+### Vasar — Kit Sacré
+
+Palette : or, ivoire, blanc chaud, lumière de cathédrale.  
+Motifs : halos intacts, rosaces, drapés, architecture lumineuse, chaînes fines.
+
+Sensation : ordre, beauté, rigidité, pureté inquiétante.
+
+### Exar — Kit Menace
+
+Palette : rouge profond, os, noir, or sale.  
+Motifs : halos renversés, cornes, os, coulures, fractures, chaînes lourdes.
+
+Sensation : rupture, colère, foi inversée.
+
+### Eshar — Kit Spectre
+
+Palette : violet, gris lunaire, blanc pâle, brume.  
+Motifs : lunes, masques, papillons blancs, visages effacés, voiles.
+
+Sensation : mémoire, disparition, secret.
+
+### Morar — Kit Exil
+
+Palette : pastels froids, bleu plat, noir doux, ivoire usé.  
+Motifs : streetwear, ailes noires ou ternies, branches mortes, halos fins.
+
+Sensation : mélancolie, adaptation, beauté ordinaire.
+
+### Velar — Kit Soleil
+
+Palette : or franc, plein jour, blanc brûlé, touches chaudes.  
+Motifs : verre, vitesse, rayons, halos éclatés en lumière, routes.
+
+Sensation : liberté, intensité, joie agressive.
+
+---
+
+## 6. Prompts de production
+
+Structure recommandée :
+
+```text
+[sujet], [peuple], [symbole principal], [état du halo], [palette],
+clean graphic illustration, flat background, generous negative space,
+full-art trading card composition, no text, no watermark
+```
+
+Règles :
+
+- prompt court : 40 mots environ ;
+- sujet dans les 55% supérieurs de l'image ;
+- pas de texte intégré ;
+- pas de signature ;
+- pas de décor narratif lourd ;
+- un halo lisible ;
+- une palette liée au peuple.
+
+---
+
+## 7. Références actuelles
+
+Les images de `raw inspiration/` sont des références, pas des assets finaux. Elles doivent être
+classées en trois groupes :
+
+### Base style
+
+Images utiles pour le style principal : graphisme net, halo lisible, fond plat ou espace négatif.
+
+### Premium alts
+
+Images plus denses, picturales ou spectaculaires. Elles servent aux arts alternatifs, pas au set
+standard.
+
+### UI / card frame
+
+Images utiles pour l'idée d'objet éditorial : labels, numéros, composition de pochette, énergie
+graphique. Le texte présent dans ces références ne doit pas être généré dans les arts finaux.
+
+---
+
+## 8. Assets à produire
+
+Priorité haute :
+
+- glyphes des dix Concepts ;
+- halo intact, terni, fêlé, brisé ;
+- dos de carte ;
+- cadre de carte Expelled ;
+- icônes Volonté, Intégrité et Prononcer ;
+- texture foil/glare adaptée au cercle de KOR.
+
+Priorité moyenne :
+
+- booster du set 01 ;
+- sceau du Vasis ;
+- marque EX ;
+- texture de chaînes d'or ;
+- fragments de halo pour animations.
+
+---
+
+## 9. Journal de validation
+
+Décisions déjà validées :
+
+- le set de base doit rester graphique et lisible ;
+- les arts alternatifs peuvent être plus picturaux ;
+- la rareté se lit par densité, pas par changement complet de rendu ;
+- les peuples correspondent aux cinq kits visuels ;
+- la personnalisation héritée de Travelers est désactivée ;
+- les références contenant du texte servent à l'esprit éditorial, pas à l'image finale.

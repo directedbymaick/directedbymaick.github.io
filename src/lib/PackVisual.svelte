@@ -65,17 +65,21 @@
 	<div class="tearline"></div>
 
 	<div class="body">
-		<img class="cover" src="/pack/zones-aveugles-cover.webp" alt="" draggable="false" />
+		<div class="halo" aria-hidden="true"></div>
 		<div class="scrim"></div>
 		<div class="plastic"></div>
 		<div class="sheen"></div>
-		<p class="brand">Travelers TCG</p>
+		<p class="brand">Expelled</p>
 		<span class="count-chip">5<small>cartes</small></span>
 		<div class="bottom">
-			<h3 class="title">Zones<br />Aveugles</h3>
+			<h3 class="title">Le<br />Silence</h3>
 			<p class="setline">Set 01 · Booster</p>
-			<p class="sigils"><span class="s-r">◆</span><span class="s-k">◈</span><span class="s-e">◉</span></p>
-			<p class="footline">Contient 5 cartes authentiques du registre</p>
+			<p class="sigils">
+				<span style="color:#c9a445">◯</span><span style="color:#b3273a">⊘</span><span
+					style="color:#8d6cb8">☽</span
+				><span style="color:#8fb4d9">◐</span><span style="color:#f0a626">☀</span>
+			</p>
+			<p class="footline">Contient 5 cartes prononcées du Korum</p>
 		</div>
 	</div>
 
@@ -189,14 +193,15 @@
 			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
 			opacity 0.5s ease;
 	}
-	.cover {
+	/* le cercle de KOR au cœur du sachet — en attendant la cover dédiée */
+	.halo {
 		position: absolute;
 		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center 22%;
-		user-select: none;
+		background:
+			radial-gradient(circle at 50% 38%, transparent 26%, rgba(201, 164, 69, 0.55) 27%, rgba(201, 164, 69, 0.55) 28.5%, transparent 29.5%),
+			radial-gradient(circle at 50% 38%, rgba(201, 164, 69, 0.14) 0%, transparent 34%),
+			radial-gradient(120% 70% at 50% 0%, rgba(201, 164, 69, 0.1), transparent 55%),
+			#12141c;
 	}
 	/* lisibilité de la typo : scrim progressif sur le tiers inférieur */
 	.scrim {
@@ -344,15 +349,6 @@
 		gap: 4cqw;
 		font-size: 4.6cqw;
 		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-	}
-	.s-r {
-		color: #3d8fd6;
-	}
-	.s-k {
-		color: #c23b4e;
-	}
-	.s-e {
-		color: #b08d57;
 	}
 	.footline {
 		margin: 1cqw 0 0;

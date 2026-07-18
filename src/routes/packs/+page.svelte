@@ -61,14 +61,14 @@
 
 <svelte:head>
 	<title>Packs — {charter.game.name}</title>
-	<meta name="description" content="Ouvre des boosters Zones Aveugles : 5 cartes, odds publiées, collection locale." />
+	<meta name="description" content="Ouvre des boosters du Silence : 5 cartes, odds publiées, collection locale." />
 </svelte:head>
 
 <header class="hero">
 	<p class="kicker"><span class="k-diamond">◆</span> Réquisition de matériel</p>
 	<h1>Packs</h1>
 	<p class="tagline">
-		Le booster Zones Aveugles : {PACK_SIZE} cartes par sachet, odds publiées, zéro compte. Ta
+		Le booster du Silence : {PACK_SIZE} cartes par sachet, odds publiées, zéro compte. Ta
 		collection vit dans ce navigateur.
 	</p>
 	<p class="colstat">
@@ -181,7 +181,7 @@
 		color: rgba(236, 232, 225, 0.55);
 	}
 	.k-diamond {
-		color: #c23b4e;
+		color: #c9a445;
 		font-size: 0.75em;
 	}
 	h1 {
@@ -296,7 +296,7 @@
 		color: rgba(236, 232, 225, 0.85);
 	}
 	.chip.new {
-		background: #c23b4e;
+		background: #c9a445;
 		color: #ece8e1;
 	}
 
@@ -376,7 +376,7 @@
 		background: #ece8e1;
 	}
 	.primary:hover {
-		background: #c23b4e;
+		background: #c9a445;
 		color: #ece8e1;
 	}
 	.ghost {
@@ -423,7 +423,7 @@
 		text-transform: uppercase;
 		padding: 0.24rem 0.65rem;
 		color: #ece8e1;
-		background: #c23b4e;
+		background: #c9a445;
 		clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
 	}
 	.recap-link {

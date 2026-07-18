@@ -1,11 +1,11 @@
 {
 	"game": {
-		"name": "TRAVELERS TCG",
-		"tagline": "Le passé est déjà écrit. Pas vos parties."
+		"name": "EXPELLED",
+		"tagline": "Le Créateur se tait. Pas vous."
 	},
 	"rarities": {
 		"common": {
-			"name": "Standard",
+			"name": "Commune",
 			"material": "carbone",
 			"foilPreset": "mat",
 			"statBudgetPerCost": 2.0,
@@ -41,29 +41,41 @@
 		}
 	},
 	"factions": {
-		"rikken": {
-			"name": "RIKKEN",
-			"color": "#3d8fd6",
-			"sigil": "◆",
-			"loreTone": "institut secret, rigueur scientifique, élite loyale, sacrifice pour la connaissance ; Travelers du programme, techniciens de la Centrale, protocoles officiels"
+		"vasar": {
+			"name": "VASAR",
+			"color": "#c9a445",
+			"sigil": "◯",
+			"loreTone": "les Gardiens de la Création : ordre, récitation, sentences ; ors et ivoires, halos intacts, cathédrales de grammaire — Koren, Doran, le Vasis"
 		},
-		"kairos": {
-			"name": "KAIROS",
-			"color": "#c23b4e",
-			"sigil": "◈",
-			"loreTone": "réseau infiltré à tous les niveaux, ambition froide, le moment opportun, la fin justifie tout ; agents doubles, CELL volés, protocoles détournés — dirigé par Sōma"
+		"exar": {
+			"name": "EXAR",
+			"color": "#b3273a",
+			"sigil": "⊘",
+			"loreTone": "les Porteurs de la Rupture : sacrifice, chaînes retournées, la question de Rasen ; rouges et os, halos brisés, Exen l'envers du monde"
 		},
-		"epoques": {
-			"name": "Les Époques",
-			"color": "#b08d57",
-			"sigil": "◉",
-			"loreTone": "figures des zones aveugles : guerriers, artisans et âmes de tous les siècles, jamais documentés par l'Histoire ; sépia, poussière, dignité des oubliés"
+		"eshar": {
+			"name": "ESHAR",
+			"color": "#8d6cb8",
+			"sigil": "☽",
+			"loreTone": "les Essences : mémoire, syllabes perdues, l'entre-deux ; violets et lunes, brumes à visage, papillons blancs — Eshel et ses registres"
+		},
+		"morar": {
+			"name": "MORAR",
+			"color": "#8fb4d9",
+			"sigil": "◐",
+			"loreTone": "les Adaptés : la chute devenue arrivée, la mutation comme fierté ; pastels, halos ternis gardés par tendresse, Xenen le monde humain — Moras"
+		},
+		"velar": {
+			"name": "VELAR",
+			"color": "#f0a626",
+			"sigil": "☀",
+			"loreTone": "les Affranchis : la Volonté suffit, le plein jour, la joie féroce ; ors francs, ailes de verre, le Bord du monde — Velna"
 		}
 	},
 	"artDirection": {
-		"rule": "Monochrome dominant + UN seul accent saturé par image (règle d'or de la bible Travelers). Lumière contenue, jamais de néon partout. Peinture épique sombre.",
-		"basePrompt": "dramatic chiaroscuro lighting, muted monochrome palette with a single saturated accent color, cinematic composition, sleek biotech suit with modular plates and contained light lines, realistic adult proportions, seinen atmosphere, masterpiece",
-		"negativePrompt": "saturated rainbow colors, neon everywhere, glowing circuits everywhere, Iron Man style, Power Rangers, giant mecha, chibi, moe, kawaii, flat lighting, comic book style, text, watermark, blurry"
+		"rule": "Le cercle derrière chaque tête (glyphe de KOR). Sacré × profane. Une couleur-âme par peuple, fond plat distinct par carte, rareté par densité d'ornement. Style : Expelled/DA.md.",
+		"basePrompt": "clean graphic illustration, flat background, generous negative space, full-art trading card composition",
+		"negativePrompt": "text, logo, watermark, epic battle scene, cinematic environment, rainbow everywhere, overdetailed background"
 	},
 	"constraints": {
 		"minCost": 0,

@@ -1,0 +1,23 @@
+{
+	"id": "vasna",
+	"name": "Vasna, choriste de Vasen",
+	"kind": "etre",
+	"cost": 1,
+	"attack": 1,
+	"health": 2,
+	"text": "",
+	"flavor": "Une des mille voix qui tiennent le monde ouvert.",
+	"rarity": "common",
+	"faction": "vasar",
+	"art": "/art/vasna.webp",
+	"gene": {
+		"palette": [
+			"#38251c",
+			"#3a3936",
+			"#e5d5c7"
+		],
+		"foilPreset": "mat",
+		"accent": "#c9a445",
+		"seed": 509068
+	}
+}

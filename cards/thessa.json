@@ -1,0 +1,23 @@
+{
+	"id": "thessa",
+	"name": "Thessa, juge de cercle",
+	"kind": "etre",
+	"cost": 4,
+	"attack": 3,
+	"health": 3,
+	"text": "Les Prononcer adverses coûtent (1) de plus.",
+	"flavor": "La loi s'élargit toujours.",
+	"rarity": "rare",
+	"faction": "vasar",
+	"art": "/art/thessa.webp",
+	"gene": {
+		"palette": [
+			"#594635",
+			"#49372c",
+			"#e8d8c6"
+		],
+		"foilPreset": "holo",
+		"accent": "#c9a445",
+		"seed": 815898
+	}
+}

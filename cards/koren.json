@@ -1,0 +1,23 @@
+{
+	"id": "koren",
+	"name": "Koren, maître des chœurs",
+	"kind": "etre",
+	"cost": 6,
+	"attack": 4,
+	"health": 5,
+	"text": "Vos autres Êtres gagnent +1/+1.",
+	"flavor": "Il aime les mots plus que ce qu'ils font vivre.",
+	"rarity": "legendary",
+	"faction": "vasar",
+	"art": "/art/koren.webp",
+	"gene": {
+		"palette": [
+			"#393727",
+			"#1a1912",
+			"#caa688"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#c9a445",
+		"seed": 742226
+	}
+}

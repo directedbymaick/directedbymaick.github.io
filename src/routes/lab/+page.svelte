@@ -91,7 +91,7 @@
 		</fieldset>
 
 		<fieldset>
-			<legend>Accent (l'unique couleur saturée — conduits, Synchro, glow)</legend>
+			<legend>Accent (la couleur-âme — halo, Prononcer, glow)</legend>
 			<input type="color" bind:value={base.gene.accent} />
 		</fieldset>
 

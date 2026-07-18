@@ -21,7 +21,7 @@ export interface AssembleInput {
 	palette: string[];
 	faction: FactionId;
 	rarity: Rarity;
-	kind: 'traveler' | 'epoque' | 'protocole';
+	kind: 'etre' | 'verbe' | 'relique' | 'lieu';
 	seed: number;
 }
 
@@ -46,7 +46,7 @@ export function assemble(input: AssembleInput): CardData {
 			seed: input.seed
 		}
 	};
-	if (input.kind !== 'protocole') {
+	if (input.kind === 'etre') {
 		// Point de départ neutre selon le budget de la charte — à ajuster à la main.
 		const budget = Math.round(rarityDef.statBudgetPerCost * card.cost);
 		card.attack = Math.floor(budget / 2);
