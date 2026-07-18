@@ -36,8 +36,9 @@
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◯</span> Set 01 · {cards.length}/{SET_SIZE} cartes</p>
-	<h1>Le<br />Silence</h1>
+	<div class="halo" aria-hidden="true"></div>
+	<p class="kicker">Set 01 · {cards.length}/{SET_SIZE} cartes</p>
+	<h1>Le Silence</h1>
 	<p class="tagline">{charter.game.tagline}</p>
 	<div class="progress" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
 		{#each Array(SEGMENTS) as _, i (i)}
@@ -51,17 +52,18 @@
 	{#if list.length > 0}
 		<section class="faction-block">
 			<h2 style="--fc: {charter.factions[f].color}">
-				<span class="tab">{charter.factions[f].sigil} {charter.factions[f].name}</span>
-				<span class="rule"></span>
-				<span class="fcount">{list.length.toString().padStart(2, '0')}</span>
+				<span class="orn"></span>
+				<span class="ftitle"><span class="fsigil">{charter.factions[f].sigil}</span> {charter.factions[f].name}</span>
+				<span class="orn"></span>
 			</h2>
+			<p class="fcount">{list.length} carte{list.length > 1 ? 's' : ''}</p>
 			<div class="wall">
 				{#each entriesFor(f) as e (e.key)}
 					<div class="cell">
 						<Card card={e.card} />
 						<a class="cardlink" href={e.href}>
 							{e.card.name}
-							{#if e.alt}<span class="altchip">ALT {e.alt}</span>{/if}
+							{#if e.alt}<span class="altchip">Alt {e.alt}</span>{/if}
 						</a>
 					</div>
 				{/each}
@@ -71,94 +73,108 @@
 {/each}
 
 <style>
-	/* ---------- hero ---------- */
+	/* ---------- hero : le titre sous le halo ---------- */
 
 	.hero {
-		margin: 1rem 0 3.4rem;
+		position: relative;
+		margin: 2.5rem 0 4.5rem;
+		text-align: center;
+	}
+	.halo {
+		position: absolute;
+		left: 50%;
+		top: 46%;
+		transform: translate(-50%, -50%);
+		width: min(420px, 80vw);
+		aspect-ratio: 1;
+		border-radius: 50%;
+		border: 1px solid rgba(201, 164, 69, 0.35);
+		box-shadow:
+			0 0 60px rgba(201, 164, 69, 0.12),
+			inset 0 0 60px rgba(201, 164, 69, 0.07);
+		pointer-events: none;
 	}
 	.kicker {
-		display: flex;
-		align-items: center;
-		gap: 0.55rem;
-		margin: 0 0 0.6rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-size: 0.78rem;
+		margin: 0 0 1rem;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 0.75rem;
 		font-weight: 600;
-		letter-spacing: 0.28em;
+		letter-spacing: 0.34em;
 		text-transform: uppercase;
-		color: rgba(236, 232, 225, 0.55);
-	}
-	.k-diamond {
-		color: #c9a445;
-		font-size: 0.75em;
+		color: rgba(236, 229, 211, 0.55);
 	}
 	h1 {
 		margin: 0;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 68%;
-		font-weight: 800;
-		font-size: clamp(3.4rem, 9vw, 6.8rem);
-		line-height: 0.88;
-		letter-spacing: 0.01em;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: clamp(3rem, 8vw, 5.8rem);
+		line-height: 1.04;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #ece8e1;
+		color: #f0e8d6;
+		text-shadow: 0 0 40px rgba(201, 164, 69, 0.25);
 	}
 	.tagline {
 		margin: 1.1rem 0 0;
-		max-width: 46ch;
-		color: rgba(236, 232, 225, 0.65);
+		font-style: italic;
+		font-size: 1.25rem;
+		color: rgba(236, 229, 211, 0.65);
 	}
 
 	.progress {
 		display: flex;
-		gap: 5px;
-		margin-top: 1.4rem;
-		max-width: 420px;
+		justify-content: center;
+		gap: 6px;
+		margin: 1.8rem auto 0;
+		max-width: 380px;
 	}
 	.seg {
 		flex: 1;
-		height: 9px;
-		background: rgba(236, 232, 225, 0.1);
-		clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+		height: 3px;
+		border-radius: 2px;
+		background: rgba(236, 229, 211, 0.12);
 	}
 	.seg.on {
 		background: #c9a445;
 	}
 
-	/* ---------- sections de faction ---------- */
+	/* ---------- sections de peuple ---------- */
 
 	.faction-block {
-		margin-bottom: 3.4rem;
+		margin-bottom: 4.2rem;
 	}
 	.faction-block h2 {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
-		margin: 0 0 1.6rem;
+		gap: 1.4rem;
+		margin: 0 0 0.3rem;
 	}
-	.tab {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 80%;
-		font-size: 1.02rem;
-		font-weight: 700;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: #0f1923;
-		background: color-mix(in srgb, var(--fc) 82%, #fff);
-		padding: 0.42rem 1.15rem 0.38rem;
-		clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-	}
-	.rule {
+	.orn {
 		flex: 1;
 		height: 1px;
-		background: color-mix(in srgb, var(--fc) 35%, transparent);
+		background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--fc) 45%, transparent));
+	}
+	.orn:last-child {
+		background: linear-gradient(270deg, transparent, color-mix(in srgb, var(--fc) 45%, transparent));
+	}
+	.ftitle {
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 600;
+		font-size: 1.25rem;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, var(--fc) 72%, #fff);
+	}
+	.fsigil {
+		color: var(--fc);
+		margin-right: 0.2rem;
 	}
 	.fcount {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-size: 0.9rem;
-		font-weight: 700;
-		color: color-mix(in srgb, var(--fc) 70%, #fff);
-		font-variant-numeric: tabular-nums;
+		margin: 0 0 1.8rem;
+		text-align: center;
+		font-style: italic;
+		font-size: 0.98rem;
+		color: rgba(236, 229, 211, 0.42);
 	}
 
 	/* ---------- grille ---------- */
@@ -166,37 +182,38 @@
 	.wall {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 2.4rem 1.4rem;
+		gap: 2.6rem 1.4rem;
 	}
 	.cell {
 		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.85rem;
+		gap: 0.9rem;
 		--card-w: min(290px, 100%);
 	}
 	.cardlink {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-size: 0.78rem;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 0.72rem;
 		font-weight: 600;
 		letter-spacing: 0.18em;
 		text-transform: uppercase;
+		text-align: center;
 		text-decoration: none;
-		color: rgba(236, 232, 225, 0.6);
+		color: rgba(236, 229, 211, 0.6);
 		transition: color 0.15s ease;
 	}
 	.cardlink:hover {
-		color: #ece8e1;
+		color: #c9a445;
 	}
 	.altchip {
 		display: inline-block;
-		margin-left: 0.4em;
-		padding: 0.12em 0.5em;
+		margin-left: 0.45em;
+		padding: 0.1em 0.6em;
 		font-size: 0.85em;
 		letter-spacing: 0.14em;
-		color: #0f1923;
-		background: #ffb454;
-		clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+		color: #0c0a13;
+		background: #c9a445;
+		border-radius: 999px;
 	}
 </style>

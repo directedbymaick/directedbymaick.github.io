@@ -137,7 +137,7 @@
 		margin-top: 1.3rem;
 	}
 	.vbtn {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.72rem;
 		font-weight: 700;
 		letter-spacing: 0.18em;
@@ -147,7 +147,7 @@
 		cursor: pointer;
 		color: rgba(236, 232, 225, 0.6);
 		background: rgba(236, 232, 225, 0.07);
-		clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+		border-radius: 999px;
 		transition:
 			background 0.15s ease,
 			color 0.15s ease;
@@ -157,8 +157,8 @@
 		background: rgba(236, 232, 225, 0.14);
 	}
 	.vbtn.active {
-		color: #0f1923;
-		background: #ffb454;
+		color: #0c0a13;
+		background: #c9a445;
 	}
 
 	.meta {
@@ -170,7 +170,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		margin: 0 0 0.3rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		font-weight: 600;
 		letter-spacing: 0.26em;
@@ -185,8 +185,7 @@
 	}
 	h1 {
 		margin: 0 0 1.1rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 70%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: clamp(2.4rem, 5vw, 3.6rem);
 		line-height: 0.92;
@@ -201,14 +200,14 @@
 		margin-bottom: 1.4rem;
 	}
 	.chip {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.74rem;
 		font-weight: 600;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
 		padding: 0.34rem 0.7rem;
 		background: rgba(236, 232, 225, 0.07);
-		clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+		border-radius: 999px;
 		color: rgba(236, 232, 225, 0.85);
 	}
 	.chip.cell {
@@ -228,7 +227,7 @@
 	}
 	.block-label {
 		margin: 0 0 0.3rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.7rem;
 		font-weight: 700;
 		letter-spacing: 0.24em;
@@ -269,15 +268,15 @@
 		display: inline-block;
 		margin-top: 1.6rem;
 		padding: 0.6rem 1.3rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.76rem;
 		font-weight: 700;
 		letter-spacing: 0.22em;
 		text-transform: uppercase;
 		text-decoration: none;
-		color: #0f1923;
+		color: #0c0a13;
 		background: #ece8e1;
-		clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+		border-radius: 999px;
 		transition: background 0.15s ease;
 	}
 	.back:hover {

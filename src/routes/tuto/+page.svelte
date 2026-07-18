@@ -108,7 +108,7 @@
 		align-items: center;
 		gap: 0.55rem;
 		margin: 0 0 0.6rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		font-weight: 600;
 		letter-spacing: 0.28em;
@@ -121,8 +121,7 @@
 	}
 	h1 {
 		margin: 0;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 68%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: clamp(3rem, 8vw, 5.6rem);
 		line-height: 0.9;
@@ -144,16 +143,15 @@
 		margin: 0 0 1.6rem;
 	}
 	.tab {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 80%;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 1rem;
 		font-weight: 700;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: #0f1923;
+		color: #0c0a13;
 		background: #ece8e1;
 		padding: 0.42rem 1.15rem 0.38rem;
-		clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.rule {
 		flex: 1;
@@ -192,16 +190,16 @@
 		place-items: center;
 		width: 1.7rem;
 		height: 1.7rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 700;
 		font-size: 0.85rem;
-		color: #0f1923;
+		color: #0c0a13;
 		background: #c9a445;
 		border-radius: 50%;
 	}
 	.lt {
 		margin: 0 0 0.15rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.85rem;
 		font-weight: 700;
 		letter-spacing: 0.14em;
@@ -232,8 +230,7 @@
 		border-left: 3px solid #c9a445;
 	}
 	.step-n {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 70%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: 1.9rem;
 		line-height: 1;
@@ -241,7 +238,7 @@
 	}
 	.step h3 {
 		margin: 0 0 0.4rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.95rem;
 		font-weight: 700;
 		letter-spacing: 0.14em;
@@ -258,15 +255,15 @@
 		display: inline-block;
 		margin-top: 1.6rem;
 		padding: 0.6rem 1.3rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		font-weight: 700;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
 		text-decoration: none;
-		color: #0f1923;
+		color: #0c0a13;
 		background: #ece8e1;
-		clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.cta:hover {
 		background: #c9a445;

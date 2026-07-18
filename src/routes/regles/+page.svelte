@@ -144,7 +144,7 @@
 		align-items: center;
 		gap: 0.55rem;
 		margin: 0 0 0.6rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		font-weight: 600;
 		letter-spacing: 0.28em;
@@ -157,8 +157,7 @@
 	}
 	h1 {
 		margin: 0;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 68%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: clamp(3rem, 8vw, 5.6rem);
 		line-height: 0.9;
@@ -180,16 +179,15 @@
 		margin: 0 0 1.6rem;
 	}
 	.tab {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 80%;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 1rem;
 		font-weight: 700;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: #0f1923;
+		color: #0c0a13;
 		background: #ece8e1;
 		padding: 0.42rem 1.15rem 0.38rem;
-		clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.rule {
 		flex: 1;
@@ -209,7 +207,7 @@
 	}
 	.block h3 {
 		margin: 0 0 0.4rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.95rem;
 		font-weight: 700;
 		letter-spacing: 0.14em;
@@ -243,7 +241,7 @@
 		background: rgba(236, 232, 225, 0.045);
 	}
 	.keywords dt {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 700;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
@@ -270,7 +268,7 @@
 		border-bottom: 1px solid rgba(236, 232, 225, 0.12);
 	}
 	th {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;

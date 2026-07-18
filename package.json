@@ -23,5 +23,9 @@
 		"tsx": "^4.23.0",
 		"typescript": "^6.0.3",
 		"vite": "^8.0.16"
+	},
+	"dependencies": {
+		"@fontsource/cinzel": "^5.2.8",
+		"@fontsource/cormorant-garamond": "^5.2.11"
 	}
 }

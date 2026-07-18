@@ -32,7 +32,7 @@
 		common: '#8b95a5',
 		rare: '#e8e4da',
 		epic: '#b8c4d6',
-		legendary: '#ffb454',
+		legendary: '#c9a445',
 		prism: '#c9a2e8'
 	};
 
@@ -173,7 +173,7 @@
 		align-items: center;
 		gap: 0.55rem;
 		margin: 0 0 0.6rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		font-weight: 600;
 		letter-spacing: 0.28em;
@@ -186,8 +186,7 @@
 	}
 	h1 {
 		margin: 0;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 68%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: clamp(3rem, 8vw, 5.6rem);
 		line-height: 0.9;
@@ -207,7 +206,7 @@
 		color: rgba(236, 232, 225, 0.45);
 	}
 	.colstat-n {
-		color: #ffb454;
+		color: #c9a445;
 		font-weight: 700;
 	}
 
@@ -266,8 +265,7 @@
 	}
 	.reveal-name {
 		margin: 0 0 0.5rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 70%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: clamp(1.8rem, 4.5vw, 3rem);
 		line-height: 0.95;
@@ -281,15 +279,15 @@
 		flex-wrap: wrap;
 	}
 	.chip {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.72rem;
 		font-weight: 700;
 		letter-spacing: 0.16em;
 		text-transform: uppercase;
 		padding: 0.3rem 0.7rem;
-		color: #0f1923;
+		color: #0c0a13;
 		background: var(--tint, #ece8e1);
-		clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.chip.faction {
 		background: rgba(236, 232, 225, 0.1);
@@ -360,7 +358,7 @@
 	}
 	.primary,
 	.ghost {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.78rem;
 		font-weight: 700;
 		letter-spacing: 0.2em;
@@ -369,10 +367,10 @@
 		padding: 0.6rem 1.3rem;
 		border: none;
 		cursor: pointer;
-		clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.primary {
-		color: #0f1923;
+		color: #0c0a13;
 		background: #ece8e1;
 	}
 	.primary:hover {
@@ -391,8 +389,7 @@
 	/* ---------- recap ---------- */
 	.recap-title {
 		margin: 0;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 70%;
+		font-family: Cinzel, Georgia, serif;
 		font-weight: 800;
 		font-size: clamp(1.6rem, 4vw, 2.4rem);
 		text-transform: uppercase;
@@ -416,7 +413,7 @@
 		position: absolute;
 		top: -0.6rem;
 		z-index: 5;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.68rem;
 		font-weight: 700;
 		letter-spacing: 0.16em;
@@ -424,10 +421,10 @@
 		padding: 0.24rem 0.65rem;
 		color: #ece8e1;
 		background: #c9a445;
-		clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.recap-link {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.72rem;
 		font-weight: 600;
 		letter-spacing: 0.16em;
@@ -450,16 +447,15 @@
 		margin: 0 0 1.4rem;
 	}
 	.tab {
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
-		font-stretch: 80%;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 1rem;
 		font-weight: 700;
 		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: #0f1923;
+		color: #0c0a13;
 		background: #ece8e1;
 		padding: 0.42rem 1.15rem 0.38rem;
-		clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+		border-radius: 999px;
 	}
 	.rule {
 		flex: 1;
@@ -474,11 +470,11 @@
 	.odds-card {
 		padding: 1rem 1.2rem;
 		background: rgba(236, 232, 225, 0.045);
-		border-left: 3px solid #ffb454;
+		border-left: 3px solid #c9a445;
 	}
 	.odds-slot {
 		margin: 0 0 0.7rem;
-		font-family: Bahnschrift, 'Arial Narrow', sans-serif;
+		font-family: Cinzel, Georgia, serif;
 		font-size: 0.85rem;
 		font-weight: 700;
 		letter-spacing: 0.18em;
