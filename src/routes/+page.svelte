@@ -112,17 +112,31 @@
 		padding: 7rem 0 5.5rem;
 		text-align: center;
 	}
+	/* l'auréole : une ellipse penchée qui flotte au-dessus du titre, comme sur une tête */
 	.hero::before {
 		content: '';
 		position: absolute;
 		left: 50%;
-		top: 54%;
-		transform: translate(-50%, -50%);
-		width: min(560px, 90vw);
-		aspect-ratio: 1;
+		top: 4.2rem;
+		width: min(230px, 46vw);
+		height: 54px;
+		transform: translateX(-50%) rotate(-7deg);
 		border-radius: 50%;
-		border: 1px solid rgba(201, 164, 69, 0.14);
-		box-shadow: 0 0 120px rgba(201, 164, 69, 0.07);
+		border: 2px solid rgba(232, 200, 118, 0.75);
+		border-bottom-color: rgba(232, 200, 118, 0.2);
+		filter: blur(0.6px) drop-shadow(0 0 22px rgba(201, 164, 69, 0.55));
+		pointer-events: none;
+	}
+	/* la lumière qu'elle projette, très diffuse */
+	.hero::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 30%;
+		transform: translate(-50%, -50%);
+		width: min(680px, 95vw);
+		height: 320px;
+		background: radial-gradient(50% 50% at 50% 50%, rgba(201, 164, 69, 0.1), transparent 70%);
 		pointer-events: none;
 	}
 	.kicker {
