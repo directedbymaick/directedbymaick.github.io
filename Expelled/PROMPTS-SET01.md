@@ -11,36 +11,40 @@ ses trois axes, non réutilisables par une autre carte du même peuple :
    arche, anneaux concentriques, éclipse, soleil, lune…
 Les silhouettes varient aussi : âge, genre, carrure, coiffure, accessoire signature.
 
+**NOMS** : chaque Être porte un nom propre (règle d'or des racines) avec sa fonction en
+sous-titre — « Korven, forgeron de sentences ». Les Verbes, Reliques et Lieux gardent des titres
+conceptuels. L'Enfant de Xenen reste sans nom : personne ne le connaît encore.
+
 ---
 
 ## VASAR
 
-**V01 · `choriste-de-vasen`** — commune · Être
+**V01 · `vasna`** — commune · Être · **Vasna, choriste de Vasen**
 ```
 young sacred choir singer, bust portrait, mouth open mid-song, short dark hair, ivory robe with high collar, one thin gold ring halo, warm ivory palette, clean graphic illustration, flat ivory background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V02 · `copiste-des-registres`** — commune · Être
+**V02 · `norel`** — commune · Être · **Norel, copiste des registres**
 ```
 wiry sacred scribe, full figure walking, arms full of gold-edged registers, round spectacles, small full gold disc behind his head, quill behind ear, warm parchment palette, clean graphic illustration, flat parchment background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V03 · `porte-syllabe`** — commune · Être
+**V03 · `renna`** — commune · Être · **Renna, porte-syllabe**
 ```
 sacred messenger woman, three-quarter view, long braid over one shoulder, holding a single glowing golden syllable in cupped hands, thin crescent of light behind her head, pale gold palette, clean graphic illustration, flat pale gold background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V04 · `gardien-des-lignes`** — commune · Être
+**V04 · `doras`** — commune · Être · **Doras, gardien des lignes**
 ```
 broad older sacred guardian, full frontal stance, ceremonial staff planted, square jaw, ivory and gold layered robe, an arch-shaped circle of light behind him, warm grey palette, clean graphic illustration, flat warm grey background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V05 · `sentinelle-des-lisieres`** — commune · Être
+**V05 · `senel`** — commune · Être · **Senel, sentinelle des lisières**
 ```
 slender sacred sentinel woman in profile, hand cupped to her ear, short white hair, pale hooded robe, one dim thin ring behind her head, muted dusk-grey palette, clean graphic illustration, flat dusk grey background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V06 · `forgeron-de-sentences`** — commune · Être
+**V06 · `korven`** — commune · Être · **Korven, forgeron de sentences**
 ```
 massive sacred smith seen from the side at his anvil, hammering one glowing chain link, leather apron over ivory robes, a circle of sparks behind his head, warm stone palette, clean graphic illustration, flat stone-grey background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -60,22 +64,22 @@ extreme close-up of one raised gloved hand in an ivory sleeve, a golden ring of 
 still life, dawn light through a round rosace window falling on an open songbook, gold dust in the air, no characters, soft amber palette, clean graphic illustration, flat soft amber background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V10 · `novice-du-vasis`** — commune · Être
+**V10 · `dorin`** — commune · Être · **Dorin, novice du Vasis**
 ```
 very young sacred judge seated on a bench too high for him, feet not touching the ground, oversized ivory robe, gavel on his knees, one small tilted ring above his head, bone-white palette, clean graphic illustration, flat bone-white background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V11 · `chef-de-choeur`** — rare · Être
+**V11 · `dasen`** — rare · Être · **Dasen, chef de chœur**
 ```
 sacred choir master seen from below, arms raised mid-conduction, long grey hair tied back, gold-embroidered ivory robes, a double ring halo, one ritual baton of light, warm ivory palette, clean graphic illustration, flat warm ivory background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V12 · `juge-de-cercle`** — rare · Être
+**V12 · `thessa`** — rare · Être · **Thessa, juge de cercle**
 ```
 stern sacred judge woman seated frontal on a high white throne, golden scales on her knee, hair in a severe bun, a halftone gold disc behind her head, marble-white palette, subtle gold ornament, clean graphic illustration, flat marble white background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V13 · `aile-de-la-loi`** — rare · Être
+**V13 · `talvas`** — rare · Être · **Talvas, aile de la loi**
 ```
 armored sacred guardian with vast white wings spread as a shield, seen slightly from below, golden bracers, a wide ring of light behind the wings themselves, drifting feathers, pale gold palette, clean graphic illustration, flat pale gold background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -95,7 +99,7 @@ impossible white towers rising into golden clouds, round windows glowing like ha
 sacred still life, a single golden chain coiled on a white marble pedestal, one link cracked and dark, a faint halo-shaped reflection floating above it, ash-grey palette, clean graphic illustration, flat ash grey background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**V17 · `maitre-copiste`** — épique · Être
+**V17 · `dorvel`** — épique · Être · **Dorvel, maître-copiste**
 ```
 elderly sacred master scribe seen in top-down view at a monumental circular desk, open registers orbiting him like a clock face, bald with a long white beard, concentric gold rings drawn on the floor around him, controlled ornament density, warm amber palette, clean graphic illustration, flat warm amber background, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -129,27 +133,27 @@ iconic sacred judge, symmetrical frontal pose, ivory ceremonial robe with layere
 
 ## EXAR
 
-**X01 · `banni-de-fraiche-date`** — commune · Être
+**X01 · `renas`** — commune · Être · **Renas, banni de fraîche date**
 ```
 young exile, bust portrait, shaved head, defiant stare, dark torn collar, freshly cracked ring halo with two gold fragments still falling, deep crimson palette, clean graphic illustration, flat crimson background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X02 · `porteur-de-chaine`** — commune · Être
+**X02 · `morek`** — commune · Être · **Morek, porteur de chaîne**
 ```
 lean scarred fighter, full figure walking toward viewer, golden sentence chain wrapped around one arm and dragging behind, half-broken disc halo, oxblood palette, clean graphic illustration, flat oxblood background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X03 · `halo-renverse`** — commune · Être
+**X03 · `exna`** — commune · Être · **Exna, halo renversé**
 ```
 exile woman in three-quarter view, long white hair, wearing her cracked halo upside down like a crown, faint calm smile, an inverted arc of light behind her, wine-red palette, clean graphic illustration, flat wine red background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X04 · `griffe-de-lenvers`** — commune · Être
+**X04 · `thanor`** — commune · Être · **Thanor, griffe de l'envers**
 ```
 hunched fallen figure seen in profile, long dark claws from tattered sleeves, glowing red eyes under a hood, small jagged circle behind, near-black palette with red, clean graphic illustration, flat near-black background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X05 · `marquee-du-trait`** — commune · Être
+**X05 · `morna`** — commune · Être · **Morna, marquée du trait**
 ```
 fierce fallen woman, tight bust portrait, one single black organic mark crossing her face and neck, short red hair, thin broken ring behind her head, rust palette, clean graphic illustration, flat rust background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -169,7 +173,7 @@ three hooded exiles seen from above around one candle, their cracked halos barel
 abstract image, a dark open mouth mid-word, red sound rings rippling outward like cracked halos, no full face, black and crimson palette, clean graphic illustration, flat black-red background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X09 · `fidele-du-dehors`** — commune · Être
+**X09 · `exel`** — commune · Être · **Exel, fidèle du dehors**
 ```
 kneeling fallen devotee seen from behind, arms open wide, his cracked halo held up in both hands like an offering, bald scarred scalp, maroon palette, clean graphic illustration, flat maroon background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -179,12 +183,12 @@ kneeling fallen devotee seen from behind, arms open wide, his cracked halo held 
 two golden chains falling from above onto the same unbowed shoulders, figure seen from the chest up, head high, no visible face, dried-blood red palette, clean graphic illustration, flat dark red background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X11 · `precheuse-de-la-question`** — rare · Être
+**X11 · `senna`** — rare · Être · **Senna, prêcheuse de la question**
 ```
 fallen street preacher woman on a bone pulpit seen from below, one finger raised asking, wild grey hair, small crowd of cracked halos glowing in the dark beneath her, one ritual bone lectern, scarlet palette, clean graphic illustration, flat scarlet background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X12 · `briseuse-de-cercles`** — rare · Être
+**X12 · `korsa`** — rare · Être · **Korsa, briseuse de cercles**
 ```
 fallen warrior woman mid-swing shattering a golden ring with a bone hammer, dynamic three-quarter action pose, braided black hair, fragments scattering in an arc, crimson-black palette, one ritual weapon, clean graphic illustration, flat deep crimson background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -194,7 +198,7 @@ fallen warrior woman mid-swing shattering a golden ring with a bone hammer, dyna
 menacing still life, a carved bone crown on a black altar over red silk, faint red glow in its hollows, one dim broken circle floating behind, charcoal palette with red, clean graphic illustration, flat charcoal background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X14 · `apotre-de-lenvers`** — rare · Être
+**X14 · `exoran`** — rare · Être · **Exoran, apôtre de l'envers**
 ```
 tall fallen apostle, full figure frontal, layered dark robes with red seams, serene terrifying smile, elegant long black hair, an inverted ring halo below his chin instead of above, bone jewelry, garnet palette, clean graphic illustration, flat garnet background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -209,7 +213,7 @@ golden chains reversing mid-air, turning from shackles into a rising whip of lig
 crowd of exile silhouettes roaring upward seen from behind, cracked halos raised like torches over their heads, red light flooding from below, vermilion palette, clean graphic illustration, flat vermilion background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**X17 · `bouche-de-labime`** — épique · Être
+**X17 · `exva`** — épique · Être · **Exva, bouche de l'Abîme**
 ```
 towering veiled fallen figure, low angle contre-plongée, a glowing red mouth as her only visible feature, layered black veils, a shattered halo orbiting her head in slow fragments, bone jewelry, controlled ornament density, abyssal red palette, clean graphic illustration, flat abyssal red background, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -243,12 +247,12 @@ iconic fallen king, symmetrical frontal pose, massive shattered inverted eclipse
 
 ## ESHAR
 
-**E01 · `echo-a-visage`** — commune · Être
+**E01 · `eshin`** — commune · Être · **Eshin, écho à visage**
 ```
 translucent ghost with a half-formed face, bust portrait, violet mist body dissolving at the shoulders, one faint silver ring behind, pale lavender palette, clean graphic illustration, flat lavender background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**E02 · `ramasseuse-de-syllabes`** — commune · Être
+**E02 · `eshna`** — commune · Être · **Eshna, ramasseuse de syllabes**
 ```
 small hooded ghost woman, full figure crouching, collecting glowing letters into a glass jar, translucent patched veil, a pale crescent moon behind her, deep plum palette, clean graphic illustration, flat plum background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -258,7 +262,7 @@ small hooded ghost woman, full figure crouching, collecting glowing letters into
 close-up of an open upturned palm, violet mist rising and forming three fleeting faces, two white moths, one glowing memory bead, twilight indigo palette, clean graphic illustration, flat indigo background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**E04 · `collecteur-dexil`** — rare · Être
+**E04 · `eskor`** — rare · Être · **Eskor, collecteur d'exil**
 ```
 very tall thin ghost in profile, layered translucent robes, carrying a birdcage full of golden halo fragments on a long pole, white moths escaping the bars, a large full moon disc behind, dusk violet palette, clean graphic illustration, flat dusk violet background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -277,7 +281,7 @@ iconic ghost archivist woman seated three-quarter at a floating desk, half-trans
 
 ## MORAR
 
-**M01 · `tombee-du-bon-cote`** — commune · Être
+**M01 · `tala`** — commune · Être · **Tala, tombée du bon côté**
 ```
 young fallen angel woman in casual modern clothes sitting relaxed on a rooftop edge, legs dangling, small black wings, short teal hair, tarnished thin ring halo, one pale circle low behind her, soft powder-blue palette, clean graphic illustration, flat powder blue background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -287,7 +291,7 @@ young fallen angel woman in casual modern clothes sitting relaxed on a rooftop e
 a standing figure seen from behind mid-transformation, ivory robes dissolving into a modern jacket from the shoulders down, feathers turning to fabric scraps in the air, half-circle behind, soft peach palette, clean graphic illustration, flat peach background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**M03 · `guide-de-xenen`** — rare · Être
+**M03 · `moren`** — rare · Être · **Moren, guide de Xenen**
 ```
 easygoing fallen angel man leaning against a lamppost, full figure, hands in pockets, folded black wings under a long coat, locs tied up, tarnished halo hanging on the lamppost above like a hat, warm apricot evening palette, clean graphic illustration, flat apricot background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -306,7 +310,7 @@ iconic serene fallen elder seated cross-legged, three-quarter view, simple moder
 
 ## VELAR
 
-**S01 · `plongeuse-du-bord`** — commune · Être
+**S01 · `velsa`** — commune · Être · **Velsa, plongeuse du bord**
 ```
 young radiant angel woman diving headfirst through bright daylight, vertical composition, glass wings tight along her body, short blond hair, thin gold halo trailing behind her like a lost ring, small sun circle high above, warm daylight palette, clean graphic illustration, flat sky-gold background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
@@ -316,7 +320,7 @@ young radiant angel woman diving headfirst through bright daylight, vertical com
 extreme close-up of one hand crushing a small sun into streaming golden fire between its fingers, radial light rays, no full figure, amber-orange palette, clean graphic illustration, flat amber orange background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
 
-**S03 · `rieur-en-chute-libre`** — rare · Être
+**S03 · `velor`** — rare · Être · **Velor, rieur en chute libre**
 ```
 laughing radiant young man free-falling on his back, arms crossed behind his head like a sunbather, seen from above, glass wings half-open, dark curly hair, his halo spinning off-frame, one wide sun ring below him, hard noon palette, one gold chain necklace, clean graphic illustration, flat bright gold background, generous negative space, full-art trading card composition --sw 200 --no text, logo, watermark
 ```
