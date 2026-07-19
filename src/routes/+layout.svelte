@@ -41,6 +41,7 @@
 	const links = [
 		{ href: '/', label: 'Registre' },
 		{ href: '/packs', label: 'Boosters' },
+		{ href: '/profil', label: 'Mon Nom' },
 		{ href: '/regles', label: 'Règles' },
 		{ href: '/tuto', label: 'Tuto' },
 		{ href: '/lab', label: 'Lab' }
