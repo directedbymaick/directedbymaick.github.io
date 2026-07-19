@@ -8,6 +8,7 @@
 	import { cards } from '$lib/cards';
 	import {
 		openPack,
+		isGodPack,
 		loadCollection,
 		saveCollection,
 		addToCollection,
@@ -165,6 +166,8 @@
 			}
 		}
 		collection = { ...collection };
+		godHit = isGodPack(pulls);
+		bulk = false;
 		flipped = pulls.map(() => false);
 
 		// flash + déflagration à l'emplacement du sachet, aux couleurs du meilleur tirage
@@ -255,7 +258,52 @@
 		stage = 'idle';
 		pulls = [];
 		flipped = [];
+		godHit = false;
 		pending = openPack();
+	}
+
+	/* ---- ouverture groupée : 5 boosters d'un coup, récap direct ---- */
+	let godHit = $state(false);
+	let bulk = $state(false); // le récap vient d'une ouverture ×5
+	const BULK_N = 5;
+	const canAffordBulk = $derived(eco.balance >= PACK_PRICE * BULK_N);
+
+	function bulkOpen() {
+		const cost = PACK_PRICE * BULK_N;
+		if (!spend(cost)) return;
+		track('packOpened', BULK_N);
+		const all: Pull[] = [];
+		let god = false;
+		for (let k = 0; k < BULK_N; k++) {
+			const pk = openPack();
+			if (isGodPack(pk)) god = true;
+			all.push(...pk);
+		}
+		track('pull', all.length);
+		freshIds = addToCollection(collection, all);
+		if (eco.autoSell) {
+			let total = 0;
+			let count = 0;
+			for (const p of all) {
+				const id = p.card.id;
+				const n = (collection[id] ?? 0) - SELL_KEEP;
+				if (n > 0) {
+					collection[id] = SELL_KEEP;
+					total += n * (SELL_VALUE[p.card.rarity] ?? 5);
+					count += n;
+				}
+			}
+			if (count > 0) {
+				saveCollection(collection);
+				earn(total, `Revente auto : ${count} copie${count > 1 ? 's' : ''} en trop`);
+			}
+		}
+		collection = { ...collection };
+		pulls = all;
+		godHit = god;
+		bulk = true;
+		pending = openPack();
+		stage = 'recap';
 	}
 
 	/* loupe : une carte révélée se clique pour être examinée en grand */
@@ -300,7 +348,12 @@
 			{#if canAfford}
 				<p class="hint">⠿ Tire la languette pour ouvrir</p>
 				<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW[bestTier]} prisma={packPrisma} />
-				<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
+				<div class="openrow">
+					<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
+					<button class="ghost bulk" disabled={!canAffordBulk} onclick={bulkOpen}>
+						×5 boosters — <i class="shard" aria-hidden="true"></i> {PACK_PRICE * BULK_N}
+					</button>
+				</div>
 			{:else}
 				<div class="broke-pack">
 					<PackVisual glow={TIER_GLOW[bestTier]} prisma={false} />
@@ -361,7 +414,13 @@
 		</div>
 	{:else if stage === 'recap'}
 		<div class="stage-inner recap">
-			<h2 class="recap-title">Ton tirage</h2>
+			{#if godHit}
+				<div class="godbanner">
+					<span class="god-em">✦</span> Booster EXPELLED <span class="god-em">✦</span>
+					<small>Le Silence s'est ouvert — cinq cartes en Full Art prismatique.</small>
+				</div>
+			{/if}
+			<h2 class="recap-title">{bulk ? `Ton ouverture · ${pulls.length} cartes` : 'Ton tirage'}</h2>
 			<div class="recap-grid">
 				{#each pulls as p, i (i)}
 					<div class="recap-cell">
@@ -409,7 +468,8 @@
 		Si une rareté tirée n'a aucune carte forgée, le tirage se replie sur la rareté la plus proche.
 		Pas de doublon à l'intérieur d'un même booster tant que le pool le permet. Chaque carte épique
 		ou au-delà a {Math.round(FULLART_RATE * 100)}&nbsp;% de chance de sortir en version
-		<strong>Full Art</strong> — collectionnée à part.
+		<strong>Full Art</strong> — collectionnée à part. Et dans de très rares cas, le sachet est un
+		<strong>booster EXPELLED</strong> : ses cinq cartes sortent toutes en Full Art prismatique.
 	</p>
 </section>
 
@@ -922,12 +982,77 @@
 		background: rgba(255, 255, 255, 0.12);
 	}
 
+	/* ---------- ouverture : rangée de boutons ---------- */
+	.openrow {
+		display: flex;
+		gap: 0.7rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	.bulk {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.bulk:disabled {
+		opacity: 0.4;
+		cursor: default;
+	}
+
 	/* ---------- recap ---------- */
 	.recap-title {
 		margin: 0;
 		font-weight: 750;
 		font-size: clamp(1.5rem, 3.5vw, 2.2rem);
 		letter-spacing: -0.02em;
+	}
+	/* la bannière du booster EXPELLED : l'événement rarissime */
+	.godbanner {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.2rem;
+		padding: 0.8rem 2rem;
+		text-align: center;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8, #e8a7b8);
+		background-size: 200% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		filter: drop-shadow(0 0 14px rgba(203, 184, 255, 0.4));
+		animation: godsheen 5s linear infinite;
+	}
+	.godbanner small {
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-weight: 400;
+		font-style: italic;
+		font-size: 0.9rem;
+		letter-spacing: 0.02em;
+		text-transform: none;
+		background: none;
+		-webkit-background-clip: border-box;
+		background-clip: border-box;
+		color: rgba(226, 212, 255, 0.85);
+		filter: none;
+	}
+	.god-em {
+		font-size: 0.7em;
+	}
+	@keyframes godsheen {
+		to {
+			background-position: 200% 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.godbanner {
+			animation: none;
+		}
 	}
 	.recap-grid {
 		display: grid;

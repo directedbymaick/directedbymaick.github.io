@@ -586,16 +586,53 @@
 		letter-spacing: 0.14em;
 		white-space: nowrap;
 	}
-	/* taxonomie affichée : chaque type a sa couleur pour se distinguer d'un coup d'œil */
+	/* taxonomie affichée : métaux précieux, sobres — sauf l'Être, irisé prismatique */
 	.kindlabel {
-		color: color-mix(in srgb, var(--kind, var(--sys)) 82%, #fff);
 		font-weight: 700;
-		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--kind, var(--sys)) 45%, transparent);
 	}
-	.card[data-kind='etre'] { --kind: #6fd39a; } /* Être — vert vivant */
-	.card[data-kind='verbe'] { --kind: #63b3ff; } /* Verbe — bleu parole */
-	.card[data-kind='relique'] { --kind: #e0a63e; } /* Relique — or objet */
-	.card[data-kind='lieu'] { --kind: #b98cf0; } /* Lieu — violet domaine */
+	/* Verbe — argent */
+	.card[data-kind='verbe'] .kindlabel {
+		color: #d3d8de;
+		text-shadow: 0 0 1.2cqw rgba(205, 214, 224, 0.35);
+	}
+	/* Relique — or */
+	.card[data-kind='relique'] .kindlabel {
+		color: #e6c778;
+		text-shadow: 0 0 1.2cqw rgba(213, 178, 94, 0.4);
+	}
+	/* Lieu — bronze */
+	.card[data-kind='lieu'] .kindlabel {
+		color: #cf9a6b;
+		text-shadow: 0 0 1.2cqw rgba(190, 130, 90, 0.35);
+	}
+	/* Être — dégradé prismatique irisé, animé */
+	.card[data-kind='etre'] .kindlabel {
+		background: linear-gradient(
+			90deg,
+			#e8a7b8,
+			#e8d3a7,
+			#a7e8c6,
+			#a7c6e8,
+			#c9a7e8,
+			#e8a7b8
+		);
+		background-size: 200% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		filter: drop-shadow(0 0 0.8cqw rgba(200, 180, 220, 0.35));
+		animation: kindsheen 6s linear infinite;
+	}
+	@keyframes kindsheen {
+		to {
+			background-position: 200% 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.card[data-kind='etre'] .kindlabel {
+			animation: none;
+		}
+	}
 	.kindlabel::after {
 		content: ' ◯';
 		font-size: 0.8em;

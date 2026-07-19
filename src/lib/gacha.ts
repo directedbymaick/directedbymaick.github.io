@@ -70,8 +70,35 @@ export interface Pull {
 	fullArt: boolean;
 }
 
+/** Chance, très rare, d'un booster « EXPELLED » : 5 cartes toutes en Full Art
+ *  prismatique — épiques, légendaires et prismatiques uniquement. */
+export const GOD_PACK_RATE = 0.008;
+
+/** Le pack est-il un « EXPELLED » (les 5 cartes en Full Art) ? */
+export function isGodPack(pulls: Pull[]): boolean {
+	return pulls.length === PACK_SIZE && pulls.every((p) => p.fullArt);
+}
+
+function openGodPack(): Pull[] {
+	const pool = cards.filter(
+		(c) => c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism'
+	);
+	const src = pool.length >= PACK_SIZE ? pool : cards;
+	const seen = new Set<string>();
+	const pulls: Pull[] = [];
+	for (let i = 0; i < PACK_SIZE; i++) {
+		let card = src[Math.floor(Math.random() * src.length)];
+		let guard = 0;
+		while (seen.has(card.id) && guard++ < 40) card = src[Math.floor(Math.random() * src.length)];
+		seen.add(card.id);
+		pulls.push({ card: fullArtView(card), baseId: card.id, fullArt: true });
+	}
+	return pulls;
+}
+
 /** Tire un booster : 5 cartes, sans doublon dans le pack si le pool le permet. */
 export function openPack(): Pull[] {
+	if (Math.random() < GOD_PACK_RATE) return openGodPack();
 	const pulls: Pull[] = [];
 	const seen = new Set<string>();
 	const slots: Rarity[] = [
