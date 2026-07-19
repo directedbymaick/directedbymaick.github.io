@@ -1,689 +1,1075 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
+	import logo from '$lib/assets/logo.svg';
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
-	import { simulate, type Ev } from '$lib/game/engine';
-	import type { FactionId } from '$lib/types';
+	import { loadDecks, type Deck } from '$lib/decks';
+	import {
+		Duel,
+		MAJORS,
+		type PlayerSnap,
+		type UnitSnap,
+		type HandEntry,
+		type DuelMeta
+	} from '$lib/game/engine';
+	import type { CardData, FactionId } from '$lib/types';
 
-	/* ---- configuration du duel ---- */
-	let deckA: FactionId = $state('vasar');
-	let deckB: FactionId = $state('exar');
-	let speed = $state(420); // ms par événement
+	/* ============ SETUP ============ */
 
-	/* ---- état du replay ---- */
-	let events: Ev[] = $state([]);
-	let cursor = $state(-1);
-	let running = $state(false);
-	let timer: ReturnType<typeof setTimeout> | undefined;
+	type Phase = 'setup' | 'play';
+	let phase = $state<Phase>('setup');
 
-	const current = $derived(cursor >= 0 ? events[cursor] : undefined);
-	const boardState = $derived(current?.state);
-	const finished = $derived(cursor >= events.length - 1 && events.length > 0);
+	let myDecks = $state<Deck[]>([]);
+	let deckChoice = $state<string>('auto-vasar'); // 'auto-<faction>' ou l'id d'un deck perso
+	let aiFaction = $state<FactionId>('exar');
 
-	function launch() {
-		pause();
+	onMount(() => {
+		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
+	});
+
+	function expandDeck(d: Deck): CardData[] {
+		const list: CardData[] = [];
+		for (const [id, n] of Object.entries(d.cards)) {
+			const c = getCard(id);
+			if (c) for (let i = 0; i < n; i++) list.push(c);
+		}
+		return list;
+	}
+	function dominantFaction(list: CardData[]): FactionId {
+		const count: Partial<Record<FactionId, number>> = {};
+		for (const c of list) count[c.faction] = (count[c.faction] ?? 0) + 1;
+		return (Object.entries(count).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'vasar') as FactionId;
+	}
+
+	/* ============ DUEL ============ */
+
+	let duel: Duel | null = null;
+	let view = $state<[PlayerSnap, PlayerSnap] | null>(null);
+	let handV = $state<HandEntry[]>([]);
+	let meta = $state<DuelMeta | null>(null);
+	let attackers = $state<number[]>([]);
+	let legal = $state<{ units: number[]; korum: boolean }>({ units: [], korum: false });
+	let pron = $state<{ uid: number; cost: number; text: string }[]>([]);
+	let log = $state<string[]>([]);
+	let sel = $state<number | null>(null);
+	let replaying = $state(false);
+	let showLog = $state(false);
+	let flash = $state('');
+
+	const myTurn = $derived(!!meta && meta.active === 0 && meta.winner === null && !replaying);
+	const winner = $derived(meta?.winner ?? null);
+
+	function refresh() {
+		if (!duel) return;
+		view = duel.state();
+		handV = duel.hand();
+		meta = duel.meta();
+		attackers = duel.attackers();
+		legal = duel.legalTargets();
+		pron = duel.pronounceable();
+	}
+
+	const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+	async function pump(fast: boolean) {
+		if (!duel) return;
+		const evs = duel.drain();
+		for (const e of evs) {
+			log.push(e.msg);
+			view = e.state;
+			flash = e.msg;
+			await sleep(fast ? 150 : 560);
+		}
+		refresh();
+	}
+
+	function start() {
 		const seed = Math.floor(Math.random() * 1e9);
-		const sim = simulate(cards, deckA, deckB, seed);
-		events = sim.events;
-		cursor = 0;
-		running = true;
-		tick();
-	}
-	function tick() {
-		clearTimeout(timer);
-		if (!running) return;
-		if (cursor >= events.length - 1) {
-			running = false;
-			return;
-		}
-		timer = setTimeout(() => {
-			cursor += 1;
-			tick();
-		}, speedFor(events[cursor + 1]));
-	}
-	function speedFor(e: Ev | undefined): number {
-		if (!e) return speed;
-		// les moments forts respirent, la pioche file
-		if (e.t === 'attack' || e.t === 'prononcer' || e.t === 'win') return speed * 1.8;
-		if (e.t === 'draw' || e.t === 'heal') return speed * 0.55;
-		return speed;
-	}
-	function pause() {
-		running = false;
-		clearTimeout(timer);
-	}
-	function resume() {
-		if (events.length === 0 || finished) return;
-		running = true;
-		tick();
-	}
-	function step() {
-		pause();
-		if (cursor < events.length - 1) cursor += 1;
-	}
-	onDestroy(() => clearTimeout(timer));
-
-	/* ---- journal : les derniers événements ---- */
-	const log = $derived(events.slice(Math.max(0, cursor - 18), cursor + 1));
-
-	/* ---- mode batch : la statistique d'équilibrage ---- */
-	interface Batch {
-		games: number;
-		wins: [number, number];
-		draws: number;
-		avgTurns: number;
-		cardRows: { id: string; name: string; faction: string; plays: number; winrate: number }[];
-	}
-	let batch: Batch | null = $state(null);
-	let batching = $state(false);
-
-	async function runBatch(n = 100) {
-		pause();
-		batching = true;
-		batch = null;
-		const wins: [number, number] = [0, 0];
-		let draws = 0;
-		let turns = 0;
-		const plays = new Map<string, { plays: number; wins: number }>();
-		for (let i = 0; i < n; i++) {
-			const sim = simulate(cards, deckA, deckB, i * 7919 + 13);
-			if (sim.winner === -1) draws += 1;
-			else wins[sim.winner] += 1;
-			turns += sim.turns;
-			for (const side of [0, 1] as const) {
-				for (const [id, count] of Object.entries(sim.played[side])) {
-					const rec = plays.get(id) ?? { plays: 0, wins: 0 };
-					rec.plays += count;
-					if (sim.winner === side) rec.wins += count;
-					plays.set(id, rec);
-				}
+		let humanDeck: CardData[] | null = null;
+		let humanFaction: FactionId = 'vasar';
+		if (deckChoice.startsWith('auto-')) {
+			humanFaction = deckChoice.slice(5) as FactionId;
+		} else {
+			const d = myDecks.find((x) => x.id === deckChoice);
+			if (d) {
+				humanDeck = expandDeck(d);
+				humanFaction = dominantFaction(humanDeck);
 			}
-			if (i % 10 === 9) await new Promise((r) => setTimeout(r)); // laisse respirer l'UI
 		}
-		batch = {
-			games: n,
-			wins,
-			draws,
-			avgTurns: turns / n,
-			cardRows: [...plays.entries()]
-				.filter(([, r]) => r.plays >= 5)
-				.map(([id, r]) => ({
-					id,
-					name: getCard(id)?.name ?? id,
-					faction: getCard(id)?.faction ?? '',
-					plays: r.plays,
-					winrate: r.wins / r.plays
-				}))
-				.sort((a, b) => b.winrate - a.winrate)
-		};
-		batching = false;
+		duel = new Duel(cards, humanDeck, humanFaction, aiFaction, seed);
+		log = [];
+		sel = null;
+		phase = 'play';
+		replaying = true;
+		pump(true).then(() => (replaying = false));
 	}
 
-	const FACTIONS: FactionId[] = ['vasar', 'exar'];
-	const SIDES = [1, 0] as const; // camp B en haut, camp A en bas
-	const fcolor = (f: string) => charter.factions[f as FactionId]?.color ?? '#8892a6';
-	const artOf = (id: string) => getCard(id)?.art ?? '';
-	const artPosOf = (id: string) => getCard(id)?.artPosition ?? 'center 12%';
+	async function doPlay(i: number) {
+		if (!duel || !myTurn) return;
+		if (!duel.play(i)) return;
+		sel = null;
+		replaying = true;
+		await pump(true);
+		replaying = false;
+	}
+
+	function clickMyUnit(u: UnitSnap) {
+		if (!myTurn) return;
+		if (sel === u.uid) sel = null;
+		else if (attackers.includes(u.uid)) sel = u.uid;
+	}
+
+	async function clickEnemyUnit(u: UnitSnap) {
+		if (!duel || !myTurn || sel === null) return;
+		if (!legal.units.includes(u.uid)) return;
+		const a = sel;
+		sel = null;
+		if (!duel.attack(a, u.uid)) return;
+		replaying = true;
+		await pump(true);
+		replaying = false;
+	}
+
+	async function clickEnemyKorum() {
+		if (!duel || !myTurn || sel === null || !legal.korum) return;
+		const a = sel;
+		sel = null;
+		if (!duel.attack(a, 'korum')) return;
+		replaying = true;
+		await pump(true);
+		replaying = false;
+	}
+
+	async function doPronounce(uid: number) {
+		if (!duel || !myTurn) return;
+		sel = null;
+		if (!duel.pronounce(uid)) return;
+		replaying = true;
+		await pump(true);
+		replaying = false;
+	}
+
+	async function endTurn() {
+		if (!duel || !myTurn) return;
+		sel = null;
+		duel.endTurn();
+		replaying = true;
+		await pump(false);
+		replaying = false;
+	}
+
+	function rematch() {
+		phase = 'setup';
+		duel = null;
+		view = null;
+		meta = null;
+	}
+
+	function artOf(u: UnitSnap): string {
+		return getCard(u.cardId)?.art ?? '';
+	}
 </script>
 
 <svelte:head>
 	<title>Arène — {charter.game.name}</title>
-	<meta name="description" content="IA contre IA : le set se teste en duel réel." />
+	<meta name="description" content="L'Arène : affrontez l'IA d'Expelled en duel, règles du Silence." />
 </svelte:head>
 
-<header class="hero">
-	<p class="kicker"><span class="k-diamond">◆</span> Salle d'entraînement</p>
-	<h1>Arène</h1>
-	<p class="tagline">
-		Deux IA jouent le set en duel réel — règles v1, les 60 cartes, effets compris. Regarde les
-		combats en direct, ou lance 100 parties pour mesurer l'équilibre.
-	</p>
-</header>
-
-<!-- ============ CONTRÔLES ============ -->
-<section class="controls">
-	<div class="pick">
-		<label>
-			<span>Camp A</span>
-			<select bind:value={deckA}>
-				{#each FACTIONS as f (f)}<option value={f}>{charter.factions[f].name}</option>{/each}
-			</select>
-		</label>
-		<span class="vs">contre</span>
-		<label>
-			<span>Camp B</span>
-			<select bind:value={deckB}>
-				{#each FACTIONS as f (f)}<option value={f}>{charter.factions[f].name}</option>{/each}
-			</select>
-		</label>
-	</div>
-	<div class="actions">
-		<button class="primary" onclick={launch}>⚔ Lancer un duel</button>
-		{#if events.length > 0 && !finished}
-			{#if running}<button class="ghost" onclick={pause}>Pause</button>
-			{:else}<button class="ghost" onclick={resume}>Reprendre</button>{/if}
-			<button class="ghost" onclick={step}>Pas à pas</button>
-		{/if}
-		<label class="speedctl">
-			<span>Rythme</span>
-			<input type="range" min="120" max="1000" step="20" bind:value={speed} style="direction: rtl" />
-		</label>
-		<button class="ghost" onclick={() => runBatch(100)} disabled={batching}>
-			{batching ? 'Simulation…' : '☍ 100 parties'}
-		</button>
-	</div>
-</section>
-
-<!-- ============ LA TABLE DE DUEL ============ -->
-{#if boardState}
-	<section class="table" class:over={finished}>
-		<div class="mat">
-			<div class="mat-ring" aria-hidden="true"></div>
-			<div class="midline" aria-hidden="true"></div>
-
-			{#each SIDES as side (side)}
-				{@const p = boardState[side]}
-				{@const isTop = side === 1}
-				{@const active = current?.side === side}
-				{@const korumHit = current?.targetKorum === true && current?.t === 'hit' && current?.side === side}
-				<div class="half" class:top={isTop} class:active style="--fc: {fcolor(p.faction)}">
-					<!-- rail identité : médaillon du Korum, Volonté, nom -->
-					<div class="idrail">
-						<div class="medallion" class:hurt={korumHit}>
-							<span class="msigil"><FactionSigil faction={p.faction} /></span>
-							<b class="mval">{Math.max(0, p.korum)}</b>
-							<svg class="mgauge" viewBox="0 0 40 40" aria-hidden="true">
-								<circle cx="20" cy="20" r="17.5" pathLength="100" class="mtrack" />
-								<circle
-									cx="20"
-									cy="20"
-									r="17.5"
-									pathLength="100"
-									class="mfill"
-									style="stroke-dasharray: {Math.max(0, (p.korum / 25) * 100)} 100"
-								/>
-							</svg>
-						</div>
-						<div class="will" title="Volonté {p.will}/{p.maxWill}">
-							{#each Array(p.maxWill) as _, i (i)}<i class:on={i < p.will}></i>{/each}
-						</div>
-						<span class="pname">{p.name}</span>
-					</div>
-
-					<!-- champ de bataille : les vraies cartes -->
-					<div class="field">
-						{#each p.board as u (u.uid)}
-							<div
-								class="bcard"
-								class:acting={current?.uid === u.uid}
-								class:targeted={current?.targetUid === u.uid}
-								class:asleep={!u.canAct && !u.locked}
-								class:locked={u.locked}
-								class:token={u.token}
-								style="--uc: {fcolor(u.faction)}"
-								title={getCard(u.cardId)?.text || u.name}
-							>
-								{#if artOf(u.cardId)}
-									<img
-										class="bart"
-										src={artOf(u.cardId)}
-										alt=""
-										style="object-position: {artPosOf(u.cardId)}"
-										draggable="false"
-									/>
-								{:else}
-									<div class="tokenface"><FactionSigil faction={u.faction} /></div>
-								{/if}
-								<div class="bscrim" aria-hidden="true"></div>
-								<span class="bcost">{u.cost}</span>
-								<span class="bname">{u.name}</span>
-								<span class="bstat batk">{u.atk}</span>
-								<span class="bstat bhp">{u.hp}</span>
-								<span class="btags">
-									{#if u.serment}<em title="Serment">⛨</em>{/if}
-									{#if u.elan}<em title="Élan">»</em>{/if}
-								</span>
-								{#if u.locked}<span class="bchains" title="Neutralisé / enchaîné">⛓</span>{/if}
-							</div>
-						{:else}
-							<span class="emptyfield">—</span>
-						{/each}
-					</div>
-
-					<!-- rail des piles : deck, défausse, exil, Lieux & Reliques -->
-					<div class="piles">
-						<div class="pile" title="Deck">
-							<img src="/card-back.webp" alt="" draggable="false" />
-							<b>{p.deck}</b>
-						</div>
-						<div class="pile flat" title="Défausse"><b>{p.discard}</b><span>déf.</span></div>
-						{#if p.exile > 0}
-							<div class="pile flat exiled" title="Exil"><b>{p.exile}</b><span>exil</span></div>
-						{/if}
-						{#each p.supports as s, i (i)}
-							<div class="plaque" title={getCard(s.cardId)?.text || s.name}>{s.name}</div>
-						{/each}
-					</div>
-
-					<!-- la main : un éventail de dos -->
-					<div class="hand" style="--n: {p.hand}">
-						{#each Array(p.hand) as _, i (i)}
-							<img class="hback" src="/card-back.webp" alt="" style="--i: {i}" draggable="false" />
-						{/each}
-					</div>
-				</div>
-			{/each}
-		</div>
-
-		<aside class="journal">
-			<h3>Journal du duel</h3>
-			<div class="jscroll">
-				{#each log as e, i (cursor - log.length + 1 + i)}
-					<p
-						class="lentry"
-						class:latest={i === log.length - 1}
-						class:major={e.t === 'attack' || e.t === 'prononcer' || e.t === 'death' || e.t === 'win' || e.t === 'turn'}
-						style="--lc: {fcolor(boardState[e.side].faction)}"
+{#if phase === 'setup'}
+	<!-- ============ ÉCRAN DE MISE EN JEU ============ -->
+	<header class="setup-hero">
+		<p class="kicker">◯ L'Arène</p>
+		<h1>Joueur contre IA</h1>
+		<p class="tagline">
+			Trente cartes, 25 d'Intégrité au Korum. Jouez vos cartes, choisissez vos cibles, prononcez au
+			bon moment — l'IA du Silence ne pardonne pas grand-chose.
+		</p>
+	</header>
+	<div class="setup">
+		<section class="spanel">
+			<h2>Votre deck</h2>
+			<div class="choices">
+				{#each MAJORS as f (f)}
+					<button
+						class="choice"
+						class:on={deckChoice === `auto-${f}`}
+						style="--fc: {charter.factions[f].color}"
+						onclick={() => (deckChoice = `auto-${f}`)}
 					>
-						{e.msg}
-					</p>
+						<span class="c-sigil"><FactionSigil faction={f} /></span>
+						<span class="c-name">{charter.factions[f].name} <small>deck auto</small></span>
+					</button>
+				{/each}
+				{#each myDecks as d (d.id)}
+					<button class="choice" class:on={deckChoice === d.id} onclick={() => (deckChoice = d.id)}>
+						<span class="c-sigil deck">🂠</span>
+						<span class="c-name">{d.name} <small>votre deck · 30 cartes</small></span>
+					</button>
 				{/each}
 			</div>
-		</aside>
-	</section>
-{:else}
-	<section class="table empty">
-		<p>Choisis les camps et lance un duel — les IA jouent, tu regardes.</p>
-	</section>
-{/if}
+			{#if myDecks.length === 0}
+				<p class="note">Vos decks complets (30 cartes) de <a href="/profil">Mon Nom</a> apparaîtront ici.</p>
+			{/if}
+		</section>
+		<section class="spanel">
+			<h2>L'adversaire</h2>
+			<div class="choices">
+				{#each MAJORS as f (f)}
+					<button
+						class="choice"
+						class:on={aiFaction === f}
+						style="--fc: {charter.factions[f].color}"
+						onclick={() => (aiFaction = f)}
+					>
+						<span class="c-sigil"><FactionSigil faction={f} /></span>
+						<span class="c-name">IA·{charter.factions[f].name}</span>
+					</button>
+				{/each}
+			</div>
+			<button class="startbtn" onclick={start}>Entrer dans l'Arène</button>
+			<p class="note"><a href="/arene/simulateur">Le simulateur IA contre IA</a> reste disponible.</p>
+		</section>
+	</div>
+{:else if view && meta}
+	{@const me = view[0]}
+	{@const foe = view[1]}
+	<!-- ============ LE PLATEAU ============ -->
+	<div class="duel" class:replaying>
+		<!-- rail gauche : les deux Korum + journal -->
+		<div class="rail-left">
+			<button
+				class="gem foe"
+				class:targetable={sel !== null && legal.korum}
+				disabled={!(sel !== null && legal.korum)}
+				onclick={clickEnemyKorum}
+				title="Le Korum adverse"
+			>
+				<i></i><b>{Math.max(0, foe.korum)}</b>
+			</button>
+			<span class="midline-orb" aria-hidden="true"></span>
+			<div class="gem mine"><i></i><b>{Math.max(0, me.korum)}</b></div>
+			<button class="logbtn" class:on={showLog} onclick={() => (showLog = !showLog)} title="Journal">☰</button>
+		</div>
 
-<!-- ============ STATS D'ÉQUILIBRAGE ============ -->
-{#if batch}
-	<section class="stats">
-		<h2><span class="tab">Verdict sur {batch.games} parties</span><span class="rule"></span></h2>
-		<div class="verdict">
-			<div class="vcard" style="--fc: {fcolor(deckA)}">
-				<span class="vname">{charter.factions[deckA].name} (A)</span>
-				<span class="vpct">{Math.round((batch.wins[0] / batch.games) * 100)}%</span>
-				<span class="vsub">{batch.wins[0]} victoires</span>
+		<!-- rail droit : Volonté + fin de tour -->
+		<div class="rail-right">
+			<div class="willbox foe" title="Volonté adverse">
+				<b>{foe.will}</b><small>/{foe.maxWill}</small>
 			</div>
-			<div class="vcard" style="--fc: {fcolor(deckB)}">
-				<span class="vname">{charter.factions[deckB].name} (B)</span>
-				<span class="vpct">{Math.round((batch.wins[1] / batch.games) * 100)}%</span>
-				<span class="vsub">{batch.wins[1]} victoires</span>
-			</div>
-			<div class="vcard">
-				<span class="vname">Durée moyenne</span>
-				<span class="vpct">{batch.avgTurns.toFixed(1)}</span>
-				<span class="vsub">tours · {batch.draws} nulle{batch.draws > 1 ? 's' : ''}</span>
+			<button class="passbtn" disabled={!myTurn} onclick={endTurn}>
+				{#if winner !== null}Terminé{:else if replaying}…{:else}Fin de<br />tour{/if}
+			</button>
+			<div class="willbox mine" title="Votre Volonté">
+				<b>{me.will}</b><small>/{me.maxWill}</small>
+				<span class="pips" aria-hidden="true">
+					{#each Array(me.maxWill) as _, i (i)}<i class:full={i < me.will}></i>{/each}
+				</span>
 			</div>
 		</div>
-		<h3>Winrate quand la carte est jouée <small>(≥ 5 apparitions — les extrêmes désignent les cartes à retoucher)</small></h3>
-		<div class="cardstats">
-			{#each batch.cardRows as row (row.id)}
-				<a class="crow" href="/card/{row.id.replace(/--.*$/, '')}" style="--fc: {fcolor(row.faction)}">
-					<span class="cname">{row.name}</span>
-					<span class="cbar"><span style="width: {row.winrate * 100}%"></span></span>
-					<span class="cpct">{Math.round(row.winrate * 100)}%</span>
-					<span class="cplays">×{row.plays}</span>
-				</a>
+
+		<!-- bandeau adverse : identité + main cachée -->
+		<div class="foehead">
+			<span class="foe-id" style="--fc: {charter.factions[foe.faction].color}">
+				<FactionSigil faction={foe.faction} />
+				{foe.name}
+			</span>
+			<div class="foe-hand" aria-label="{foe.hand} cartes en main adverse">
+				{#each Array(Math.min(foe.hand, 10)) as _, i (i)}
+					<span class="back"><img src={logo} alt="" /></span>
+				{/each}
+			</div>
+			<span class="foe-deck">{foe.deck} au deck</span>
+		</div>
+
+		<!-- plateau adverse -->
+		<div class="lane foe-lane">
+			{#each foe.board as u (u.uid)}
+				<button
+					class="unit"
+					class:targetable={sel !== null && legal.units.includes(u.uid)}
+					class:locked={u.locked}
+					class:serment={u.serment}
+					disabled={!(sel !== null && legal.units.includes(u.uid))}
+					onclick={() => clickEnemyUnit(u)}
+					title={u.name}
+				>
+					{#if artOf(u)}<img src={artOf(u)} alt="" />{/if}
+					<span class="u-name">{u.name}</span>
+					{#if u.serment}<span class="u-tag">Serment</span>{/if}
+					{#if u.locked}<span class="u-lock">⛓</span>{/if}
+					<span class="u-atk">{u.atk}</span>
+					<span class="u-hp" class:hurt={u.hp < u.maxHp}>{u.hp}</span>
+				</button>
+			{/each}
+			{#if foe.board.length === 0}<span class="lane-empty">—</span>{/if}
+		</div>
+
+		<div class="centerline" aria-hidden="true"><i></i></div>
+
+		<!-- votre plateau -->
+		<div class="lane my-lane">
+			{#each me.board as u (u.uid)}
+				<div class="unitwrap">
+					<button
+						class="unit mine"
+						class:ready={attackers.includes(u.uid)}
+						class:selected={sel === u.uid}
+						class:locked={u.locked}
+						class:serment={u.serment}
+						onclick={() => clickMyUnit(u)}
+						title={u.name}
+					>
+						{#if artOf(u)}<img src={artOf(u)} alt="" />{/if}
+						<span class="u-name">{u.name}</span>
+						{#if u.serment}<span class="u-tag">Serment</span>{/if}
+						{#if u.locked}<span class="u-lock">⛓</span>{/if}
+						{#if u.elan}<span class="u-elan">⚡</span>{/if}
+						<span class="u-atk">{u.atk}</span>
+						<span class="u-hp" class:hurt={u.hp < u.maxHp}>{u.hp}</span>
+					</button>
+					{#each pron.filter((p) => p.uid === u.uid) as p (p.uid)}
+						<button class="pronbtn" title={p.text} onclick={() => doPronounce(p.uid)}
+							>◯ Prononcer {p.cost}</button
+						>
+					{/each}
+				</div>
+			{/each}
+			{#if me.board.length === 0}<span class="lane-empty">—</span>{/if}
+		</div>
+
+		<!-- la main -->
+		<div class="hand">
+			{#each handV as h, i (i)}
+				<button
+					class="hcard"
+					class:playable={h.playable}
+					style="--i: {i - (handV.length - 1) / 2}"
+					disabled={!h.playable}
+					onclick={() => doPlay(i)}
+					title="{h.card.name} — {h.card.text || 'Sans effet.'}"
+				>
+					<span class="h-cost">{h.cost}</span>
+					{#if h.card.art}<img src={h.card.art} alt="" />{/if}
+					<span class="h-name">{h.card.name}</span>
+					{#if h.card.kind === 'etre'}
+						<span class="h-stats">{h.card.attack}/{h.card.health}</span>
+					{:else}
+						<span class="h-kind">{h.card.kind}</span>
+					{/if}
+				</button>
 			{/each}
 		</div>
-	</section>
+
+		<!-- fil d'action -->
+		{#if flash}
+			<p class="flash">{flash}</p>
+		{/if}
+
+		{#if showLog}
+			<aside class="log">
+				{#each log.slice(-40) as line, i (i)}
+					<p>{line}</p>
+				{/each}
+			</aside>
+		{/if}
+
+		<!-- fin de partie -->
+		{#if winner !== null}
+			<div class="endveil">
+				<img src={logo} alt="" />
+				<h2>
+					{winner === 0 ? 'Le Korum adverse se tait.' : winner === 1 ? 'Votre Korum se tait.' : 'Double chute.'}
+				</h2>
+				<p>{winner === 0 ? 'Victoire — votre parole tient.' : winner === 1 ? 'Défaite — l’Arène retiendra votre nom.' : 'Match nul.'}</p>
+				<button class="startbtn" onclick={rematch}>Rejouer</button>
+			</div>
+		{/if}
+	</div>
 {/if}
 
 <style>
-	.hero { margin: 4rem 0 2.4rem; }
+	/* ============ setup ============ */
+	.setup-hero {
+		margin: 4rem 0 2.5rem;
+	}
 	.kicker {
-		display: flex; align-items: center; gap: 0.55rem; margin: 0 0 1rem;
-		font-size: 0.78rem; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
-		color: rgba(242, 240, 234, 0.4);
+		margin: 0 0 1rem;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: var(--gold);
 	}
-	.k-diamond { color: #c9a445; font-size: 0.75em; }
-	h1 { margin: 0; font-weight: 800; font-size: clamp(2.8rem, 6.5vw, 4.6rem); letter-spacing: -0.03em; line-height: 1; }
-	.tagline { margin: 1.2rem 0 0; max-width: 60ch; font-size: 1.05rem; line-height: 1.6; color: rgba(242, 240, 234, 0.55); }
-
-	/* ---------- contrôles ---------- */
-	.controls {
-		display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
-		margin-bottom: 1.6rem; padding: 1rem 1.4rem;
-		background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px;
+	h1 {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 400;
+		font-size: clamp(2.6rem, 6vw, 4.4rem);
 	}
-	.pick { display: flex; align-items: center; gap: 0.9rem; }
-	.pick label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242, 240, 234, 0.45); }
-	.pick select {
-		font-family: inherit; font-size: 0.9rem; padding: 0.45rem 0.8rem;
-		color: #f2f0ea; background: #14161c; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px;
+	.tagline {
+		margin: 1.2rem 0 0;
+		max-width: 60ch;
+		color: rgba(238, 240, 245, 0.55);
+		line-height: 1.6;
 	}
-	.vs { font-size: 0.8rem; color: rgba(242, 240, 234, 0.4); padding-top: 1rem; }
-	.actions { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
-	.primary, .ghost {
-		font-family: inherit; font-size: 0.88rem; font-weight: 600; padding: 0.6rem 1.2rem;
-		border: none; cursor: pointer; border-radius: 999px; transition: background 0.18s ease, color 0.18s ease;
-	}
-	.primary { color: #0a0a0d; background: #f2f0ea; }
-	.primary:hover { background: #c9a445; }
-	.ghost { color: rgba(242, 240, 234, 0.65); background: rgba(255, 255, 255, 0.07); }
-	.ghost:hover { color: #f2f0ea; background: rgba(255, 255, 255, 0.12); }
-	.ghost:disabled { opacity: 0.5; cursor: default; }
-	.speedctl { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(242, 240, 234, 0.45); }
-	.speedctl input { accent-color: #c9a445; width: 110px; }
-
-	/* ---------- la table ---------- */
-	.table {
+	.setup {
 		display: grid;
-		grid-template-columns: 1fr 300px;
-		gap: 1rem;
-		margin-bottom: 2.4rem;
-		align-items: stretch;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 1.6rem;
 	}
-	.table.empty {
-		display: block; padding: 3.4rem; text-align: center; color: rgba(242, 240, 234, 0.4);
-		background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px;
+	.spanel {
+		padding: 1.6rem;
+		background: var(--panel);
+		border: 1px solid var(--panel-line);
+		border-radius: 18px;
+		backdrop-filter: blur(12px);
 	}
-
-	/* le tapis : matière sombre, l'anneau de KOR gravé au centre */
-	.mat {
-		position: relative;
-		overflow: hidden;
-		padding: 0.4rem 1.2rem;
-		border-radius: 20px;
-		background:
-			radial-gradient(90% 70% at 50% 50%, rgba(201, 164, 69, 0.05), transparent 65%),
-			radial-gradient(140% 100% at 50% 0%, rgba(20, 24, 34, 0.9), transparent 60%),
-			radial-gradient(140% 100% at 50% 100%, rgba(26, 20, 28, 0.9), transparent 60%),
-			repeating-linear-gradient(45deg, #101218 0 3px, #0c0e14 3px 6px),
-			#0c0e14;
-		border: 1px solid rgba(201, 164, 69, 0.14);
-		box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55);
+	.spanel h2 {
+		margin: 0 0 1rem;
+		font-size: 1.05rem;
+		font-weight: 650;
 	}
-	.mat-ring {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		width: min(46vw, 420px);
-		aspect-ratio: 1;
-		translate: -50% -50%;
-		border-radius: 50%;
-		border: 1px solid rgba(201, 164, 69, 0.14);
-		box-shadow:
-			inset 0 0 0 8px rgba(201, 164, 69, 0.03),
-			0 0 0 14px rgba(201, 164, 69, 0.025);
-		pointer-events: none;
+	.choices {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
-	.midline {
-		position: absolute;
-		left: 4%;
-		right: 4%;
-		top: 50%;
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(201, 164, 69, 0.35), transparent);
-		pointer-events: none;
-	}
-
-	/* une moitié de table : identité | champ | piles, la main en bordure */
-	.half {
-		position: relative;
-		display: grid;
-		grid-template-columns: 150px 1fr 150px;
-		gap: 1rem;
+	.choice {
+		display: flex;
 		align-items: center;
-		min-height: 218px;
-		padding: 1.5rem 0 1.1rem;
+		gap: 0.9rem;
+		padding: 0.7rem 0.9rem;
+		border: 1px solid var(--panel-line);
+		border-radius: 12px;
+		background: rgba(140, 170, 220, 0.05);
+		font-family: inherit;
+		color: rgba(238, 240, 245, 0.75);
+		cursor: pointer;
+		text-align: left;
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
 	}
-	.half.top { padding: 1.1rem 0 1.5rem; }
-	/* le camp actif respire : un souffle de sa couleur monte de son bord */
-	.half::before {
-		content: '';
-		position: absolute;
-		left: -1.2rem;
-		right: -1.2rem;
-		bottom: -0.4rem;
-		height: 55%;
-		background: linear-gradient(0deg, color-mix(in srgb, var(--fc) 10%, transparent), transparent);
-		opacity: 0;
-		transition: opacity 0.5s ease;
-		pointer-events: none;
+	.choice:hover {
+		border-color: rgba(213, 178, 94, 0.4);
 	}
-	.half.top::before { bottom: auto; top: -0.4rem; background: linear-gradient(180deg, color-mix(in srgb, var(--fc) 10%, transparent), transparent); }
-	.half.active::before { opacity: 1; }
-
-	/* ---------- médaillon du Korum ---------- */
-	.idrail { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; }
-	.medallion {
-		position: relative;
-		width: 84px;
-		height: 84px;
+	.choice.on {
+		border-color: rgba(213, 178, 94, 0.6);
+		background: rgba(213, 178, 94, 0.1);
+		color: var(--ink);
+	}
+	.c-sigil {
+		width: 1.8rem;
+		height: 1.8rem;
+		color: var(--fc, var(--gold));
+	}
+	.c-sigil.deck {
 		display: grid;
 		place-items: center;
+		font-size: 1.3rem;
+		color: var(--gold);
+	}
+	.c-name {
+		display: flex;
+		flex-direction: column;
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+	.c-name small {
+		font-weight: 450;
+		font-size: 0.72rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
+	.startbtn {
+		margin-top: 1.2rem;
+		width: 100%;
+		padding: 0.85rem 1.4rem;
+		border: none;
+		border-radius: 999px;
+		background: var(--cream);
+		color: #171b10;
+		font-family: inherit;
+		font-size: 1rem;
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow: 0 0 22px rgba(213, 178, 94, 0.3);
+	}
+	.startbtn:hover {
+		background: #f7edd6;
+	}
+	.note {
+		margin: 1rem 0 0;
+		font-size: 0.82rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
+	.note a {
+		color: var(--gold);
+	}
+
+	/* ============ plateau ============ */
+	.duel {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		min-height: calc(100vh - 5.9rem);
+		padding: 0.6rem 5.5rem 0.4rem;
+		margin: 0 -2rem;
+		box-sizing: border-box;
+		/* le champ : pierre sombre bordée d'or, façon LoR en nuit Expelled */
+		background:
+			radial-gradient(70% 60% at 50% 50%, rgba(34, 56, 40, 0.34), transparent 75%),
+			radial-gradient(90% 80% at 50% -10%, rgba(24, 42, 84, 0.4), transparent 60%);
+	}
+
+	/* rails */
+	.rail-left,
+	.rail-right {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1.2rem;
+		width: 5rem;
+		z-index: 5;
+	}
+	.rail-left {
+		left: 0.4rem;
+	}
+	.rail-right {
+		right: 0.4rem;
+	}
+
+	.gem {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 3.6rem;
+		height: 3.6rem;
+		border: none;
+		background: none;
+		cursor: default;
+		filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+	}
+	.gem i {
+		position: absolute;
+		inset: 0;
+		border-radius: 32% 68% 55% 45% / 40% 45% 55% 60%;
+		border: 2px solid rgba(255, 255, 255, 0.25);
+	}
+	.gem.foe i {
+		background: radial-gradient(circle at 35% 30%, #ff8f8f, #c22333 55%, #6c0f1c);
+	}
+	.gem.mine i {
+		background: radial-gradient(circle at 35% 30%, #9fc4ff, #2b62c2 55%, #123063);
+	}
+	.gem b {
+		position: relative;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1.15rem;
+		color: #fff;
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+	}
+	.gem.targetable {
+		cursor: crosshair;
+	}
+	.gem.targetable i {
+		box-shadow: 0 0 0 3px rgba(255, 120, 90, 0.8), 0 0 24px rgba(255, 120, 90, 0.7);
+		animation: pulse-t 1s ease-in-out infinite;
+	}
+	.midline-orb {
+		width: 0.9rem;
+		height: 0.9rem;
 		border-radius: 50%;
-		background: radial-gradient(circle at 38% 32%, color-mix(in srgb, var(--fc) 22%, #171a22), #0d0f15 72%);
-		border: 1px solid color-mix(in srgb, var(--fc) 45%, transparent);
-		box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-		transition: box-shadow 0.3s ease;
+		background: radial-gradient(circle at 35% 30%, #f2d98a, #a97f2c);
 	}
-	.medallion.hurt {
-		box-shadow: 0 0 22px rgba(232, 95, 107, 0.55), inset 0 0 12px rgba(232, 95, 107, 0.3);
-		animation: quake 0.35s ease;
+	.logbtn {
+		margin-top: 0.8rem;
+		width: 2.4rem;
+		height: 2.4rem;
+		border-radius: 10px;
+		border: 1px solid var(--panel-line);
+		background: var(--panel);
+		color: rgba(238, 240, 245, 0.7);
+		cursor: pointer;
 	}
-	@keyframes quake {
-		25% { transform: translateX(-3px); }
-		50% { transform: translateX(3px); }
-		75% { transform: translateX(-2px); }
+	.logbtn.on {
+		border-color: rgba(213, 178, 94, 0.6);
+		color: var(--gold);
 	}
-	.msigil { position: absolute; top: 10px; font-size: 0.85rem; opacity: 0.9; }
-	.mval { font-size: 1.65rem; font-weight: 800; margin-top: 0.55rem; font-variant-numeric: tabular-nums; }
-	.mgauge { position: absolute; inset: -5px; width: calc(100% + 10px); height: calc(100% + 10px); transform: rotate(-90deg); }
-	.mgauge circle { fill: none; stroke-width: 2.4; }
-	.mtrack { stroke: rgba(255, 255, 255, 0.07); }
-	.mfill { stroke: var(--fc); stroke-linecap: round; transition: stroke-dasharray 0.5s ease; }
 
-	.will { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; max-width: 120px; }
-	.will i {
-		width: 9px; height: 9px; rotate: 45deg; border-radius: 2px;
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid color-mix(in srgb, var(--fc) 35%, transparent);
-		transition: background 0.3s ease, box-shadow 0.3s ease;
+	.passbtn {
+		width: 5rem;
+		height: 5rem;
+		border-radius: 50%;
+		border: 3px solid rgba(213, 178, 94, 0.65);
+		background: radial-gradient(circle at 35% 30%, #3f76d4, #1c3f88 60%, #0d2250);
+		color: #fff;
+		font-family: inherit;
+		font-size: 0.82rem;
+		font-weight: 700;
+		line-height: 1.15;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		cursor: pointer;
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55), inset 0 2px 6px rgba(255, 255, 255, 0.25);
+		transition: filter 0.15s ease;
 	}
-	.will i.on { background: var(--fc); box-shadow: 0 0 6px color-mix(in srgb, var(--fc) 60%, transparent); }
-	.pname { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in srgb, var(--fc) 65%, #f2f0ea); }
-
-	/* ---------- champ de bataille : les vraies cartes ---------- */
-	.field {
+	.passbtn:hover:not(:disabled) {
+		filter: brightness(1.15);
+	}
+	.passbtn:disabled {
+		filter: grayscale(0.6) brightness(0.7);
+		cursor: default;
+	}
+	.willbox {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		font-variant-numeric: tabular-nums;
+		color: rgba(238, 240, 245, 0.75);
+	}
+	.willbox b {
+		font-size: 1.05rem;
+		color: var(--gold);
+	}
+	.willbox small {
+		font-size: 0.7rem;
+		color: rgba(238, 240, 245, 0.4);
+	}
+	.pips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.7rem;
 		justify-content: center;
+		gap: 3px;
+		max-width: 4.4rem;
+		margin-top: 0.4rem;
+	}
+	.pips i {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: rgba(140, 170, 220, 0.2);
+	}
+	.pips i.full {
+		background: radial-gradient(circle at 35% 30%, #f2d98a, #c9a445);
+	}
+
+	/* bandeau adverse */
+	.foehead {
+		display: flex;
 		align-items: center;
-		min-height: 150px;
+		justify-content: center;
+		gap: 1.2rem;
+		padding: 0.2rem 0 0.5rem;
 	}
-	.emptyfield { color: rgba(242, 240, 234, 0.18); font-size: 1.2rem; }
-	.bcard {
-		--bw: clamp(86px, 8.4vw, 112px);
-		position: relative;
-		width: var(--bw);
-		aspect-ratio: 63 / 88;
-		border-radius: 8px;
-		overflow: hidden;
-		background: #14161c;
-		border: 1px solid color-mix(in srgb, var(--uc) 45%, transparent);
-		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-		transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
-	}
-	.bcard.token { border-style: dashed; }
-	.bcard.asleep { filter: brightness(0.6); }
-	.bcard.locked { filter: brightness(0.45) saturate(0.35); }
-	/* l'attaquant s'élance vers la ligne de front */
-	.half:not(.top) .bcard.acting { transform: translateY(-14px) scale(1.06); }
-	.half.top .bcard.acting { transform: translateY(14px) scale(1.06); }
-	.bcard.acting { box-shadow: 0 10px 26px color-mix(in srgb, var(--uc) 40%, rgba(0, 0, 0, 0.6)); z-index: 3; }
-	.bcard.targeted {
-		box-shadow: 0 0 0 2px #e85f6b, 0 0 22px rgba(232, 95, 107, 0.5);
-		animation: struck 0.35s ease;
-		z-index: 2;
-	}
-	@keyframes struck {
-		30% { transform: translateX(-3px) rotate(-1.2deg); }
-		60% { transform: translateX(3px) rotate(1.2deg); }
-	}
-	.bart { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-	.tokenface {
-		position: absolute; inset: 0; display: grid; place-items: center; font-size: 2rem;
-		background:
-			radial-gradient(80% 60% at 50% 35%, color-mix(in srgb, var(--uc) 18%, transparent), transparent),
-			repeating-linear-gradient(45deg, #171a21 0 3px, #12141b 3px 6px);
-	}
-	.bscrim {
-		position: absolute; inset: 0;
-		background: linear-gradient(180deg, rgba(5, 6, 9, 0.25) 0%, transparent 26%, transparent 52%, rgba(5, 6, 9, 0.88) 100%);
-	}
-	.bcost {
-		position: absolute; top: 3px; left: 3px; width: 1.15rem; height: 1.15rem;
-		display: grid; place-items: center; font-size: 0.66rem; font-weight: 800;
-		color: #0a0a0d; background: #e9cf8d; border-radius: 50%;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-	}
-	.bname {
-		position: absolute; left: 5px; right: 5px; bottom: 1.35rem;
-		font-size: 0.56rem; font-weight: 650; line-height: 1.12; letter-spacing: 0.01em;
-		text-shadow: 0 1px 2px #000;
-		display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-	}
-	.bstat {
-		position: absolute; bottom: 3px; min-width: 1.15rem; height: 1.15rem;
-		display: grid; place-items: center; padding: 0 0.25rem;
-		font-size: 0.68rem; font-weight: 800; font-variant-numeric: tabular-nums;
-		border-radius: 999px; color: #f2f0ea; background: rgba(10, 11, 15, 0.85);
-		border: 1px solid color-mix(in srgb, var(--uc) 55%, transparent);
-	}
-	.batk { left: 3px; }
-	.bhp { right: 3px; }
-	.btags { position: absolute; top: 3px; right: 4px; display: flex; gap: 2px; }
-	.btags em { font-style: normal; font-size: 0.7rem; color: color-mix(in srgb, var(--uc) 70%, #fff); text-shadow: 0 1px 2px #000; }
-	.bchains {
-		position: absolute; inset: 0; display: grid; place-items: center;
-		font-size: 1.3rem; color: rgba(242, 240, 234, 0.85); text-shadow: 0 1px 4px #000;
-		background: rgba(10, 11, 15, 0.35);
-	}
-
-	/* ---------- piles ---------- */
-	.piles { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
-	.pile { position: relative; width: 52px; }
-	.pile img {
-		width: 100%; border-radius: 5px; display: block;
-		box-shadow: 0 2px 0 #0a0b0f, 0 3px 0 #14161c, 0 4px 0 #0a0b0f, 0 6px 10px rgba(0, 0, 0, 0.5);
-	}
-	.pile b {
-		position: absolute; right: -6px; bottom: -6px; min-width: 1.2rem; height: 1.2rem;
-		display: grid; place-items: center; padding: 0 0.25rem;
-		font-size: 0.66rem; font-weight: 800; color: #0a0a0d; background: #e9cf8d; border-radius: 999px;
-	}
-	.pile.flat {
-		display: flex; align-items: baseline; gap: 0.3rem; width: auto; padding: 0.15rem 0.55rem;
-		background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px;
-	}
-	.pile.flat b { position: static; background: none; color: #f2f0ea; min-width: 0; height: auto; font-size: 0.78rem; }
-	.pile.flat span { font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242, 240, 234, 0.4); }
-	.pile.exiled { border-color: rgba(141, 108, 184, 0.4); }
-	.pile.exiled b { color: #cbb8ff; }
-	.plaque {
-		max-width: 140px; padding: 0.24rem 0.6rem;
-		font-size: 0.6rem; letter-spacing: 0.05em; text-align: center; line-height: 1.2;
+	.foe-id {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.82rem;
+		font-weight: 600;
 		color: color-mix(in srgb, var(--fc) 70%, #fff);
-		background: color-mix(in srgb, var(--fc) 12%, transparent);
-		border: 1px solid color-mix(in srgb, var(--fc) 35%, transparent);
-		border-radius: 6px;
 	}
-
-	/* ---------- la main : éventail de dos ---------- */
-	.hand {
-		position: absolute;
-		left: 50%;
-		bottom: -1.15rem;
-		translate: -50% 0;
+	.foe-id :global(svg) {
+		width: 1.2rem;
+		height: 1.2rem;
+	}
+	.foe-hand {
 		display: flex;
-		pointer-events: none;
+		gap: 0.2rem;
 	}
-	.half.top .hand { bottom: auto; top: -1.15rem; }
-	.hback {
-		width: 44px;
+	.back {
+		display: grid;
+		place-items: center;
+		width: 1.7rem;
+		height: 2.4rem;
 		border-radius: 4px;
-		margin: 0 -9px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-		transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * 5deg))
-			translateY(calc(max(var(--i) - (var(--n) - 1) / 2, (var(--n) - 1) / 2 - var(--i)) * max(var(--i) - (var(--n) - 1) / 2, (var(--n) - 1) / 2 - var(--i)) * 1.1px));
-		transition: transform 0.3s ease;
+		background: linear-gradient(160deg, #10182c, #0a101f);
+		border: 1px solid rgba(213, 178, 94, 0.35);
 	}
-	.half.top .hback {
-		transform: rotate(calc((var(--i) - (var(--n) - 1) / 2) * -5deg))
-			translateY(calc(max(var(--i) - (var(--n) - 1) / 2, (var(--n) - 1) / 2 - var(--i)) * max(var(--i) - (var(--n) - 1) / 2, (var(--n) - 1) / 2 - var(--i)) * -1.1px));
+	.back img {
+		width: 1.1rem;
+		opacity: 0.8;
+	}
+	.foe-deck {
+		font-size: 0.72rem;
+		color: rgba(238, 240, 245, 0.4);
+		font-variant-numeric: tabular-nums;
 	}
 
-	/* ---------- journal ---------- */
-	.journal {
-		display: flex;
-		flex-direction: column;
-		padding: 1rem 1.1rem;
-		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		border-radius: 20px;
-		min-height: 0;
-	}
-	.journal h3 {
-		margin: 0 0 0.7rem;
-		font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
-		color: rgba(242, 240, 234, 0.4);
-	}
-	.jscroll {
+	/* lanes */
+	.lane {
 		flex: 1;
 		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.7rem;
+		flex-wrap: wrap;
+		padding: 0.4rem 0;
+		min-height: 8.4rem;
+	}
+	.lane-empty {
+		color: rgba(238, 240, 245, 0.18);
+		font-size: 1.4rem;
+	}
+	.centerline {
+		position: relative;
+		height: 2px;
+		margin: 0 1rem;
+		background: linear-gradient(90deg, transparent, #c9a445 12%, #f2d98a 50%, #c9a445 88%, transparent);
+	}
+	.centerline i {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		width: 1.1rem;
+		height: 1.1rem;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 30%, #f2d98a, #a97f2c);
+		box-shadow: 0 0 14px rgba(213, 178, 94, 0.6);
+	}
+
+	/* unités */
+	.unitwrap {
+		display: flex;
 		flex-direction: column;
-		justify-content: flex-end;
+		align-items: center;
+		gap: 0.35rem;
+	}
+	.unit {
+		position: relative;
+		width: 6.2rem;
+		height: 8rem;
+		border-radius: 10px;
+		border: 1.5px solid rgba(140, 170, 220, 0.25);
+		background: #0c1324;
 		overflow: hidden;
+		cursor: default;
+		padding: 0;
+		font-family: inherit;
+		transition:
+			transform 0.15s ease,
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	.unit img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 15%;
+		opacity: 0.9;
+	}
+	.unit::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, transparent 40%, rgba(5, 8, 16, 0.88) 88%);
+	}
+	.u-name {
+		position: absolute;
+		left: 0.3rem;
+		right: 0.3rem;
+		bottom: 1.5rem;
+		z-index: 2;
+		font-size: 0.6rem;
+		font-weight: 600;
+		color: rgba(238, 240, 245, 0.9);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		text-shadow: 0 1px 3px #000;
+	}
+	.u-atk,
+	.u-hp {
+		position: absolute;
+		bottom: 0.25rem;
+		z-index: 2;
+		display: grid;
+		place-items: center;
+		min-width: 1.3rem;
+		height: 1.3rem;
+		padding: 0 0.2rem;
+		border-radius: 6px;
+		font-size: 0.78rem;
+		font-weight: 750;
+		font-variant-numeric: tabular-nums;
+		color: #fff;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+	}
+	.u-atk {
+		left: 0.25rem;
+		background: linear-gradient(180deg, #e8a33d, #b06a12);
+	}
+	.u-hp {
+		right: 0.25rem;
+		background: linear-gradient(180deg, #d24747, #8f1d1d);
+	}
+	.u-hp.hurt {
+		box-shadow: 0 0 0 1.5px #ff9d9d;
+	}
+	.u-tag {
+		position: absolute;
+		top: 0.25rem;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 2;
+		padding: 0.05rem 0.4rem;
+		border-radius: 999px;
+		background: rgba(213, 178, 94, 0.9);
+		color: #171b10;
+		font-size: 0.56rem;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+	.u-lock {
+		position: absolute;
+		top: 0.2rem;
+		right: 0.25rem;
+		z-index: 2;
 		font-size: 0.8rem;
-		line-height: 1.45;
+		filter: drop-shadow(0 1px 2px #000);
 	}
-	.lentry { margin: 0.12rem 0; color: rgba(242, 240, 234, 0.4); border-left: 2px solid color-mix(in srgb, var(--lc) 50%, transparent); padding-left: 0.65rem; }
-	.lentry.major { color: rgba(242, 240, 234, 0.72); }
-	.lentry.latest { color: #f2f0ea; }
+	.u-elan {
+		position: absolute;
+		top: 0.2rem;
+		left: 0.25rem;
+		z-index: 2;
+		font-size: 0.75rem;
+		filter: drop-shadow(0 1px 2px #000);
+	}
+	.unit.locked {
+		filter: grayscale(0.7) brightness(0.7);
+	}
+	/* les états d'action */
+	.unit.mine.ready {
+		cursor: pointer;
+		border-color: rgba(120, 220, 140, 0.8);
+		box-shadow: 0 0 12px rgba(120, 220, 140, 0.35);
+	}
+	.unit.mine.selected {
+		transform: translateY(-6px);
+		border-color: #f2d98a;
+		box-shadow: 0 0 0 2px rgba(242, 217, 138, 0.8), 0 0 22px rgba(213, 178, 94, 0.6);
+	}
+	.unit.targetable {
+		cursor: crosshair;
+		border-color: rgba(255, 120, 90, 0.85);
+		box-shadow: 0 0 0 2px rgba(255, 120, 90, 0.5), 0 0 18px rgba(255, 120, 90, 0.5);
+		animation: pulse-t 1s ease-in-out infinite;
+	}
+	@keyframes pulse-t {
+		0%,
+		100% {
+			filter: brightness(1);
+		}
+		50% {
+			filter: brightness(1.25);
+		}
+	}
+	.pronbtn {
+		padding: 0.2rem 0.7rem;
+		border: 1px solid rgba(213, 178, 94, 0.6);
+		border-radius: 999px;
+		background: rgba(213, 178, 94, 0.12);
+		color: var(--gold);
+		font-family: inherit;
+		font-size: 0.68rem;
+		font-weight: 700;
+		cursor: pointer;
+		white-space: nowrap;
+	}
+	.pronbtn:hover {
+		background: rgba(213, 178, 94, 0.25);
+	}
 
-	/* ---------- stats ---------- */
-	.stats { margin-bottom: 3.5rem; }
-	.stats h2 { display: flex; align-items: center; gap: 1rem; margin: 0 0 1.2rem; }
-	.tab { font-size: 1.15rem; font-weight: 650; white-space: nowrap; }
-	.rule { flex: 1; height: 1px; background: rgba(255, 255, 255, 0.07); }
-	.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.6rem; }
-	.vcard {
-		padding: 1rem 1.2rem; border-radius: 14px;
-		background: color-mix(in srgb, var(--fc, #8892a6) 8%, rgba(255, 255, 255, 0.02));
-		border: 1px solid color-mix(in srgb, var(--fc, #8892a6) 25%, transparent);
+	/* main */
+	.hand {
+		display: flex;
+		justify-content: center;
+		align-items: flex-end;
+		padding: 0.6rem 0 0.4rem;
+		min-height: 9.6rem;
 	}
-	.vname { display: block; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242, 240, 234, 0.5); }
-	.vpct { display: block; margin-top: 0.2rem; font-size: 1.9rem; font-weight: 800; }
-	.vsub { font-size: 0.78rem; color: rgba(242, 240, 234, 0.45); }
-	.stats h3 { margin: 0 0 0.8rem; font-size: 0.95rem; font-weight: 600; }
-	.stats h3 small { font-weight: 400; color: rgba(242, 240, 234, 0.4); }
-	.cardstats { display: flex; flex-direction: column; gap: 0.3rem; }
-	.crow {
-		display: grid; grid-template-columns: 220px 1fr 48px 44px; align-items: center; gap: 0.8rem;
-		padding: 0.35rem 0.6rem; border-radius: 8px; text-decoration: none; color: inherit;
-		transition: background 0.15s ease;
+	.hcard {
+		position: relative;
+		width: 6.6rem;
+		height: 9rem;
+		margin: 0 -0.55rem;
+		border-radius: 10px;
+		border: 1.5px solid rgba(140, 170, 220, 0.3);
+		background: #0c1324;
+		overflow: hidden;
+		padding: 0;
+		font-family: inherit;
+		transform: rotate(calc(var(--i) * 3deg)) translateY(calc(var(--i) * var(--i) * 2.2px));
+		transform-origin: bottom center;
+		transition:
+			transform 0.18s ease,
+			border-color 0.18s ease,
+			box-shadow 0.18s ease,
+			filter 0.18s ease;
 	}
-	.crow:hover { background: rgba(255, 255, 255, 0.04); }
-	.cname { font-size: 0.82rem; color: color-mix(in srgb, var(--fc) 60%, #f2f0ea); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.cbar { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
-	.cbar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--fc) 60%, #666), var(--fc)); }
-	.cpct { font-size: 0.82rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
-	.cplays { font-size: 0.72rem; color: rgba(242, 240, 234, 0.4); text-align: right; font-variant-numeric: tabular-nums; }
+	.hcard img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 15%;
+		opacity: 0.92;
+	}
+	.hcard::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, transparent 42%, rgba(5, 8, 16, 0.9) 90%);
+	}
+	.hcard:disabled {
+		filter: grayscale(0.5) brightness(0.6);
+		cursor: default;
+	}
+	.hcard.playable {
+		cursor: pointer;
+		border-color: rgba(120, 200, 255, 0.75);
+		box-shadow: 0 0 12px rgba(120, 200, 255, 0.3);
+	}
+	.hcard.playable:hover {
+		transform: rotate(0deg) translateY(-1.6rem) scale(1.28);
+		z-index: 10;
+		box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 18px rgba(120, 200, 255, 0.45);
+	}
+	.h-cost {
+		position: absolute;
+		top: 0.25rem;
+		left: 0.25rem;
+		z-index: 2;
+		display: grid;
+		place-items: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 30%, #9fc4ff, #1c3f88);
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		color: #fff;
+		font-size: 0.8rem;
+		font-weight: 750;
+	}
+	.h-name {
+		position: absolute;
+		left: 0.35rem;
+		right: 0.35rem;
+		bottom: 1.35rem;
+		z-index: 2;
+		font-size: 0.6rem;
+		font-weight: 600;
+		color: rgba(238, 240, 245, 0.92);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		text-shadow: 0 1px 3px #000;
+	}
+	.h-stats,
+	.h-kind {
+		position: absolute;
+		bottom: 0.3rem;
+		left: 0.35rem;
+		z-index: 2;
+		font-size: 0.62rem;
+		font-weight: 650;
+		color: var(--gold);
+		text-transform: capitalize;
+	}
 
-	@media (max-width: 1080px) {
-		.table { grid-template-columns: 1fr; }
-		.journal { max-height: 220px; }
+	/* fil + journal + fin */
+	.flash {
+		position: absolute;
+		left: 50%;
+		bottom: 10.4rem;
+		transform: translateX(-50%);
+		margin: 0;
+		max-width: 70%;
+		padding: 0.3rem 1rem;
+		border-radius: 999px;
+		background: rgba(7, 12, 24, 0.8);
+		border: 1px solid var(--panel-line);
+		font-size: 0.78rem;
+		color: rgba(238, 240, 245, 0.8);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		pointer-events: none;
 	}
+	.log {
+		position: absolute;
+		left: 5.4rem;
+		top: 1rem;
+		bottom: 1rem;
+		width: min(300px, 40vw);
+		overflow-y: auto;
+		padding: 0.9rem 1rem;
+		background: rgba(7, 12, 24, 0.88);
+		border: 1px solid var(--panel-line);
+		border-radius: 14px;
+		backdrop-filter: blur(10px);
+		z-index: 20;
+	}
+	.log p {
+		margin: 0 0 0.45rem;
+		font-size: 0.74rem;
+		line-height: 1.35;
+		color: rgba(238, 240, 245, 0.7);
+	}
+	.endveil {
+		position: absolute;
+		inset: 0;
+		z-index: 30;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.6rem;
+		background: rgba(4, 7, 14, 0.86);
+		backdrop-filter: blur(8px);
+		text-align: center;
+	}
+	.endveil img {
+		width: 5.4rem;
+		filter: drop-shadow(0 0 20px rgba(213, 178, 94, 0.5));
+	}
+	.endveil h2 {
+		margin: 0.6rem 0 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 400;
+		font-size: clamp(1.6rem, 4vw, 2.6rem);
+	}
+	.endveil p {
+		margin: 0;
+		color: rgba(238, 240, 245, 0.6);
+	}
+	.endveil .startbtn {
+		width: auto;
+		margin-top: 1.2rem;
+		padding: 0.7rem 2.2rem;
+	}
+
 	@media (max-width: 760px) {
-		.half { grid-template-columns: 92px 1fr; }
-		.piles { display: none; }
-		.crow { grid-template-columns: 130px 1fr 44px 40px; }
+		.duel {
+			padding: 0.6rem 3.4rem 0.4rem;
+		}
+		.unit {
+			width: 4.6rem;
+			height: 6.2rem;
+		}
+		.hcard {
+			width: 5rem;
+			height: 7rem;
+		}
 	}
 </style>
