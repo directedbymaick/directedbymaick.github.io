@@ -191,19 +191,26 @@
 
 		stage = 'reveal';
 		await tick();
-		// les 5 dos jaillissent du point d'explosion vers leurs places dans l'éventail
+		// les 5 dos jaillissent DU sachet : jet dispersé (x, rotation) qui se range en éventail
 		if (gsap && stageEl) {
 			gsap.fromTo(
 				stageEl.querySelectorAll('.fc-pop'),
-				{ y: 150, scale: 0.55, autoAlpha: 0, rotate: -6 },
 				{
+					x: () => gsap!.utils.random(-140, 140),
+					y: 210,
+					scale: 0.4,
+					autoAlpha: 0,
+					rotate: () => gsap!.utils.random(-38, 38)
+				},
+				{
+					x: 0,
 					y: 0,
 					scale: 1,
 					autoAlpha: 1,
 					rotate: 0,
-					duration: 0.85,
-					ease: 'back.out(1.5)',
-					stagger: 0.07
+					duration: 0.9,
+					ease: 'back.out(1.4)',
+					stagger: { each: 0.08, from: 'center' }
 				}
 			);
 		}
@@ -265,10 +272,11 @@
 	/* ---- ouverture groupée : 5 boosters d'un coup, récap direct ---- */
 	let godHit = $state(false);
 	let bulk = $state(false); // le récap vient d'une ouverture ×5
+	let spilling = $state(false); // pendant la cascade ×5, on masque puis on projette
 	const BULK_N = 5;
 	const canAffordBulk = $derived(eco.balance >= PACK_PRICE * BULK_N);
 
-	function bulkOpen() {
+	async function bulkOpen() {
 		const cost = PACK_PRICE * BULK_N;
 		if (!spend(cost)) return;
 		track('packOpened', BULK_N);
@@ -303,7 +311,73 @@
 		godHit = god;
 		bulk = true;
 		pending = openPack();
+		spilling = !reduced && !!gsap;
 		stage = 'recap';
+		await tick();
+		spillReveal();
+	}
+
+	/* La cascade ×5 : les cartes jaillissent du sachet (haut-centre du stage) et
+	   se déploient vers leurs cases dans la grille du récap, en salve rapide. */
+	async function spillReveal() {
+		if (!spilling || !gsap || !stageEl) {
+			spilling = false;
+			return;
+		}
+		const cells = Array.from(stageEl.querySelectorAll('.recap-cell')) as HTMLElement[];
+		if (!cells.length) {
+			spilling = false;
+			return;
+		}
+		const sr = stageEl.getBoundingClientRect();
+		const sx = sr.left + sr.width / 2; // point d'émission : le sachet
+		const sy = sr.top + 96;
+
+		// déflagration d'ouverture, aux couleurs du meilleur lot
+		if (fx && fxLayer) {
+			const fr = fxLayer.getBoundingClientRect();
+			const colors = godHit
+				? BURST.fullart.fx.colors
+				: pulls.some((p) => fxOf(p) === 'prism' || fxOf(p) === 'fullart')
+					? BURST.prism.fx.colors
+					: ['#ffedc0', '#e9c96a', '#fff8e6'];
+			fx.burst(sx - fr.left, sy - fr.top, { colors, orbs: 34, streaks: 16, power: 340, bloom: true });
+			if (godHit || pulls.some((p) => fxOf(p) === 'fullart' || fxOf(p) === 'prism')) {
+				const f = document.createElement('div');
+				f.className = 'flash prisma';
+				fxLayer.appendChild(f);
+				gsap.fromTo(f, { opacity: 0 }, { opacity: 1, duration: 0.14, yoyo: true, repeat: 1, ease: 'power1.inOut', onComplete: () => f.remove() });
+			}
+		}
+
+		// vecteur sachet → case, mémorisé par carte pour l'animation d'entrée
+		cells.forEach((cell) => {
+			const r = cell.getBoundingClientRect();
+			cell.style.setProperty('--dx', `${(sx - (r.left + r.width / 2)).toFixed(0)}px`);
+			cell.style.setProperty('--dy', `${(sy - (r.top + r.height / 2)).toFixed(0)}px`);
+		});
+
+		const dx = (i: number, t: Element) => parseFloat((t as HTMLElement).style.getPropertyValue('--dx')) || 0;
+		const dy = (i: number, t: Element) => parseFloat((t as HTMLElement).style.getPropertyValue('--dy')) || 0;
+
+		gsap.fromTo(
+			cells,
+			{ x: dx, y: dy, scale: 0.18, rotate: () => gsap!.utils.random(-55, 55), autoAlpha: 0 },
+			{
+				x: 0,
+				y: 0,
+				scale: 1,
+				rotate: 0,
+				autoAlpha: 1,
+				duration: 0.72,
+				ease: 'back.out(1.3)',
+				stagger: { each: 0.045, from: 'center' },
+				clearProps: 'transform,opacity,visibility',
+				onComplete: () => (spilling = false)
+			}
+		);
+		if (godHit && stageEl)
+			gsap.fromTo(stageEl, { x: 0 }, { x: 9, duration: 0.6, ease: 'packShake', clearProps: 'x' });
 	}
 
 	/* loupe : une carte révélée se clique pour être examinée en grand */
@@ -413,7 +487,7 @@
 			</div>
 		</div>
 	{:else if stage === 'recap'}
-		<div class="stage-inner recap">
+		<div class="stage-inner recap" class:spilling>
 			{#if godHit}
 				<div class="godbanner">
 					<span class="god-em">✦</span> Booster EXPELLED <span class="god-em">✦</span>
@@ -683,10 +757,14 @@
 		}
 	}
 
-	/* ---------- calque d'effets : flash, particules, ondes de choc ---------- */
+	/* ---------- calque d'effets : flash, particules, ondes de choc ----------
+	   Plafonné à la zone haute du stage : les particules naissent et vivent
+	   près du sachet. Sans ce plafond, un récap ×5 (25 cartes) étirerait le
+	   canvas sur des milliers de px — coûteux et il masquerait les cartes. */
 	.fx {
 		position: absolute;
-		inset: 0;
+		inset: 0 0 auto 0;
+		height: min(100%, 760px);
 		z-index: 50;
 		border-radius: inherit;
 		overflow: hidden;
@@ -1068,6 +1146,13 @@
 		align-items: center;
 		gap: 0.6rem;
 		--card-w: 100%;
+	}
+	/* avant que GSAP ne projette les cartes : cases masquées, aucune grille figée ne clignote */
+	.recap.spilling .recap-cell {
+		visibility: hidden;
+	}
+	.recap.spilling .recap-grid {
+		will-change: transform;
 	}
 	.newbadge {
 		position: absolute;
