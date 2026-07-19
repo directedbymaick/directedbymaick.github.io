@@ -8,6 +8,8 @@ import { nsKey, scheduleCloudSync } from '$lib/store';
 
 export const PACK_PRICE = 100;
 export const STARTER_GRANT = 300;
+/** Plafond de solde : un compte ne peut pas dépasser cette somme d'Éclats. */
+export const MAX_BALANCE = 999999;
 export const MATCH_REWARD = { win: 100, loss: 40, pvpWin: 150, pvpLoss: 60 };
 
 /** Revente des copies excédentaires (au-delà de 3) : valeur par rareté. */
@@ -240,8 +242,11 @@ export function setAutoSell(v: boolean): void {
 
 export function earn(amount: number, reason: string): void {
 	if (amount <= 0) return;
-	eco.balance += amount;
-	eco.lastGain = { amount, reason, at: Date.now() };
+	const before = eco.balance;
+	eco.balance = Math.min(MAX_BALANCE, eco.balance + amount);
+	const gained = eco.balance - before;
+	if (gained <= 0) return; // déjà au plafond
+	eco.lastGain = { amount: gained, reason, at: Date.now() };
 	persist();
 }
 

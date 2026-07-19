@@ -14,7 +14,8 @@ export const PLAYER_KEYS = [
 	'travelers-collection-v1',
 	'expelled-eco',
 	'expelled-decks',
-	'expelled-pseudo'
+	'expelled-pseudo',
+	'expelled-mail'
 ];
 
 export function currentEmail(): string | null {

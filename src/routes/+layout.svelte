@@ -7,6 +7,8 @@
 	import { page } from '$app/state';
 	import { session, initSession, signOut } from '$lib/account.svelte';
 	import AuthPanel from '$lib/AuthPanel.svelte';
+	import MailPanel from '$lib/MailPanel.svelte';
+	import { initMail, unreadCountFor } from '$lib/mail.svelte';
 	import { eco, initEconomy } from '$lib/economy.svelte';
 	import '@fontsource-variable/inter/index.css';
 	import '@fontsource/cinzel/400.css';
@@ -56,10 +58,19 @@
 	const account = $derived(session.account);
 	let menuOpen = $state(false);
 	let loginOpen = $state(false);
+	let mailOpen = $state(false);
+	const unreadMail = $derived(unreadCountFor(session.account?.email ?? null));
 
 	onMount(() => {
 		initSession();
 		initEconomy();
+		initMail();
+	});
+
+	// recharge le courrier dès que le compte est prêt / change de compte
+	$effect(() => {
+		void session.account?.email;
+		if (session.ready) initMail();
 	});
 
 	/* toast de gain d'Éclats */
@@ -110,6 +121,24 @@
 				<i class="shard" aria-hidden="true"></i><b>{eco.balance}</b>
 			</a>
 
+			<!-- le courrier -->
+			<div class="mailbtn-wrap">
+				<button
+					class="mailbtn"
+					onclick={() => (mailOpen = true)}
+					aria-label="Courrier"
+					title="Courrier"
+				>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+						<rect x="3" y="5" width="18" height="14" rx="2.5" />
+						<path d="M3.5 7l8.5 6 8.5-6" stroke-linecap="round" stroke-linejoin="round" />
+					</svg>
+					{#if unreadMail > 0}
+						<span class="badge">{unreadMail}</span>
+					{/if}
+				</button>
+			</div>
+
 			<!-- le compte -->
 			<div class="acct">
 				<button
@@ -139,6 +168,14 @@
 			</div>
 		</div>
 	</nav>
+
+	<!-- boîte de réception -->
+	{#if mailOpen}
+		<div class="login" role="dialog" aria-modal="true" aria-label="Courrier">
+			<button class="login-backdrop" aria-label="Fermer" onclick={() => (mailOpen = false)}></button>
+			<MailPanel close={() => (mailOpen = false)} />
+		</div>
+	{/if}
 
 	<!-- modale de connexion -->
 	{#if loginOpen}
@@ -379,6 +416,51 @@
 			opacity: 0;
 			transform: translateY(-6px);
 		}
+	}
+
+	/* ---------- le courrier ---------- */
+	.mailbtn-wrap {
+		position: relative;
+	}
+	.mailbtn {
+		display: grid;
+		place-items: center;
+		width: 2.4rem;
+		height: 2.4rem;
+		border-radius: 50%;
+		border: 1px solid rgba(140, 170, 220, 0.3);
+		background: rgba(140, 170, 220, 0.08);
+		color: rgba(238, 240, 245, 0.7);
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+	.mailbtn svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+	.mailbtn:hover {
+		border-color: rgba(213, 178, 94, 0.55);
+		color: var(--ink);
+	}
+	.badge {
+		position: absolute;
+		top: -0.3rem;
+		right: -0.3rem;
+		min-width: 1.15rem;
+		height: 1.15rem;
+		padding: 0 0.3rem;
+		box-sizing: border-box;
+		display: grid;
+		place-items: center;
+		border-radius: 999px;
+		background: linear-gradient(135deg, #f2d98a, #c9a445);
+		color: #171b10;
+		font-size: 0.68rem;
+		font-weight: 800;
+		font-variant-numeric: tabular-nums;
+		box-shadow: 0 0 10px rgba(213, 178, 94, 0.5);
 	}
 
 	/* ---------- le compte ---------- */
