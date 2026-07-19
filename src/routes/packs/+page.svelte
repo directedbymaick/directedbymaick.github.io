@@ -221,7 +221,16 @@
 		flipped = [];
 		pending = openPack();
 	}
+
+	/* loupe : une carte révélée se clique pour être examinée en grand */
+	let zoomed = $state<Pull | null>(null);
 </script>
+
+<svelte:window
+	onkeydown={(e) => {
+		if (e.key === 'Escape') zoomed = null;
+	}}
+/>
 
 <svelte:head>
 	<title>Packs — {charter.game.name}</title>
@@ -274,7 +283,8 @@
 						data-fx={fxOf(p)}
 						style={slotStyle(i, pulls.length)}
 						aria-label={flipped[i] ? p.card.name : `Révéler la carte ${i + 1}`}
-						onclick={() => flip(i)}
+						title={flipped[i] ? 'Agrandir' : undefined}
+						onclick={() => (flipped[i] ? (zoomed = p) : flip(i))}
 					>
 						<div class="fc-pop">
 							<div class="fc-inner">
@@ -310,7 +320,9 @@
 						{:else if freshIds.includes(p.card.id) && pulls.findIndex((q) => q.card.id === p.card.id) === i}
 							<span class="newbadge">Nouvelle !</span>
 						{/if}
-						<Card card={p.card} fullArt={p.fullArt} />
+						<button class="zoombtn" title="Agrandir" onclick={() => (zoomed = p)}>
+							<Card card={p.card} fullArt={p.fullArt} />
+						</button>
 						<a class="recap-link" href="/card/{p.baseId}{p.fullArt ? '?v=fullart' : ''}">{p.card.name}</a>
 					</div>
 				{/each}
@@ -351,7 +363,103 @@
 	</p>
 </section>
 
+<!-- ============ LA LOUPE : examiner une carte en grand ============ -->
+{#if zoomed}
+	<div class="zoom" role="dialog" aria-modal="true" aria-label={zoomed.card.name}>
+		<button class="zoom-backdrop" aria-label="Fermer" onclick={() => (zoomed = null)}></button>
+		<div class="zoom-card">
+			<Card card={zoomed.card} fullArt={zoomed.fullArt} />
+		</div>
+		<button class="zoom-close" aria-label="Fermer" onclick={() => (zoomed = null)}>✕</button>
+		<p class="zoom-name">
+			{zoomed.card.name}{zoomed.fullArt ? ' · Full Art' : ''} —
+			{charter.rarities[zoomed.card.rarity].name}
+		</p>
+	</div>
+{/if}
+
 <style>
+	/* ---------- la loupe ---------- */
+	.zoom {
+		position: fixed;
+		inset: 0;
+		z-index: 150;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.zoom-backdrop {
+		position: absolute;
+		inset: 0;
+		border: none;
+		cursor: zoom-out;
+		background: rgba(4, 7, 14, 0.82);
+		backdrop-filter: blur(10px);
+		animation: zfade 0.25s ease;
+	}
+	.zoom-card {
+		position: relative;
+		--card-w: min(440px, 88vw, 58vh);
+		animation: zpop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+		filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6));
+	}
+	.zoom-close {
+		position: absolute;
+		top: 1.2rem;
+		right: 1.4rem;
+		display: grid;
+		place-items: center;
+		width: 2.6rem;
+		height: 2.6rem;
+		border: 1px solid rgba(238, 240, 245, 0.25);
+		border-radius: 50%;
+		background: rgba(10, 16, 30, 0.6);
+		color: rgba(238, 240, 245, 0.8);
+		font-size: 1rem;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+	.zoom-close:hover {
+		border-color: rgba(213, 178, 94, 0.6);
+		color: #fff;
+	}
+	.zoom-name {
+		position: absolute;
+		bottom: 1.6rem;
+		left: 50%;
+		transform: translateX(-50%);
+		margin: 0;
+		font-size: 0.85rem;
+		color: rgba(238, 240, 245, 0.6);
+		white-space: nowrap;
+		pointer-events: none;
+	}
+	@keyframes zfade {
+		from {
+			opacity: 0;
+		}
+	}
+	@keyframes zpop {
+		from {
+			opacity: 0;
+			transform: scale(0.9) translateY(14px);
+		}
+	}
+
+	/* les cartes révélées deviennent des loupes */
+	.fan-card.flipped {
+		cursor: zoom-in;
+	}
+	.zoombtn {
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: zoom-in;
+	}
 	.hero {
 		margin: 4rem 0 3rem;
 	}
