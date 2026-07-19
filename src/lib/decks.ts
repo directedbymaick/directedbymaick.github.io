@@ -1,6 +1,6 @@
 import { charter } from '$lib/charter';
 import type { CardData } from '$lib/types';
-import { nsKey } from '$lib/store';
+import { nsKey, scheduleCloudSync } from '$lib/store';
 
 /** Un deck : 30 cartes, copies limitées par la rareté (cf. Règles). */
 export interface Deck {
@@ -25,6 +25,7 @@ export function loadDecks(): Deck[] {
 
 export function saveDecks(decks: Deck[]) {
 	localStorage.setItem(nsKey(KEY), JSON.stringify(decks));
+	scheduleCloudSync();
 }
 
 export function newDeck(name: string): Deck {

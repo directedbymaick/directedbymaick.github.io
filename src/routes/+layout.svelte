@@ -5,7 +5,8 @@
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
-	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
+	import { session, initSession, signOut } from '$lib/account.svelte';
+	import AuthPanel from '$lib/AuthPanel.svelte';
 	import { eco, initEconomy } from '$lib/economy.svelte';
 	import '@fontsource-variable/inter/index.css';
 	import '@fontsource/cinzel/400.css';
@@ -55,8 +56,6 @@
 	const account = $derived(session.account);
 	let menuOpen = $state(false);
 	let loginOpen = $state(false);
-	let email = $state('');
-	let loginErr = $state('');
 
 	onMount(() => {
 		initSession();
@@ -76,23 +75,12 @@
 
 	function acctClick() {
 		if (account) menuOpen = !menuOpen;
-		else {
-			loginErr = '';
-			loginOpen = true;
-		}
+		else loginOpen = true;
 	}
-	function doLogin(e: SubmitEvent) {
-		e.preventDefault();
-		if (!isValidEmail(email)) {
-			loginErr = 'Cet e-mail ne semble pas valide.';
-			return;
-		}
-		loginOpen = false;
-		signIn(email); // recharge vers /profil (stores réinitialisés par compte)
-	}
-	function doLogout() {
+	async function doLogout() {
 		menuOpen = false;
-		signOut(); // recharge vers l'accueil
+		await signOut();
+		if (typeof location !== 'undefined') location.assign('/');
 	}
 </script>
 
@@ -156,26 +144,7 @@
 	{#if loginOpen}
 		<div class="login" role="dialog" aria-modal="true" aria-label="Connexion">
 			<button class="login-backdrop" aria-label="Fermer" onclick={() => (loginOpen = false)}></button>
-			<form class="login-panel" onsubmit={doLogin}>
-				<img src={logo} alt="" aria-hidden="true" />
-				<h3>Rejoindre le Silence</h3>
-				<p class="lp-sub">Entrez votre e-mail pour ouvrir votre espace : collection, decks, Arène.</p>
-				<!-- svelte-ignore a11y_autofocus -->
-				<input
-					type="email"
-					bind:value={email}
-					placeholder="vous@exemple.com"
-					autocomplete="email"
-					autofocus
-					required
-				/>
-				{#if loginErr}<p class="lp-err">{loginErr}</p>{/if}
-				<button class="lp-submit" type="submit">Se connecter</button>
-				<p class="lp-note">
-					Votre espace est stocké dans ce navigateur — pas encore de vérification d'e-mail ni de
-					synchronisation entre appareils.
-				</p>
-			</form>
+			<div class="login-panel"><AuthPanel /></div>
 		</div>
 	{/if}
 
@@ -544,69 +513,6 @@
 			opacity: 0;
 			transform: translateY(16px) scale(0.96);
 		}
-	}
-	.login-panel img {
-		width: 4.2rem;
-		filter: drop-shadow(0 0 16px rgba(213, 178, 94, 0.45));
-	}
-	.login-panel h3 {
-		margin: 0.4rem 0 0;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 600;
-		font-size: 1.35rem;
-		letter-spacing: 0.06em;
-	}
-	.lp-sub {
-		margin: 0;
-		text-align: center;
-		font-size: 0.85rem;
-		line-height: 1.5;
-		color: rgba(238, 240, 245, 0.55);
-	}
-	.login-panel input {
-		width: 100%;
-		box-sizing: border-box;
-		margin-top: 0.6rem;
-		padding: 0.7rem 1rem;
-		font-family: inherit;
-		font-size: 0.95rem;
-		color: var(--ink);
-		background: rgba(140, 170, 220, 0.08);
-		border: 1px solid var(--panel-line);
-		border-radius: 11px;
-	}
-	.login-panel input:focus {
-		outline: none;
-		border-color: rgba(213, 178, 94, 0.6);
-	}
-	.lp-err {
-		margin: 0;
-		font-size: 0.8rem;
-		color: #ff9d9d;
-	}
-	.lp-submit {
-		width: 100%;
-		margin-top: 0.3rem;
-		padding: 0.75rem 1.4rem;
-		border: none;
-		border-radius: 999px;
-		background: var(--cream);
-		color: #171b10;
-		font-family: inherit;
-		font-size: 0.95rem;
-		font-weight: 700;
-		cursor: pointer;
-		box-shadow: 0 0 18px rgba(213, 178, 94, 0.25);
-	}
-	.lp-submit:hover {
-		background: #f7edd6;
-	}
-	.lp-note {
-		margin: 0.5rem 0 0;
-		text-align: center;
-		font-size: 0.7rem;
-		line-height: 1.45;
-		color: rgba(238, 240, 245, 0.35);
 	}
 
 	main {

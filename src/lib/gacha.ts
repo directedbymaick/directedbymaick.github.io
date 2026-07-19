@@ -1,6 +1,6 @@
 import type { CardData, Rarity } from '$lib/types';
 import { cards } from '$lib/cards';
-import { nsKey } from '$lib/store';
+import { nsKey, scheduleCloudSync } from '$lib/store';
 
 /**
  * Le gacha : ouverture de boosters ZONES AVEUGLES, 100% local.
@@ -136,6 +136,7 @@ export function loadCollection(): Collection {
 export function saveCollection(col: Collection): void {
 	if (typeof localStorage === 'undefined') return;
 	localStorage.setItem(nsKey(STORE_KEY), JSON.stringify(col));
+	scheduleCloudSync();
 }
 
 /** Ajoute les tirages à la collection ; renvoie les ids nouveaux (première fois).

@@ -6,8 +6,9 @@
 	import { cards, getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import { loadCollection, saveCollection, collectionStats, fullArtView } from '$lib/gacha';
-	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
-	import { nsKey } from '$lib/store';
+	import { session, initSession, signOut, setPseudo } from '$lib/account.svelte';
+	import AuthPanel from '$lib/AuthPanel.svelte';
+	import { nsKey, scheduleCloudSync } from '$lib/store';
 	import {
 		eco,
 		initEconomy,
@@ -116,8 +117,6 @@
 
 	/* ---- le compte ---- */
 	const account = $derived(session.account);
-	let gmail = $state('');
-	let gerr = $state('');
 
 	/* contexte des succès + compteur de récompenses réclamables */
 	const achCtx = $derived<AchContext>({
@@ -188,19 +187,9 @@
 		earn(total, `Revente du surplus : ${count} carte${count > 1 ? 's' : ''}`);
 	}
 
-	function gateLogin(e: SubmitEvent) {
-		e.preventDefault();
-		if (!isValidEmail(gmail)) {
-			gerr = 'Cet e-mail ne semble pas valide.';
-			return;
-		}
-		signIn(gmail);
-		pseudo = localStorage.getItem(nsKey('expelled-pseudo')) ?? pseudo;
-		gmail = '';
-		gerr = '';
-	}
-	function logout() {
-		signOut();
+	async function logout() {
+		await signOut();
+		if (typeof location !== 'undefined') location.assign('/');
 	}
 
 	/* réinitialiser la collection (utile après des tests) */
@@ -217,6 +206,8 @@
 	$effect(() => {
 		if (!loaded) return;
 		localStorage.setItem(nsKey('expelled-pseudo'), pseudo);
+		scheduleCloudSync();
+		setPseudo(pseudo);
 	});
 
 	function createDeck() {
@@ -254,30 +245,10 @@
 	<meta name="description" content="Votre espace : collection et decks de {charter.game.name}." />
 </svelte:head>
 
-{#if loaded && !account}
+{#if session.ready && !account}
 	<!-- ============ PORTE : connexion requise ============ -->
 	<section class="gate">
-		<img src={logo} alt="" aria-hidden="true" />
-		<h1>Votre espace</h1>
-		<p>
-			Connectez-vous avec votre e-mail pour ouvrir votre espace : collection, decks et duels
-			d'Arène.
-		</p>
-		<form onsubmit={gateLogin}>
-			<input
-				type="email"
-				bind:value={gmail}
-				placeholder="vous@exemple.com"
-				autocomplete="email"
-				required
-			/>
-			{#if gerr}<p class="gerr">{gerr}</p>{/if}
-			<button type="submit">Se connecter</button>
-		</form>
-		<p class="gnote">
-			Votre espace est stocké dans ce navigateur — pas encore de vérification d'e-mail ni de
-			synchronisation entre appareils.
-		</p>
+		<AuthPanel />
 	</section>
 {:else if account}
 	<!-- ============ EN-TÊTE DU NOM ============ -->
@@ -649,68 +620,6 @@
 		border: 1px solid rgba(213, 178, 94, 0.3);
 		border-radius: 20px;
 		backdrop-filter: blur(12px);
-	}
-	.gate img {
-		width: 4.6rem;
-		filter: drop-shadow(0 0 16px rgba(213, 178, 94, 0.45));
-	}
-	.gate h1 {
-		margin: 0.4rem 0 0;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 600;
-		font-size: 1.7rem;
-		letter-spacing: 0.05em;
-	}
-	.gate > p {
-		margin: 0;
-		font-size: 0.9rem;
-		line-height: 1.55;
-		color: rgba(238, 240, 245, 0.55);
-	}
-	.gate form {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-		margin-top: 0.6rem;
-	}
-	.gate input {
-		width: 100%;
-		box-sizing: border-box;
-		padding: 0.7rem 1rem;
-		font-family: inherit;
-		font-size: 0.95rem;
-		color: var(--ink);
-		background: rgba(140, 170, 220, 0.08);
-		border: 1px solid var(--panel-line);
-		border-radius: 11px;
-	}
-	.gate input:focus {
-		outline: none;
-		border-color: rgba(213, 178, 94, 0.6);
-	}
-	.gerr {
-		margin: 0;
-		font-size: 0.8rem;
-		color: #ff9d9d;
-	}
-	.gate button[type='submit'] {
-		padding: 0.75rem 1.4rem;
-		border: none;
-		border-radius: 999px;
-		background: var(--cream);
-		color: #171b10;
-		font-family: inherit;
-		font-size: 0.95rem;
-		font-weight: 700;
-		cursor: pointer;
-		box-shadow: 0 0 18px rgba(213, 178, 94, 0.25);
-	}
-	.gnote {
-		margin: 0.6rem 0 0;
-		font-size: 0.7rem;
-		line-height: 1.45;
-		color: rgba(238, 240, 245, 0.32);
 	}
 	/* ---------- Éclats / quêtes / succès ---------- */
 	.chip.gold {

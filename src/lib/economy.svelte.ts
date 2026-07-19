@@ -4,7 +4,7 @@
  * et le livre de succès — on les dépense en boosters.
  * Tout vit en localStorage (rattaché au compte), partagé via un état réactif.
  */
-import { nsKey } from '$lib/store';
+import { nsKey, scheduleCloudSync } from '$lib/store';
 
 export const PACK_PRICE = 100;
 export const STARTER_GRANT = 300;
@@ -194,6 +194,7 @@ function weekKey(d = new Date()): string {
 function persist(): void {
 	const { ready, lastGain, ...data } = eco;
 	localStorage.setItem(nsKey(KEY), JSON.stringify(data));
+	scheduleCloudSync();
 }
 
 export function initEconomy(): void {

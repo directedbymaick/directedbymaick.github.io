@@ -95,7 +95,13 @@
 		initSession();
 		initEconomy();
 		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
-		if (!session.account) mode = 'gate';
+	});
+
+	/* la porte PvP suit l'état de connexion (résolu de façon asynchrone) */
+	$effect(() => {
+		if (!session.ready) return;
+		if (!session.account && mode === 'menu') mode = 'gate';
+		else if (session.account && mode === 'gate') mode = 'menu';
 	});
 	onDestroy(() => {
 		peer?.destroy();
