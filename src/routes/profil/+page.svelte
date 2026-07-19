@@ -202,6 +202,13 @@
 		signOut();
 	}
 
+	/* réinitialiser la collection (utile après des tests) */
+	function resetCollection() {
+		if (!confirm('Vider entièrement votre collection ? Cette action est irréversible.')) return;
+		collection = {};
+		saveCollection({});
+	}
+
 	$effect(() => {
 		if (!loaded) return;
 		saveDecks($state.snapshot(decks) as Deck[]);
@@ -358,6 +365,11 @@
 			<small>à l'ouverture d'un booster, les copies au-delà de 3 sont revendues aussitôt</small>
 		</span>
 	</label>
+
+	<p class="reset-line">
+		<button class="resetbtn" onclick={resetCollection}>Réinitialiser ma collection</button>
+		<span>— repartir d'un Registre vide (Éclats, quêtes et succès conservés).</span>
+	</p>
 
 	{#if surplusCount > 0}
 		<div class="sellbar">
@@ -1017,6 +1029,34 @@
 	}
 	.hint a {
 		color: var(--gold);
+	}
+
+	.reset-line {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		flex-wrap: wrap;
+		margin: 0 0 1.6rem;
+		font-size: 0.8rem;
+		color: rgba(238, 240, 245, 0.4);
+	}
+	.resetbtn {
+		padding: 0.4rem 0.9rem;
+		border: 1px solid rgba(220, 90, 90, 0.35);
+		border-radius: 999px;
+		background: transparent;
+		color: rgba(255, 150, 150, 0.75);
+		font-family: inherit;
+		font-size: 0.78rem;
+		font-weight: 550;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			color 0.15s ease;
+	}
+	.resetbtn:hover {
+		border-color: rgba(220, 90, 90, 0.6);
+		color: #ffb3b3;
 	}
 
 	/* ---------- revente du surplus ---------- */
