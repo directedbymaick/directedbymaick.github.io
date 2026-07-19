@@ -45,6 +45,7 @@
 		{ href: '/', label: 'Registre' },
 		{ href: '/packs', label: 'Boosters' },
 		{ href: '/arene', label: 'Arène' },
+		{ href: '/versus', label: 'Salons' },
 		{ href: '/regles', label: 'Règles' },
 		{ href: '/tuto', label: 'Tuto' },
 		{ href: '/lab', label: 'Lab' }

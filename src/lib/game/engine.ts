@@ -1298,6 +1298,11 @@ export class Duel {
 		if (!this.myTurn) return;
 		const g = this.g;
 		ev(g, { t: 'phase', side: 0, msg: 'Fin de votre tour' });
+		this.endTurnRest();
+	}
+
+	private endTurnRest(): void {
+		const g = this.g;
 		endTurnFx(g, 0);
 		if (g.winner !== null) return;
 		startTurn(g, 1);
@@ -1310,5 +1315,193 @@ export class Duel {
 		if (g.winner === null) playPhase(g, 1);
 		if (g.winner === null) endTurnFx(g, 1);
 		if (g.winner === null) startTurn(g, 0);
+	}
+}
+
+/* --------------------- Match : deux humains (PvP, hôte autoritaire) --------------------- */
+
+/**
+ * Une partie à deux joueurs humains. L'hôte (côté 0) exécute toute la logique ;
+ * le camp est passé à chaque action — le moteur valide que c'est bien son tour.
+ */
+export class Match {
+	private g: G;
+
+	constructor(
+		cardPool: CardData[],
+		a: { deck: CardData[] | null; faction: FactionId; name: string },
+		b: { deck: CardData[] | null; faction: FactionId; name: string },
+		seed: number
+	) {
+		const rng = mulberry32(seed);
+		const mk = (faction: FactionId, name: string, deck: CardData[]): P => ({
+			name,
+			faction,
+			korum: 25,
+			will: 0,
+			maxWill: 0,
+			deck,
+			hand: [],
+			board: [],
+			supports: [],
+			discard: [],
+			exile: [],
+			fatigue: 0,
+			firstCardPlayed: false,
+			allyDiedThisTurn: false,
+			allyDiedLastTurn: false,
+			sacrificedThisTurn: false,
+			played: {}
+		});
+		const da =
+			a.deck && a.deck.length === 30 ? shuffleInPlace([...a.deck], rng) : buildDeck(cardPool, a.faction, rng);
+		const db =
+			b.deck && b.deck.length === 30 ? shuffleInPlace([...b.deck], rng) : buildDeck(cardPool, b.faction, rng);
+		this.g = {
+			t: 0,
+			active: 0,
+			players: [mk(a.faction, a.name, da), mk(b.faction, b.name, db)],
+			lastVerb: null,
+			winner: null,
+			rng,
+			uidSeq: 1,
+			events: []
+		};
+		draw(this.g, 0, 4, true);
+		draw(this.g, 1, 5, true);
+		ev(this.g, {
+			t: 'start',
+			side: 0,
+			msg: `Le duel commence : ${this.g.players[0].name} contre ${this.g.players[1].name}`
+		});
+		startTurn(this.g, 0);
+	}
+
+	drain(): Ev[] {
+		return this.g.events.splice(0);
+	}
+
+	state(): [PlayerSnap, PlayerSnap] {
+		return [snapPlayer(this.g, 0), snapPlayer(this.g, 1)];
+	}
+
+	meta(): DuelMeta & { activeName: string } {
+		const p = this.g.players[this.g.active];
+		return {
+			turn: Math.ceil(this.g.t / 2),
+			active: this.g.active,
+			winner: this.g.winner,
+			will: p.will,
+			maxWill: p.maxWill,
+			activeName: p.name
+		};
+	}
+
+	private isTurn(side: Side): boolean {
+		return this.g.active === side && this.g.winner === null;
+	}
+
+	hand(side: Side): HandEntry[] {
+		const p = this.g.players[side];
+		return p.hand.map((c) => ({
+			card: c,
+			cost: playCost(this.g, side, c),
+			playable: this.isTurn(side) && playCost(this.g, side, c) <= p.will
+		}));
+	}
+
+	play(side: Side, index: number): boolean {
+		const p = this.g.players[side];
+		const c = p.hand[index];
+		if (!this.isTurn(side) || !c || playCost(this.g, side, c) > p.will) return false;
+		playCard(this.g, side, c);
+		return true;
+	}
+
+	attackers(side: Side): number[] {
+		if (!this.isTurn(side)) return [];
+		return this.g.players[side].board.filter((u) => canAttack(this.g, side, u)).map((u) => u.uid);
+	}
+
+	legalTargets(side: Side): { units: number[]; korum: boolean } {
+		const e = this.g.players[other(side)];
+		const wall = e.board.filter((t) => !isLocked(this.g, t));
+		if (wall.length === 0) return { units: [], korum: true };
+		const serments = wall.filter((t) => t.serment);
+		return { units: (serments.length > 0 ? serments : wall).map((t) => t.uid), korum: false };
+	}
+
+	attack(side: Side, uid: number, target: number | 'korum'): boolean {
+		if (!this.isTurn(side)) return false;
+		const u = this.g.players[side].board.find((x) => x.uid === uid);
+		if (!u || !canAttack(this.g, side, u)) return false;
+		const legal = this.legalTargets(side);
+		if (target === 'korum') {
+			if (!legal.korum) return false;
+			attack(this.g, side, u, 'korum');
+			return true;
+		}
+		if (!legal.units.includes(target)) return false;
+		const t = this.g.players[other(side)].board.find((x) => x.uid === target);
+		if (!t) return false;
+		attack(this.g, side, u, t);
+		return true;
+	}
+
+	pronounceable(side: Side): { uid: number; cost: number; text: string }[] {
+		if (!this.isTurn(side)) return [];
+		const p = this.g.players[side];
+		return p.board
+			.filter((u) => u.card.prononcer)
+			.map((u) => ({
+				uid: u.uid,
+				cost: prononcerCost(this.g, side, u.card.prononcer!.cost),
+				text: u.card.prononcer!.text
+			}))
+			.filter((x) => x.cost <= p.will);
+	}
+
+	pronounce(side: Side, uid: number): boolean {
+		if (!this.isTurn(side)) return false;
+		const g = this.g;
+		const p = g.players[side];
+		const en = other(side);
+		const e = g.players[en];
+		const u = p.board.find((x) => x.uid === uid);
+		const pr = u?.card.prononcer;
+		if (!u || !pr) return false;
+		const cost = prononcerCost(g, side, pr.cost);
+		if (p.will < cost) return false;
+		p.will -= cost;
+		const boost = hasSupport(p, 'porte-du-dehors') ? 1 : 0;
+		ev(g, { t: 'prononcer', side, uid: u.uid, msg: `${u.card.name} PRONONCE (${cost}) — ${pr.text}` });
+		triggerSenel(g, side);
+		if (u.card.id === 'exva') {
+			let left = 5 + boost;
+			const targets = [...e.board].sort((x, y) => unitHp(g, en, x) - unitHp(g, en, y));
+			for (const t of targets) {
+				const hp = unitHp(g, en, t);
+				if (hp <= left) {
+					left -= hp;
+					damageUnit(g, en, t, hp);
+				}
+			}
+			if (left > 0) damageKorum(g, en, left);
+		} else if (u.card.id === 'rasen') {
+			for (const t of [...e.board]) destroy(g, en, t, 'death');
+			for (const t of [...p.board]) if (t !== u) destroy(g, side, t, 'death');
+		}
+		exileUnit(g, side, u);
+		checkWin(g);
+		return true;
+	}
+
+	endTurn(side: Side): boolean {
+		if (!this.isTurn(side)) return false;
+		const g = this.g;
+		ev(g, { t: 'phase', side, msg: `Fin du tour de ${g.players[side].name}` });
+		endTurnFx(g, side);
+		if (g.winner === null) startTurn(g, other(side));
+		return true;
 	}
 }
