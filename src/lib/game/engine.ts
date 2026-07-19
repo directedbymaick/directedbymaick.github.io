@@ -113,6 +113,7 @@ export interface PlayerSnap {
 export type EvType =
 	| 'start'
 	| 'turn'
+	| 'phase'
 	| 'draw'
 	| 'fatigue'
 	| 'play'
@@ -1296,10 +1297,15 @@ export class Duel {
 	endTurn(): void {
 		if (!this.myTurn) return;
 		const g = this.g;
+		ev(g, { t: 'phase', side: 0, msg: 'Fin de votre tour' });
 		endTurnFx(g, 0);
 		if (g.winner !== null) return;
 		startTurn(g, 1);
+		if (g.winner === null && g.players[1].hand.length > 0)
+			ev(g, { t: 'phase', side: 1, msg: "L'IA déploie sa Volonté" });
 		if (g.winner === null) playPhase(g, 1);
+		if (g.winner === null && g.players[1].board.length > 0)
+			ev(g, { t: 'phase', side: 1, msg: "L'IA passe à l'attaque" });
 		if (g.winner === null) combatPhase(g, 1);
 		if (g.winner === null) playPhase(g, 1);
 		if (g.winner === null) endTurnFx(g, 1);

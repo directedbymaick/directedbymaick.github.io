@@ -73,12 +73,35 @@
 
 	const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+	/* ---- annonces de phase ---- */
+	let banner = $state<{ title: string; sub: string } | null>(null);
+	let bannerN = $state(0);
+	let aiActing = $state(false);
+
 	async function pump(fast: boolean) {
 		if (!duel) return;
 		const evs = duel.drain();
 		for (const e of evs) {
 			log.push(e.msg);
 			view = e.state;
+			// chaque tour et chaque phase s'annonce en bannière centrale
+			if (e.t === 'turn') {
+				aiActing = e.side === 1;
+				banner = {
+					title: e.side === 0 ? 'Votre tour' : "Tour de l'IA",
+					sub: e.msg.replace(/^[—\s]+|[—\s]+$/g, '')
+				};
+				bannerN++;
+				await sleep(1100);
+				continue;
+			}
+			if (e.t === 'phase') {
+				banner = { title: e.msg, sub: '' };
+				bannerN++;
+				await sleep(950);
+				continue;
+			}
+			if (e.t === 'win') aiActing = false;
 			flash = e.msg;
 			await sleep(fast ? 150 : 560);
 		}
@@ -330,7 +353,7 @@
 				<b>{foe.will}</b><small>/{foe.maxWill}</small>
 			</div>
 			<button class="passbtn" disabled={!myTurn} onclick={endTurn}>
-				{#if winner !== null}Terminé{:else if replaying}…{:else}Fin de<br />tour{/if}
+				{#if winner !== null}Terminé{:else if aiActing}Tour<br />adverse{:else if replaying}…{:else}Fin de<br />tour{/if}
 			</button>
 			<div class="willbox mine" title="Votre Volonté">
 				<b>{me.will}</b><small>/{me.maxWill}</small>
@@ -453,6 +476,20 @@
 					<p>{line}</p>
 				{/each}
 			</aside>
+		{/if}
+
+		<!-- l'annonce de phase -->
+		{#if banner}
+			{#key bannerN}
+				<div class="phase-banner" aria-live="polite">
+					<span class="pb-line"></span>
+					<div class="pb-txt">
+						<h3>{banner.title}</h3>
+						{#if banner.sub}<p>{banner.sub}</p>{/if}
+					</div>
+					<span class="pb-line flip"></span>
+				</div>
+			{/key}
 		{/if}
 
 		<!-- la loupe -->
@@ -1008,6 +1045,71 @@
 		outline-offset: -6px;
 		border-radius: 18px;
 		background: radial-gradient(60% 80% at 50% 50%, rgba(213, 178, 94, 0.07), transparent 75%);
+	}
+
+	/* l'annonce de phase : bannière centrale qui traverse puis s'efface */
+	.phase-banner {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 43%;
+		z-index: 25;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1.4rem;
+		pointer-events: none;
+		animation: pb 1.5s ease forwards;
+	}
+	.pb-line {
+		flex: 1;
+		max-width: 240px;
+		height: 1.5px;
+		background: linear-gradient(90deg, transparent, #f2d98a 70%, #c9a445);
+	}
+	.pb-line.flip {
+		background: linear-gradient(270deg, transparent, #f2d98a 70%, #c9a445);
+	}
+	.pb-txt {
+		text-align: center;
+		padding: 0.5rem 1.6rem;
+		background: rgba(6, 10, 20, 0.78);
+		border: 1px solid rgba(213, 178, 94, 0.35);
+		border-radius: 14px;
+		backdrop-filter: blur(6px);
+	}
+	.pb-txt h3 {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 600;
+		font-size: clamp(1.2rem, 2.6vw, 1.9rem);
+		letter-spacing: 0.12em;
+		color: #f5f0dd;
+		text-shadow: 0 0 24px rgba(213, 178, 94, 0.45);
+		white-space: nowrap;
+	}
+	.pb-txt p {
+		margin: 0.15rem 0 0;
+		font-size: 0.74rem;
+		color: rgba(238, 240, 245, 0.55);
+		white-space: nowrap;
+	}
+	@keyframes pb {
+		0% {
+			opacity: 0;
+			transform: translateY(12px) scale(0.97);
+		}
+		12% {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+		78% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(-8px);
+		}
 	}
 
 	/* la loupe */
