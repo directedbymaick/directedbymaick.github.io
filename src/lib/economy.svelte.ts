@@ -48,28 +48,77 @@ export const WEEKLY: QuestDef[] = [
 	{ id: 'w-pron', label: 'Prononcer 3 fois', event: 'prononcer', n: 3, reward: 150 }
 ];
 
+export type AchCategory = 'combat' | 'prononciation' | 'salons' | 'collection' | 'voie';
+
 export interface AchDef {
 	id: string;
 	label: string;
 	desc: string;
 	reward: number;
+	cat: AchCategory;
 	check: (s: Stats, ctx: AchContext) => boolean;
 }
 export interface AchContext {
 	uniques: number;
 	setSize: number;
 	fullDecks: number;
+	prisms: number;
+	prismTotal: number;
+	legendaries: number;
+	legendTotal: number;
+	factionsCovered: number;
+	factionTotal: number;
 }
 
+export const ACH_CATEGORIES: { id: AchCategory; label: string }[] = [
+	{ id: 'combat', label: "L'Arène" },
+	{ id: 'prononciation', label: 'La Prononciation' },
+	{ id: 'salons', label: 'Les Salons' },
+	{ id: 'collection', label: 'Le Registre' },
+	{ id: 'voie', label: 'La Voie' }
+];
+
 export const ACHIEVEMENTS: AchDef[] = [
-	{ id: 'a-first-win', label: 'Premier mot', desc: 'Gagner votre première partie.', reward: 100, check: (s) => s.wins >= 1 },
-	{ id: 'a-wins-10', label: 'La parole tient', desc: 'Gagner 10 parties.', reward: 300, check: (s) => s.wins >= 10 },
-	{ id: 'a-packs-10', label: 'Réquisition', desc: 'Ouvrir 10 boosters.', reward: 150, check: (s) => s.packsOpened >= 10 },
-	{ id: 'a-pron-10', label: 'Dix Prononciations', desc: 'Prononcer 10 fois en duel.', reward: 200, check: (s) => s.prononces >= 10 },
-	{ id: 'a-uniques-30', label: 'Demi-Registre', desc: 'Posséder 30 cartes uniques.', reward: 200, check: (_s, c) => c.uniques >= 30 },
-	{ id: 'a-uniques-60', label: 'Le Registre complet', desc: 'Posséder les 60 cartes du Silence.', reward: 500, check: (_s, c) => c.uniques >= c.setSize },
-	{ id: 'a-deck', label: 'Trente voix', desc: 'Construire un deck complet de 30 cartes.', reward: 100, check: (_s, c) => c.fullDecks >= 1 },
-	{ id: 'a-pvp', label: 'Face à un Nom', desc: 'Gagner un duel Joueur contre Joueur.', reward: 250, check: (s) => s.pvpWins >= 1 }
+	/* ---- L'Arène : le combat ---- */
+	{ id: 'a-first-win', label: 'Premier mot', desc: 'Gagner votre première partie.', reward: 100, cat: 'combat', check: (s) => s.wins >= 1 },
+	{ id: 'a-wins-5', label: "La voix s'affermit", desc: 'Gagner 5 parties.', reward: 150, cat: 'combat', check: (s) => s.wins >= 5 },
+	{ id: 'a-wins-10', label: 'La parole tient', desc: 'Gagner 10 parties.', reward: 300, cat: 'combat', check: (s) => s.wins >= 10 },
+	{ id: 'a-wins-25', label: 'Rhéteur', desc: 'Gagner 25 parties.', reward: 400, cat: 'combat', check: (s) => s.wins >= 25 },
+	{ id: 'a-wins-50', label: "L'Arène vous connaît", desc: 'Gagner 50 parties.', reward: 600, cat: 'combat', check: (s) => s.wins >= 50 },
+	{ id: 'a-wins-100', label: 'Le Silence recule', desc: 'Gagner 100 parties.', reward: 1000, cat: 'combat', check: (s) => s.wins >= 100 },
+	{ id: 'a-losses-10', label: 'Apprendre en tombant', desc: 'Perdre 10 parties — la chute est une arrivée.', reward: 150, cat: 'combat', check: (s) => s.losses >= 10 },
+	{ id: 'a-games-25', label: "Habitué de l'Arène", desc: 'Disputer 25 parties.', reward: 200, cat: 'combat', check: (s) => s.wins + s.losses >= 25 },
+	{ id: 'a-cards-100', label: 'Cent gestes', desc: 'Jouer 100 cartes en duel.', reward: 150, cat: 'combat', check: (s) => s.cardsPlayed >= 100 },
+	{ id: 'a-cards-500', label: 'Le bras ne tremble plus', desc: 'Jouer 500 cartes en duel.', reward: 400, cat: 'combat', check: (s) => s.cardsPlayed >= 500 },
+
+	/* ---- La Prononciation ---- */
+	{ id: 'a-pron-1', label: 'Première Prononciation', desc: 'Prononcer pour la première fois.', reward: 50, cat: 'prononciation', check: (s) => s.prononces >= 1 },
+	{ id: 'a-pron-10', label: 'Dix Prononciations', desc: 'Prononcer 10 fois en duel.', reward: 200, cat: 'prononciation', check: (s) => s.prononces >= 10 },
+	{ id: 'a-pron-25', label: "La bouche d'or", desc: 'Prononcer 25 fois en duel.', reward: 350, cat: 'prononciation', check: (s) => s.prononces >= 25 },
+
+	/* ---- Les Salons : le PvP ---- */
+	{ id: 'a-pvp', label: 'Face à un Nom', desc: 'Gagner un duel Joueur contre Joueur.', reward: 250, cat: 'salons', check: (s) => s.pvpWins >= 1 },
+	{ id: 'a-pvp-5', label: 'Duelliste', desc: 'Gagner 5 duels en salon.', reward: 400, cat: 'salons', check: (s) => s.pvpWins >= 5 },
+	{ id: 'a-pvp-20', label: 'Votre code fait peur', desc: 'Gagner 20 duels en salon.', reward: 800, cat: 'salons', check: (s) => s.pvpWins >= 20 },
+
+	/* ---- Le Registre : la collection ---- */
+	{ id: 'a-uniques-10', label: 'Premières pages', desc: 'Posséder 10 cartes uniques.', reward: 100, cat: 'collection', check: (_s, c) => c.uniques >= 10 },
+	{ id: 'a-uniques-30', label: 'Demi-Registre', desc: 'Posséder 30 cartes uniques.', reward: 200, cat: 'collection', check: (_s, c) => c.uniques >= 30 },
+	{ id: 'a-uniques-45', label: 'Bibliothécaire', desc: 'Posséder 45 cartes uniques.', reward: 300, cat: 'collection', check: (_s, c) => c.uniques >= 45 },
+	{ id: 'a-uniques-60', label: 'Le Registre complet', desc: 'Posséder les 60 cartes du Silence.', reward: 500, cat: 'collection', check: (_s, c) => c.uniques >= c.setSize },
+	{ id: 'a-packs-10', label: 'Réquisition', desc: 'Ouvrir 10 boosters.', reward: 150, cat: 'collection', check: (s) => s.packsOpened >= 10 },
+	{ id: 'a-packs-25', label: 'Fournisseur officiel', desc: 'Ouvrir 25 boosters.', reward: 300, cat: 'collection', check: (s) => s.packsOpened >= 25 },
+	{ id: 'a-pulls-100', label: 'Cent tirages', desc: 'Tirer 100 cartes de boosters.', reward: 200, cat: 'collection', check: (s) => s.pulls >= 100 },
+	{ id: 'a-prism-1', label: 'Toucher le prisme', desc: 'Posséder une carte Prismatique.', reward: 150, cat: 'collection', check: (_s, c) => c.prisms >= 1 },
+	{ id: 'a-prism-all', label: 'Les cinq lumières', desc: 'Posséder toutes les Prismatiques.', reward: 400, cat: 'collection', check: (_s, c) => c.prismTotal > 0 && c.prisms >= c.prismTotal },
+	{ id: 'a-legend-all', label: 'Panthéon', desc: 'Posséder toutes les Légendaires.', reward: 300, cat: 'collection', check: (_s, c) => c.legendTotal > 0 && c.legendaries >= c.legendTotal },
+	{ id: 'a-all-factions', label: 'Œcuménique', desc: 'Posséder au moins une carte de chaque peuple.', reward: 100, cat: 'collection', check: (_s, c) => c.factionsCovered >= c.factionTotal },
+
+	/* ---- La Voie : decks et Éclats ---- */
+	{ id: 'a-deck', label: 'Trente voix', desc: 'Construire un deck complet de 30 cartes.', reward: 100, cat: 'voie', check: (_s, c) => c.fullDecks >= 1 },
+	{ id: 'a-decks-3', label: 'Stratège', desc: 'Avoir 3 decks complets.', reward: 200, cat: 'voie', check: (_s, c) => c.fullDecks >= 3 },
+	{ id: 'a-rich-1000', label: 'Trésorier du Vasis', desc: "Détenir 1 000 Éclats d'un coup.", reward: 150, cat: 'voie', check: () => eco.balance >= 1000 },
+	{ id: 'a-rich-2500', label: "L'auréole se reforme", desc: "Détenir 2 500 Éclats d'un coup.", reward: 300, cat: 'voie', check: () => eco.balance >= 2500 }
 ];
 
 /* ------------------------------- état + persistance ------------------------------- */

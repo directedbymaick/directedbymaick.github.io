@@ -487,15 +487,14 @@
 	.s-ico {
 		display: grid;
 		place-items: center;
-		width: 1.7rem;
-		height: 1.7rem;
-		border-radius: 50%;
-		background: rgba(140, 170, 220, 0.08);
-		font-size: 0.85rem;
+		width: 2rem;
+		height: 2rem;
+		font-size: 1.75rem;
 		color: var(--gold);
+		filter: drop-shadow(0 0 6px color-mix(in srgb, currentColor 45%, transparent));
 	}
 	.srow.active .s-ico {
-		background: rgba(213, 178, 94, 0.16);
+		filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 70%, transparent));
 	}
 	.s-label {
 		flex: 1;
@@ -561,11 +560,17 @@
 	}
 	.fcount {
 		margin-left: auto;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
 		font-size: 0.8rem;
 		font-variant-numeric: tabular-nums;
 		color: color-mix(in srgb, var(--fc) 70%, #fff);
-		opacity: 0.75;
+		opacity: 0.85;
 		white-space: nowrap;
+	}
+	.fcount :global(.sigil) {
+		font-size: 1.5rem;
 	}
 	@media (max-width: 700px) {
 		.chapter-head {

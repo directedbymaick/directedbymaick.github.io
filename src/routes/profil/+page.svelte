@@ -13,6 +13,7 @@
 		DAILY,
 		WEEKLY,
 		ACHIEVEMENTS,
+		ACH_CATEGORIES,
 		questProgress,
 		claimQuest,
 		claimAchievement,
@@ -85,7 +86,16 @@
 	const achCtx = $derived<AchContext>({
 		uniques: stats.unique,
 		setSize: cards.length,
-		fullDecks: decks.filter((d) => deckSize(d) === 30).length
+		fullDecks: decks.filter((d) => deckSize(d) === 30).length,
+		prisms: cards.filter((c) => c.rarity === 'prism' && (collection[c.id] ?? 0) > 0).length,
+		prismTotal: cards.filter((c) => c.rarity === 'prism').length,
+		legendaries: cards.filter((c) => c.rarity === 'legendary' && (collection[c.id] ?? 0) > 0)
+			.length,
+		legendTotal: cards.filter((c) => c.rarity === 'legendary').length,
+		factionsCovered: factions.filter((f) =>
+			cards.some((c) => c.faction === f && (collection[c.id] ?? 0) > 0)
+		).length,
+		factionTotal: factions.length
 	});
 	const claimable = $derived(
 		DAILY.filter((q) => {
@@ -335,28 +345,42 @@
 	</div>
 {:else if tab === 'succes'}
 	<!-- ============ LIVRE DE SUCCÈS ============ -->
+	{@const claimedCount = ACHIEVEMENTS.filter((a) => eco.ach[a.id]?.claimed).length}
 	<div class="qwrap">
-		<section class="qgroup">
-			<h3>Livre de succès <small>— accomplissements permanents</small></h3>
-			{#each ACHIEVEMENTS as a (a.id)}
-				{@const done = a.check(eco.stats, achCtx)}
-				{@const isClaimed = eco.ach[a.id]?.claimed ?? false}
-				<div class="qrow" class:claimed={isClaimed}>
-					<div class="qinfo">
-						<p class="qlabel">{a.label}</p>
-						<p class="qdesc">{a.desc}</p>
-					</div>
-					<span class="qreward"><i class="shard" aria-hidden="true"></i>{a.reward}</span>
-					{#if isClaimed}
-						<span class="qdone" title="Réclamé">✓</span>
-					{:else}
-						<button class="qclaim" disabled={!done} onclick={() => claimAchievement(a.id, achCtx)}
-							>Réclamer</button
-						>
-					{/if}
-				</div>
-			{/each}
-		</section>
+		<p class="qsummary">
+			<b>{claimedCount}</b>/{ACHIEVEMENTS.length} succès réclamés
+		</p>
+		{#each ACH_CATEGORIES as cat (cat.id)}
+			{@const list = ACHIEVEMENTS.filter((a) => a.cat === cat.id)}
+			{#if list.length > 0}
+				<section class="qgroup">
+					<h3>
+						{cat.label}
+						<small>— {list.filter((a) => eco.ach[a.id]?.claimed).length}/{list.length}</small>
+					</h3>
+					{#each list as a (a.id)}
+						{@const done = a.check(eco.stats, achCtx)}
+						{@const isClaimed = eco.ach[a.id]?.claimed ?? false}
+						<div class="qrow" class:claimed={isClaimed}>
+							<div class="qinfo">
+								<p class="qlabel">{a.label}</p>
+								<p class="qdesc">{a.desc}</p>
+							</div>
+							<span class="qreward"><i class="shard" aria-hidden="true"></i>{a.reward}</span>
+							{#if isClaimed}
+								<span class="qdone" title="Réclamé">✓</span>
+							{:else}
+								<button
+									class="qclaim"
+									disabled={!done}
+									onclick={() => claimAchievement(a.id, achCtx)}>Réclamer</button
+								>
+							{/if}
+						</div>
+					{/each}
+				</section>
+			{/if}
+		{/each}
 	</div>
 {:else if !cur}
 	<!-- ============ LISTE DES DECKS ============ -->
@@ -697,6 +721,15 @@
 		background: rgba(213, 178, 94, 0.15);
 		color: var(--gold);
 		font-weight: 700;
+	}
+	.qsummary {
+		margin: 0;
+		font-size: 0.9rem;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.qsummary b {
+		color: var(--gold);
+		font-variant-numeric: tabular-nums;
 	}
 	.qnote {
 		margin: 0;
