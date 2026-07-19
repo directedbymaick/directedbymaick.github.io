@@ -5,6 +5,7 @@
 	import { cards, getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import { loadCollection, collectionStats } from '$lib/gacha';
+	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
 	import {
 		type Deck,
 		DECK_SIZE,
@@ -63,12 +64,33 @@
 	const curveMax = $derived(Math.max(1, ...curve));
 	const spread = $derived(cur ? factionSpread(cur, getCard) : {});
 
+	/* ---- le compte ---- */
+	const account = $derived(session.account);
+	let gmail = $state('');
+	let gerr = $state('');
+
 	onMount(() => {
+		initSession();
 		collection = loadCollection();
 		decks = loadDecks();
 		pseudo = localStorage.getItem('expelled-pseudo') ?? 'Sans-Nom';
 		loaded = true;
 	});
+
+	function gateLogin(e: SubmitEvent) {
+		e.preventDefault();
+		if (!isValidEmail(gmail)) {
+			gerr = 'Cet e-mail ne semble pas valide.';
+			return;
+		}
+		signIn(gmail);
+		pseudo = localStorage.getItem('expelled-pseudo') ?? pseudo;
+		gmail = '';
+		gerr = '';
+	}
+	function logout() {
+		signOut();
+	}
 
 	$effect(() => {
 		if (!loaded) return;
@@ -114,20 +136,47 @@
 	<meta name="description" content="Votre espace : collection et decks de {charter.game.name}." />
 </svelte:head>
 
-<!-- ============ EN-TÊTE DU NOM ============ -->
-<header class="idcard">
-	<img class="sigil" src={logo} alt="" aria-hidden="true" />
-	<div class="who">
-		<input class="pseudo" bind:value={pseudo} maxlength="24" aria-label="Votre pseudo" />
-		<p class="sub">UID : KOR-701606888 · Niveau d'Équilibre 0</p>
-	</div>
-	<div class="chips">
-		<span class="chip"><b>30</b> Intégrité</span>
-		<span class="chip"><b>{stats.unique}</b>/{cards.length} uniques</span>
-		<span class="chip"><b>{stats.total}</b> tirées</span>
-		<span class="chip"><b>{decks.length}</b> deck{decks.length > 1 ? 's' : ''}</span>
-	</div>
-</header>
+{#if loaded && !account}
+	<!-- ============ PORTE : connexion requise ============ -->
+	<section class="gate">
+		<img src={logo} alt="" aria-hidden="true" />
+		<h1>Votre espace</h1>
+		<p>
+			Connectez-vous avec votre e-mail pour ouvrir votre espace : collection, decks et duels
+			d'Arène.
+		</p>
+		<form onsubmit={gateLogin}>
+			<input
+				type="email"
+				bind:value={gmail}
+				placeholder="vous@exemple.com"
+				autocomplete="email"
+				required
+			/>
+			{#if gerr}<p class="gerr">{gerr}</p>{/if}
+			<button type="submit">Se connecter</button>
+		</form>
+		<p class="gnote">
+			Votre espace est stocké dans ce navigateur — pas encore de vérification d'e-mail ni de
+			synchronisation entre appareils.
+		</p>
+	</section>
+{:else if account}
+	<!-- ============ EN-TÊTE DU NOM ============ -->
+	<header class="idcard">
+		<img class="sigil" src={logo} alt="" aria-hidden="true" />
+		<div class="who">
+			<input class="pseudo" bind:value={pseudo} maxlength="24" aria-label="Votre pseudo" />
+			<p class="sub">{account.email} · Niveau d'Équilibre 0</p>
+		</div>
+		<div class="chips">
+			<span class="chip"><b>30</b> Intégrité</span>
+			<span class="chip"><b>{stats.unique}</b>/{cards.length} uniques</span>
+			<span class="chip"><b>{stats.total}</b> tirées</span>
+			<span class="chip"><b>{decks.length}</b> deck{decks.length > 1 ? 's' : ''}</span>
+			<button class="outbtn" onclick={logout}>Se déconnecter</button>
+		</div>
+	</header>
 
 <!-- ============ ONGLETS ============ -->
 <div class="tabs" role="tablist">
@@ -314,8 +363,101 @@
 		</aside>
 	</div>
 {/if}
+{/if}
 
 <style>
+	/* ---------- la porte ---------- */
+	.gate {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.8rem;
+		max-width: 430px;
+		margin: 7rem auto 4rem;
+		padding: 2.6rem 2.4rem 2rem;
+		text-align: center;
+		background: var(--panel);
+		border: 1px solid rgba(213, 178, 94, 0.3);
+		border-radius: 20px;
+		backdrop-filter: blur(12px);
+	}
+	.gate img {
+		width: 4.6rem;
+		filter: drop-shadow(0 0 16px rgba(213, 178, 94, 0.45));
+	}
+	.gate h1 {
+		margin: 0.4rem 0 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 600;
+		font-size: 1.7rem;
+		letter-spacing: 0.05em;
+	}
+	.gate > p {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.gate form {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		margin-top: 0.6rem;
+	}
+	.gate input {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0.7rem 1rem;
+		font-family: inherit;
+		font-size: 0.95rem;
+		color: var(--ink);
+		background: rgba(140, 170, 220, 0.08);
+		border: 1px solid var(--panel-line);
+		border-radius: 11px;
+	}
+	.gate input:focus {
+		outline: none;
+		border-color: rgba(213, 178, 94, 0.6);
+	}
+	.gerr {
+		margin: 0;
+		font-size: 0.8rem;
+		color: #ff9d9d;
+	}
+	.gate button[type='submit'] {
+		padding: 0.75rem 1.4rem;
+		border: none;
+		border-radius: 999px;
+		background: var(--cream);
+		color: #171b10;
+		font-family: inherit;
+		font-size: 0.95rem;
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow: 0 0 18px rgba(213, 178, 94, 0.25);
+	}
+	.gnote {
+		margin: 0.6rem 0 0;
+		font-size: 0.7rem;
+		line-height: 1.45;
+		color: rgba(238, 240, 245, 0.32);
+	}
+	.outbtn {
+		padding: 0.4rem 0.85rem;
+		font-family: inherit;
+		font-size: 0.78rem;
+		font-weight: 550;
+		color: rgba(255, 150, 150, 0.75);
+		background: transparent;
+		border: 1px solid rgba(220, 90, 90, 0.35);
+		border-radius: 999px;
+		cursor: pointer;
+	}
+	.outbtn:hover {
+		color: #ffb3b3;
+		border-color: rgba(220, 90, 90, 0.6);
+	}
 	/* ---------- en-tête ---------- */
 	.idcard {
 		display: flex;
