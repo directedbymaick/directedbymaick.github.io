@@ -489,8 +489,8 @@
 		inset: 0;
 		border-radius: 50%;
 		background: linear-gradient(160deg, #f7e6ac 0%, #d9b45e 34%, #9c7328 62%, #efce77 100%);
-		-webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 1.55cqw), #000 calc(100% - 1.15cqw));
-		mask: radial-gradient(closest-side, #0000 calc(100% - 1.55cqw), #000 calc(100% - 1.15cqw));
+		-webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 0.95cqw), #000 calc(100% - 0.6cqw));
+		mask: radial-gradient(closest-side, #0000 calc(100% - 0.95cqw), #000 calc(100% - 0.6cqw));
 	}
 	/* sigil de faction : le glyphe accent, seul */
 	.sigil {
@@ -772,8 +772,8 @@
 		inset: 0;
 		border-radius: 50%;
 		background: linear-gradient(160deg, #f7e6ac 0%, #d9b45e 34%, #9c7328 62%, #efce77 100%);
-		-webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 1.15cqw), #000 calc(100% - 0.8cqw));
-		mask: radial-gradient(closest-side, #0000 calc(100% - 1.15cqw), #000 calc(100% - 0.8cqw));
+		-webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 0.72cqw), #000 calc(100% - 0.45cqw));
+		mask: radial-gradient(closest-side, #0000 calc(100% - 0.72cqw), #000 calc(100% - 0.45cqw));
 	}
 	.stat small {
 		font-family: Cinzel, Georgia, serif;
