@@ -45,9 +45,34 @@ function pickCard(rarity: Rarity, avoid: Set<string>): CardData {
 	return cards[Math.floor(Math.random() * cards.length)];
 }
 
+/* ---------- full art : le chase du set ---------- */
+
+/** Chance qu'une carte éligible sorte en version Full Art. Publiée sur la page. */
+export const FULLART_RATE = 0.06;
+
+function eligibleFullArt(c: CardData): boolean {
+	return !!c.fullArt || c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism';
+}
+
+/** Vue Full Art d'une carte : cadre prismatique, art plein cadre, id dédié (collectible à part). */
+export function fullArtView(c: CardData): CardData {
+	const v = structuredClone(c);
+	v.id = `${c.id}--fullart`;
+	v.rarity = 'prism';
+	v.gene = { ...v.gene, foilPreset: 'prism' };
+	return v;
+}
+
+/** Un tirage : la carte affichée (vue full art le cas échéant) + son identité de base. */
+export interface Pull {
+	card: CardData;
+	baseId: string;
+	fullArt: boolean;
+}
+
 /** Tire un booster : 5 cartes, sans doublon dans le pack si le pool le permet. */
-export function openPack(): CardData[] {
-	const pulls: CardData[] = [];
+export function openPack(): Pull[] {
+	const pulls: Pull[] = [];
 	const seen = new Set<string>();
 	const slots: Rarity[] = [
 		rollRarity(SLOT_ODDS[0].odds),
@@ -59,7 +84,8 @@ export function openPack(): CardData[] {
 	for (const rarity of slots) {
 		const card = pickCard(rarity, seen);
 		seen.add(card.id);
-		pulls.push(card);
+		const fullArt = eligibleFullArt(card) && Math.random() < FULLART_RATE;
+		pulls.push({ card: fullArt ? fullArtView(card) : card, baseId: card.id, fullArt });
 	}
 	return pulls;
 }
@@ -84,18 +110,24 @@ export function saveCollection(col: Collection): void {
 	localStorage.setItem(STORE_KEY, JSON.stringify(col));
 }
 
-/** Ajoute les tirages à la collection ; renvoie les ids nouveaux (première fois). */
-export function addToCollection(col: Collection, pulls: CardData[]): string[] {
+/** Ajoute les tirages à la collection ; renvoie les ids nouveaux (première fois).
+ *  Les Full Art sont collectionnés à part, sous leur id `--fullart`. */
+export function addToCollection(col: Collection, pulls: Pull[]): string[] {
 	const fresh: string[] = [];
-	for (const c of pulls) {
-		if (!col[c.id]) fresh.push(c.id);
-		col[c.id] = (col[c.id] ?? 0) + 1;
+	for (const p of pulls) {
+		const id = p.card.id;
+		if (!col[id]) fresh.push(id);
+		col[id] = (col[id] ?? 0) + 1;
 	}
 	saveCollection(col);
 	return fresh;
 }
 
 export function collectionStats(col: Collection): { unique: number; total: number } {
-	const owned = Object.values(col).filter((n) => n > 0);
-	return { unique: Object.keys(col).filter((id) => col[id] > 0).length, total: owned.reduce((a, b) => a + b, 0) };
+	const owned = Object.entries(col).filter(([, n]) => n > 0);
+	return {
+		// les uniques comptent les cartes de base — les Full Art sont un bonus, pas un dénominateur
+		unique: owned.filter(([id]) => !id.endsWith('--fullart')).length,
+		total: owned.reduce((a, [, n]) => a + n, 0)
+	};
 }

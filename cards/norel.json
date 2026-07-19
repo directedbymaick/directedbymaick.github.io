@@ -3,21 +3,22 @@
 	"name": "Norel, copiste des registres",
 	"kind": "etre",
 	"cost": 2,
-	"attack": 1,
-	"health": 1,
+	"attack": 0,
+	"health": 2,
 	"text": "À l'arrivée : piochez une carte.",
 	"flavor": "Il note les noms. Tous les noms.",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/norel.webp",
+	"artPosition": "center 4%",
 	"gene": {
 		"palette": [
-			"#362c26",
-			"#292729",
-			"#c6ad98"
+			"#674a37",
+			"#161519",
+			"#e5c9a8"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 555355
+		"seed": 457806
 	}
 }

@@ -1,0 +1,24 @@
+{
+	"id": "senna",
+	"name": "Senna, prêcheuse de la question",
+	"kind": "etre",
+	"cost": 3,
+	"text": "Vos Prononcer coûtent 1 Volonté de moins.",
+	"rarity": "rare",
+	"faction": "exar",
+	"art": "/art/senna.webp",
+	"artPosition": "center 2%",
+	"gene": {
+		"palette": [
+			"#371917",
+			"#271615",
+			"#c7b9b8"
+		],
+		"foilPreset": "holo",
+		"accent": "#b3273a",
+		"seed": 332745
+	},
+	"attack": 2,
+	"health": 2,
+	"flavor": "Elle pose la question de Rasen aux foules."
+}

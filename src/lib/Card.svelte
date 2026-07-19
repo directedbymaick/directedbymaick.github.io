@@ -3,13 +3,16 @@
 	import type { CardData } from '$lib/types';
 	import { resolveFoil, styleString } from '$lib/effects/foil';
 	import { charter } from '$lib/charter';
+	import FactionSigil from '$lib/FactionSigil.svelte';
 
 	let {
 		card,
-		interactive = true
+		interactive = true,
+		fullArt = false
 	}: {
 		card: CardData;
 		interactive?: boolean;
+		fullArt?: boolean;
 	} = $props();
 
 	const faction = $derived(
@@ -73,7 +76,7 @@
 		data-material={rarityDef.material}
 		data-foil={foil.preset}
 		data-kind={card.kind}
-		data-fullart="true"
+		data-fullart={fullArt ? 'true' : 'false'}
 		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
@@ -89,7 +92,7 @@
 				</div>
 
 				<span class="cost" title="Coût en Volonté">{card.cost}</span>
-				<span class="sigil" title={faction.name}>{faction.sigil}</span>
+				<span class="sigil" title={faction.name}><FactionSigil faction={card.faction} /></span>
 
 				<div class="content">
 					<header class="plate">
@@ -105,13 +108,13 @@
 					</header>
 
 					<div class="cartouche">
-						<span class="watermark" aria-hidden="true">{faction.sigil}</span>
+						<span class="watermark" aria-hidden="true"><FactionSigil faction={card.faction} flat /></span>
 						{#if card.text}
 							<p class="rules">{card.text}</p>
 						{/if}
 						{#if card.prononcer}
 							<p class="synchro">
-								<span class="synchro-tag">◯ Prononcer {card.prononcer.cost}</span>
+								<span class="synchro-tag"><span class="ptag-ring" aria-hidden="true"></span><span class="ptag-label">Prononcer {card.prononcer.cost}</span></span>
 								{card.prononcer.text}
 							</p>
 						{/if}
@@ -138,7 +141,11 @@
 				<div class="glare" aria-hidden="true"></div>
 			</div>
 			<footer class="frame-footer" aria-hidden="true">
-				<span class="ff-serial">{faction.name} · {card.id.slice(0, 14).toUpperCase()}</span>
+				<span class="ff-serial"
+					>{faction.name} · {card.id.slice(0, 14).toUpperCase()}{#if card.alt}<span class="ff-alt"
+							>Alt {card.alt}</span
+						>{/if}</span
+				>
 				<span class="ff-rarity">◯ {rarityDef.name} · Le Silence</span>
 			</footer>
 			<div class="conduits" aria-hidden="true"></div>
@@ -230,17 +237,62 @@
 	/* prisme (prismatique) : irisation contenue sur graphite */
 	.card[data-material='prisme'] .face {
 		background:
-			conic-gradient(
-				from calc(var(--hue-shift) + var(--pxn) * 60deg) at 50% 50%,
-				rgba(200, 120, 140, 0.5),
-				rgba(210, 180, 110, 0.5),
-				rgba(120, 200, 160, 0.5),
-				rgba(110, 160, 210, 0.5),
-				rgba(170, 120, 210, 0.5),
-				rgba(200, 120, 140, 0.5)
-			),
-			linear-gradient(170deg, #2a2b33, #17181d 60%, #24252c);
-		background-blend-mode: color-dodge, normal;
+			linear-gradient(115deg, transparent 18%, rgba(255,255,255,.24) 28%, transparent 38%),
+			conic-gradient(from calc(var(--hue-shift) + var(--pxn) * 24deg),rgba(238,185,202,.2),rgba(232,210,158,.2),rgba(228,220,205,.18),rgba(166,188,232,.2),rgba(202,174,226,.18),rgba(238,185,202,.2)),
+			repeating-linear-gradient(96deg,rgba(255,255,255,.035) 0 1px,transparent 1px 4px),
+			linear-gradient(165deg,#3b3d45 0%,#111218 24%,#292b33 52%,#0d0e13 76%,#353740 100%);
+		background-size: 240% 100%,100% 100%,auto,auto;
+		background-position: calc(var(--pxn) * 100%) 0,center,center,center;
+		background-blend-mode: screen,color-dodge,soft-light,normal;
+		box-shadow:
+			0 2.8cqw 7cqw rgba(0,0,0,.62),
+			0 0 1.2cqw rgba(175,210,255,.24),
+			0 0 2.8cqw rgba(221,170,255,.12),
+			inset 0 .32cqw .55cqw rgba(255,255,255,.58),
+			inset 0 -.35cqw .65cqw rgba(65,105,160,.42);
+	}
+	.card[data-material='prisme'] .face::before,
+	.card[data-material='prisme'] .face::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 8;
+		border-radius: inherit;
+		pointer-events: none;
+	}
+	/* Une couche optique extrêmement fine : la couleur vit dans la tranche, pas sur la carte. */
+	.card[data-material='prisme'] .face::before {
+		padding: .72cqw;
+		background: conic-gradient(from calc(205deg + var(--pxn) * 55deg),rgba(255,142,174,.76),rgba(255,224,158,.76),rgba(236,228,216,.78),rgba(145,181,255,.76),rgba(201,151,255,.7),rgba(255,142,174,.76));
+		-webkit-mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+		mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
+		opacity: calc(.58 + var(--from-center) * .4);
+		filter: saturate(1.12) brightness(1.38) contrast(1.06);
+		mix-blend-mode: screen;
+		transition: opacity .28s ease;
+	}
+	/* Reflet blanc étroit, comparable à une arête métallique sous une source ponctuelle. */
+	.card[data-material='prisme'] .face::after {
+		inset: .3cqw;
+		border: .28cqw solid transparent;
+		background: radial-gradient(34cqw 18cqw at var(--px) var(--py),rgba(255,255,255,.95),rgba(220,240,255,.42) 22%,transparent 66%) border-box;
+		-webkit-mask: linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+		mask: linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
+		opacity: calc(.34 + var(--from-center) * .66);
+		filter: blur(.045cqw) brightness(1.25);
+		mix-blend-mode: screen;
+	}
+	.card[data-material='prisme'].hover .face {
+		box-shadow:
+			0 3cqw 8cqw rgba(0,0,0,.64),
+			0 0 1.8cqw rgba(180,200,255,.48),
+			0 0 4.5cqw rgba(220,150,255,.24),
+			inset 0 .35cqw .65cqw rgba(255,255,255,.72),
+			inset 0 -.4cqw .75cqw rgba(80,130,195,.5);
 	}
 
 	/* glow d'activation : l'accent irradie (lumière contenue → libérée) */
@@ -343,6 +395,41 @@
 	.ff-rarity {
 		text-transform: uppercase;
 	}
+	/* le sceau ALT : pastille prismatique gravée dans le cadre — l'iridescence
+	   balaie lentement le dégradé argent-violet-or, discret mais indubitable */
+	.ff-alt {
+		display: inline-block;
+		margin-left: 1.2cqw;
+		padding: 0.35cqw 1.3cqw 0.25cqw;
+		font-size: 1.7cqw;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-indent: 0.1em;
+		text-transform: uppercase;
+		color: #14100a;
+		text-shadow: none;
+		background: linear-gradient(
+			100deg,
+			#e8ecf4 0%,
+			#cbb8ff 22%,
+			#f4f0ff 40%,
+			#ffe3a1 58%,
+			#e8ecf4 78%,
+			#cbb8ff 100%
+		);
+		background-size: 250% 100%;
+		border-radius: 999px;
+		box-shadow:
+			0 0 1.6cqw rgba(203, 184, 255, 0.4),
+			inset 0 0.2cqw 0.3cqw rgba(255, 255, 255, 0.7);
+		animation: altsheen 5s linear infinite;
+	}
+	@keyframes altsheen {
+		to { background-position: -250% 0; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.ff-alt { animation: none; }
+	}
 	.card[data-material='carbone'] {
 		--frame-ink: rgba(236, 232, 225, 0.55);
 		--frame-ink-relief: rgba(0, 0, 0, 0.5);
@@ -429,9 +516,10 @@
 		font-size: 5cqw;
 		line-height: 1;
 		color: color-mix(in srgb, var(--accent) 80%, #fff);
-		text-shadow:
-			0 0 2.2cqw color-mix(in srgb, var(--accent) 70%, transparent),
-			0 0.3cqw 0.6cqw rgba(0, 0, 0, 0.55);
+	}
+	.sigil :global(svg) {
+		filter: drop-shadow(0 0 1.6cqw color-mix(in srgb, var(--accent) 65%, transparent))
+			drop-shadow(0 0.3cqw 0.5cqw rgba(0, 0, 0, 0.5));
 	}
 
 	/* gravure : un filet fin, sous les badges et le contenu (z2) —
@@ -608,13 +696,18 @@
 	}
 	/* le sceau du Prononcer : pill d'or — le geste signature est doré, pas faction */
 	.synchro-tag {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.9cqw;
 		font-family: Cinzel, Georgia, serif;
 		font-size: 2.6cqw;
 		font-weight: 700;
+		line-height: 1;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		padding: 0.45cqw 1.9cqw 0.4cqw;
+		/* padding symétrique : l'anneau se centre au vrai milieu ; padding droit réduit
+		   pour rattraper le letter-spacing orphelin après le dernier caractère. */
+		padding: 0.7cqw 1.6cqw 0.7cqw 1.9cqw;
 		margin-bottom: 0.7cqw;
 		border-radius: 999px;
 		background: linear-gradient(
@@ -624,6 +717,19 @@
 		);
 		color: #14100a;
 		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+	}
+	/* l'anneau du Prononcer : dessiné, pas un glyphe — centrage garanti */
+	.ptag-ring {
+		flex: none;
+		width: 1.9cqw;
+		height: 1.9cqw;
+		border: 0.4cqw solid currentColor;
+		border-radius: 50%;
+	}
+	/* Cinzel : capitales sans jambages — les glyphes flottent haut dans leur em-box.
+	   La correction optique s'applique au texte SEUL, jamais à l'anneau. */
+	.ptag-label {
+		transform: translateY(0.055em);
 	}
 	.flavor {
 		margin: 1.4cqw 0 0;
@@ -1001,6 +1107,25 @@
 	}
 
 	/* ---------- glare : reflet, toutes raretés ---------- */
+
+	/* PRISME FULL ART : L'AURÉOLE */
+	.card[data-material='prisme'][data-fullart='true'] .scrim { background: linear-gradient(180deg,rgba(8,9,13,.22),transparent 24%,transparent 43%,rgba(7,8,12,.76) 70%,#07080c 100%); }
+	.card[data-material='prisme'][data-fullart='true'] .cost { top: 8.4cqw; left: 6.4cqw; width: auto; height: auto; border-radius: 0; background: none; box-shadow: none; font-size: 7.2cqw; font-weight: 600; text-shadow: 0 .5cqw 1.4cqw rgba(0,0,0,.9),0 0 2.4cqw rgba(201,164,69,.35); }
+	.card[data-material='prisme'][data-fullart='true'] .cost::before { inset: -3.25cqw -.85cqw auto; height: 2.35cqw; padding: 0; border: .4cqw solid rgba(235,205,126,.92); border-bottom-color: rgba(235,205,126,.28); border-radius: 50%; background: none; -webkit-mask: none; mask: none; filter: drop-shadow(0 0 1.4cqw rgba(201,164,69,.65)); transform: rotate(-8deg); }
+	.card[data-material='prisme'][data-fullart='true'] .sigil { top: 6.2cqw; right: 5.8cqw; font-size: 4.5cqw; }
+	.card[data-material='prisme'][data-fullart='true'] .content { padding: 0 6cqw 4.2cqw; text-align: center; }
+	.card[data-material='prisme'][data-fullart='true'] .plate { align-self: stretch; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; }
+	.card[data-material='prisme'][data-fullart='true'] .plate::before { top: auto; bottom: -1.7cqw; left: 24%; right: 24%; }
+	.card[data-material='prisme'][data-fullart='true'] .name { font-size: 5.5cqw; font-weight: 600; letter-spacing: .055em; color: #fff9ea; }
+	.card[data-material='prisme'][data-fullart='true'] .cellline { justify-content: center; margin-top: 2.6cqw; font-size: 2.35cqw; }
+	.card[data-material='prisme'][data-fullart='true'] .hairline,
+	.card[data-material='prisme'][data-fullart='true'] .fname,
+	.card[data-material='prisme'][data-fullart='true'] .watermark { display: none; }
+	.card[data-material='prisme'][data-fullart='true'] .cartouche { margin-top: 1.2cqw; padding: 1.2cqw 1cqw; border: 0; border-radius: 0; background: none; box-shadow: none; backdrop-filter: none; }
+	.card[data-material='prisme'][data-fullart='true'] .rules { font-size: 3.35cqw; }
+	.card[data-material='prisme'][data-fullart='true'] .synchro { margin-top: 1.1cqw; padding: .8cqw 1cqw; border: 0; border-radius: 0; background: none; }
+	.card[data-material='prisme'][data-fullart='true'] .synchro-tag { display: flex; width: fit-content; margin: 0 auto .7cqw; padding: 0; background: none; color: #e5c56e; text-shadow: 0 0 1.5cqw rgba(201,164,69,.35); }
+	.card[data-material='prisme'][data-fullart='true'] .flavor { margin-top: 1cqw; }
 
 	.glare {
 		z-index: 6;

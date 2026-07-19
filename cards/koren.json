@@ -6,18 +6,18 @@
 	"attack": 4,
 	"health": 5,
 	"text": "Vos autres Êtres gagnent +1/+1.",
-	"flavor": "Il aime les mots plus que ce qu'ils font vivre.",
+	"flavor": "Il aime les mots. Les gens qui les portent, beaucoup moins.",
 	"rarity": "legendary",
 	"faction": "vasar",
 	"art": "/art/koren.webp",
 	"gene": {
 		"palette": [
-			"#393727",
-			"#1a1912",
-			"#caa688"
+			"#8a6448",
+			"#483328",
+			"#e8caa6"
 		],
 		"foilPreset": "galaxy",
 		"accent": "#c9a445",
-		"seed": 742226
+		"seed": 603514
 	}
 }

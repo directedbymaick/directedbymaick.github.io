@@ -10,14 +10,15 @@
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/talvas.webp",
+	"fullArt": true,
 	"gene": {
 		"palette": [
-			"#56392a",
-			"#392624",
-			"#d7aa87"
+			"#b87846",
+			"#462a27",
+			"#fae8c8"
 		],
 		"foilPreset": "holo",
 		"accent": "#c9a445",
-		"seed": 192481
+		"seed": 185356
 	}
 }

@@ -1,0 +1,27 @@
+{
+	"id": "velsa",
+	"name": "Velsa, plongeuse du bord",
+	"kind": "etre",
+	"cost": 2,
+	"text": "Élan (peut attaquer dès son arrivée).",
+	"rarity": "common",
+	"faction": "velar",
+	"art": "/art/velsa.webp",
+	"fullArt": true,
+	"gene": {
+		"palette": [
+			"#7a8aa4",
+			"#3d3d2f",
+			"#eac978"
+		],
+		"foilPreset": "mat",
+		"accent": "#f0a626",
+		"seed": 768976
+	},
+	"attack": 2,
+	"health": 1,
+	"flavor": "Le bord du monde est un plongeoir.",
+	"alts": [
+		"/art/alt/velsa-alt1.webp"
+	]
+}

@@ -4,18 +4,18 @@
 	"kind": "relique",
 	"cost": 2,
 	"text": "Attachez à un Être adverse : il ne peut pas attaquer.",
-	"flavor": "Celle de Rasen. Revenue de l'envers — nul ne sait comment.",
+	"flavor": "La chaîne de Rasen. Personne ne l'a ramenée de l'envers : elle est revenue seule.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/premiere-chaine.webp",
 	"gene": {
 		"palette": [
-			"#b7a489",
-			"#393b39",
-			"#b4ada7"
+			"#655b4a",
+			"#3b3c36",
+			"#b5aba4"
 		],
 		"foilPreset": "holo",
 		"accent": "#c9a445",
-		"seed": 197243
+		"seed": 894538
 	}
 }

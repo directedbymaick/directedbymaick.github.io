@@ -1,0 +1,27 @@
+{
+	"id": "rasen",
+	"name": "Rasen, le Premier Expulsé",
+	"kind": "etre",
+	"cost": 7,
+	"text": "",
+	"rarity": "prism",
+	"faction": "exar",
+	"art": "/art/rasen.webp",
+	"gene": {
+		"palette": [
+			"#382429",
+			"#191013",
+			"#e79675"
+		],
+		"foilPreset": "prism",
+		"accent": "#b3273a",
+		"seed": 524176
+	},
+	"attack": 5,
+	"health": 6,
+	"prononcer": {
+		"cost": 4,
+		"text": "Détruit tous les autres Êtres."
+	},
+	"flavor": "Il ne pose plus qu’une seule question."
+}

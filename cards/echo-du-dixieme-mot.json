@@ -1,0 +1,22 @@
+{
+	"id": "echo-du-dixieme-mot",
+	"name": "Écho du dixième mot",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Sacrifiez un de vos Êtres : piochez 2 cartes.",
+	"flavor": "On ne l'a prononcé qu'une fois. Il ne s'est jamais tu depuis.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/echo-du-dixieme-mot.webp",
+	"artPosition": "center 40%",
+	"gene": {
+		"palette": [
+			"#37151b",
+			"#27161a",
+			"#eb909a"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 405416
+	}
+}

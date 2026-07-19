@@ -1,0 +1,23 @@
+{
+	"id": "eshna",
+	"name": "Eshna, ramasseuse de syllabes",
+	"kind": "etre",
+	"cost": 3,
+	"text": "Quand elle entre en jeu : récupérez une carte de votre défausse dans votre main.",
+	"rarity": "common",
+	"faction": "eshar",
+	"art": "/art/eshna.webp",
+	"gene": {
+		"palette": [
+			"#273846",
+			"#111920",
+			"#a4e8f9"
+		],
+		"foilPreset": "mat",
+		"accent": "#8d6cb8",
+		"seed": 750644
+	},
+	"attack": 2,
+	"health": 3,
+	"flavor": "Tout se garde. Surtout ce qui tombe."
+}

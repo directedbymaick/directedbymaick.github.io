@@ -1,0 +1,21 @@
+{
+	"id": "dernier-mot",
+	"name": "Le Dernier Mot",
+	"kind": "verbe",
+	"cost": 5,
+	"text": "Inflige 3 dégâts à tous les Êtres adverses.",
+	"rarity": "epic",
+	"faction": "exar",
+	"art": "/art/dernier-mot.webp",
+	"gene": {
+		"palette": [
+			"#251c26",
+			"#362b35",
+			"#ea9779"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#b3273a",
+		"seed": 680190
+	},
+	"flavor": "La dernière syllabe est la plus lourde."
+}

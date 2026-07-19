@@ -6,18 +6,18 @@
 	"attack": 3,
 	"health": 3,
 	"text": "Les Prononcer adverses coûtent (1) de plus.",
-	"flavor": "La loi s'élargit toujours.",
+	"flavor": "Le cercle des juges s'élargit chaque année. Il ne s'est jamais resserré.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/thessa.webp",
 	"gene": {
 		"palette": [
-			"#594635",
-			"#49372c",
-			"#e8d8c6"
+			"#69452a",
+			"#482c23",
+			"#e7c7a9"
 		],
 		"foilPreset": "holo",
 		"accent": "#c9a445",
-		"seed": 815898
+		"seed": 336011
 	}
 }

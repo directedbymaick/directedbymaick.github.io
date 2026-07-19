@@ -1,0 +1,21 @@
+{
+	"id": "brume-memorielle",
+	"name": "Brume mémorielle",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Regardez les 3 prochaines cartes de votre deck, piochez-en une.",
+	"rarity": "rare",
+	"faction": "eshar",
+	"art": "/art/brume-memorielle.webp",
+	"gene": {
+		"palette": [
+			"#06354a",
+			"#031821",
+			"#98a9e6"
+		],
+		"foilPreset": "holo",
+		"accent": "#8d6cb8",
+		"seed": 141994
+	},
+	"flavor": "La brume se souvient à ta place."
+}

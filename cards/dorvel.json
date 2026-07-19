@@ -10,14 +10,15 @@
 	"rarity": "epic",
 	"faction": "vasar",
 	"art": "/art/dorvel.webp",
+	"artPosition": "center 34%",
 	"gene": {
 		"palette": [
-			"#372719",
-			"#171618",
-			"#b5b6c9"
+			"#483726",
+			"#292826",
+			"#c9a577"
 		],
 		"foilPreset": "prismatic",
 		"accent": "#c9a445",
-		"seed": 167548
+		"seed": 549706
 	}
 }

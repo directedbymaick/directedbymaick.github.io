@@ -1,0 +1,21 @@
+{
+	"id": "rompre",
+	"name": "Rompre",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Inflige 3 dégâts à une cible.",
+	"flavor": "Un mot suffit.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/rompre.webp",
+	"gene": {
+		"palette": [
+			"#372827",
+			"#181517",
+			"#c3b1ab"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 401568
+	}
+}

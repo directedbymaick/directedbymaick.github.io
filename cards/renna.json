@@ -10,14 +10,15 @@
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/renna.webp",
+	"artPosition": "center 4%",
 	"gene": {
 		"palette": [
-			"#38291b",
-			"#19120c",
-			"#dbd5c8"
+			"#775637",
+			"#181719",
+			"#f6e4c8"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 493683
+		"seed": 670353
 	}
 }

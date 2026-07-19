@@ -1,0 +1,23 @@
+{
+	"id": "exel",
+	"name": "Exel, fidèle du dehors",
+	"kind": "etre",
+	"cost": 2,
+	"text": "Gagne +2 ATQ le tour où vous sacrifiez un allié.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/exel.webp",
+	"gene": {
+		"palette": [
+			"#441c29",
+			"#240b14",
+			"#c7a599"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 22636
+	},
+	"attack": 2,
+	"health": 2,
+	"flavor": "« On nous a jetés dehors — alors le dehors est à nous. »"
+}

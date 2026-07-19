@@ -1,0 +1,23 @@
+{
+	"id": "moren",
+	"name": "Moren, guide de Xenen",
+	"kind": "etre",
+	"cost": 3,
+	"text": "La première carte que vous jouez chaque tour coûte 1 Volonté de moins.",
+	"rarity": "rare",
+	"faction": "morar",
+	"art": "/art/moren.webp",
+	"gene": {
+		"palette": [
+			"#26241c",
+			"#191915",
+			"#d6a668"
+		],
+		"foilPreset": "holo",
+		"accent": "#8fb4d9",
+		"seed": 298872
+	},
+	"attack": 2,
+	"health": 3,
+	"flavor": "Il connaît les deux mondes. Il n'en regrette qu'un."
+}

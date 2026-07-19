@@ -1,0 +1,21 @@
+{
+	"id": "couronne-dos",
+	"name": "Couronne d'os",
+	"kind": "relique",
+	"cost": 3,
+	"text": "S’attache à un de vos Êtres : il gagne +2/+1.",
+	"rarity": "rare",
+	"faction": "exar",
+	"art": "/art/couronne-dos.webp",
+	"gene": {
+		"palette": [
+			"#352a27",
+			"#171618",
+			"#cab9a7"
+		],
+		"foilPreset": "holo",
+		"accent": "#b3273a",
+		"seed": 856911
+	},
+	"flavor": "Le premier roi du dehors n'a pas eu droit à l'or."
+}

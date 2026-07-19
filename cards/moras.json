@@ -1,0 +1,23 @@
+{
+	"id": "moras",
+	"name": "Moras, le Souriant",
+	"kind": "etre",
+	"cost": 5,
+	"text": "Vos Êtres peuvent échanger leur ATQ et leur Intégrité à chaque tour.",
+	"rarity": "legendary",
+	"faction": "morar",
+	"art": "/art/moras.webp",
+	"gene": {
+		"palette": [
+			"#27231c",
+			"#181a15",
+			"#c7a687"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#8fb4d9",
+		"seed": 642931
+	},
+	"attack": 3,
+	"health": 5,
+	"flavor": "« Parce que je tombais du bon côté. »"
+}

@@ -1,0 +1,21 @@
+{
+	"id": "seconde-sentence",
+	"name": "Seconde sentence",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Si un de vos Êtres est mort ce tour ou le précédent : un allié gagne +2/+2.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/seconde-sentence.webp",
+	"gene": {
+		"palette": [
+			"#462826",
+			"#271817",
+			"#c8a8a9"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 812636
+	},
+	"flavor": "On ne condamne pas deux fois. Eux, si."
+}

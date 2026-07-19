@@ -1,0 +1,21 @@
+{
+	"id": "exen",
+	"name": "Exen, l'Envers",
+	"kind": "lieu",
+	"cost": 3,
+	"text": "Chaque fois qu'un de vos Êtres meurt : vous piochez une carte.",
+	"rarity": "legendary",
+	"faction": "exar",
+	"art": "/art/exen.webp",
+	"gene": {
+		"palette": [
+			"#36262b",
+			"#1a161a",
+			"#f1937c"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#b3273a",
+		"seed": 7624
+	},
+	"flavor": "Bâti là où le monde ne se regarde pas."
+}

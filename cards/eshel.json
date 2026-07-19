@@ -1,0 +1,23 @@
+{
+	"id": "eshel",
+	"name": "Eshel, l'Archiviste",
+	"kind": "etre",
+	"cost": 5,
+	"text": "Quand elle entre en jeu : cherchez n'importe quelle carte de votre deck et mettez-la en main.",
+	"rarity": "legendary",
+	"faction": "eshar",
+	"art": "/art/eshel.webp",
+	"gene": {
+		"palette": [
+			"#253b48",
+			"#111a20",
+			"#dae8fc"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#8d6cb8",
+		"seed": 516903
+	},
+	"attack": 3,
+	"health": 4,
+	"flavor": "« J'étais de peu d'importance. C'est pour cela que j'ai survécu. »"
+}

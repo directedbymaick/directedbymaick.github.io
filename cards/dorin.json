@@ -6,18 +6,20 @@
 	"attack": 2,
 	"health": 1,
 	"text": "",
-	"flavor": "Un juge de plus. On riait, aux premiers jours.",
+	"flavor": "Encore un juge. Au début, ça faisait rire. Plus maintenant.",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/dorin.webp",
+	"artPosition": "center 0%",
+	"fullArt": true,
 	"gene": {
 		"palette": [
-			"#372b25",
-			"#181a15",
-			"#e9a876"
+			"#493528",
+			"#1a1712",
+			"#fba878"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 470455
+		"seed": 611895
 	}
 }

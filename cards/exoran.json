@@ -1,0 +1,23 @@
+{
+	"id": "exoran",
+	"name": "Exoran, apôtre de l'envers",
+	"kind": "etre",
+	"cost": 5,
+	"text": "",
+	"rarity": "rare",
+	"faction": "exar",
+	"art": "/art/exoran.webp",
+	"gene": {
+		"palette": [
+			"#281925",
+			"#120b11",
+			"#4c2f46"
+		],
+		"foilPreset": "holo",
+		"accent": "#b3273a",
+		"seed": 907139
+	},
+	"attack": 5,
+	"health": 4,
+	"flavor": "Il a appris à aimer la chute. C'est le plus dangereux."
+}

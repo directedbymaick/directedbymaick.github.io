@@ -1,0 +1,23 @@
+{
+	"id": "thanor",
+	"name": "Thanor, griffe de l'envers",
+	"kind": "etre",
+	"cost": 3,
+	"attack": 3,
+	"health": 3,
+	"text": "",
+	"flavor": "L'envers du monde a des mains.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/thanor.webp",
+	"gene": {
+		"palette": [
+			"#292737",
+			"#0a070b",
+			"#c7b2e0"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 284073
+	}
+}

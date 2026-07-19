@@ -1,0 +1,23 @@
+{
+	"id": "eskor",
+	"name": "Eskor, collecteur d'exil",
+	"kind": "etre",
+	"cost": 4,
+	"text": "Quand il entre en jeu : récupérez une carte exilée.",
+	"rarity": "rare",
+	"faction": "eshar",
+	"art": "/art/eskor.webp",
+	"gene": {
+		"palette": [
+			"#293b68",
+			"#131a2f",
+			"#97c6db"
+		],
+		"foilPreset": "holo",
+		"accent": "#8d6cb8",
+		"seed": 465729
+	},
+	"attack": 3,
+	"health": 3,
+	"flavor": "Il sait ce qu'on peut faire d'un nom entier."
+}

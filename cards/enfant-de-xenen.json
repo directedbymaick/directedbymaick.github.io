@@ -1,0 +1,23 @@
+{
+	"id": "enfant-de-xenen",
+	"name": "L'Enfant de Xenen",
+	"kind": "etre",
+	"cost": 3,
+	"text": "Quand il entre en jeu : copiez le dernier Verbe joué, même adverse.",
+	"rarity": "epic",
+	"faction": "morar",
+	"art": "/art/enfant-de-xenen.webp", "artPosition": "center 70%",
+	"gene": {
+		"palette": [
+			"#283d49",
+			"#2a3637",
+			"#a7b8d9"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#8fb4d9",
+		"seed": 469771
+	},
+	"attack": 2,
+	"health": 3,
+	"flavor": "Cinq peuples retiennent leur souffle."
+}

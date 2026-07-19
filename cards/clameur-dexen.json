@@ -1,0 +1,21 @@
+{
+	"id": "clameur-dexen",
+	"name": "Clameur d'Exen",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Un de vos Êtres gagne +2 ATQ jusqu'à la fin du tour.",
+	"rarity": "rare",
+	"faction": "exar",
+	"art": "/art/clameur-dexen.webp",
+	"gene": {
+		"palette": [
+			"#281b24",
+			"#171319",
+			"#fcebe4"
+		],
+		"foilPreset": "holo",
+		"accent": "#b3273a",
+		"seed": 660927
+	},
+	"flavor": "L'envers a aussi ses chœurs."
+}

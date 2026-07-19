@@ -12,12 +12,12 @@
 	"art": "/art/korven.webp",
 	"gene": {
 		"palette": [
-			"#473729",
-			"#201912",
-			"#b5ac96"
+			"#382617",
+			"#19110a",
+			"#d7b689"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 15537
+		"seed": 855027
 	}
 }

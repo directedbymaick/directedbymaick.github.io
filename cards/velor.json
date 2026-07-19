@@ -1,0 +1,23 @@
+{
+	"id": "velor",
+	"name": "Velor, rieur en chute libre",
+	"kind": "etre",
+	"cost": 3,
+	"text": "Élan (peut attaquer dès son arrivée).",
+	"rarity": "rare",
+	"faction": "velar",
+	"art": "/art/velor.webp",
+	"gene": {
+		"palette": [
+			"#56657a",
+			"#373737",
+			"#c8b597"
+		],
+		"foilPreset": "holo",
+		"accent": "#f0a626",
+		"seed": 135777
+	},
+	"attack": 3,
+	"health": 2,
+	"flavor": "On l'a entendu rire avant de le voir."
+}

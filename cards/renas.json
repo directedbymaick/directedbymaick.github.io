@@ -1,0 +1,23 @@
+{
+	"id": "renas",
+	"name": "Renas, banni de fraîche date",
+	"kind": "etre",
+	"cost": 1,
+	"attack": 2,
+	"health": 1,
+	"text": "",
+	"flavor": "Sa chaîne est encore chaude.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/renas.webp",
+	"gene": {
+		"palette": [
+			"#271b24",
+			"#181419",
+			"#b7abc8"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 173692
+	}
+}

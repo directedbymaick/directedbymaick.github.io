@@ -1,0 +1,23 @@
+{
+	"id": "tala",
+	"name": "Tala, tombée du bon côté",
+	"kind": "etre",
+	"cost": 2,
+	"text": "À son arrivée, choisissez sa forme : défensive (1/3) ou offensive (3/1).",
+	"rarity": "common",
+	"faction": "morar",
+	"art": "/art/tala.webp",
+	"gene": {
+		"palette": [
+			"#6c99c8",
+			"#272827",
+			"#c9b497"
+		],
+		"foilPreset": "mat",
+		"accent": "#8fb4d9",
+		"seed": 872220
+	},
+	"attack": 1,
+	"health": 3,
+	"flavor": "Elle a choisi son côté en plein vol."
+}

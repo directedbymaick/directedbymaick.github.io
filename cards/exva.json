@@ -1,0 +1,27 @@
+{
+	"id": "exva",
+	"name": "Exva, bouche de l'Abîme",
+	"kind": "etre",
+	"cost": 6,
+	"text": "",
+	"rarity": "epic",
+	"faction": "exar",
+	"art": "/art/exva.webp",
+	"gene": {
+		"palette": [
+			"#192739",
+			"#181826",
+			"#a7a6e2"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#b3273a",
+		"seed": 407041
+	},
+	"attack": 4,
+	"health": 5,
+	"prononcer": {
+		"cost": 3,
+		"text": "Inflige 5 dégâts, répartis comme vous voulez."
+	},
+	"flavor": "Elle prononce pour ceux qui n'osent pas."
+}

@@ -12,12 +12,12 @@
 	"art": "/art/thalen.webp",
 	"gene": {
 		"palette": [
-			"#382419",
-			"#373839",
-			"#e7d5c9"
+			"#59443a",
+			"#372828",
+			"#b7a9a8"
 		],
 		"foilPreset": "prismatic",
 		"accent": "#c9a445",
-		"seed": 398707
+		"seed": 61290
 	}
 }

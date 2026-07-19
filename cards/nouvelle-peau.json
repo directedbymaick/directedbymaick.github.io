@@ -1,0 +1,22 @@
+{
+	"id": "nouvelle-peau",
+	"name": "Nouvelle peau",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Un de vos Êtres échange son ATQ et son Intégrité.",
+	"rarity": "common",
+	"faction": "morar",
+	"art": "/art/nouvelle-peau.webp",
+	"artPosition": "center 0%",
+	"gene": {
+		"palette": [
+			"#776b57",
+			"#473824",
+			"#c8b9a6"
+		],
+		"foilPreset": "mat",
+		"accent": "#8fb4d9",
+		"seed": 657805
+	},
+	"flavor": "On ne remonte pas. On devient."
+}

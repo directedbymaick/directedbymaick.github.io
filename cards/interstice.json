@@ -1,0 +1,21 @@
+{
+	"id": "interstice",
+	"name": "L'Interstice",
+	"kind": "lieu",
+	"cost": 3,
+	"text": "Vos effets qui touchent la défausse ou l'exil sont doublés.",
+	"rarity": "epic",
+	"faction": "eshar",
+	"art": "/art/interstice.webp",
+	"gene": {
+		"palette": [
+			"#072537",
+			"#031119",
+			"#96dbf3"
+		],
+		"foilPreset": "prismatic",
+		"accent": "#8d6cb8",
+		"seed": 811425
+	},
+	"flavor": "Ni haut, ni bas. Le seul endroit qui n'a pas choisi."
+}

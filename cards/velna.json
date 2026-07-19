@@ -1,0 +1,23 @@
+{
+	"id": "velna",
+	"name": "Velna, la Première à Sauter",
+	"kind": "etre",
+	"cost": 6,
+	"text": "Élan. Gagne +1 ATQ pour chaque autre allié avec Élan.",
+	"rarity": "legendary",
+	"faction": "velar",
+	"art": "/art/velna.webp",
+	"gene": {
+		"palette": [
+			"#4a5667",
+			"#292829",
+			"#fae9b8"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#f0a626",
+		"seed": 575362
+	},
+	"attack": 5,
+	"health": 4,
+	"flavor": "« Tu tiens la porte d’une maison vide. »"
+}

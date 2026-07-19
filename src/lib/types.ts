@@ -66,6 +66,8 @@ export interface CardData {
 	fullArt?: boolean;
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
 	alts?: string[];
+	/** Index de version alternative (1+) — posé par altView à l'affichage, jamais dans les JSON. */
+	alt?: number;
 	gene: CardGene;
 }
 

@@ -1,0 +1,21 @@
+{
+	"id": "porte-du-dehors",
+	"name": "La Porte du dehors",
+	"kind": "lieu",
+	"cost": 3,
+	"text": "Vos effets Prononcer sont renforcés (+1 à leurs valeurs).",
+	"rarity": "legendary",
+	"faction": "exar",
+	"art": "/art/porte-du-dehors.webp",
+	"gene": {
+		"palette": [
+			"#361a1b",
+			"#181619",
+			"#a1bdeb"
+		],
+		"foilPreset": "galaxy",
+		"accent": "#b3273a",
+		"seed": 506112
+	},
+	"flavor": "Elle ne s'ouvre que dans un sens."
+}

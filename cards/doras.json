@@ -12,12 +12,12 @@
 	"art": "/art/doras.webp",
 	"gene": {
 		"palette": [
-			"#29231b",
-			"#383936",
-			"#c6c8c9"
+			"#695349",
+			"#261b26",
+			"#d9a869"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 3913
+		"seed": 978197
 	}
 }

@@ -1,0 +1,23 @@
+{
+	"id": "morna",
+	"name": "Morna, marquée du trait",
+	"kind": "etre",
+	"cost": 3,
+	"attack": 4,
+	"health": 2,
+	"text": "Quand elle attaque, elle subit 1 dégât.",
+	"flavor": "Ils l'ont marquée pour qu'on la fuie. On l'a suivie.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/morna.webp",
+	"gene": {
+		"palette": [
+			"#272836",
+			"#061917",
+			"#e59883"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 540272
+	}
+}

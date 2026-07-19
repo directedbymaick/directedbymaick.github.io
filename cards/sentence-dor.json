@@ -2,20 +2,21 @@
 	"id": "sentence-dor",
 	"name": "Sentence d'or",
 	"kind": "verbe",
-	"cost": 3,
+	"cost": 2,
 	"text": "Enchaînez un Être adverse : il est neutralisé tant qu'il reste en jeu.",
 	"flavor": "Chaque maillon est un mot du verdict.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/sentence-dor.webp",
+	"artPosition": "center 4%",
 	"gene": {
 		"palette": [
-			"#382827",
-			"#261a19",
-			"#cab9c7"
+			"#382418",
+			"#19100b",
+			"#dbc6b5"
 		],
 		"foilPreset": "holo",
 		"accent": "#c9a445",
-		"seed": 568475
+		"seed": 70580
 	}
 }

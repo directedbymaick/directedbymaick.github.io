@@ -25,6 +25,7 @@ export function altView(card: CardData, art: string, index: number): CardData {
 	return {
 		...card,
 		art,
+		alt: index + 1,
 		gene: {
 			...card.gene,
 			foilPreset: card.gene.foilPreset === 'mat' ? 'holo' : card.gene.foilPreset,

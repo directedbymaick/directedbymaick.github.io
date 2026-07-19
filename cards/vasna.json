@@ -6,18 +6,18 @@
 	"attack": 1,
 	"health": 2,
 	"text": "",
-	"flavor": "Une des mille voix qui tiennent le monde ouvert.",
+	"flavor": "Une voix parmi mille. Elle n'a pas manqué une nuit en vingt ans.",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/vasna.webp",
 	"gene": {
 		"palette": [
-			"#38251c",
-			"#3a3936",
-			"#e5d5c7"
+			"#5a3526",
+			"#181718",
+			"#f4e6d8"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 509068
+		"seed": 661348
 	}
 }

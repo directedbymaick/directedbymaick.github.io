@@ -1,0 +1,23 @@
+{
+	"id": "korsa",
+	"name": "Korsa, briseuse de cercles",
+	"kind": "etre",
+	"cost": 4,
+	"text": "Quand elle entre en jeu : détruit une Relique ou un Lieu adverse.",
+	"rarity": "rare",
+	"faction": "exar",
+	"art": "/art/korsa.webp",
+	"gene": {
+		"palette": [
+			"#482627",
+			"#201112",
+			"#cda88c"
+		],
+		"foilPreset": "holo",
+		"accent": "#b3273a",
+		"seed": 601649
+	},
+	"attack": 3,
+	"health": 3,
+	"flavor": "Les cercles aussi peuvent se briser."
+}

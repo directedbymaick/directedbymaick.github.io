@@ -1,0 +1,24 @@
+{
+	"id": "exna",
+	"name": "Exna, halo renversé",
+	"kind": "etre",
+	"cost": 2,
+	"attack": 1,
+	"health": 2,
+	"text": "Gagne +1/+1 chaque fois qu'une carte alliée est détruite.",
+	"flavor": "Elle porte son halo à l'envers, comme une bannière prise à l'ennemi.",
+	"rarity": "common",
+	"faction": "exar",
+	"art": "/art/exna.webp",
+	"fullArt": true,
+	"gene": {
+		"palette": [
+			"#392935",
+			"#191318",
+			"#e89896"
+		],
+		"foilPreset": "mat",
+		"accent": "#b3273a",
+		"seed": 894801
+	}
+}

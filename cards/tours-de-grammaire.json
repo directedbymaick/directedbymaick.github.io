@@ -2,20 +2,20 @@
 	"id": "tours-de-grammaire",
 	"name": "Les Tours de grammaire",
 	"kind": "lieu",
-	"cost": 3,
+	"cost": 2,
 	"text": "Vos Verbes coûtent (1) de moins.",
-	"flavor": "Koren y monte seul, la nuit, mesurer l'élan.",
+	"flavor": "Koren y monte seul, la nuit. Personne n'a jamais osé demander pourquoi.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/tours-de-grammaire.webp",
 	"gene": {
 		"palette": [
-			"#664b55",
-			"#080504",
-			"#e7b784"
+			"#68474a",
+			"#0b0707",
+			"#e7a975"
 		],
 		"foilPreset": "holo",
 		"accent": "#c9a445",
-		"seed": 64128
+		"seed": 475509
 	}
 }

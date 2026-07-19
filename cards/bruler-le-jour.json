@@ -1,0 +1,21 @@
+{
+	"id": "bruler-le-jour",
+	"name": "Brûler le jour",
+	"kind": "verbe",
+	"cost": 3,
+	"text": "Inflige 3 dégâts directement au Korum adverse (le joueur).",
+	"rarity": "common",
+	"faction": "velar",
+	"art": "/art/bruler-le-jour.webp",
+	"gene": {
+		"palette": [
+			"#36454b",
+			"#252826",
+			"#fce678"
+		],
+		"foilPreset": "mat",
+		"accent": "#f0a626",
+		"seed": 832124
+	},
+	"flavor": "La journée est une torche. Autant l’allumer."
+}

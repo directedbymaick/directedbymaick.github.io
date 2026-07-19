@@ -2,20 +2,21 @@
 	"id": "appel-a-lordre",
 	"name": "Appel à l'ordre",
 	"kind": "verbe",
-	"cost": 3,
+	"cost": 2,
 	"text": "Renvoyez un Être dans la main de son propriétaire.",
 	"flavor": "La ligne se referme.",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/appel-a-lordre.webp",
+	"artPosition": "center 4%",
 	"gene": {
 		"palette": [
-			"#362b25",
-			"#181311",
-			"#e6b677"
+			"#47362a",
+			"#201813",
+			"#fad696"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 402761
+		"seed": 128607
 	}
 }

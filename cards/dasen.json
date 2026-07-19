@@ -2,7 +2,7 @@
 	"id": "dasen",
 	"name": "Dasen, chef de chœur",
 	"kind": "etre",
-	"cost": 3,
+	"cost": 4,
 	"attack": 2,
 	"health": 2,
 	"text": "Vos autres Êtres Vasar ont +1 ATQ.",
@@ -12,12 +12,12 @@
 	"art": "/art/dasen.webp",
 	"gene": {
 		"palette": [
-			"#48271a",
-			"#20110c",
-			"#d7a878"
+			"#664b36",
+			"#483728",
+			"#d7a777"
 		],
 		"foilPreset": "holo",
 		"accent": "#c9a445",
-		"seed": 816209
+		"seed": 17830
 	}
 }

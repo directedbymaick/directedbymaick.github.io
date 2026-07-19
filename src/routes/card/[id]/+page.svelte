@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
+	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { altView } from '$lib/cards';
 	import type { CardData } from '$lib/types';
@@ -15,13 +16,36 @@
 		label: string;
 		view: CardData;
 	}
+	function fullArtView(source: CardData): CardData {
+		const view = structuredClone(source);
+		view.id = `${source.id}--fullart`;
+		view.rarity = 'prism';
+		view.gene.foilPreset = 'prism';
+		return view;
+	}
+	const hasFullArt = $derived(
+		card.fullArt || card.rarity === 'prism' || card.rarity === 'legendary' || card.rarity === 'epic'
+	);
 	const artOptions: ArtOption[] = $derived([
 		{ key: 'base', label: 'Standard', view: card },
-		...(card.alts ?? []).map((art, i) => ({
-			key: `alt${i + 2}`,
-			label: `Alt ${i + 1}`,
-			view: altView(card, art, i)
-		}))
+		...(hasFullArt ? [{ key: 'fullart', label: 'Full Art · Auréole', view: fullArtView(card) }] : []),
+		...(card.alts ?? []).flatMap((art, i) => [
+			{
+				key: `alt${i + 2}`,
+				label: `Alt ${i + 1}`,
+				view: altView(card, art, i)
+			},
+			// chaque alt éligible a aussi sa version full art — le chase du chase
+			...(hasFullArt
+				? [
+						{
+							key: `alt${i + 2}full`,
+							label: `Alt ${i + 1} · Full Art`,
+							view: fullArtView(altView(card, art, i))
+						}
+					]
+				: [])
+		])
 	]);
 
 	let artSel = $state('base');
@@ -46,7 +70,7 @@
 <section class="stage">
 	<div class="showcase">
 		{#key artSel}
-			<Card card={shown} />
+			<Card card={shown} fullArt={artSel === 'fullart' || artSel.endsWith('full')} />
 		{/key}
 		{#if artOptions.length > 1}
 			<div class="variants" role="tablist" aria-label="Versions de la carte">
@@ -67,7 +91,7 @@
 
 	<aside class="meta" style="--fc: {faction?.color ?? '#8892a6'}">
 		<p class="role">
-			<span class="r-sigil">{faction?.sigil}</span>
+			<span class="r-sigil"><FactionSigil faction={card.faction} /></span>
 			{faction?.name}
 			<span class="r-sep">//</span>
 			{rarityDef.name}
@@ -102,7 +126,7 @@
 			</div>
 		{/if}
 		{#if card.flavor}
-			<p class="flavor">« {card.flavor} »</p>
+			<p class="flavor">{card.flavor?.startsWith('«') ? card.flavor : `« ${card.flavor} »`}</p>
 		{/if}
 
 		<p class="gene">

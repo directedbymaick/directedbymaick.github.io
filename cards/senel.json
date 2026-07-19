@@ -10,14 +10,15 @@
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/senel.webp",
+	"fullArt": true,
 	"gene": {
 		"palette": [
-			"#374456",
-			"#171819",
-			"#b8b7d6"
+			"#493836",
+			"#141a1b",
+			"#c7a9a6"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 453443
+		"seed": 596256
 	}
 }

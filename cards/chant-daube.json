@@ -8,14 +8,15 @@
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/chant-daube.webp",
+	"artPosition": "center 48%",
 	"gene": {
 		"palette": [
-			"#241d19",
-			"#383936",
-			"#b7a898"
+			"#2b221b",
+			"#251b16",
+			"#b7a797"
 		],
 		"foilPreset": "mat",
 		"accent": "#c9a445",
-		"seed": 267888
+		"seed": 467525
 	}
 }

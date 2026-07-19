@@ -61,10 +61,14 @@ Le Korum représente l'objectif à protéger. Il n'est pas dans le deck. Il comm
 ## 4. Mise en place
 
 1. Chaque joueur mélange son deck.
-2. Chaque joueur pioche 4 cartes.
-3. Chaque joueur peut faire un mulligan : remettre sa main sous le deck, mélanger, puis piocher 4.
+2. Le premier joueur pioche 4 cartes ; le second joueur pioche **5 cartes**.
+3. Chaque joueur peut faire un mulligan : remettre sa main sous le deck, mélanger, puis re-piocher
+   le même nombre.
 4. Le premier joueur commence avec 1 Volonté maximale mais ne pioche pas au premier tour.
 5. Le second joueur pioche normalement.
+
+*(Équilibrage v1.1 : la 5ᵉ carte compense l'initiative du premier joueur, mesurée à 63 % de
+victoires sur 1 000 parties simulées.)*
 
 ---
 
@@ -121,10 +125,13 @@ Un Verbe résout son effet puis va en défausse.
 
 Chaque Être prêt peut attaquer une fois par tour.
 
-Quand un Être attaque, son contrôleur choisit une cible :
+**Le Korum est protégé tant que son camp garde au moins un Être capable de défendre** : un
+attaquant doit cibler un Être adverse. Le Korum devient attaquable lorsque le camp adverse n'a
+plus de défenseur valide — un Être **neutralisé ou enchaîné ne monte pas la garde**. Les effets
+qui précisent « directement » (ex. Brûler le jour) ignorent cette protection.
 
-- le Korum adverse ;
-- un Être adverse.
+*(Équilibrage v1.2 : la frappe libre au Korum rendait l'initiative écrasante — 40 % des parties
+se gagnaient avec plus de 20 Intégrité restantes.)*
 
 ### Attaquer le Korum
 
@@ -136,7 +143,10 @@ Les deux Êtres s'infligent simultanément des dégâts égaux à leur Attaque.
 
 Un Être dont l'Intégrité tombe à 0 ou moins est détruit et va en défausse.
 
-Les dégâts sur les Êtres sont retirés à la fin de chaque tour, sauf indication contraire.
+**Les dégâts sur les Êtres persistent** : ils ne sont retirés que par un effet de soin explicite.
+
+*(Équilibrage v1.1 : l'ancien soin automatique de fin de tour annulait tout plan d'usure et de
+dégâts directs — il tuait le gameplan Exar, mesuré à 16 % de victoires.)*
 
 ---
 
@@ -192,7 +202,8 @@ hors de portée, sauf texte contraire explicite.
 
 ### Serment
 
-Un Être avec **Serment** doit être attaqué avant le Korum tant qu'il est prêt.
+Un Être avec **Serment** doit être attaqué en priorité parmi les Êtres de son camp, tant qu'il
+est prêt. (v1.2 : le Korum étant protégé par défaut, le Serment dirige désormais l'ordre du mur.)
 
 Ancien rôle : garde/provocation.
 

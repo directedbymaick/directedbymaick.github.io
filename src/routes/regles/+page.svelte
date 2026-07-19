@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
 	import type { FactionId, Rarity } from '$lib/types';
@@ -18,7 +19,7 @@
 		{ t: 'Le duel', d: 'Deux joueurs, 30 cartes chacun. Votre Nom a 30 Intégrité — faites taire celui d’en face.' },
 		{ t: 'La Volonté', d: 'La ressource (NER). Elle se recharge et monte de 1 par tour, jusqu’à 10. Tout se paye avec.' },
 		{ t: 'Les types', d: 'Être (unité), Verbe (effet ponctuel), Relique (objet permanent), Lieu (domaine global — un seul actif par camp).' },
-		{ t: 'Le combat', d: 'Chaque Être attaque une fois par tour : un Être adverse ou le Nom. Dégâts simultanés (THA).' }
+		{ t: 'Le combat', d: 'Chaque Être attaque une fois par tour. Le Nom est protégé tant qu\'un Être adverse monte la garde — les entravés (neutralisés, enchaînés) ne défendent pas. Les effets « directement » ignorent la protection. Dégâts simultanés (THA).' }
 	];
 
 	const KEYWORDS = [
@@ -103,7 +104,7 @@
 	<div class="grid">
 		{#each factions as f (f)}
 			<div class="block faction" style="--fc: {charter.factions[f].color}">
-				<h3><span class="sigil">{charter.factions[f].sigil}</span> {charter.factions[f].name}</h3>
+				<h3><span class="sigil"><FactionSigil faction={f} /></span> {charter.factions[f].name}</h3>
 				<p class="ftag">{FACTION_STYLE[f].tagline}</p>
 				<p><strong>Forces :</strong> {FACTION_STYLE[f].forces}</p>
 				<p><strong>Limites :</strong> {FACTION_STYLE[f].interdits}</p>
