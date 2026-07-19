@@ -167,6 +167,48 @@
 		meta = null;
 	}
 
+	/* ---- la loupe : lire une carte en grand ---- */
+	let zoomed = $state<CardData | null>(null);
+
+	/* ---- drag & drop : glisser une carte de la main vers le plateau ---- */
+	let handEl: HTMLElement | undefined = $state();
+	let dragIdx = $state<number | null>(null);
+	let dragOn = $state(false); // le seuil de mouvement est franchi
+	let dragXY = $state({ x: 0, y: 0 });
+	let pressPos = { x: 0, y: 0 };
+
+	function handDown(e: PointerEvent, i: number) {
+		if (e.button !== 0) return;
+		pressPos = { x: e.clientX, y: e.clientY };
+		dragIdx = i;
+		dragOn = false;
+		dragXY = { x: 0, y: 0 };
+		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+	}
+	function handMove(e: PointerEvent, i: number) {
+		if (dragIdx !== i) return;
+		const dx = e.clientX - pressPos.x;
+		const dy = e.clientY - pressPos.y;
+		if (!dragOn && Math.hypot(dx, dy) > 8) dragOn = true;
+		if (dragOn && handV[i]?.playable && myTurn) dragXY = { x: dx, y: dy };
+	}
+	function handUp(e: PointerEvent, i: number) {
+		if (dragIdx !== i) return;
+		const wasDrag = dragOn;
+		dragIdx = null;
+		dragOn = false;
+		dragXY = { x: 0, y: 0 };
+		if (!wasDrag) {
+			// simple clic : on lit la carte
+			zoomed = handV[i]?.card ?? null;
+			return;
+		}
+		// dépôt : au-dessus de la main = sur le plateau
+		if (!handV[i]?.playable || !myTurn) return;
+		const rect = handEl?.getBoundingClientRect();
+		if (rect && e.clientY < rect.top - 8) doPlay(i);
+	}
+
 	/** La vraie carte du registre — ou une carte reconstituée pour les jetons. */
 	function cardOf(u: UnitSnap): CardData {
 		return (
@@ -196,6 +238,15 @@
 	<title>Arène — {charter.game.name}</title>
 	<meta name="description" content="L'Arène : affrontez l'IA d'Expelled en duel, règles du Silence." />
 </svelte:head>
+
+<svelte:window
+	onkeydown={(e) => {
+		if (e.key === 'Escape') {
+			zoomed = null;
+			sel = null;
+		}
+	}}
+/>
 
 {#if phase === 'setup'}
 	<!-- ============ ÉCRAN DE MISE EN JEU ============ -->
@@ -312,7 +363,11 @@
 					class:locked={u.locked}
 					disabled={!(sel !== null && legal.units.includes(u.uid))}
 					onclick={() => clickEnemyUnit(u)}
-					title={u.name}
+					oncontextmenu={(e) => {
+						e.preventDefault();
+						zoomed = cardOf(u);
+					}}
+					title="{u.name} — clic droit pour lire"
 				>
 					<Card card={cardOf(u)} interactive={false} />
 					<span class="ov-atk">{u.atk}</span>
@@ -327,7 +382,7 @@
 		<div class="centerline" aria-hidden="true"><i></i></div>
 
 		<!-- votre plateau -->
-		<div class="lane my-lane">
+		<div class="lane my-lane" class:dropready={dragOn && dragIdx !== null && handV[dragIdx]?.playable}>
 			{#each me.board as u (u.uid)}
 				<div class="unitwrap">
 					<button
@@ -336,7 +391,11 @@
 						class:selected={sel === u.uid}
 						class:locked={u.locked}
 						onclick={() => clickMyUnit(u)}
-						title={u.name}
+						oncontextmenu={(e) => {
+							e.preventDefault();
+							zoomed = cardOf(u);
+						}}
+						title="{u.name} — clic droit pour lire"
 					>
 						<Card card={cardOf(u)} interactive={false} />
 						<span class="ov-atk">{u.atk}</span>
@@ -355,16 +414,24 @@
 			{#if me.board.length === 0}<span class="lane-empty">—</span>{/if}
 		</div>
 
-		<!-- la main : les vraies cartes, en éventail -->
-		<div class="hand">
+		<!-- la main : glisser pour jouer, cliquer pour lire -->
+		<div class="hand" bind:this={handEl}>
 			{#each handV as h, i (i)}
 				<button
 					class="hslot"
 					class:playable={h.playable}
-					style="--i: {i - (handV.length - 1) / 2}"
-					disabled={!h.playable}
-					onclick={() => doPlay(i)}
-					title="{h.card.name} — {h.card.text || 'Sans effet.'}"
+					class:unplayable={!h.playable}
+					class:dragging={dragIdx === i && dragOn}
+					style="--i: {i - (handV.length - 1) / 2}; --dx: {dragIdx === i ? dragXY.x : 0}px; --dy: {dragIdx === i ? dragXY.y : 0}px"
+					onpointerdown={(e) => handDown(e, i)}
+					onpointermove={(e) => handMove(e, i)}
+					onpointerup={(e) => handUp(e, i)}
+					onpointercancel={() => {
+						dragIdx = null;
+						dragOn = false;
+						dragXY = { x: 0, y: 0 };
+					}}
+					title="{h.card.name} — glisser sur le plateau pour jouer, cliquer pour lire"
 				>
 					<Card card={h.card} interactive={false} />
 					{#if h.cost !== h.card.cost}
@@ -373,6 +440,7 @@
 				</button>
 			{/each}
 		</div>
+		<p class="handhint">Glissez une carte sur le plateau pour la jouer · cliquez pour l'examiner</p>
 
 		<!-- fil d'action -->
 		{#if flash}
@@ -385,6 +453,15 @@
 					<p>{line}</p>
 				{/each}
 			</aside>
+		{/if}
+
+		<!-- la loupe -->
+		{#if zoomed}
+			<div class="zoom" role="dialog" aria-modal="true" aria-label={zoomed.name}>
+				<button class="zoom-backdrop" aria-label="Fermer" onclick={() => (zoomed = null)}></button>
+				<div class="zoom-card"><Card card={zoomed} /></div>
+				<button class="zoom-close" aria-label="Fermer" onclick={() => (zoomed = null)}>✕</button>
+			</div>
 		{/if}
 
 		<!-- fin de partie -->
@@ -889,6 +966,8 @@
 		margin: 0 -1.1rem;
 		border-radius: 12px;
 		--card-w: clamp(140px, 21vh, 190px);
+		touch-action: none;
+		cursor: zoom-in;
 		transform: rotate(calc(var(--i) * 2.6deg)) translateY(calc(var(--i) * var(--i) * 3px));
 		transform-origin: bottom center;
 		transition:
@@ -896,18 +975,88 @@
 			box-shadow 0.18s ease,
 			filter 0.18s ease;
 	}
-	.hslot:disabled {
+	.hslot.unplayable {
 		filter: grayscale(0.55) brightness(0.6);
-		cursor: default;
 	}
 	.hslot.playable {
-		cursor: pointer;
+		cursor: grab;
 		box-shadow: 0 0 0 2px rgba(120, 200, 255, 0.55), 0 0 18px rgba(120, 200, 255, 0.3);
 	}
-	.hslot.playable:hover {
+	.hslot.playable:hover:not(.dragging) {
 		transform: rotate(0deg) translateY(-3.2rem) scale(1.32);
 		z-index: 10;
 		box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65), 0 0 22px rgba(120, 200, 255, 0.45);
+	}
+	/* la carte suit le curseur pendant le glisser */
+	.hslot.dragging {
+		cursor: grabbing;
+		z-index: 20;
+		transition: box-shadow 0.18s ease;
+		transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(1.12);
+		box-shadow: 0 24px 50px rgba(0, 0, 0, 0.7), 0 0 26px rgba(120, 200, 255, 0.5);
+	}
+	.handhint {
+		margin: 0.2rem 0 0;
+		text-align: center;
+		font-size: 0.7rem;
+		letter-spacing: 0.06em;
+		color: rgba(238, 240, 245, 0.32);
+	}
+	/* zone de dépôt pendant le drag */
+	.my-lane.dropready {
+		outline: 2px dashed rgba(213, 178, 94, 0.55);
+		outline-offset: -6px;
+		border-radius: 18px;
+		background: radial-gradient(60% 80% at 50% 50%, rgba(213, 178, 94, 0.07), transparent 75%);
+	}
+
+	/* la loupe */
+	.zoom {
+		position: fixed;
+		inset: 0;
+		z-index: 150;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.zoom-backdrop {
+		position: absolute;
+		inset: 0;
+		border: none;
+		cursor: zoom-out;
+		background: rgba(4, 7, 14, 0.82);
+		backdrop-filter: blur(10px);
+	}
+	.zoom-card {
+		position: relative;
+		--card-w: min(440px, 88vw, 58vh);
+		animation: zpop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6));
+	}
+	.zoom-close {
+		position: absolute;
+		top: 1.2rem;
+		right: 1.4rem;
+		display: grid;
+		place-items: center;
+		width: 2.6rem;
+		height: 2.6rem;
+		border: 1px solid rgba(238, 240, 245, 0.25);
+		border-radius: 50%;
+		background: rgba(10, 16, 30, 0.6);
+		color: rgba(238, 240, 245, 0.8);
+		font-size: 1rem;
+		cursor: pointer;
+	}
+	.zoom-close:hover {
+		border-color: rgba(213, 178, 94, 0.6);
+		color: #fff;
+	}
+	@keyframes zpop {
+		from {
+			opacity: 0;
+			transform: scale(0.9) translateY(14px);
+		}
 	}
 	/* chip de coût réduit (Tours de grammaire, Moren…) */
 	.ov-cost {
