@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+	<title>Expelled — l'auréole fêlée</title>
+	<defs>
+		<linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" stop-color="#f2e2ab"/>
+			<stop offset="45%" stop-color="#d9b969"/>
+			<stop offset="100%" stop-color="#a9812f"/>
+		</linearGradient>
+		<mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+			<rect width="512" height="512" fill="#fff"/>
+			<!-- la fêlure : un éclair qui descend à travers l'anneau -->
+			<polyline points="78,262 92,276 82,290 98,304 88,318" fill="none" stroke="#000" stroke-width="8"/>
+			<!-- la brisure nette, plus haut -->
+			<line x1="106" y1="196" x2="128" y2="182" stroke="#000" stroke-width="5"/>
+		</mask>
+	</defs>
+	<g transform="rotate(-14 256 250)">
+		<ellipse cx="256" cy="250" rx="198" ry="84" fill="none" stroke="url(#gold)" stroke-width="13" mask="url(#cut)"/>
+		<!-- le fragment qui tombe -->
+		<path d="M118 352 L132 372 L118 392 L104 372 Z" fill="url(#gold)" transform="rotate(12 118 372)"/>
+	</g>
+</svg>

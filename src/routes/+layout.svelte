@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import favicon from '$lib/assets/favicon.svg';
+	import logo from '$lib/assets/logo.svg';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
@@ -54,7 +55,7 @@
 	<nav>
 		<div class="nav-inner">
 			<a class="brand" href="/">
-				<span class="emblem" aria-hidden="true">◯</span>
+				<img class="emblem" src={logo} alt="" aria-hidden="true" />
 				<span class="brand-txt">
 					<b>{charter.game.name}</b>
 					<i>Le Silence · Set 01</i>
@@ -155,16 +156,9 @@
 		text-decoration: none;
 	}
 	.emblem {
-		display: grid;
-		place-items: center;
-		width: 2.1rem;
-		height: 2.1rem;
-		border-radius: 50%;
-		border: 1px solid rgba(213, 178, 94, 0.55);
-		color: var(--gold);
-		font-size: 1rem;
-		background: radial-gradient(120% 120% at 50% 0%, rgba(213, 178, 94, 0.16), transparent 65%);
-		box-shadow: 0 0 14px rgba(213, 178, 94, 0.2);
+		width: 2.6rem;
+		height: 2.6rem;
+		filter: drop-shadow(0 0 10px rgba(213, 178, 94, 0.45));
 	}
 	.brand-txt {
 		display: flex;
