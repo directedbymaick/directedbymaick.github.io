@@ -5,7 +5,6 @@
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
 	import { eco, initEconomy } from '$lib/economy.svelte';
 	import '@fontsource-variable/inter/index.css';
@@ -88,15 +87,12 @@
 			loginErr = 'Cet e-mail ne semble pas valide.';
 			return;
 		}
-		signIn(email);
 		loginOpen = false;
-		email = '';
-		goto('/profil');
+		signIn(email); // recharge vers /profil (stores réinitialisés par compte)
 	}
 	function doLogout() {
-		signOut();
 		menuOpen = false;
-		if (page.url.pathname === '/profil') goto('/');
+		signOut(); // recharge vers l'accueil
 	}
 </script>
 

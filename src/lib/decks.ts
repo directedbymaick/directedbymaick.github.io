@@ -1,5 +1,6 @@
 import { charter } from '$lib/charter';
 import type { CardData } from '$lib/types';
+import { nsKey } from '$lib/store';
 
 /** Un deck : 30 cartes, copies limitées par la rareté (cf. Règles). */
 export interface Deck {
@@ -15,7 +16,7 @@ export const DECK_SIZE = 30;
 
 export function loadDecks(): Deck[] {
 	try {
-		const raw = JSON.parse(localStorage.getItem(KEY) ?? '[]');
+		const raw = JSON.parse(localStorage.getItem(nsKey(KEY)) ?? '[]');
 		return Array.isArray(raw) ? raw : [];
 	} catch {
 		return [];
@@ -23,7 +24,7 @@ export function loadDecks(): Deck[] {
 }
 
 export function saveDecks(decks: Deck[]) {
-	localStorage.setItem(KEY, JSON.stringify(decks));
+	localStorage.setItem(nsKey(KEY), JSON.stringify(decks));
 }
 
 export function newDeck(name: string): Deck {

@@ -7,6 +7,7 @@
 	import { charter } from '$lib/charter';
 	import { loadCollection, saveCollection, collectionStats, fullArtView } from '$lib/gacha';
 	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
+	import { nsKey } from '$lib/store';
 	import {
 		eco,
 		initEconomy,
@@ -151,7 +152,7 @@
 		initEconomy();
 		collection = loadCollection();
 		decks = loadDecks();
-		pseudo = localStorage.getItem('expelled-pseudo') ?? 'Sans-Nom';
+		pseudo = localStorage.getItem(nsKey('expelled-pseudo')) ?? 'Sans-Nom';
 		loaded = true;
 	});
 
@@ -194,7 +195,7 @@
 			return;
 		}
 		signIn(gmail);
-		pseudo = localStorage.getItem('expelled-pseudo') ?? pseudo;
+		pseudo = localStorage.getItem(nsKey('expelled-pseudo')) ?? pseudo;
 		gmail = '';
 		gerr = '';
 	}
@@ -215,7 +216,7 @@
 	});
 	$effect(() => {
 		if (!loaded) return;
-		localStorage.setItem('expelled-pseudo', pseudo);
+		localStorage.setItem(nsKey('expelled-pseudo'), pseudo);
 	});
 
 	function createDeck() {

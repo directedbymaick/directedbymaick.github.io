@@ -1,5 +1,6 @@
 import type { CardData, Rarity } from '$lib/types';
 import { cards } from '$lib/cards';
+import { nsKey } from '$lib/store';
 
 /**
  * Le gacha : ouverture de boosters ZONES AVEUGLES, 100% local.
@@ -117,7 +118,7 @@ export function openPack(): Pull[] {
 	return pulls;
 }
 
-/* ---------- collection (localStorage) ---------- */
+/* ---------- collection (localStorage, rattachée au compte) ---------- */
 
 const STORE_KEY = 'travelers-collection-v1';
 
@@ -126,7 +127,7 @@ export type Collection = Record<string, number>;
 export function loadCollection(): Collection {
 	if (typeof localStorage === 'undefined') return {};
 	try {
-		return JSON.parse(localStorage.getItem(STORE_KEY) ?? '{}');
+		return JSON.parse(localStorage.getItem(nsKey(STORE_KEY)) ?? '{}');
 	} catch {
 		return {};
 	}
@@ -134,7 +135,7 @@ export function loadCollection(): Collection {
 
 export function saveCollection(col: Collection): void {
 	if (typeof localStorage === 'undefined') return;
-	localStorage.setItem(STORE_KEY, JSON.stringify(col));
+	localStorage.setItem(nsKey(STORE_KEY), JSON.stringify(col));
 }
 
 /** Ajoute les tirages à la collection ; renvoie les ids nouveaux (première fois).

@@ -7,6 +7,7 @@
 	import { cards, getCard } from '$lib/cards';
 	import { loadDecks, type Deck } from '$lib/decks';
 	import { session, initSession } from '$lib/account.svelte';
+	import { nsKey } from '$lib/store';
 	import { initEconomy, earn, track, MATCH_REWARD } from '$lib/economy.svelte';
 	import {
 		Match,
@@ -86,7 +87,7 @@
 
 	const myName = $derived(
 		session.account
-			? (localStorage.getItem('expelled-pseudo') ?? session.account.email.split('@')[0])
+			? (localStorage.getItem(nsKey('expelled-pseudo')) ?? session.account.email.split('@')[0])
 			: 'Sans-Nom'
 	);
 

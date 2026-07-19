@@ -2,8 +2,9 @@
  * L'économie du Silence : les Éclats (fragments d'auréole).
  * On en gagne à chaque partie, via les quêtes journalières/hebdomadaires
  * et le livre de succès — on les dépense en boosters.
- * Tout vit en localStorage, partagé via un état réactif.
+ * Tout vit en localStorage (rattaché au compte), partagé via un état réactif.
  */
+import { nsKey } from '$lib/store';
 
 export const PACK_PRICE = 100;
 export const STARTER_GRANT = 300;
@@ -192,13 +193,13 @@ function weekKey(d = new Date()): string {
 
 function persist(): void {
 	const { ready, lastGain, ...data } = eco;
-	localStorage.setItem(KEY, JSON.stringify(data));
+	localStorage.setItem(nsKey(KEY), JSON.stringify(data));
 }
 
 export function initEconomy(): void {
 	if (eco.ready) return;
 	try {
-		const raw = localStorage.getItem(KEY);
+		const raw = localStorage.getItem(nsKey(KEY));
 		if (raw) {
 			const d = JSON.parse(raw);
 			eco.balance = d.balance ?? 0;
