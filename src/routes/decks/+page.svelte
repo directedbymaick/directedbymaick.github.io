@@ -98,7 +98,15 @@
 						<ul>
 							{#each rows as r (r.card.id)}
 								<li>
-									<button class="crow" onclick={() => (zoomed = r.card)} title="Cliquer pour lire">
+									<button class="crow" onclick={() => (zoomed = r.card)} title="Cliquer pour agrandir">
+										<span class="cthumb"
+											><img
+												src={r.card.art}
+												alt=""
+												loading="lazy"
+												style="object-position: {r.card.artPosition ?? 'center 12%'}"
+											/></span
+										>
 										<span class="ccost">{r.card.cost}</span>
 										<span class="cname">{r.card.name}</span>
 										<span class="cstars" class:prism={r.card.rarity === 'prism'}
@@ -361,6 +369,25 @@
 	.crow:hover {
 		background: rgba(213, 178, 94, 0.09);
 		border-color: rgba(213, 178, 94, 0.35);
+	}
+	.crow:hover .cthumb {
+		border-color: rgba(213, 178, 94, 0.6);
+	}
+	/* vignette de l'illustration : reconnaître la carte d'un coup d'œil */
+	.cthumb {
+		flex: none;
+		width: 2.1rem;
+		height: 2.1rem;
+		border-radius: 7px;
+		overflow: hidden;
+		border: 1px solid rgba(140, 170, 220, 0.25);
+		background: #0c1324;
+	}
+	.cthumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
 	}
 	.ccost {
 		flex: none;

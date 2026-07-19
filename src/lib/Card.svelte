@@ -482,30 +482,15 @@
 			inset 0 0 0 1px color-mix(in srgb, var(--sys) 40%, transparent),
 			0 0.5cqw 1cqw rgba(0, 0, 0, 0.55);
 	}
-	/* l'anneau d'or brossé : le halo de la Volonté */
+	/* l'anneau d'or : masque radial = cercle parfait, sans couture ni bosse */
 	.cost::before {
 		content: '';
 		position: absolute;
 		inset: 0;
 		border-radius: 50%;
-		padding: 0.75cqw;
-		background: conic-gradient(
-			from 210deg,
-			#f2d98a,
-			#c9a445 22%,
-			#8f6420 45%,
-			#e6c05e 68%,
-			#a97f2c 85%,
-			#f2d98a
-		);
-		-webkit-mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		-webkit-mask-composite: xor;
-		mask-composite: exclude;
+		background: linear-gradient(160deg, #f7e6ac 0%, #d9b45e 34%, #9c7328 62%, #efce77 100%);
+		-webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 1.55cqw), #000 calc(100% - 1.15cqw));
+		mask: radial-gradient(closest-side, #0000 calc(100% - 1.55cqw), #000 calc(100% - 1.15cqw));
 	}
 	/* sigil de faction : le glyphe accent, seul */
 	.sigil {
@@ -601,12 +586,16 @@
 		letter-spacing: 0.14em;
 		white-space: nowrap;
 	}
-	/* taxonomie affichée : ÊTRE ◯ — l'or du halo */
+	/* taxonomie affichée : chaque type a sa couleur pour se distinguer d'un coup d'œil */
 	.kindlabel {
-		color: color-mix(in srgb, var(--sys) 78%, #fff);
+		color: color-mix(in srgb, var(--kind, var(--sys)) 82%, #fff);
 		font-weight: 700;
-		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--sys) 35%, transparent);
+		text-shadow: 0 0 1.4cqw color-mix(in srgb, var(--kind, var(--sys)) 45%, transparent);
 	}
+	.card[data-kind='etre'] { --kind: #6fd39a; } /* Être — vert vivant */
+	.card[data-kind='verbe'] { --kind: #63b3ff; } /* Verbe — bleu parole */
+	.card[data-kind='relique'] { --kind: #e0a63e; } /* Relique — or objet */
+	.card[data-kind='lieu'] { --kind: #b98cf0; } /* Lieu — violet domaine */
 	.kindlabel::after {
 		content: ' ◯';
 		font-size: 0.8em;
@@ -776,30 +765,15 @@
 		text-shadow: 0 0.3cqw 0.45cqw rgba(0, 0, 0, 0.6);
 		box-shadow: 0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5);
 	}
+	/* sertissage d'or : anneau radial parfait (aucune bosse même agrandi) */
 	.stat .hex::before {
 		content: '';
 		position: absolute;
 		inset: 0;
 		border-radius: 50%;
-		padding: 0.55cqw;
-		/* sertissage d'or brossé */
-		background: conic-gradient(
-			from 210deg,
-			#f2d98a,
-			#c9a445 22%,
-			#8f6420 45%,
-			#e6c05e 68%,
-			#a97f2c 85%,
-			#f2d98a
-		);
-		-webkit-mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		mask:
-			linear-gradient(#fff 0 0) content-box,
-			linear-gradient(#fff 0 0);
-		-webkit-mask-composite: xor;
-		mask-composite: exclude;
+		background: linear-gradient(160deg, #f7e6ac 0%, #d9b45e 34%, #9c7328 62%, #efce77 100%);
+		-webkit-mask: radial-gradient(closest-side, #0000 calc(100% - 1.15cqw), #000 calc(100% - 0.8cqw));
+		mask: radial-gradient(closest-side, #0000 calc(100% - 1.15cqw), #000 calc(100% - 0.8cqw));
 	}
 	.stat small {
 		font-family: Cinzel, Georgia, serif;
