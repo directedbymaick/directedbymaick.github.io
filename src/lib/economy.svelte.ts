@@ -9,6 +9,16 @@ export const PACK_PRICE = 100;
 export const STARTER_GRANT = 300;
 export const MATCH_REWARD = { win: 100, loss: 40, pvpWin: 150, pvpLoss: 60 };
 
+/** Revente des copies excédentaires (au-delà de 3) : valeur par rareté. */
+export const SELL_KEEP = 3;
+export const SELL_VALUE: Record<string, number> = {
+	common: 5,
+	rare: 10,
+	epic: 20,
+	legendary: 40,
+	prism: 80
+};
+
 export type TrackEvent =
 	| 'win'
 	| 'loss'

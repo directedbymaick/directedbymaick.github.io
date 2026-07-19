@@ -5,7 +5,7 @@
 	import logo from '$lib/assets/logo.svg';
 	import { cards, getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import { loadCollection, collectionStats } from '$lib/gacha';
+	import { loadCollection, saveCollection, collectionStats } from '$lib/gacha';
 	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
 	import {
 		eco,
@@ -17,6 +17,9 @@
 		questProgress,
 		claimQuest,
 		claimAchievement,
+		earn,
+		SELL_KEEP,
+		SELL_VALUE,
 		type AchContext
 	} from '$lib/economy.svelte';
 	import {
@@ -31,7 +34,7 @@
 		costCurve,
 		factionSpread
 	} from '$lib/decks';
-	import type { FactionId, Rarity } from '$lib/types';
+	import type { CardData, FactionId, Rarity } from '$lib/types';
 
 	const factions = Object.keys(charter.factions) as FactionId[];
 	const STARS: Record<Rarity, number> = { common: 2, rare: 3, epic: 4, legendary: 5, prism: 5 };
@@ -118,6 +121,38 @@
 		pseudo = localStorage.getItem('expelled-pseudo') ?? 'Sans-Nom';
 		loaded = true;
 	});
+
+	/* ---- revente du surplus (au-delà de 3 copies) ---- */
+	function surplusOf(c: CardData): number {
+		return Math.max(0, (collection[c.id] ?? 0) - SELL_KEEP);
+	}
+	const surplusCount = $derived(cards.reduce((s, c) => s + surplusOf(c), 0));
+	const surplusValue = $derived(
+		cards.reduce((s, c) => s + surplusOf(c) * (SELL_VALUE[c.rarity] ?? 5), 0)
+	);
+	function sellSurplus(c: CardData) {
+		const n = surplusOf(c);
+		if (n <= 0) return;
+		collection[c.id] = SELL_KEEP;
+		collection = { ...collection };
+		saveCollection($state.snapshot(collection));
+		earn(n * (SELL_VALUE[c.rarity] ?? 5), `Revente : ${c.name} ×${n}`);
+	}
+	function sellAllSurplus() {
+		let total = 0;
+		let count = 0;
+		for (const c of cards) {
+			const n = surplusOf(c);
+			if (n <= 0) continue;
+			collection[c.id] = SELL_KEEP;
+			total += n * (SELL_VALUE[c.rarity] ?? 5);
+			count += n;
+		}
+		if (count === 0) return;
+		collection = { ...collection };
+		saveCollection($state.snapshot(collection));
+		earn(total, `Revente du surplus : ${count} carte${count > 1 ? 's' : ''}`);
+	}
 
 	function gateLogin(e: SubmitEvent) {
 		e.preventDefault();
@@ -275,8 +310,19 @@
 
 	<p class="hint">
 		Les cartes s'obtiennent en ouvrant des <a href="/packs">boosters</a> — les grisées manquent
-		encore à votre Registre.
+		encore à votre Registre. Au-delà de 3 copies, le surplus se revend en Éclats.
 	</p>
+
+	{#if surplusCount > 0}
+		<div class="sellbar">
+			<span
+				>Surplus : <b>{surplusCount}</b> carte{surplusCount > 1 ? 's' : ''} au-delà de 3 copies</span
+			>
+			<button class="sellall" onclick={sellAllSurplus}>
+				Tout revendre · +{surplusValue} <i class="shard" aria-hidden="true"></i>
+			</button>
+		</div>
+	{/if}
 
 	<div class="colgrid">
 		{#each pool as c (c.id)}
@@ -289,6 +335,16 @@
 					<span class="owncount">×{owned}</span>
 				{:else}
 					<span class="lock">Non possédée</span>
+				{/if}
+				{#if surplusOf(c) > 0}
+					<button
+						class="sellbtn"
+						title="Revendre les copies au-delà de 3"
+						onclick={() => sellSurplus(c)}
+					>
+						Revendre ×{surplusOf(c)} · +{surplusOf(c) * (SELL_VALUE[c.rarity] ?? 5)}
+						<i class="shard" aria-hidden="true"></i>
+					</button>
 				{/if}
 			</div>
 		{/each}
@@ -903,12 +959,71 @@
 	}
 
 	.hint {
-		margin: 0 0 1.6rem;
+		margin: 0 0 1.2rem;
 		font-size: 0.85rem;
 		color: rgba(238, 240, 245, 0.45);
 	}
 	.hint a {
 		color: var(--gold);
+	}
+
+	/* ---------- revente du surplus ---------- */
+	.sellbar {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin: 0 0 1.6rem;
+		padding: 0.8rem 1.2rem;
+		background: rgba(213, 178, 94, 0.06);
+		border: 1px solid rgba(213, 178, 94, 0.3);
+		border-radius: 14px;
+		font-size: 0.88rem;
+		color: rgba(238, 240, 245, 0.65);
+	}
+	.sellbar b {
+		color: var(--gold);
+		font-variant-numeric: tabular-nums;
+	}
+	.sellall {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-left: auto;
+		padding: 0.5rem 1.1rem;
+		border: none;
+		border-radius: 999px;
+		background: var(--cream);
+		color: #171b10;
+		font-family: inherit;
+		font-size: 0.84rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		cursor: pointer;
+		box-shadow: 0 0 14px rgba(213, 178, 94, 0.25);
+	}
+	.sellall:hover {
+		background: #f7edd6;
+	}
+	.sellbtn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: 0.55rem;
+		padding: 0.32rem 0.85rem;
+		border: 1px solid rgba(213, 178, 94, 0.45);
+		border-radius: 999px;
+		background: rgba(213, 178, 94, 0.1);
+		color: var(--gold);
+		font-family: inherit;
+		font-size: 0.74rem;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+	.sellbtn:hover {
+		background: rgba(213, 178, 94, 0.22);
 	}
 
 	/* ---------- collection ---------- */
