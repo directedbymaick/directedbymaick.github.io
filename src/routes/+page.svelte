@@ -3,7 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import type { FactionId } from '$lib/types';
+	import type { FactionId, Rarity } from '$lib/types';
 
 	const SET_SIZE = 60;
 
@@ -17,6 +17,9 @@
 		morar: 'La chute devenue arrivée',
 		velar: 'La Volonté suffit'
 	};
+
+	/* rareté → étoiles, comme les personnages HSR */
+	const STARS: Record<Rarity, number> = { common: 2, rare: 3, epic: 4, legendary: 5, prism: 5 };
 
 	function byFaction(f: FactionId) {
 		return cards
@@ -47,7 +50,20 @@
 
 	const heroArt = bannerArt('vasar');
 
+	/* filtre par peuple, façon Banque de Données */
+	let sel = $state<'all' | FactionId>('all');
+	const shown = $derived(
+		(sel === 'all' ? factions : [sel]).filter((f) => byFaction(f).length > 0)
+	);
+
 	let container: HTMLElement;
+	let refreshST: (() => void) | null = null;
+
+	// au changement de filtre, les positions des déclencheurs changent : on recalcule
+	$effect(() => {
+		void sel;
+		if (refreshST) requestAnimationFrame(() => refreshST?.());
+	});
 
 	onMount(() => {
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -56,6 +72,7 @@
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
+			refreshST = () => ScrollTrigger.refresh();
 			ctx = gsap.context(() => {
 				// ---- hero : l'émergence (l'image sort du noir, le titre se dit ligne à ligne)
 				gsap.fromTo(
@@ -132,23 +149,6 @@
 						}
 					);
 				});
-				// le label vertical dérive plus lentement que la page (profondeur)
-				gsap.utils.toArray<HTMLElement>('.vlabel').forEach((v) => {
-					gsap.fromTo(
-						v,
-						{ y: 90 },
-						{
-							y: -90,
-							ease: 'none',
-							scrollTrigger: {
-								trigger: v.parentElement,
-								start: 'top bottom',
-								end: 'bottom top',
-								scrub: 1.8
-							}
-						}
-					);
-				});
 
 				// ---- galerie : les cartes émergent en vagues, puis restent en place
 				gsap.set('.cell', { autoAlpha: 0 });
@@ -196,43 +196,71 @@
 		<p class="quiet scrollhint">Défiler</p>
 	</header>
 
-	<!-- ============ CHAPITRES : un peuple, un écran ============ -->
-	{#each factions as f, fi (f)}
-		{@const list = byFaction(f)}
-		{#if list.length > 0}
-			{@const banner = bannerArt(f)}
-			<section class="chapter" style="--fc: {charter.factions[f].color}">
-				<span class="vlabel" aria-hidden="true">{charter.factions[f].name}</span>
-
-				<header class="chapter-head">
-					<span class="index">0{fi + 1}</span>
-					<h2>{charter.factions[f].name}</h2>
-					<p class="ftag">{FACTION_TAG[f]}</p>
-					<span class="fcount"
-						>{charter.factions[f].sigil} {list.length} carte{list.length > 1 ? 's' : ''}</span
+	<!-- ============ LE REGISTRE : sidebar + chapitres ============ -->
+	<div class="registre">
+		<aside class="side">
+			<p class="side-title">Banque du Silence</p>
+			<button class="srow" class:active={sel === 'all'} onclick={() => (sel = 'all')}>
+				<span class="s-ico">✦</span>
+				<span class="s-label">Tous</span>
+				<span class="s-count">{cards.length}</span>
+			</button>
+			{#each factions as f (f)}
+				{@const n = byFaction(f).length}
+				<button
+					class="srow"
+					class:active={sel === f}
+					disabled={n === 0}
+					style="--fc: {charter.factions[f].color}"
+					onclick={() => (sel = f)}
+				>
+					<span class="s-ico" style="color: {charter.factions[f].color}"
+						>{charter.factions[f].sigil}</span
 					>
-				</header>
+					<span class="s-label">{charter.factions[f].name}</span>
+					<span class="s-count">{n}</span>
+				</button>
+			{/each}
+		</aside>
 
-				{#if banner}
-					<div class="bandeau" aria-hidden="true">
-						<img src={banner} alt="" />
-					</div>
-				{/if}
+		<div class="content">
+			{#each shown as f (f)}
+				{@const list = byFaction(f)}
+				{@const banner = bannerArt(f)}
+				<section class="chapter" style="--fc: {charter.factions[f].color}">
+					<header class="chapter-head">
+						<span class="index">0{factions.indexOf(f) + 1}</span>
+						<h2>{charter.factions[f].name}</h2>
+						<p class="ftag">{FACTION_TAG[f]}</p>
+						<span class="fcount"
+							>{charter.factions[f].sigil} {list.length} carte{list.length > 1 ? 's' : ''}</span
+						>
+					</header>
 
-				<div class="galerie">
-					{#each entriesFor(f) as e (e.key)}
-						<div class="cell">
-							<Card card={e.card} />
-							<a class="cardlink" href={e.href}>
-								{e.card.name}
-								{#if e.alt}<span class="altchip">Alt {e.alt}</span>{/if}
-							</a>
+					{#if banner}
+						<div class="bandeau" aria-hidden="true">
+							<img src={banner} alt="" />
 						</div>
-					{/each}
-				</div>
-			</section>
-		{/if}
-	{/each}
+					{/if}
+
+					<div class="galerie">
+						{#each entriesFor(f) as e (e.key)}
+							<div class="cell">
+								<Card card={e.card} />
+								<a class="band" href={e.href}>
+									<span class="bname">{e.card.name}</span>
+									<span class="stars" class:prism={e.card.rarity === 'prism'}
+										>{'★'.repeat(STARS[e.card.rarity])}</span
+									>
+									{#if e.alt}<span class="altchip">Alt {e.alt}</span>{/if}
+								</a>
+							</div>
+						{/each}
+					</div>
+				</section>
+			{/each}
+		</div>
+	</div>
 </div>
 
 <style>
@@ -240,7 +268,7 @@
 
 	.hero {
 		position: relative;
-		min-height: 92vh;
+		min-height: 88vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -249,7 +277,6 @@
 		margin: 0 -2rem;
 		overflow: hidden;
 	}
-	/* l'image émerge du noir : masquée sur tous les bords, jamais de cadre */
 	.hero-art {
 		position: absolute;
 		inset: 0;
@@ -264,7 +291,7 @@
 		-webkit-mask-image: radial-gradient(95% 78% at 50% 36%, #000 26%, transparent 76%);
 		mask-image: radial-gradient(95% 78% at 50% 36%, #000 26%, transparent 76%);
 	}
-	/* le hero se fond dans la section suivante — jamais de bord */
+	/* le hero se fond dans la suite — jamais de bord */
 	.hero::after {
 		content: '';
 		position: absolute;
@@ -272,7 +299,7 @@
 		right: 0;
 		bottom: 0;
 		height: 34%;
-		background: linear-gradient(180deg, transparent 0%, rgba(10, 10, 13, 0.6) 55%, #0a0a0d 100%);
+		background: linear-gradient(180deg, transparent 0%, rgba(7, 13, 26, 0.6) 55%, var(--bg) 100%);
 		pointer-events: none;
 	}
 	.hero-inner {
@@ -280,7 +307,6 @@
 		z-index: 2;
 		padding: 0 2rem;
 	}
-	/* voile de lisibilité : le texte reste net même sur les zones claires de l'art */
 	.hero-inner::before {
 		content: '';
 		position: absolute;
@@ -288,8 +314,8 @@
 		z-index: -1;
 		background: radial-gradient(
 			55% 60% at 50% 48%,
-			rgba(7, 7, 10, 0.62) 0%,
-			rgba(7, 7, 10, 0.34) 55%,
+			rgba(5, 8, 16, 0.62) 0%,
+			rgba(5, 8, 16, 0.34) 55%,
 			transparent 80%
 		);
 		pointer-events: none;
@@ -300,7 +326,7 @@
 		font-weight: 600;
 		letter-spacing: 0.34em;
 		text-transform: uppercase;
-		color: rgba(242, 240, 234, 0.5);
+		color: rgba(238, 240, 245, 0.5);
 	}
 	h1 {
 		margin: 0;
@@ -317,13 +343,12 @@
 	.line {
 		display: block;
 	}
-	/* la tagline en escalier — jamais empilée-centrée */
 	.tagline {
 		margin: 2.2rem 0 0;
 		font-family: 'Cormorant Garamond', Georgia, serif;
 		font-size: clamp(1.3rem, 2.6vw, 1.8rem);
 		line-height: 1.35;
-		color: rgba(242, 240, 234, 0.85);
+		color: rgba(238, 240, 245, 0.85);
 		text-shadow: 0 1px 14px rgba(0, 0, 0, 0.7);
 	}
 	.tagline .line {
@@ -339,19 +364,19 @@
 		height: 2px;
 		margin: 3rem auto 0;
 		border-radius: 2px;
-		background: rgba(242, 240, 234, 0.12);
+		background: rgba(238, 240, 245, 0.14);
 		overflow: hidden;
 	}
 	.meter-fill {
 		display: block;
 		height: 100%;
-		background: #c9a445;
+		background: var(--gold);
 	}
 	.meter-label {
 		margin: 0.7rem 0 0;
 		font-size: 0.78rem;
 		font-variant-numeric: tabular-nums;
-		color: rgba(242, 240, 234, 0.4);
+		color: rgba(238, 240, 245, 0.4);
 	}
 	.scrollhint {
 		position: absolute;
@@ -363,7 +388,7 @@
 		font-weight: 600;
 		letter-spacing: 0.4em;
 		text-transform: uppercase;
-		color: rgba(242, 240, 234, 0.35);
+		color: rgba(238, 240, 245, 0.35);
 		animation: breathe 3.2s ease-in-out infinite;
 	}
 	@keyframes breathe {
@@ -376,18 +401,121 @@
 		}
 	}
 
-	/* ============ CHAPITRES ============ */
+	/* ============ REGISTRE : sidebar + contenu ============ */
+
+	.registre {
+		display: grid;
+		grid-template-columns: 220px 1fr;
+		gap: 2.6rem;
+		align-items: start;
+	}
+	@media (max-width: 900px) {
+		.registre {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* ---------- sidebar : filtres façon Banque de Données ---------- */
+	.side {
+		position: sticky;
+		top: 5.4rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 1.1rem 0.9rem;
+		background: var(--panel);
+		border: 1px solid var(--panel-line);
+		border-radius: 18px;
+		backdrop-filter: blur(12px);
+	}
+	@media (max-width: 900px) {
+		.side {
+			position: static;
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+	}
+	.side-title {
+		margin: 0 0 0.6rem;
+		padding: 0 0.6rem;
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.24em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.38);
+	}
+	@media (max-width: 900px) {
+		.side-title {
+			width: 100%;
+		}
+	}
+	.srow {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.6rem 0.8rem;
+		border: 1px solid transparent;
+		border-radius: 12px;
+		background: transparent;
+		font-family: inherit;
+		font-size: 0.88rem;
+		font-weight: 550;
+		color: rgba(238, 240, 245, 0.62);
+		cursor: pointer;
+		text-align: left;
+		transition:
+			background 0.16s ease,
+			color 0.16s ease,
+			border-color 0.16s ease;
+	}
+	.srow:hover:not(:disabled) {
+		background: rgba(140, 170, 220, 0.08);
+		color: var(--ink);
+	}
+	.srow.active {
+		background: rgba(213, 178, 94, 0.1);
+		border-color: rgba(213, 178, 94, 0.4);
+		color: var(--ink);
+	}
+	.srow:disabled {
+		opacity: 0.32;
+		cursor: default;
+	}
+	.s-ico {
+		display: grid;
+		place-items: center;
+		width: 1.7rem;
+		height: 1.7rem;
+		border-radius: 50%;
+		background: rgba(140, 170, 220, 0.08);
+		font-size: 0.85rem;
+		color: var(--gold);
+	}
+	.srow.active .s-ico {
+		background: rgba(213, 178, 94, 0.16);
+	}
+	.s-label {
+		flex: 1;
+	}
+	.s-count {
+		font-size: 0.76rem;
+		font-variant-numeric: tabular-nums;
+		color: rgba(238, 240, 245, 0.4);
+	}
+	.srow.active .s-count {
+		color: var(--gold);
+	}
+
+	/* ---------- chapitres ---------- */
 
 	.chapter {
 		position: relative;
-		/* un écran de noir entre les peuples : le silence entre deux syllabes */
-		padding: 22vh 0 10vh;
+		padding: 4rem 0 6rem;
 	}
-	/* lueur ambiante : la lumière descend sur chaque chapitre, très diffuse */
 	.chapter::before {
 		content: '';
 		position: absolute;
-		top: 8vh;
+		top: 0;
 		left: 50%;
 		transform: translateX(-50%);
 		width: min(900px, 120vw);
@@ -399,58 +527,41 @@
 		);
 		pointer-events: none;
 	}
-	.vlabel {
-		position: absolute;
-		top: 24vh;
-		left: -1.2rem;
-		writing-mode: vertical-rl;
-		font-family: Cinzel, Georgia, serif;
-		font-size: 0.72rem;
-		letter-spacing: 0.5em;
-		text-transform: uppercase;
-		color: rgba(242, 240, 234, 0.22);
-		pointer-events: none;
-	}
-	@media (max-width: 900px) {
-		.vlabel {
-			display: none;
-		}
-	}
 
 	.chapter-head {
 		display: flex;
 		align-items: baseline;
 		gap: 1.4rem;
-		margin-bottom: 3rem;
+		margin-bottom: 2.6rem;
 	}
 	.index {
 		font-size: 0.85rem;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		letter-spacing: 0.2em;
-		color: rgba(242, 240, 234, 0.32);
+		color: rgba(238, 240, 245, 0.32);
 	}
 	.chapter-head h2 {
 		margin: 0;
 		font-family: Cinzel, Georgia, serif;
 		font-weight: 400;
-		font-size: clamp(2rem, 4.5vw, 3.2rem);
+		font-size: clamp(1.9rem, 4vw, 2.9rem);
 		letter-spacing: 0.05em;
-		color: #f2f0ea;
+		color: var(--ink);
 	}
 	.ftag {
 		margin: 0;
 		font-family: 'Cormorant Garamond', Georgia, serif;
 		font-style: italic;
 		font-size: 1.15rem;
-		color: rgba(242, 240, 234, 0.45);
+		color: rgba(238, 240, 245, 0.45);
 	}
 	.fcount {
 		margin-left: auto;
 		font-size: 0.8rem;
 		font-variant-numeric: tabular-nums;
 		color: color-mix(in srgb, var(--fc) 70%, #fff);
-		opacity: 0.7;
+		opacity: 0.75;
 		white-space: nowrap;
 	}
 	@media (max-width: 700px) {
@@ -462,15 +573,14 @@
 		}
 	}
 
-	/* ---------- bandeau letterbox ---------- */
+	/* ---------- bandeau : fondu sur les quatre bords ---------- */
 	.bandeau {
 		position: relative;
-		height: 42vh;
-		min-height: 260px;
-		margin: 0 0 5rem;
+		height: 36vh;
+		min-height: 230px;
+		margin: 0 0 4rem;
 		overflow: hidden;
 	}
-	/* fondu sur les quatre bords : l'image flotte dans le noir, aucun bord net */
 	.bandeau img {
 		width: 100%;
 		height: 130%;
@@ -481,40 +591,73 @@
 		-webkit-mask-image: radial-gradient(100% 86% at 50% 50%, #000 32%, transparent 92%);
 		mask-image: radial-gradient(100% 86% at 50% 50%, #000 32%, transparent 92%);
 	}
-	/* ---------- galerie : grille propre, toutes les cartes à la même taille ---------- */
+
+	/* ---------- galerie : grille propre, cartes à taille unique ---------- */
 
 	.galerie {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-		gap: 3.2rem 1.8rem;
+		grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+		gap: 2.8rem 1.6rem;
 	}
 	.cell {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 1rem;
-		--card-w: min(290px, 100%);
+		gap: 0.8rem;
+		--card-w: min(285px, 100%);
 	}
-	.cardlink {
-		font-size: 0.8rem;
-		font-weight: 550;
-		letter-spacing: 0.01em;
-		text-align: center;
+
+	/* le bandeau de nom : vignette HSR — nom, étoiles de rareté, chip Alt */
+	.band {
+		width: 100%;
+		max-width: 285px;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.55rem 0.9rem;
+		background: var(--panel);
+		border: 1px solid var(--panel-line);
+		border-radius: 12px;
 		text-decoration: none;
-		color: rgba(242, 240, 234, 0.5);
-		transition: color 0.15s ease;
+		transition:
+			border-color 0.18s ease,
+			background 0.18s ease;
 	}
-	.cardlink:hover {
-		color: #f2f0ea;
+	.band:hover {
+		border-color: rgba(213, 178, 94, 0.55);
+		background: rgba(213, 178, 94, 0.07);
+	}
+	.bname {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 0.82rem;
+		font-weight: 550;
+		color: rgba(238, 240, 245, 0.85);
+	}
+	.stars {
+		font-size: 0.68rem;
+		letter-spacing: 0.08em;
+		color: var(--gold);
+		white-space: nowrap;
+	}
+	.stars.prism {
+		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
 	}
 	.altchip {
-		display: inline-block;
-		margin-left: 0.45em;
-		padding: 0.1em 0.55em;
-		font-size: 0.82em;
-		font-weight: 600;
-		color: #0a0a0d;
-		background: #c9a445;
+		flex: none;
+		padding: 0.12em 0.55em;
+		font-size: 0.66rem;
+		font-weight: 650;
+		letter-spacing: 0.06em;
+		color: #171b10;
+		background: linear-gradient(180deg, #f0d68a, var(--gold-deep));
 		border-radius: 999px;
 	}
 </style>

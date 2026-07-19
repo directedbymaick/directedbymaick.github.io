@@ -53,13 +53,19 @@
 <div class="app">
 	<nav>
 		<div class="nav-inner">
-			<a class="brand" href="/">{charter.game.name}</a>
+			<a class="brand" href="/">
+				<span class="emblem" aria-hidden="true">◯</span>
+				<span class="brand-txt">
+					<b>{charter.game.name}</b>
+					<i>Le Silence · Set 01</i>
+				</span>
+			</a>
 			<div class="links">
 				{#each links as l (l.href)}
 					<a href={l.href} class:active={page.url.pathname === l.href}>{l.label}</a>
 				{/each}
 			</div>
-			<span class="setcount">{cards.length}<em>/60</em></span>
+			<span class="setcount">Indexées <b>{cards.length}</b>/60</span>
 		</div>
 	</nav>
 
@@ -67,31 +73,52 @@
 		{@render children()}
 	</main>
 
-	<!-- grain de pellicule : unifie toutes les surfaces, très discret -->
-	<div class="grain" aria-hidden="true"></div>
-
 	<footer>
 		<p>{charter.game.tagline}</p>
 	</footer>
+
+	<span class="uid" aria-hidden="true">UID : KOR-701606888</span>
+
+	<!-- grain de pellicule : unifie toutes les surfaces, très discret -->
+	<div class="grain" aria-hidden="true"></div>
 </div>
 
 <style>
+	:global(:root) {
+		--bg: #070d1a;
+		--bg-2: #0b1528;
+		--panel: rgba(13, 22, 42, 0.62);
+		--panel-line: rgba(140, 170, 220, 0.14);
+		--ink: #eef0f5;
+		--ink-dim: rgba(238, 240, 245, 0.55);
+		--gold: #d5b25e;
+		--gold-deep: #c9a445;
+		--cream: #efe8d8;
+	}
 	:global(html) {
 		scroll-behavior: smooth;
 	}
 	:global(body) {
 		margin: 0;
 		min-height: 100vh;
-		background: #0a0a0d;
-		color: #f2f0ea;
+		color: var(--ink);
 		font-family: 'Inter Variable', Inter, system-ui, sans-serif;
 		font-size: 1rem;
 		-webkit-font-smoothing: antialiased;
 		text-rendering: optimizeLegibility;
+		/* le cosmos HSR : nébuleuses bleues sur nuit profonde, étoiles fixes */
+		background:
+			url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 900'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='40' cy='120' r='1.1' opacity='.55'/%3E%3Ccircle cx='190' cy='60' r='.8' opacity='.4'/%3E%3Ccircle cx='330' cy='210' r='1.3' opacity='.6'/%3E%3Ccircle cx='520' cy='90' r='.9' opacity='.35'/%3E%3Ccircle cx='700' cy='160' r='1.1' opacity='.5'/%3E%3Ccircle cx='840' cy='40' r='.8' opacity='.4'/%3E%3Ccircle cx='90' cy='330' r='.9' opacity='.4'/%3E%3Ccircle cx='260' cy='420' r='1.2' opacity='.55'/%3E%3Ccircle cx='450' cy='300' r='.8' opacity='.3'/%3E%3Ccircle cx='620' cy='380' r='1.4' opacity='.6'/%3E%3Ccircle cx='790' cy='300' r='.9' opacity='.4'/%3E%3Ccircle cx='150' cy='560' r='1.2' opacity='.5'/%3E%3Ccircle cx='360' cy='620' r='.8' opacity='.35'/%3E%3Ccircle cx='540' cy='540' r='1.1' opacity='.55'/%3E%3Ccircle cx='730' cy='600' r='.9' opacity='.4'/%3E%3Ccircle cx='860' cy='500' r='1.2' opacity='.5'/%3E%3Ccircle cx='60' cy='760' r='.9' opacity='.4'/%3E%3Ccircle cx='240' cy='840' r='1.3' opacity='.55'/%3E%3Ccircle cx='430' cy='780' r='.8' opacity='.35'/%3E%3Ccircle cx='610' cy='860' r='1.1' opacity='.5'/%3E%3Ccircle cx='800' cy='760' r='.9' opacity='.4'/%3E%3C/g%3E%3Cg fill='%23d5b25e'%3E%3Ccircle cx='470' cy='170' r='1.2' opacity='.5'/%3E%3Ccircle cx='120' cy='470' r='1' opacity='.45'/%3E%3Ccircle cx='690' cy='470' r='1.2' opacity='.4'/%3E%3Ccircle cx='320' cy='740' r='1' opacity='.45'/%3E%3C/g%3E%3C/svg%3E")
+				repeat,
+			radial-gradient(60% 45% at 18% 8%, rgba(38, 70, 130, 0.4), transparent 65%),
+			radial-gradient(55% 40% at 85% 30%, rgba(24, 52, 105, 0.35), transparent 65%),
+			radial-gradient(70% 50% at 50% 100%, rgba(16, 34, 70, 0.45), transparent 70%),
+			linear-gradient(180deg, #050a14 0%, var(--bg) 40%, #081020 100%);
+		background-attachment: fixed;
 	}
 	:global(::selection) {
-		background: rgba(201, 164, 69, 0.9);
-		color: #0a0a0d;
+		background: rgba(213, 178, 94, 0.9);
+		color: #081020;
 	}
 	:global(a) {
 		color: inherit;
@@ -103,68 +130,102 @@
 		min-height: 100vh;
 	}
 
-	/* ---------- nav : verre dépoli, fixe ---------- */
+	/* ---------- nav : barre de jeu, verre bleuté ---------- */
 	nav {
 		position: sticky;
 		top: 0;
 		z-index: 100;
-		background: rgba(10, 10, 13, 0.72);
-		backdrop-filter: blur(20px) saturate(1.6);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(7, 12, 24, 0.7);
+		backdrop-filter: blur(18px) saturate(1.5);
+		border-bottom: 1px solid rgba(140, 170, 220, 0.12);
 	}
 	.nav-inner {
-		max-width: 1240px;
+		max-width: 1280px;
 		margin: 0 auto;
 		padding: 0 2rem;
-		height: 3.4rem;
+		height: 3.9rem;
 		display: flex;
 		align-items: center;
-		gap: 2.4rem;
+		gap: 2rem;
 	}
 	.brand {
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
 		text-decoration: none;
+	}
+	.emblem {
+		display: grid;
+		place-items: center;
+		width: 2.1rem;
+		height: 2.1rem;
+		border-radius: 50%;
+		border: 1px solid rgba(213, 178, 94, 0.55);
+		color: var(--gold);
+		font-size: 1rem;
+		background: radial-gradient(120% 120% at 50% 0%, rgba(213, 178, 94, 0.16), transparent 65%);
+		box-shadow: 0 0 14px rgba(213, 178, 94, 0.2);
+	}
+	.brand-txt {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.15;
+	}
+	.brand-txt b {
 		font-family: Cinzel, Georgia, serif;
 		font-weight: 700;
-		font-size: 0.95rem;
-		letter-spacing: 0.3em;
-		color: #f2f0ea;
+		font-size: 0.92rem;
+		letter-spacing: 0.26em;
+		color: var(--ink);
+	}
+	.brand-txt i {
+		font-style: normal;
+		font-size: 0.66rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.42);
 	}
 	.links {
 		display: flex;
-		gap: 1.8rem;
-		margin-left: 0.6rem;
+		gap: 0.4rem;
+		margin-left: 1rem;
 	}
 	.links a {
 		text-decoration: none;
-		font-size: 0.82rem;
-		font-weight: 500;
-		letter-spacing: 0.01em;
-		color: rgba(242, 240, 234, 0.55);
-		transition: color 0.18s ease;
+		font-size: 0.84rem;
+		font-weight: 550;
+		padding: 0.42rem 1rem;
+		border-radius: 999px;
+		color: rgba(238, 240, 245, 0.6);
+		transition:
+			color 0.18s ease,
+			background 0.18s ease;
 	}
 	.links a:hover {
-		color: rgba(242, 240, 234, 0.85);
+		color: var(--ink);
+		background: rgba(140, 170, 220, 0.1);
 	}
+	/* l'onglet actif : pill crème, texte nuit — le code HSR */
 	.links a.active {
-		color: #f2f0ea;
+		color: #171b10;
+		background: var(--cream);
+		box-shadow: 0 0 16px rgba(213, 178, 94, 0.25);
 	}
 	.setcount {
 		margin-left: auto;
 		font-size: 0.82rem;
-		font-weight: 600;
 		font-variant-numeric: tabular-nums;
-		color: #c9a445;
+		color: rgba(238, 240, 245, 0.5);
 	}
-	.setcount em {
-		font-style: normal;
-		font-weight: 400;
-		color: rgba(242, 240, 234, 0.35);
+	.setcount b {
+		font-weight: 650;
+		color: var(--gold);
 	}
 
 	main {
 		flex: 1;
 		width: 100%;
-		max-width: 1240px;
+		max-width: 1280px;
 		margin: 0 auto;
 		padding: 0 2rem 4rem;
 		box-sizing: border-box;
@@ -175,16 +236,33 @@
 		inset: 0;
 		z-index: 200;
 		pointer-events: none;
-		opacity: 0.05;
+		opacity: 0.045;
 		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 		background-size: 240px 240px;
+	}
+
+	/* l'estampille UID, comme en jeu */
+	.uid {
+		position: fixed;
+		left: 1.1rem;
+		bottom: 0.9rem;
+		z-index: 150;
+		font-size: 0.68rem;
+		letter-spacing: 0.08em;
+		font-variant-numeric: tabular-nums;
+		color: rgba(238, 240, 245, 0.3);
+		pointer-events: none;
+	}
+	@media (max-width: 700px) {
+		.uid {
+			display: none;
+		}
 	}
 
 	footer {
 		position: relative;
 		padding: 5rem 2rem 3rem;
 	}
-	/* jamais de coupure nette : le footer se fond dans la page */
 	footer::before {
 		content: '';
 		position: absolute;
@@ -192,15 +270,15 @@
 		left: 20%;
 		right: 20%;
 		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(201, 164, 69, 0.35), transparent);
+		background: linear-gradient(90deg, transparent, rgba(213, 178, 94, 0.4), transparent);
 	}
 	footer p {
-		max-width: 1240px;
+		max-width: 1280px;
 		margin: 0 auto;
 		text-align: center;
 		font-family: 'Cormorant Garamond', Georgia, serif;
 		font-style: italic;
 		font-size: 1.05rem;
-		color: rgba(242, 240, 234, 0.4);
+		color: rgba(238, 240, 245, 0.42);
 	}
 </style>
