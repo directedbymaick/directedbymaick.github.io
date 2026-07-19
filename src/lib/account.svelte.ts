@@ -6,7 +6,7 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '$lib/supabase';
 import {
 	setCurrentEmail,
-	applySave,
+	applyCloud,
 	pushCloudNow,
 	migrateGuestToNamespace
 } from '$lib/store';
@@ -37,7 +37,7 @@ function applyAuth(s: Session | null): void {
 	session.ready = true;
 	if (s && acc) {
 		const cloud = s.user.user_metadata?.save;
-		if (cloud && typeof cloud === 'object') applySave(cloud as Record<string, string | null>);
+		if (cloud && typeof cloud === 'object') applyCloud(cloud as Record<string, string | null>);
 	}
 }
 
@@ -67,7 +67,7 @@ async function afterAuth(): Promise<void> {
 	const cloud = user.user_metadata?.save;
 	const hasCloud = cloud && typeof cloud === 'object' && Object.keys(cloud).length > 0;
 	if (hasCloud) {
-		applySave(cloud as Record<string, string | null>);
+		applyCloud(cloud as Record<string, string | null>);
 	} else {
 		migrateGuestToNamespace(email);
 		await pushCloudNow();

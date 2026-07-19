@@ -54,22 +54,57 @@ export function migrateGuestToNamespace(email: string): void {
 
 /* ---------------------------- sauvegarde cloud ---------------------------- */
 
-type Save = Record<string, string | null>;
+/**
+ * Sync par version : chaque modification locale incrémente un compteur `rev`
+ * (namespacé, persistant). Le bloc poussé au cloud embarque cette version.
+ * Au retour du cloud, on n'écrase le local QUE si le cloud est au moins aussi
+ * récent — sinon on garde le local (modif non encore poussée) et on resynchro-
+ * nise vers le haut. Résultat : rien de supprimé ou gagné ne « revient ».
+ */
+type Save = Record<string, string | null | number>;
 
-/** Rassemble les données locales du joueur (namespacées) en un bloc. */
+const REV = 'expelled-rev';
+
+function localRev(): number {
+	if (typeof localStorage === 'undefined') return 0;
+	return Number(localStorage.getItem(nsKey(REV)) ?? '0') || 0;
+}
+function setLocalRev(n: number): void {
+	if (typeof localStorage === 'undefined') return;
+	localStorage.setItem(nsKey(REV), String(n));
+}
+
+/** Rassemble les données locales du joueur (namespacées) + la version. */
 export function gatherSave(): Save {
-	const save: Save = {};
+	const save: Save = { __ver: localRev() };
 	for (const k of PLAYER_KEYS) save[k] = localStorage.getItem(nsKey(k));
 	return save;
 }
 
-/** Écrit un bloc de sauvegarde dans les clés locales namespacées. */
-export function applySave(save: Save | null | undefined): void {
-	if (!save) return;
+/** Écrit un bloc dans les clés locales namespacées (sans logique de version). */
+function writeSave(save: Save): void {
 	for (const k of PLAYER_KEYS) {
 		const v = save[k];
 		if (typeof v === 'string') localStorage.setItem(nsKey(k), v);
 	}
+}
+
+/**
+ * Applique un bloc cloud au local, protégé par la version.
+ * - cloud ≥ local : le cloud fait foi → on écrit et on adopte sa version.
+ * - cloud < local : le local a des modifs non poussées → on le garde et on
+ *   planifie une remontée. Renvoie true si le cloud a été appliqué.
+ */
+export function applyCloud(save: Save | null | undefined): boolean {
+	if (!save) return false;
+	const cloudVer = Number(save.__ver ?? 0) || 0;
+	if (cloudVer >= localRev()) {
+		writeSave(save);
+		setLocalRev(cloudVer);
+		return true;
+	}
+	scheduleCloudSync(); // le local est plus récent : on le fait remonter
+	return false;
 }
 
 /** Pousse le bloc local vers le compte Supabase (débounce). */
@@ -77,8 +112,9 @@ let syncTimer: ReturnType<typeof setTimeout> | undefined;
 export function scheduleCloudSync(): void {
 	if (typeof localStorage === 'undefined') return;
 	if (!currentEmail()) return; // invité : rien à synchroniser
+	setLocalRev(localRev() + 1); // marque le local comme plus récent
 	clearTimeout(syncTimer);
-	syncTimer = setTimeout(pushCloudNow, 1500);
+	syncTimer = setTimeout(pushCloudNow, 1200);
 }
 
 export async function pushCloudNow(): Promise<void> {

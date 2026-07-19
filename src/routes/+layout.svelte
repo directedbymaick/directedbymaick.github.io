@@ -6,6 +6,7 @@
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
 	import { session, initSession, signOut } from '$lib/account.svelte';
+	import { pushCloudNow } from '$lib/store';
 	import AuthPanel from '$lib/AuthPanel.svelte';
 	import MailPanel from '$lib/MailPanel.svelte';
 	import { initMail, unreadCountFor } from '$lib/mail.svelte';
@@ -65,6 +66,13 @@
 		initSession();
 		initEconomy();
 		initMail();
+		// ceinture de sécurité : pousser la sauvegarde avant de quitter/masquer l'onglet
+		const flush = () => {
+			if (document.visibilityState === 'hidden') pushCloudNow();
+		};
+		addEventListener('visibilitychange', flush);
+		addEventListener('pagehide', () => pushCloudNow());
+		return () => removeEventListener('visibilitychange', flush);
 	});
 
 	// recharge le courrier dès que le compte est prêt / change de compte
