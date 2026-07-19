@@ -1,14 +1,23 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { altView } from '$lib/cards';
+	import { loadCollection } from '$lib/gacha';
 	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
 	const card = $derived(data.card);
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const faction = $derived(charter.factions[card.faction]);
+
+	/* la Full Art n'est proposée que si le joueur l'a tirée */
+	let collection = $state<Record<string, number>>({});
+	onMount(() => {
+		collection = loadCollection();
+	});
+	const ownsFullArt = $derived((collection[`${card.id}--fullart`] ?? 0) > 0);
 
 	/** Choix de l'artwork : base ou versions alternatives (toujours foil). */
 	interface ArtOption {
@@ -23,34 +32,22 @@
 		view.gene.foilPreset = 'prism';
 		return view;
 	}
-	const hasFullArt = $derived(
-		card.fullArt || card.rarity === 'prism' || card.rarity === 'legendary' || card.rarity === 'epic'
-	);
 	const artOptions: ArtOption[] = $derived([
 		{ key: 'base', label: 'Standard', view: card },
-		...(hasFullArt ? [{ key: 'fullart', label: 'Full Art · Auréole', view: fullArtView(card) }] : []),
+		...(ownsFullArt ? [{ key: 'fullart', label: 'Full Art · Auréole', view: fullArtView(card) }] : []),
 		...(card.alts ?? []).flatMap((art, i) => [
 			{
 				key: `alt${i + 2}`,
 				label: `Alt ${i + 1}`,
 				view: altView(card, art, i)
-			},
-			// chaque alt éligible a aussi sa version full art — le chase du chase
-			...(hasFullArt
-				? [
-						{
-							key: `alt${i + 2}full`,
-							label: `Alt ${i + 1} · Full Art`,
-							view: fullArtView(altView(card, art, i))
-						}
-					]
-				: [])
+			}
 		])
 	]);
 
 	let artSel = $state('base');
 	$effect(() => {
 		card.id; // reset à chaque navigation de carte
+		artOptions; // ré-applique quand la Full Art devient disponible (collection chargée)
 		const v = new URLSearchParams(location.search).get('v');
 		artSel = v && artOptions.some((o) => o.key === v) ? v : 'base';
 	});

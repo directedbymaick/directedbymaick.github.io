@@ -5,7 +5,7 @@
 	import logo from '$lib/assets/logo.svg';
 	import { cards, getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import { loadCollection, saveCollection, collectionStats } from '$lib/gacha';
+	import { loadCollection, saveCollection, collectionStats, fullArtView } from '$lib/gacha';
 	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
 	import {
 		eco,
@@ -68,6 +68,38 @@
 			)
 	);
 
+	/** Entrées de la grille : chaque carte de base, suivie de sa Full Art
+	 *  UNIQUEMENT si elle a été tirée. Les doublons gardent l'affichage ×n. */
+	interface ColEntry {
+		key: string;
+		id: string; // clé dans la collection (base ou <id>--fullart)
+		view: CardData;
+		fullArt: boolean;
+		base: CardData;
+	}
+	const collectionEntries = $derived<ColEntry[]>(
+		pool.flatMap((c) => {
+			const out: ColEntry[] = [{ key: c.id, id: c.id, view: c, fullArt: false, base: c }];
+			if ((collection[`${c.id}--fullart`] ?? 0) > 0)
+				out.push({
+					key: `${c.id}--fullart`,
+					id: `${c.id}--fullart`,
+					view: fullArtView(c),
+					fullArt: true,
+					base: c
+				});
+			return out;
+		})
+	);
+
+	/** Toutes les vues « vendables » : cartes de base + Full Art possédées. */
+	const sellableViews = $derived<CardData[]>([
+		...cards,
+		...cards
+			.filter((c) => (collection[`${c.id}--fullart`] ?? 0) > 0)
+			.map((c) => fullArtView(c))
+	]);
+
 	const deckRows = $derived(
 		cur
 			? Object.entries(cur.cards)
@@ -127,9 +159,9 @@
 	function surplusOf(c: CardData): number {
 		return Math.max(0, (collection[c.id] ?? 0) - SELL_KEEP);
 	}
-	const surplusCount = $derived(cards.reduce((s, c) => s + surplusOf(c), 0));
+	const surplusCount = $derived(sellableViews.reduce((s, c) => s + surplusOf(c), 0));
 	const surplusValue = $derived(
-		cards.reduce((s, c) => s + surplusOf(c) * (SELL_VALUE[c.rarity] ?? 5), 0)
+		sellableViews.reduce((s, c) => s + surplusOf(c) * (SELL_VALUE[c.rarity] ?? 5), 0)
 	);
 	function sellSurplus(c: CardData) {
 		const n = surplusOf(c);
@@ -142,7 +174,7 @@
 	function sellAllSurplus() {
 		let total = 0;
 		let count = 0;
-		for (const c of cards) {
+		for (const c of sellableViews) {
 			const n = surplusOf(c);
 			if (n <= 0) continue;
 			collection[c.id] = SELL_KEEP;
@@ -339,24 +371,30 @@
 	{/if}
 
 	<div class="colgrid">
-		{#each pool as c (c.id)}
-			{@const owned = collection[c.id] ?? 0}
-			<div class="colcell" class:missing={owned === 0}>
-				<a href="/card/{c.id}" aria-label={c.name}>
-					<Card card={c} interactive={owned > 0} />
+		{#each collectionEntries as e (e.key)}
+			{@const owned = collection[e.id] ?? 0}
+			<div class="colcell" class:missing={owned === 0} class:fa={e.fullArt}>
+				<a
+					href="/card/{e.base.id}{e.fullArt ? '?v=fullart' : ''}"
+					aria-label="{e.base.name}{e.fullArt ? ' — Full Art' : ''}"
+				>
+					<Card card={e.view} fullArt={e.fullArt} interactive={owned > 0} />
 				</a>
+				{#if e.fullArt}
+					<span class="fabadge">Full Art</span>
+				{/if}
 				{#if owned > 0}
 					<span class="owncount">×{owned}</span>
 				{:else}
 					<span class="lock">Non possédée</span>
 				{/if}
-				{#if surplusOf(c) > 0}
+				{#if surplusOf(e.view) > 0}
 					<button
 						class="sellbtn"
 						title="Revendre les copies au-delà de 3"
-						onclick={() => sellSurplus(c)}
+						onclick={() => sellSurplus(e.view)}
 					>
-						Revendre ×{surplusOf(c)} · +{surplusOf(c) * (SELL_VALUE[c.rarity] ?? 5)}
+						Revendre ×{surplusOf(e.view)} · +{surplusOf(e.view) * (SELL_VALUE[e.view.rarity] ?? 5)}
 						<i class="shard" aria-hidden="true"></i>
 					</button>
 				{/if}
@@ -1121,6 +1159,20 @@
 	.colcell.missing {
 		filter: grayscale(0.9) brightness(0.55);
 		opacity: 0.75;
+	}
+	.fabadge {
+		position: absolute;
+		top: -0.5rem;
+		left: 0.4rem;
+		z-index: 5;
+		padding: 0.15rem 0.6rem;
+		font-size: 0.66rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		color: #171b10;
+		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
+		border-radius: 999px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 	}
 	.owncount {
 		position: absolute;
