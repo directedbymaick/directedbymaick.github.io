@@ -17,6 +17,7 @@
 		type Pull
 	} from '$lib/gacha';
 	import type { Rarity } from '$lib/types';
+	import { eco, initEconomy, spend, track, PACK_PRICE } from '$lib/economy.svelte';
 
 	type Stage = 'idle' | 'reveal' | 'recap';
 	/** Palier d'effets du reveal : la rareté, ou 'fullart' — le cran au-dessus de tout. */
@@ -52,6 +53,7 @@
 	let fxCanvas: HTMLCanvasElement | undefined = $state();
 	let reduced = false;
 	onMount(() => {
+		initEconomy();
 		pending = openPack();
 		reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (!reduced) {
@@ -125,8 +127,14 @@
 		return `--rot: ${(off * 4.5).toFixed(1)}deg; --ty: ${(off * off * 9).toFixed(0)}px`;
 	}
 
+	const canAfford = $derived(eco.balance >= PACK_PRICE);
+
 	async function onTorn() {
+		// le booster se paye en Éclats — dernier garde-fou si l'UI a laissé passer
+		if (!spend(PACK_PRICE)) return;
+		track('packOpened');
 		pulls = pending.length ? pending : openPack();
+		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
 		collection = { ...collection };
 		flipped = pulls.map(() => false);
@@ -257,9 +265,23 @@
 	</div>
 	{#if stage === 'idle'}
 		<div class="stage-inner">
-			<p class="hint">⠿ Tire la languette pour ouvrir</p>
-			<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW[bestTier]} prisma={packPrisma} />
-			<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
+			<p class="price">
+				<i class="shard" aria-hidden="true"></i> Booster — <b>{PACK_PRICE}</b> Éclats · solde
+				<b>{eco.balance}</b>
+			</p>
+			{#if canAfford}
+				<p class="hint">⠿ Tire la languette pour ouvrir</p>
+				<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW[bestTier]} prisma={packPrisma} />
+				<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
+			{:else}
+				<div class="broke-pack">
+					<PackVisual glow={TIER_GLOW[bestTier]} prisma={false} />
+				</div>
+				<p class="broke">
+					Éclats insuffisants — gagnez-en en <a href="/arene">Arène</a> et via vos
+					<a href="/profil">quêtes</a>.
+				</p>
+			{/if}
 		</div>
 	{:else if stage === 'reveal'}
 		<div class="stage-inner">
@@ -529,6 +551,39 @@
 		text-transform: uppercase;
 		color: rgba(201, 164, 69, 0.8);
 		animation: pulse 2.4s ease-in-out infinite;
+	}
+	.price {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0;
+		font-size: 0.9rem;
+		color: rgba(238, 240, 245, 0.6);
+	}
+	.price b {
+		color: #d5b25e;
+		font-variant-numeric: tabular-nums;
+	}
+	.shard {
+		display: inline-block;
+		width: 0.62rem;
+		height: 0.62rem;
+		rotate: 45deg;
+		border-radius: 2px;
+		background: linear-gradient(135deg, #f2d98a, #a97f2c);
+		box-shadow: 0 0 8px rgba(213, 178, 94, 0.5);
+	}
+	.broke-pack {
+		filter: grayscale(0.8) brightness(0.55);
+		pointer-events: none;
+	}
+	.broke {
+		margin: 0;
+		font-size: 0.9rem;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.broke a {
+		color: #d5b25e;
 	}
 	@keyframes pulse {
 		0%,

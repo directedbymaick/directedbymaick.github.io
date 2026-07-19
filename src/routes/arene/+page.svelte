@@ -6,6 +6,7 @@
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
 	import { loadDecks, type Deck } from '$lib/decks';
+	import { initEconomy, earn, track, MATCH_REWARD } from '$lib/economy.svelte';
 	import {
 		Duel,
 		MAJORS,
@@ -26,6 +27,7 @@
 	let aiFaction = $state<FactionId>('exar');
 
 	onMount(() => {
+		initEconomy();
 		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
 	});
 
@@ -60,6 +62,21 @@
 
 	const myTurn = $derived(!!meta && meta.active === 0 && meta.winner === null && !replaying);
 	const winner = $derived(meta?.winner ?? null);
+
+	/* récompense de fin de partie : une seule fois par duel */
+	let rewarded = $state(false);
+	const gainAmount = $derived(winner === 0 ? MATCH_REWARD.win : MATCH_REWARD.loss);
+	$effect(() => {
+		if (winner === null || rewarded || phase !== 'play') return;
+		rewarded = true;
+		if (winner === 0) {
+			earn(MATCH_REWARD.win, 'Victoire en Arène');
+			track('win');
+		} else {
+			earn(MATCH_REWARD.loss, 'Défaite honorable');
+			track('loss');
+		}
+	});
 
 	function refresh() {
 		if (!duel) return;
@@ -109,6 +126,7 @@
 	}
 
 	function start() {
+		rewarded = false;
 		const seed = Math.floor(Math.random() * 1e9);
 		let humanDeck: CardData[] | null = null;
 		let humanFaction: FactionId = 'vasar';
@@ -132,6 +150,7 @@
 	async function doPlay(i: number) {
 		if (!duel || !myTurn) return;
 		if (!duel.play(i)) return;
+		track('cardPlayed');
 		sel = null;
 		replaying = true;
 		await pump(true);
@@ -169,6 +188,7 @@
 		if (!duel || !myTurn) return;
 		sel = null;
 		if (!duel.pronounce(uid)) return;
+		track('prononcer');
 		replaying = true;
 		await pump(true);
 		replaying = false;
@@ -509,6 +529,7 @@
 					{winner === 0 ? 'Le Korum adverse se tait.' : winner === 1 ? 'Votre Korum se tait.' : 'Double chute.'}
 				</h2>
 				<p>{winner === 0 ? 'Victoire — votre parole tient.' : winner === 1 ? 'Défaite — l’Arène retiendra votre nom.' : 'Match nul.'}</p>
+				<p class="gain"><i class="shard" aria-hidden="true"></i> +{gainAmount} Éclats</p>
 				<button class="startbtn" onclick={rematch}>Rejouer</button>
 			</div>
 		{/if}
@@ -1244,6 +1265,25 @@
 	.endveil p {
 		margin: 0;
 		color: rgba(238, 240, 245, 0.6);
+	}
+	.endveil .gain {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.4rem;
+		font-size: 1.05rem;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		color: #d5b25e;
+	}
+	.shard {
+		display: inline-block;
+		width: 0.62rem;
+		height: 0.62rem;
+		rotate: 45deg;
+		border-radius: 2px;
+		background: linear-gradient(135deg, #f2d98a, #a97f2c);
+		box-shadow: 0 0 8px rgba(213, 178, 94, 0.5);
 	}
 	.endveil .startbtn {
 		width: auto;

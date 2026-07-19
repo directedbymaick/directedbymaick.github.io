@@ -8,6 +8,17 @@
 	import { loadCollection, collectionStats } from '$lib/gacha';
 	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
 	import {
+		eco,
+		initEconomy,
+		DAILY,
+		WEEKLY,
+		ACHIEVEMENTS,
+		questProgress,
+		claimQuest,
+		claimAchievement,
+		type AchContext
+	} from '$lib/economy.svelte';
+	import {
 		type Deck,
 		DECK_SIZE,
 		loadDecks,
@@ -30,7 +41,7 @@
 	let collection = $state<Record<string, number>>({});
 	let decks = $state<Deck[]>([]);
 
-	let tab = $state<'collection' | 'decks'>('collection');
+	let tab = $state<'collection' | 'decks' | 'quetes' | 'succes'>('collection');
 	let editId = $state<string | null>(null);
 	const cur = $derived(decks.find((d) => d.id === editId) ?? null);
 
@@ -70,8 +81,28 @@
 	let gmail = $state('');
 	let gerr = $state('');
 
+	/* contexte des succès + compteur de récompenses réclamables */
+	const achCtx = $derived<AchContext>({
+		uniques: stats.unique,
+		setSize: cards.length,
+		fullDecks: decks.filter((d) => deckSize(d) === 30).length
+	});
+	const claimable = $derived(
+		DAILY.filter((q) => {
+			const st = questProgress('daily', q.id);
+			return !st.claimed && st.p >= q.n;
+		}).length +
+			WEEKLY.filter((q) => {
+				const st = questProgress('weekly', q.id);
+				return !st.claimed && st.p >= q.n;
+			}).length +
+			ACHIEVEMENTS.filter((a) => !(eco.ach[a.id]?.claimed ?? false) && a.check(eco.stats, achCtx))
+				.length
+	);
+
 	onMount(() => {
 		initSession();
+		initEconomy();
 		collection = loadCollection();
 		decks = loadDecks();
 		pseudo = localStorage.getItem('expelled-pseudo') ?? 'Sans-Nom';
@@ -171,10 +202,11 @@
 			<p class="sub">{account.email} · Niveau d'Équilibre 0</p>
 		</div>
 		<div class="chips">
-			<span class="chip"><b>30</b> Intégrité</span>
+			<span class="chip gold"><i class="shard" aria-hidden="true"></i><b>{eco.balance}</b> Éclats</span>
 			<span class="chip"><b>{stats.unique}</b>/{cards.length} uniques</span>
 			<span class="chip"><b>{stats.total}</b> tirées</span>
 			<span class="chip"><b>{decks.length}</b> deck{decks.length > 1 ? 's' : ''}</span>
+			<span class="chip"><b>{eco.stats.wins}</b> victoire{eco.stats.wins > 1 ? 's' : ''}</span>
 			<button class="outbtn" onclick={logout}>Se déconnecter</button>
 		</div>
 	</header>
@@ -195,6 +227,21 @@
 			tab = 'decks';
 			editId = null;
 		}}>Decks</button
+	>
+	<button
+		role="tab"
+		aria-selected={tab === 'quetes'}
+		class:active={tab === 'quetes'}
+		onclick={() => (tab = 'quetes')}
+	>
+		Quêtes{#if claimable > 0}<i class="claimdot" title="{claimable} récompense(s) à réclamer"
+			></i>{/if}
+	</button>
+	<button
+		role="tab"
+		aria-selected={tab === 'succes'}
+		class:active={tab === 'succes'}
+		onclick={() => (tab = 'succes')}>Succès</button
 	>
 </div>
 
@@ -235,6 +282,81 @@
 				{/if}
 			</div>
 		{/each}
+	</div>
+{:else if tab === 'quetes'}
+	<!-- ============ QUÊTES ============ -->
+	<div class="qwrap">
+		<section class="qgroup">
+			<h3>Journalières <small>— remises à zéro chaque jour</small></h3>
+			{#each DAILY as q (q.id)}
+				{@const st = questProgress('daily', q.id)}
+				<div class="qrow" class:claimed={st.claimed}>
+					<div class="qinfo">
+						<p class="qlabel">{q.label}</p>
+						<div class="qbar"><i style="width: {Math.min(100, (st.p / q.n) * 100)}%"></i></div>
+					</div>
+					<span class="qcount">{Math.min(st.p, q.n)}/{q.n}</span>
+					<span class="qreward"><i class="shard" aria-hidden="true"></i>{q.reward}</span>
+					{#if st.claimed}
+						<span class="qdone" title="Réclamé">✓</span>
+					{:else}
+						<button class="qclaim" disabled={st.p < q.n} onclick={() => claimQuest('daily', q.id)}
+							>Réclamer</button
+						>
+					{/if}
+				</div>
+			{/each}
+		</section>
+		<section class="qgroup">
+			<h3>Hebdomadaires <small>— remises à zéro chaque semaine</small></h3>
+			{#each WEEKLY as q (q.id)}
+				{@const st = questProgress('weekly', q.id)}
+				<div class="qrow" class:claimed={st.claimed}>
+					<div class="qinfo">
+						<p class="qlabel">{q.label}</p>
+						<div class="qbar"><i style="width: {Math.min(100, (st.p / q.n) * 100)}%"></i></div>
+					</div>
+					<span class="qcount">{Math.min(st.p, q.n)}/{q.n}</span>
+					<span class="qreward"><i class="shard" aria-hidden="true"></i>{q.reward}</span>
+					{#if st.claimed}
+						<span class="qdone" title="Réclamé">✓</span>
+					{:else}
+						<button class="qclaim" disabled={st.p < q.n} onclick={() => claimQuest('weekly', q.id)}
+							>Réclamer</button
+						>
+					{/if}
+				</div>
+			{/each}
+		</section>
+		<p class="qnote">
+			Les Éclats se gagnent aussi à chaque partie d'<a href="/arene">Arène</a> — victoire ou
+			défaite.
+		</p>
+	</div>
+{:else if tab === 'succes'}
+	<!-- ============ LIVRE DE SUCCÈS ============ -->
+	<div class="qwrap">
+		<section class="qgroup">
+			<h3>Livre de succès <small>— accomplissements permanents</small></h3>
+			{#each ACHIEVEMENTS as a (a.id)}
+				{@const done = a.check(eco.stats, achCtx)}
+				{@const isClaimed = eco.ach[a.id]?.claimed ?? false}
+				<div class="qrow" class:claimed={isClaimed}>
+					<div class="qinfo">
+						<p class="qlabel">{a.label}</p>
+						<p class="qdesc">{a.desc}</p>
+					</div>
+					<span class="qreward"><i class="shard" aria-hidden="true"></i>{a.reward}</span>
+					{#if isClaimed}
+						<span class="qdone" title="Réclamé">✓</span>
+					{:else}
+						<button class="qclaim" disabled={!done} onclick={() => claimAchievement(a.id, achCtx)}
+							>Réclamer</button
+						>
+					{/if}
+				</div>
+			{/each}
+		</section>
 	</div>
 {:else if !cur}
 	<!-- ============ LISTE DES DECKS ============ -->
@@ -445,6 +567,146 @@
 		line-height: 1.45;
 		color: rgba(238, 240, 245, 0.32);
 	}
+	/* ---------- Éclats / quêtes / succès ---------- */
+	.chip.gold {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		border-color: rgba(213, 178, 94, 0.4);
+		background: rgba(213, 178, 94, 0.08);
+	}
+	.shard {
+		display: inline-block;
+		width: 0.6rem;
+		height: 0.6rem;
+		rotate: 45deg;
+		border-radius: 2px;
+		background: linear-gradient(135deg, #f2d98a, #a97f2c);
+		box-shadow: 0 0 8px rgba(213, 178, 94, 0.5);
+	}
+	.claimdot {
+		display: inline-block;
+		width: 0.5rem;
+		height: 0.5rem;
+		margin-left: 0.4rem;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 30%, #f2d98a, #c9a445);
+		box-shadow: 0 0 8px rgba(213, 178, 94, 0.8);
+		vertical-align: middle;
+	}
+	.qwrap {
+		display: flex;
+		flex-direction: column;
+		gap: 1.6rem;
+		max-width: 760px;
+	}
+	.qgroup {
+		padding: 1.3rem 1.4rem;
+		background: var(--panel);
+		border: 1px solid var(--panel-line);
+		border-radius: 16px;
+		backdrop-filter: blur(10px);
+	}
+	.qgroup h3 {
+		margin: 0 0 1rem;
+		font-size: 0.98rem;
+		font-weight: 650;
+	}
+	.qgroup h3 small {
+		font-weight: 450;
+		font-size: 0.76rem;
+		color: rgba(238, 240, 245, 0.4);
+	}
+	.qrow {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.7rem 0.2rem;
+		border-top: 1px solid rgba(140, 170, 220, 0.08);
+	}
+	.qrow.claimed {
+		opacity: 0.55;
+	}
+	.qinfo {
+		flex: 1;
+		min-width: 0;
+	}
+	.qlabel {
+		margin: 0 0 0.35rem;
+		font-size: 0.9rem;
+		font-weight: 550;
+	}
+	.qdesc {
+		margin: 0;
+		font-size: 0.78rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
+	.qbar {
+		height: 4px;
+		border-radius: 2px;
+		background: rgba(140, 170, 220, 0.12);
+		overflow: hidden;
+	}
+	.qbar i {
+		display: block;
+		height: 100%;
+		border-radius: 2px;
+		background: linear-gradient(90deg, #f2d98a, #c9a445);
+		transition: width 0.3s ease;
+	}
+	.qcount {
+		font-size: 0.78rem;
+		font-variant-numeric: tabular-nums;
+		color: rgba(238, 240, 245, 0.5);
+		white-space: nowrap;
+	}
+	.qreward {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.84rem;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		color: #d5b25e;
+		white-space: nowrap;
+	}
+	.qclaim {
+		padding: 0.4rem 0.95rem;
+		border: none;
+		border-radius: 999px;
+		background: var(--cream);
+		color: #171b10;
+		font-family: inherit;
+		font-size: 0.78rem;
+		font-weight: 700;
+		cursor: pointer;
+		box-shadow: 0 0 12px rgba(213, 178, 94, 0.25);
+	}
+	.qclaim:disabled {
+		background: rgba(140, 170, 220, 0.12);
+		color: rgba(238, 240, 245, 0.35);
+		box-shadow: none;
+		cursor: default;
+	}
+	.qdone {
+		display: grid;
+		place-items: center;
+		width: 1.7rem;
+		height: 1.7rem;
+		border-radius: 50%;
+		background: rgba(213, 178, 94, 0.15);
+		color: var(--gold);
+		font-weight: 700;
+	}
+	.qnote {
+		margin: 0;
+		font-size: 0.82rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
+	.qnote a {
+		color: var(--gold);
+	}
+
 	.outbtn {
 		padding: 0.4rem 0.85rem;
 		font-family: inherit;

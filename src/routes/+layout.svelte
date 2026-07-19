@@ -7,6 +7,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { session, initSession, signIn, signOut, isValidEmail } from '$lib/account.svelte';
+	import { eco, initEconomy } from '$lib/economy.svelte';
 	import '@fontsource-variable/inter/index.css';
 	import '@fontsource/cinzel/400.css';
 	import '@fontsource/cinzel/600.css';
@@ -58,6 +59,18 @@
 
 	onMount(() => {
 		initSession();
+		initEconomy();
+	});
+
+	/* toast de gain d'Éclats */
+	let gainShown = $state<{ amount: number; reason: string } | null>(null);
+	let gainTimer: ReturnType<typeof setTimeout> | undefined;
+	$effect(() => {
+		const g = eco.lastGain;
+		if (!g) return;
+		gainShown = { amount: g.amount, reason: g.reason };
+		clearTimeout(gainTimer);
+		gainTimer = setTimeout(() => (gainShown = null), 3200);
 	});
 
 	function acctClick() {
@@ -105,6 +118,11 @@
 				{/each}
 			</div>
 			<span class="setcount">Indexées <b>{cards.length}</b>/60</span>
+
+			<!-- les Éclats -->
+			<a class="wallet" href="/packs" title="Éclats — la monnaie du Silence">
+				<i class="shard" aria-hidden="true"></i><b>{eco.balance}</b>
+			</a>
 
 			<!-- le compte -->
 			<div class="acct">
@@ -172,6 +190,15 @@
 	</footer>
 
 	<span class="uid" aria-hidden="true">UID : KOR-701606888</span>
+
+	<!-- toast de gain -->
+	{#if gainShown}
+		<div class="gain-toast" role="status">
+			<i class="shard" aria-hidden="true"></i>
+			<b>+{gainShown.amount}</b>
+			<span>{gainShown.reason}</span>
+		</div>
+	{/if}
 
 	<!-- grain de pellicule : unifie toutes les surfaces, très discret -->
 	<div class="grain" aria-hidden="true"></div>
@@ -309,6 +336,82 @@
 	.setcount b {
 		font-weight: 650;
 		color: var(--gold);
+	}
+
+	/* ---------- les Éclats ---------- */
+	.wallet {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.35rem 0.85rem;
+		border: 1px solid rgba(213, 178, 94, 0.35);
+		border-radius: 999px;
+		background: rgba(213, 178, 94, 0.07);
+		text-decoration: none;
+		font-size: 0.84rem;
+		font-variant-numeric: tabular-nums;
+		transition: border-color 0.15s ease;
+	}
+	.wallet:hover {
+		border-color: rgba(213, 178, 94, 0.6);
+	}
+	.wallet b {
+		font-weight: 650;
+		color: var(--gold);
+	}
+	.shard {
+		display: inline-block;
+		width: 0.62rem;
+		height: 0.62rem;
+		rotate: 45deg;
+		border-radius: 2px;
+		background: linear-gradient(135deg, #f2d98a, #a97f2c);
+		box-shadow: 0 0 8px rgba(213, 178, 94, 0.5);
+	}
+
+	.gain-toast {
+		position: fixed;
+		right: 1.4rem;
+		bottom: 1.4rem;
+		z-index: 250;
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.7rem 1.2rem;
+		background: rgba(9, 14, 27, 0.95);
+		border: 1px solid rgba(213, 178, 94, 0.5);
+		border-radius: 999px;
+		box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5), 0 0 20px rgba(213, 178, 94, 0.2);
+		animation: gt 3.2s ease forwards;
+		pointer-events: none;
+	}
+	.gain-toast b {
+		font-size: 0.95rem;
+		color: var(--gold);
+		font-variant-numeric: tabular-nums;
+	}
+	.gain-toast span {
+		font-size: 0.8rem;
+		color: rgba(238, 240, 245, 0.65);
+		max-width: 40vw;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	@keyframes gt {
+		0% {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		8%,
+		82% {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(-6px);
+		}
 	}
 
 	/* ---------- le compte ---------- */
