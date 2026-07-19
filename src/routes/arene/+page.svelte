@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Card from '$lib/Card.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import logo from '$lib/assets/logo.svg';
 	import { charter } from '$lib/charter';
@@ -166,8 +167,28 @@
 		meta = null;
 	}
 
-	function artOf(u: UnitSnap): string {
-		return getCard(u.cardId)?.art ?? '';
+	/** La vraie carte du registre — ou une carte reconstituée pour les jetons. */
+	function cardOf(u: UnitSnap): CardData {
+		return (
+			getCard(u.cardId) ?? {
+				id: u.cardId,
+				name: u.name,
+				kind: 'etre',
+				cost: u.cost,
+				attack: u.atk,
+				health: u.maxHp,
+				text: '',
+				rarity: 'common',
+				faction: u.faction as FactionId,
+				art: '/card-back.webp',
+				gene: {
+					palette: [],
+					foilPreset: 'mat',
+					accent: charter.factions[u.faction as FactionId]?.color ?? '#c9a445',
+					seed: 1
+				}
+			}
+		);
 	}
 </script>
 
@@ -286,20 +307,18 @@
 		<div class="lane foe-lane">
 			{#each foe.board as u (u.uid)}
 				<button
-					class="unit"
+					class="slot"
 					class:targetable={sel !== null && legal.units.includes(u.uid)}
 					class:locked={u.locked}
-					class:serment={u.serment}
 					disabled={!(sel !== null && legal.units.includes(u.uid))}
 					onclick={() => clickEnemyUnit(u)}
 					title={u.name}
 				>
-					{#if artOf(u)}<img src={artOf(u)} alt="" />{/if}
-					<span class="u-name">{u.name}</span>
-					{#if u.serment}<span class="u-tag">Serment</span>{/if}
-					{#if u.locked}<span class="u-lock">⛓</span>{/if}
-					<span class="u-atk">{u.atk}</span>
-					<span class="u-hp" class:hurt={u.hp < u.maxHp}>{u.hp}</span>
+					<Card card={cardOf(u)} interactive={false} />
+					<span class="ov-atk">{u.atk}</span>
+					<span class="ov-hp" class:hurt={u.hp < u.maxHp}>{u.hp}</span>
+					{#if u.serment}<span class="ov-tag">Serment</span>{/if}
+					{#if u.locked}<span class="ov-lock">⛓</span>{/if}
 				</button>
 			{/each}
 			{#if foe.board.length === 0}<span class="lane-empty">—</span>{/if}
@@ -312,21 +331,19 @@
 			{#each me.board as u (u.uid)}
 				<div class="unitwrap">
 					<button
-						class="unit mine"
+						class="slot mine"
 						class:ready={attackers.includes(u.uid)}
 						class:selected={sel === u.uid}
 						class:locked={u.locked}
-						class:serment={u.serment}
 						onclick={() => clickMyUnit(u)}
 						title={u.name}
 					>
-						{#if artOf(u)}<img src={artOf(u)} alt="" />{/if}
-						<span class="u-name">{u.name}</span>
-						{#if u.serment}<span class="u-tag">Serment</span>{/if}
-						{#if u.locked}<span class="u-lock">⛓</span>{/if}
-						{#if u.elan}<span class="u-elan">⚡</span>{/if}
-						<span class="u-atk">{u.atk}</span>
-						<span class="u-hp" class:hurt={u.hp < u.maxHp}>{u.hp}</span>
+						<Card card={cardOf(u)} interactive={false} />
+						<span class="ov-atk">{u.atk}</span>
+						<span class="ov-hp" class:hurt={u.hp < u.maxHp}>{u.hp}</span>
+						{#if u.serment}<span class="ov-tag">Serment</span>{/if}
+						{#if u.locked}<span class="ov-lock">⛓</span>{/if}
+						{#if u.elan}<span class="ov-elan">⚡</span>{/if}
 					</button>
 					{#each pron.filter((p) => p.uid === u.uid) as p (p.uid)}
 						<button class="pronbtn" title={p.text} onclick={() => doPronounce(p.uid)}
@@ -338,24 +355,20 @@
 			{#if me.board.length === 0}<span class="lane-empty">—</span>{/if}
 		</div>
 
-		<!-- la main -->
+		<!-- la main : les vraies cartes, en éventail -->
 		<div class="hand">
 			{#each handV as h, i (i)}
 				<button
-					class="hcard"
+					class="hslot"
 					class:playable={h.playable}
 					style="--i: {i - (handV.length - 1) / 2}"
 					disabled={!h.playable}
 					onclick={() => doPlay(i)}
 					title="{h.card.name} — {h.card.text || 'Sans effet.'}"
 				>
-					<span class="h-cost">{h.cost}</span>
-					{#if h.card.art}<img src={h.card.art} alt="" />{/if}
-					<span class="h-name">{h.card.name}</span>
-					{#if h.card.kind === 'etre'}
-						<span class="h-stats">{h.card.attack}/{h.card.health}</span>
-					{:else}
-						<span class="h-kind">{h.card.kind}</span>
+					<Card card={h.card} interactive={false} />
+					{#if h.cost !== h.card.cost}
+						<span class="ov-cost" title="Coût réduit">{h.cost}</span>
 					{/if}
 				</button>
 			{/each}
@@ -707,10 +720,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.7rem;
+		gap: 1.1rem;
 		flex-wrap: wrap;
-		padding: 0.4rem 0;
-		min-height: 8.4rem;
+		padding: 0.7rem 0;
+		min-height: 13rem;
 	}
 	.lane-empty {
 		color: rgba(238, 240, 245, 0.18);
@@ -734,134 +747,104 @@
 		box-shadow: 0 0 14px rgba(213, 178, 94, 0.6);
 	}
 
-	/* unités */
+	/* unités : les vraies cartes, avec stats vivantes en médaillons */
 	.unitwrap {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.35rem;
+		gap: 0.4rem;
 	}
-	.unit {
+	.slot {
 		position: relative;
-		width: 6.2rem;
-		height: 8rem;
-		border-radius: 10px;
-		border: 1.5px solid rgba(140, 170, 220, 0.25);
-		background: #0c1324;
-		overflow: hidden;
-		cursor: default;
 		padding: 0;
+		border: none;
+		background: none;
 		font-family: inherit;
+		cursor: default;
+		border-radius: 12px;
+		--card-w: clamp(122px, 17vh, 168px);
 		transition:
 			transform 0.15s ease,
-			border-color 0.15s ease,
-			box-shadow 0.15s ease;
+			box-shadow 0.15s ease,
+			filter 0.15s ease;
 	}
-	.unit img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center 15%;
-		opacity: 0.9;
+	.slot.locked {
+		filter: grayscale(0.7) brightness(0.7);
 	}
-	.unit::after {
-		content: '';
+	/* médaillons de stats vivantes (buffs et dégâts inclus) */
+	.ov-atk,
+	.ov-hp {
 		position: absolute;
-		inset: 0;
-		background: linear-gradient(180deg, transparent 40%, rgba(5, 8, 16, 0.88) 88%);
-	}
-	.u-name {
-		position: absolute;
-		left: 0.3rem;
-		right: 0.3rem;
-		bottom: 1.5rem;
-		z-index: 2;
-		font-size: 0.6rem;
-		font-weight: 600;
-		color: rgba(238, 240, 245, 0.9);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		text-shadow: 0 1px 3px #000;
-	}
-	.u-atk,
-	.u-hp {
-		position: absolute;
-		bottom: 0.25rem;
-		z-index: 2;
+		bottom: -0.45rem;
+		z-index: 6;
 		display: grid;
 		place-items: center;
-		min-width: 1.3rem;
-		height: 1.3rem;
-		padding: 0 0.2rem;
-		border-radius: 6px;
-		font-size: 0.78rem;
+		min-width: 1.7rem;
+		height: 1.7rem;
+		padding: 0 0.25rem;
+		border-radius: 50%;
+		border: 1.5px solid rgba(255, 255, 255, 0.35);
+		font-size: 0.9rem;
 		font-weight: 750;
 		font-variant-numeric: tabular-nums;
 		color: #fff;
-		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
 	}
-	.u-atk {
-		left: 0.25rem;
-		background: linear-gradient(180deg, #e8a33d, #b06a12);
+	.ov-atk {
+		left: -0.35rem;
+		background: radial-gradient(circle at 35% 30%, #f0b45a, #b06a12);
 	}
-	.u-hp {
-		right: 0.25rem;
-		background: linear-gradient(180deg, #d24747, #8f1d1d);
+	.ov-hp {
+		right: -0.35rem;
+		background: radial-gradient(circle at 35% 30%, #e86a6a, #8f1d1d);
 	}
-	.u-hp.hurt {
-		box-shadow: 0 0 0 1.5px #ff9d9d;
+	.ov-hp.hurt {
+		box-shadow: 0 0 0 2px #ff9d9d, 0 3px 8px rgba(0, 0, 0, 0.55);
 	}
-	.u-tag {
+	.ov-tag {
 		position: absolute;
-		top: 0.25rem;
+		top: -0.45rem;
 		left: 50%;
 		transform: translateX(-50%);
-		z-index: 2;
-		padding: 0.05rem 0.4rem;
+		z-index: 6;
+		padding: 0.1rem 0.55rem;
 		border-radius: 999px;
-		background: rgba(213, 178, 94, 0.9);
+		background: linear-gradient(180deg, #f0d68a, #c9a445);
 		color: #171b10;
-		font-size: 0.56rem;
+		font-size: 0.62rem;
 		font-weight: 700;
 		white-space: nowrap;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 	}
-	.u-lock {
+	.ov-lock {
 		position: absolute;
-		top: 0.2rem;
-		right: 0.25rem;
-		z-index: 2;
-		font-size: 0.8rem;
+		top: -0.35rem;
+		right: -0.2rem;
+		z-index: 6;
+		font-size: 1rem;
 		filter: drop-shadow(0 1px 2px #000);
 	}
-	.u-elan {
+	.ov-elan {
 		position: absolute;
-		top: 0.2rem;
-		left: 0.25rem;
-		z-index: 2;
-		font-size: 0.75rem;
+		top: -0.35rem;
+		left: -0.2rem;
+		z-index: 6;
+		font-size: 0.95rem;
 		filter: drop-shadow(0 1px 2px #000);
 	}
-	.unit.locked {
-		filter: grayscale(0.7) brightness(0.7);
-	}
-	/* les états d'action */
-	.unit.mine.ready {
+	/* les états d'action : anneaux autour de la vraie carte */
+	.slot.mine.ready {
 		cursor: pointer;
-		border-color: rgba(120, 220, 140, 0.8);
-		box-shadow: 0 0 12px rgba(120, 220, 140, 0.35);
+		box-shadow: 0 0 0 2.5px rgba(120, 220, 140, 0.75), 0 0 20px rgba(120, 220, 140, 0.35);
 	}
-	.unit.mine.selected {
-		transform: translateY(-6px);
-		border-color: #f2d98a;
-		box-shadow: 0 0 0 2px rgba(242, 217, 138, 0.8), 0 0 22px rgba(213, 178, 94, 0.6);
+	.slot.mine.selected {
+		transform: translateY(-8px);
+		box-shadow: 0 0 0 3px rgba(242, 217, 138, 0.9), 0 0 28px rgba(213, 178, 94, 0.65);
 	}
-	.unit.targetable {
+	.slot.targetable {
 		cursor: crosshair;
-		border-color: rgba(255, 120, 90, 0.85);
-		box-shadow: 0 0 0 2px rgba(255, 120, 90, 0.5), 0 0 18px rgba(255, 120, 90, 0.5);
+		box-shadow: 0 0 0 3px rgba(255, 120, 90, 0.7), 0 0 24px rgba(255, 120, 90, 0.55);
 		animation: pulse-t 1s ease-in-out infinite;
 	}
 	@keyframes pulse-t {
@@ -889,109 +872,67 @@
 		background: rgba(213, 178, 94, 0.25);
 	}
 
-	/* main */
+	/* main : les vraies cartes en éventail */
 	.hand {
 		display: flex;
 		justify-content: center;
 		align-items: flex-end;
-		padding: 0.6rem 0 0.4rem;
-		min-height: 9.6rem;
+		padding: 1rem 0 0.5rem;
+		min-height: 15.5rem;
 	}
-	.hcard {
+	.hslot {
 		position: relative;
-		width: 6.6rem;
-		height: 9rem;
-		margin: 0 -0.55rem;
-		border-radius: 10px;
-		border: 1.5px solid rgba(140, 170, 220, 0.3);
-		background: #0c1324;
-		overflow: hidden;
 		padding: 0;
+		border: none;
+		background: none;
 		font-family: inherit;
-		transform: rotate(calc(var(--i) * 3deg)) translateY(calc(var(--i) * var(--i) * 2.2px));
+		margin: 0 -1.1rem;
+		border-radius: 12px;
+		--card-w: clamp(140px, 21vh, 190px);
+		transform: rotate(calc(var(--i) * 2.6deg)) translateY(calc(var(--i) * var(--i) * 3px));
 		transform-origin: bottom center;
 		transition:
 			transform 0.18s ease,
-			border-color 0.18s ease,
 			box-shadow 0.18s ease,
 			filter 0.18s ease;
 	}
-	.hcard img {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center 15%;
-		opacity: 0.92;
-	}
-	.hcard::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(180deg, transparent 42%, rgba(5, 8, 16, 0.9) 90%);
-	}
-	.hcard:disabled {
-		filter: grayscale(0.5) brightness(0.6);
+	.hslot:disabled {
+		filter: grayscale(0.55) brightness(0.6);
 		cursor: default;
 	}
-	.hcard.playable {
+	.hslot.playable {
 		cursor: pointer;
-		border-color: rgba(120, 200, 255, 0.75);
-		box-shadow: 0 0 12px rgba(120, 200, 255, 0.3);
+		box-shadow: 0 0 0 2px rgba(120, 200, 255, 0.55), 0 0 18px rgba(120, 200, 255, 0.3);
 	}
-	.hcard.playable:hover {
-		transform: rotate(0deg) translateY(-1.6rem) scale(1.28);
+	.hslot.playable:hover {
+		transform: rotate(0deg) translateY(-3.2rem) scale(1.32);
 		z-index: 10;
-		box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6), 0 0 18px rgba(120, 200, 255, 0.45);
+		box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65), 0 0 22px rgba(120, 200, 255, 0.45);
 	}
-	.h-cost {
+	/* chip de coût réduit (Tours de grammaire, Moren…) */
+	.ov-cost {
 		position: absolute;
-		top: 0.25rem;
-		left: 0.25rem;
-		z-index: 2;
+		top: -0.4rem;
+		left: -0.4rem;
+		z-index: 6;
 		display: grid;
 		place-items: center;
-		width: 1.5rem;
-		height: 1.5rem;
+		width: 1.8rem;
+		height: 1.8rem;
 		border-radius: 50%;
-		background: radial-gradient(circle at 35% 30%, #9fc4ff, #1c3f88);
-		border: 1px solid rgba(255, 255, 255, 0.4);
+		background: radial-gradient(circle at 35% 30%, #9fe0a8, #1f7a3a);
+		border: 1.5px solid rgba(255, 255, 255, 0.45);
 		color: #fff;
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		font-weight: 750;
-	}
-	.h-name {
-		position: absolute;
-		left: 0.35rem;
-		right: 0.35rem;
-		bottom: 1.35rem;
-		z-index: 2;
-		font-size: 0.6rem;
-		font-weight: 600;
-		color: rgba(238, 240, 245, 0.92);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		text-shadow: 0 1px 3px #000;
-	}
-	.h-stats,
-	.h-kind {
-		position: absolute;
-		bottom: 0.3rem;
-		left: 0.35rem;
-		z-index: 2;
-		font-size: 0.62rem;
-		font-weight: 650;
-		color: var(--gold);
-		text-transform: capitalize;
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
 	}
 
 	/* fil + journal + fin */
 	.flash {
 		position: absolute;
 		left: 50%;
-		bottom: 10.4rem;
+		bottom: 16.6rem;
 		transform: translateX(-50%);
 		margin: 0;
 		max-width: 70%;
@@ -1063,13 +1004,12 @@
 		.duel {
 			padding: 0.6rem 3.4rem 0.4rem;
 		}
-		.unit {
-			width: 4.6rem;
-			height: 6.2rem;
+		.slot {
+			--card-w: clamp(96px, 13vh, 128px);
 		}
-		.hcard {
-			width: 5rem;
-			height: 7rem;
+		.hslot {
+			--card-w: clamp(108px, 16vh, 150px);
+			margin: 0 -1.4rem;
 		}
 	}
 </style>
