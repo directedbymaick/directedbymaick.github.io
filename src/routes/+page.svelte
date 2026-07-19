@@ -268,13 +268,15 @@
 
 	.hero {
 		position: relative;
-		min-height: 88vh;
+		min-height: 92vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
-		margin: 0 -2rem;
+		/* pleine largeur d'écran, en sortant du conteneur centré */
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
 		overflow: hidden;
 	}
 	.hero-art {

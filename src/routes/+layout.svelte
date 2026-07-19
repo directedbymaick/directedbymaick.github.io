@@ -98,10 +98,12 @@
 	}
 	:global(html) {
 		scroll-behavior: smooth;
+		overflow-x: clip;
 	}
 	:global(body) {
 		margin: 0;
 		min-height: 100vh;
+		overflow-x: clip;
 		color: var(--ink);
 		font-family: 'Inter Variable', Inter, system-ui, sans-serif;
 		font-size: 1rem;
