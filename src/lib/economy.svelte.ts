@@ -147,6 +147,8 @@ interface EcoState {
 	daily: Record<string, QuestState>;
 	weekly: Record<string, QuestState>;
 	ach: Record<string, { claimed: boolean }>;
+	/** revente automatique du surplus (au-delà de 3 copies) à l'ouverture des boosters */
+	autoSell: boolean;
 	/** dernier gain affichable (toast) */
 	lastGain: { amount: number; reason: string; at: number } | null;
 }
@@ -172,6 +174,7 @@ export const eco = $state<EcoState>({
 	daily: {},
 	weekly: {},
 	ach: {},
+	autoSell: false,
 	lastGain: null
 });
 
@@ -205,6 +208,7 @@ export function initEconomy(): void {
 			eco.daily = d.daily ?? {};
 			eco.weekly = d.weekly ?? {};
 			eco.ach = d.ach ?? {};
+			eco.autoSell = d.autoSell ?? false;
 		} else {
 			eco.balance = STARTER_GRANT;
 			eco.lastGain = { amount: STARTER_GRANT, reason: 'Bienvenue dans le Silence', at: Date.now() };
@@ -224,6 +228,11 @@ export function initEconomy(): void {
 		eco.weekly = {};
 	}
 	eco.ready = true;
+	persist();
+}
+
+export function setAutoSell(v: boolean): void {
+	eco.autoSell = v;
 	persist();
 }
 

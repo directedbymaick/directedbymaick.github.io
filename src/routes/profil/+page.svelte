@@ -18,6 +18,7 @@
 		claimQuest,
 		claimAchievement,
 		earn,
+		setAutoSell,
 		SELL_KEEP,
 		SELL_VALUE,
 		type AchContext
@@ -312,6 +313,19 @@
 		Les cartes s'obtiennent en ouvrant des <a href="/packs">boosters</a> — les grisées manquent
 		encore à votre Registre. Au-delà de 3 copies, le surplus se revend en Éclats.
 	</p>
+
+	<label class="autosell">
+		<input
+			type="checkbox"
+			checked={eco.autoSell}
+			onchange={(e) => setAutoSell(e.currentTarget.checked)}
+		/>
+		<span class="track" aria-hidden="true"><i></i></span>
+		<span class="autosell-txt">
+			Revente automatique du surplus
+			<small>à l'ouverture d'un booster, les copies au-delà de 3 sont revendues aussitôt</small>
+		</span>
+	</label>
 
 	{#if surplusCount > 0}
 		<div class="sellbar">
@@ -968,6 +982,67 @@
 	}
 
 	/* ---------- revente du surplus ---------- */
+	.autosell {
+		display: flex;
+		align-items: center;
+		gap: 0.9rem;
+		margin: 0 0 1rem;
+		padding: 0.75rem 1.2rem;
+		background: var(--panel);
+		border: 1px solid var(--panel-line);
+		border-radius: 14px;
+		cursor: pointer;
+		max-width: 640px;
+	}
+	.autosell input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.autosell .track {
+		flex: none;
+		position: relative;
+		width: 2.6rem;
+		height: 1.4rem;
+		border-radius: 999px;
+		background: rgba(140, 170, 220, 0.18);
+		transition: background 0.18s ease;
+	}
+	.autosell .track i {
+		position: absolute;
+		top: 0.15rem;
+		left: 0.15rem;
+		width: 1.1rem;
+		height: 1.1rem;
+		border-radius: 50%;
+		background: rgba(238, 240, 245, 0.75);
+		transition:
+			left 0.18s ease,
+			background 0.18s ease;
+	}
+	.autosell input:checked + .track {
+		background: rgba(213, 178, 94, 0.45);
+	}
+	.autosell input:checked + .track i {
+		left: 1.35rem;
+		background: linear-gradient(135deg, #f2d98a, #c9a445);
+		box-shadow: 0 0 8px rgba(213, 178, 94, 0.7);
+	}
+	.autosell input:focus-visible + .track {
+		outline: 2px solid rgba(213, 178, 94, 0.6);
+		outline-offset: 2px;
+	}
+	.autosell-txt {
+		display: flex;
+		flex-direction: column;
+		font-size: 0.88rem;
+		font-weight: 550;
+	}
+	.autosell-txt small {
+		font-weight: 450;
+		font-size: 0.76rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
 	.sellbar {
 		display: flex;
 		align-items: center;

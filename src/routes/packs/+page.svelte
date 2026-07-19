@@ -9,6 +9,7 @@
 	import {
 		openPack,
 		loadCollection,
+		saveCollection,
 		addToCollection,
 		collectionStats,
 		SLOT_ODDS,
@@ -17,7 +18,16 @@
 		type Pull
 	} from '$lib/gacha';
 	import type { Rarity } from '$lib/types';
-	import { eco, initEconomy, spend, track, PACK_PRICE } from '$lib/economy.svelte';
+	import {
+		eco,
+		initEconomy,
+		spend,
+		earn,
+		track,
+		PACK_PRICE,
+		SELL_KEEP,
+		SELL_VALUE
+	} from '$lib/economy.svelte';
 
 	type Stage = 'idle' | 'reveal' | 'recap';
 	/** Palier d'effets du reveal : la rareté, ou 'fullart' — le cran au-dessus de tout. */
@@ -136,6 +146,24 @@
 		pulls = pending.length ? pending : openPack();
 		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
+		// revente automatique du surplus (option de l'espace utilisateur)
+		if (eco.autoSell) {
+			let total = 0;
+			let count = 0;
+			for (const p of pulls) {
+				const id = p.card.id;
+				const n = (collection[id] ?? 0) - SELL_KEEP;
+				if (n > 0) {
+					collection[id] = SELL_KEEP;
+					total += n * (SELL_VALUE[p.card.rarity] ?? 5);
+					count += n;
+				}
+			}
+			if (count > 0) {
+				saveCollection(collection);
+				earn(total, `Revente auto : ${count} copie${count > 1 ? 's' : ''} en trop`);
+			}
+		}
 		collection = { ...collection };
 		flipped = pulls.map(() => false);
 
