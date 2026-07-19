@@ -69,16 +69,20 @@
 		reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (!reduced) {
 			(async () => {
-				const [{ gsap: g }, { CustomEase }, { CustomWiggle }] = await Promise.all([
-					import('gsap'),
-					import('gsap/CustomEase'),
-					import('gsap/CustomWiggle')
-				]);
-				g.registerPlugin(CustomEase, CustomWiggle);
-				// secousse pro : oscillation amortie, pas un yoyo linéaire
-				CustomWiggle.create('packShake', { wiggles: 8, type: 'easeOut' });
-				gsap = g;
-				if (fxCanvas) fx = createPackFx(fxCanvas);
+				try {
+					const [{ gsap: g }, { CustomEase }, { CustomWiggle }] = await Promise.all([
+						import('gsap'),
+						import('gsap/CustomEase'),
+						import('gsap/CustomWiggle')
+					]);
+					g.registerPlugin(CustomEase, CustomWiggle);
+					// secousse pro : oscillation amortie, pas un yoyo linéaire
+					CustomWiggle.create('packShake', { wiggles: 8, type: 'easeOut' });
+					gsap = g;
+					if (fxCanvas) fx = createPackFx(fxCanvas);
+				} catch {
+					/* GSAP indisponible : on retombe sur l'affichage sans animation */
+				}
 			})();
 		}
 		return () => fx?.destroy();
@@ -360,22 +364,38 @@
 		const dx = (i: number, t: Element) => parseFloat((t as HTMLElement).style.getPropertyValue('--dx')) || 0;
 		const dy = (i: number, t: Element) => parseFloat((t as HTMLElement).style.getPropertyValue('--dy')) || 0;
 
-		gsap.fromTo(
-			cells,
-			{ x: dx, y: dy, scale: 0.18, rotate: () => gsap!.utils.random(-55, 55), autoAlpha: 0 },
-			{
-				x: 0,
-				y: 0,
-				scale: 1,
-				rotate: 0,
-				autoAlpha: 1,
-				duration: 0.72,
-				ease: 'back.out(1.3)',
-				stagger: { each: 0.045, from: 'center' },
-				clearProps: 'transform,opacity,visibility',
-				onComplete: () => (spilling = false)
-			}
-		);
+		// filet de sécurité : si l'onglet passe en arrière-plan (rAF gelé) et que
+		// onComplete ne se déclenche pas, on révèle les cartes coûte que coûte.
+		const reveal = () => {
+			gsap?.set(cells, { clearProps: 'all' });
+			spilling = false;
+		};
+		const safety = setTimeout(reveal, 2600);
+
+		try {
+			gsap.fromTo(
+				cells,
+				{ x: dx, y: dy, scale: 0.18, rotate: () => gsap!.utils.random(-55, 55), autoAlpha: 0 },
+				{
+					x: 0,
+					y: 0,
+					scale: 1,
+					rotate: 0,
+					autoAlpha: 1,
+					duration: 0.72,
+					ease: 'back.out(1.3)',
+					stagger: { each: 0.045, from: 'center' },
+					clearProps: 'transform,opacity,visibility',
+					onComplete: () => {
+						clearTimeout(safety);
+						spilling = false;
+					}
+				}
+			);
+		} catch {
+			clearTimeout(safety);
+			reveal();
+		}
 		if (godHit && stageEl)
 			gsap.fromTo(stageEl, { x: 0 }, { x: 9, duration: 0.6, ease: 'packShake', clearProps: 'x' });
 	}
