@@ -8,7 +8,7 @@
 
 	const ANATOMY = [
 		{ n: 1, t: 'La Volonté', d: 'Le coût à payer pour prononcer la carte (la jouer). La cellule en haut à gauche.' },
-		{ n: 2, t: 'Le sigil', d: 'Le peuple de la carte : ◯ Vasar, ⊘ Exar, ☽ Eshar, ◐ Morar, ☀ Velar.' },
+		{ n: 2, t: 'Le sceau', d: 'Le peuple de la carte : son emblème officiel, en haut à droite de l’illustration.' },
 		{ n: 3, t: 'La plaque', d: 'Le nom, le type (Être / Verbe / Relique / Lieu) et le sous-titre.' },
 		{ n: 4, t: 'Le cartouche', d: "L'effet, le Prononcer éventuel (l'étiquette au cercle), et une ligne du Korum en italique." },
 		{ n: 5, t: 'Les stats', d: "ATQ (les dégâts qu'il inflige) et INT (l'Intégrité qu'il encaisse). Êtres uniquement." },

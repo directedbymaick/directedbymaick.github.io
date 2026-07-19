@@ -517,7 +517,7 @@
 		line-height: 1;
 		color: color-mix(in srgb, var(--accent) 80%, #fff);
 	}
-	.sigil :global(svg) {
+	.sigil :global(span) {
 		filter: drop-shadow(0 0 1.6cqw color-mix(in srgb, var(--accent) 65%, transparent))
 			drop-shadow(0 0.3cqw 0.5cqw rgba(0, 0, 0, 0.5));
 	}

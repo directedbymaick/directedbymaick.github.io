@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
+	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import type { FactionId, Rarity } from '$lib/types';
@@ -215,7 +216,7 @@
 					onclick={() => (sel = f)}
 				>
 					<span class="s-ico" style="color: {charter.factions[f].color}"
-						>{charter.factions[f].sigil}</span
+						><FactionSigil faction={f} flat /></span
 					>
 					<span class="s-label">{charter.factions[f].name}</span>
 					<span class="s-count">{n}</span>
@@ -233,7 +234,7 @@
 						<h2>{charter.factions[f].name}</h2>
 						<p class="ftag">{FACTION_TAG[f]}</p>
 						<span class="fcount"
-							>{charter.factions[f].sigil} {list.length} carte{list.length > 1 ? 's' : ''}</span
+							><FactionSigil faction={f} flat /> {list.length} carte{list.length > 1 ? 's' : ''}</span
 						>
 					</header>
 

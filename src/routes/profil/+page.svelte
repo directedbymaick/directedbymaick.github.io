@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
+	import FactionSigil from '$lib/FactionSigil.svelte';
 	import logo from '$lib/assets/logo.svg';
 	import { cards, getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
@@ -208,7 +209,7 @@
 				style="--fc: {charter.factions[f].color}"
 				onclick={() => (fFaction = f)}
 			>
-				{charter.factions[f].sigil}
+				<span style="color: {charter.factions[f].color}"><FactionSigil faction={f} flat /></span>
 				{charter.factions[f].name}
 			</button>
 		{/each}
@@ -290,7 +291,8 @@
 						class="fbtn"
 						class:on={fFaction === f}
 						style="--fc: {charter.factions[f].color}"
-						onclick={() => (fFaction = f)}>{charter.factions[f].sigil}</button
+						onclick={() => (fFaction = f)}
+						><span style="color: {charter.factions[f].color}"><FactionSigil faction={f} flat /></span></button
 					>
 				{/each}
 				<input class="search" type="search" placeholder="Rechercher…" bind:value={search} />
@@ -311,7 +313,7 @@
 								{c.name}
 								<small
 									>{KIND_LABEL[c.kind]} · <i style="color: {charter.factions[c.faction].color}"
-										>{charter.factions[c.faction].sigil}</i
+										><FactionSigil faction={c.faction} flat /></i
 									>
 									{charter.factions[c.faction].name}</small
 								>
