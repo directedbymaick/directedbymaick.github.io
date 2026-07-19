@@ -46,6 +46,7 @@
 		{ href: '/packs', label: 'Boosters' },
 		{ href: '/arene', label: 'Arène' },
 		{ href: '/versus', label: 'Salons' },
+		{ href: '/decks', label: 'Decks' },
 		{ href: '/regles', label: 'Règles' },
 		{ href: '/tuto', label: 'Tuto' },
 		{ href: '/lab', label: 'Lab' }

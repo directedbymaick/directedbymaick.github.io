@@ -152,7 +152,7 @@ export interface SimResult {
 
 /* ------------------------------ Deck builder ------------------------------ */
 
-const MAX_COPIES: Record<string, number> = {
+export const MAX_COPIES: Record<string, number> = {
 	common: 3,
 	rare: 2,
 	epic: 2,
@@ -1022,16 +1022,22 @@ export function simulate(
 	cardPool: CardData[],
 	deckA: FactionId,
 	deckB: FactionId,
-	seed: number
+	seed: number,
+	/** decks imposés (Laboratoire) : liste de 30 cartes par camp, ou null = deck auto */
+	presetDecks?: [CardData[] | null, CardData[] | null]
 ): SimResult {
 	const rng = mulberry32(seed);
-	const mk = (faction: FactionId, name: string): P => ({
+	const preset = (i: 0 | 1): CardData[] | null => {
+		const p = presetDecks?.[i];
+		return p && p.length === 30 ? p : null;
+	};
+	const mk = (faction: FactionId, name: string, forced: CardData[] | null): P => ({
 		name,
 		faction,
 		korum: 25,
 		will: 0,
 		maxWill: 0,
-		deck: buildDeck(cardPool, faction, rng),
+		deck: forced ? shuffleInPlace([...forced], rng) : buildDeck(cardPool, faction, rng),
 		hand: [],
 		board: [],
 		supports: [],
@@ -1047,7 +1053,10 @@ export function simulate(
 	const g: G = {
 		t: 0,
 		active: 0,
-		players: [mk(deckA, `IA·${deckA.toUpperCase()}`), mk(deckB, `IA·${deckB.toUpperCase()}`)],
+		players: [
+			mk(deckA, `IA·${deckA.toUpperCase()}`, preset(0)),
+			mk(deckB, `IA·${deckB.toUpperCase()}`, preset(1))
+		],
 		lastVerb: null,
 		winner: null,
 		rng,

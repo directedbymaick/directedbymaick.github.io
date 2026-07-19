@@ -1,15 +1,114 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
-	import { simulate, type Ev } from '$lib/game/engine';
-	import type { FactionId } from '$lib/types';
+	import { simulate, buildDeck, MAX_COPIES, type Ev } from '$lib/game/engine';
+	import { META_DECKS } from '$lib/metadecks';
+	import { loadDecks, type Deck } from '$lib/decks';
+	import type { CardData, FactionId } from '$lib/types';
 
-	/* ---- configuration du duel ---- */
-	let deckA: FactionId = $state('vasar');
-	let deckB: FactionId = $state('exar');
+	/* ---- configuration du duel : les modulations du Laboratoire ---- */
+	let srcA = $state('auto-vasar');
+	let srcB = $state('auto-exar');
+	let forceA = $state(''); // carte imposée au camp A ('' = aucune)
+	let forceB = $state('');
+	let forceNA = $state(2); // copies imposées
+	let forceNB = $state(2);
+	let games = $state(100); // taille du lot statistique
+	let seedInput = $state(''); // graine fixe ('' = aléatoire)
 	let speed = $state(420); // ms par événement
+
+	let myDecks = $state<Deck[]>([]);
+	onMount(() => {
+		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
+	});
+
+	const CARD_OPTIONS = [...cards].sort(
+		(a, b) => a.faction.localeCompare(b.faction) || a.cost - b.cost || a.name.localeCompare(b.name)
+	);
+
+	/* petit générateur déterministe pour matérialiser les decks auto côté page */
+	function lcg(seed: number) {
+		let s = seed >>> 0 || 1;
+		return () => {
+			s = (s * 1664525 + 1013904223) >>> 0;
+			return s / 4294967296;
+		};
+	}
+
+	function expand(rec: Record<string, number>): CardData[] {
+		const list: CardData[] = [];
+		for (const [id, n] of Object.entries(rec)) {
+			const c = getCard(id);
+			if (c) for (let i = 0; i < n; i++) list.push(c);
+		}
+		return list;
+	}
+	function dominant(list: CardData[]): FactionId {
+		const count: Partial<Record<FactionId, number>> = {};
+		for (const c of list) count[c.faction] = (count[c.faction] ?? 0) + 1;
+		return (Object.entries(count).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'vasar') as FactionId;
+	}
+
+	/** Construit le deck d'un camp selon la source + la carte imposée. */
+	function sideDeck(
+		src: string,
+		forcedId: string,
+		forcedN: number,
+		rng: () => number
+	): { list: CardData[] | null; faction: FactionId } {
+		let list: CardData[] | null = null;
+		let faction: FactionId = 'vasar';
+		if (src.startsWith('auto-')) {
+			faction = src.slice(5) as FactionId;
+		} else if (src.startsWith('meta-')) {
+			const d = META_DECKS.find((x) => x.id === src.slice(5));
+			if (d) {
+				list = expand(d.cards);
+				faction = d.faction;
+			}
+		} else if (src.startsWith('user-')) {
+			const d = myDecks.find((x) => x.id === src.slice(5));
+			if (d) {
+				list = expand(d.cards);
+				faction = dominant(list);
+			}
+		}
+		const target = forcedId ? getCard(forcedId) : undefined;
+		if (target) {
+			if (!list) list = buildDeck(cards, faction, rng);
+			const want = Math.min(forcedN, MAX_COPIES[target.rarity] ?? 1);
+			let have = list.filter((c) => c.id === target.id).length;
+			for (let i = list.length - 1; i >= 0 && have < want; i--) {
+				if (list[i].id !== target.id) {
+					list.splice(i, 1);
+					list.push(target);
+					have++;
+				}
+			}
+		}
+		return { list, faction };
+	}
+
+	function seedOf(offset = 0): number {
+		const n = parseInt(seedInput, 10);
+		return (Number.isFinite(n) ? n : Math.floor(Math.random() * 1e9)) + offset;
+	}
+
+	function sideLabel(src: string): string {
+		if (src.startsWith('auto-'))
+			return `${charter.factions[src.slice(5) as FactionId]?.name ?? src} (auto)`;
+		if (src.startsWith('meta-')) return META_DECKS.find((d) => d.id === src.slice(5))?.name ?? src;
+		return myDecks.find((d) => d.id === src.slice(5))?.name ?? src;
+	}
+	function sideFaction(src: string): FactionId {
+		if (src.startsWith('auto-')) return src.slice(5) as FactionId;
+		if (src.startsWith('meta-'))
+			return META_DECKS.find((d) => d.id === src.slice(5))?.faction ?? 'vasar';
+		const d = myDecks.find((x) => x.id === src.slice(5));
+		return d ? dominant(expand(d.cards)) : 'vasar';
+	}
 
 	/* ---- état du replay ---- */
 	let events: Ev[] = $state([]);
@@ -23,8 +122,10 @@
 
 	function launch() {
 		pause();
-		const seed = Math.floor(Math.random() * 1e9);
-		const sim = simulate(cards, deckA, deckB, seed);
+		const seed = seedOf();
+		const a = sideDeck(srcA, forceA, forceNA, lcg(seed));
+		const b = sideDeck(srcB, forceB, forceNB, lcg(seed ^ 0x9e3779b9));
+		const sim = simulate(cards, a.faction, b.faction, seed, [a.list, b.list]);
 		events = sim.events;
 		cursor = 0;
 		running = true;
@@ -78,16 +179,20 @@
 	let batch: Batch | null = $state(null);
 	let batching = $state(false);
 
-	async function runBatch(n = 100) {
+	async function runBatch(n = games) {
 		pause();
 		batching = true;
 		batch = null;
 		const wins: [number, number] = [0, 0];
 		let draws = 0;
 		let turns = 0;
+		const base = seedOf();
 		const plays = new Map<string, { plays: number; wins: number }>();
 		for (let i = 0; i < n; i++) {
-			const sim = simulate(cards, deckA, deckB, i * 7919 + 13);
+			const gs = base + i * 7919 + 13;
+			const a = sideDeck(srcA, forceA, forceNA, lcg(gs));
+			const b = sideDeck(srcB, forceB, forceNB, lcg(gs ^ 0x9e3779b9));
+			const sim = simulate(cards, a.faction, b.faction, gs, [a.list, b.list]);
 			if (sim.winner === -1) draws += 1;
 			else wins[sim.winner] += 1;
 			turns += sim.turns;
@@ -133,30 +238,85 @@
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◆</span> Salle d'entraînement</p>
-	<h1>Arène</h1>
+	<p class="kicker"><span class="k-diamond">◯</span> Le Laboratoire</p>
+	<h1>IA contre IA</h1>
 	<p class="tagline">
-		Deux IA jouent le set en duel réel — règles v1, les 60 cartes, effets compris. Regarde les
-		combats en direct, ou lance 100 parties pour mesurer l'équilibre.
+		Deux IA jouent le set en duel réel — règles v1, les 60 cartes, effets compris. Modulez les
+		decks, imposez une carte à tester, fixez la graine, puis regardez un duel en direct ou lancez
+		un lot de parties pour mesurer son taux de victoire.
 	</p>
 </header>
 
 <!-- ============ CONTRÔLES ============ -->
 <section class="controls">
 	<div class="pick">
-		<label>
-			<span>Camp A</span>
-			<select bind:value={deckA}>
-				{#each FACTIONS as f (f)}<option value={f}>{charter.factions[f].name}</option>{/each}
-			</select>
-		</label>
-		<span class="vs">contre</span>
-		<label>
-			<span>Camp B</span>
-			<select bind:value={deckB}>
-				{#each FACTIONS as f (f)}<option value={f}>{charter.factions[f].name}</option>{/each}
-			</select>
-		</label>
+		{#each [0, 1] as sideIdx (sideIdx)}
+			<div class="sidecfg">
+				<span class="sidename">Camp {sideIdx === 0 ? 'A' : 'B'}</span>
+				<label>
+					<span>Deck</span>
+					{#if sideIdx === 0}
+						<select bind:value={srcA}>
+							<optgroup label="Automatiques">
+								{#each FACTIONS as f (f)}<option value="auto-{f}">{charter.factions[f].name} (auto)</option>{/each}
+							</optgroup>
+							<optgroup label="Decks recommandés">
+								{#each META_DECKS as d (d.id)}<option value="meta-{d.id}">{d.name}</option>{/each}
+							</optgroup>
+							{#if myDecks.length > 0}
+								<optgroup label="Vos decks">
+									{#each myDecks as d (d.id)}<option value="user-{d.id}">{d.name}</option>{/each}
+								</optgroup>
+							{/if}
+						</select>
+					{:else}
+						<select bind:value={srcB}>
+							<optgroup label="Automatiques">
+								{#each FACTIONS as f (f)}<option value="auto-{f}">{charter.factions[f].name} (auto)</option>{/each}
+							</optgroup>
+							<optgroup label="Decks recommandés">
+								{#each META_DECKS as d (d.id)}<option value="meta-{d.id}">{d.name}</option>{/each}
+							</optgroup>
+							{#if myDecks.length > 0}
+								<optgroup label="Vos decks">
+									{#each myDecks as d (d.id)}<option value="user-{d.id}">{d.name}</option>{/each}
+								</optgroup>
+							{/if}
+						</select>
+					{/if}
+				</label>
+				<label>
+					<span>Carte à tester</span>
+					{#if sideIdx === 0}
+						<select bind:value={forceA}>
+							<option value="">— aucune —</option>
+							{#each CARD_OPTIONS as c (c.id)}
+								<option value={c.id}>{charter.factions[c.faction].name} · {c.cost} · {c.name}</option>
+							{/each}
+						</select>
+					{:else}
+						<select bind:value={forceB}>
+							<option value="">— aucune —</option>
+							{#each CARD_OPTIONS as c (c.id)}
+								<option value={c.id}>{charter.factions[c.faction].name} · {c.cost} · {c.name}</option>
+							{/each}
+						</select>
+					{/if}
+				</label>
+				<label class="copies">
+					<span>Copies</span>
+					{#if sideIdx === 0}
+						<select bind:value={forceNA} disabled={!forceA}>
+							{#each [1, 2, 3] as n (n)}<option value={n}>{n}</option>{/each}
+						</select>
+					{:else}
+						<select bind:value={forceNB} disabled={!forceB}>
+							{#each [1, 2, 3] as n (n)}<option value={n}>{n}</option>{/each}
+						</select>
+					{/if}
+				</label>
+			</div>
+		{/each}
 	</div>
 	<div class="actions">
 		<button class="primary" onclick={launch}>⚔ Lancer un duel</button>
@@ -169,8 +329,18 @@
 			<span>Rythme</span>
 			<input type="range" min="120" max="1000" step="20" bind:value={speed} style="direction: rtl" />
 		</label>
-		<button class="ghost" onclick={() => runBatch(100)} disabled={batching}>
-			{batching ? 'Simulation…' : '☍ 100 parties'}
+		<label class="gamesctl">
+			<span>Lot</span>
+			<select bind:value={games}>
+				{#each [20, 50, 100, 200, 500] as n (n)}<option value={n}>{n} parties</option>{/each}
+			</select>
+		</label>
+		<label class="seedctl">
+			<span>Graine</span>
+			<input type="text" bind:value={seedInput} placeholder="aléatoire" inputmode="numeric" />
+		</label>
+		<button class="ghost" onclick={() => runBatch(games)} disabled={batching}>
+			{batching ? 'Simulation…' : `☍ Lancer ${games} parties`}
 		</button>
 	</div>
 </section>
@@ -303,13 +473,13 @@
 	<section class="stats">
 		<h2><span class="tab">Verdict sur {batch.games} parties</span><span class="rule"></span></h2>
 		<div class="verdict">
-			<div class="vcard" style="--fc: {fcolor(deckA)}">
-				<span class="vname">{charter.factions[deckA].name} (A)</span>
+			<div class="vcard" style="--fc: {fcolor(sideFaction(srcA))}">
+				<span class="vname">{sideLabel(srcA)} (A)</span>
 				<span class="vpct">{Math.round((batch.wins[0] / batch.games) * 100)}%</span>
 				<span class="vsub">{batch.wins[0]} victoires</span>
 			</div>
-			<div class="vcard" style="--fc: {fcolor(deckB)}">
-				<span class="vname">{charter.factions[deckB].name} (B)</span>
+			<div class="vcard" style="--fc: {fcolor(sideFaction(srcB))}">
+				<span class="vname">{sideLabel(srcB)} (B)</span>
 				<span class="vpct">{Math.round((batch.wins[1] / batch.games) * 100)}%</span>
 				<span class="vsub">{batch.wins[1]} victoires</span>
 			</div>
@@ -322,8 +492,16 @@
 		<h3>Winrate quand la carte est jouée <small>(≥ 5 apparitions — les extrêmes désignent les cartes à retoucher)</small></h3>
 		<div class="cardstats">
 			{#each batch.cardRows as row (row.id)}
-				<a class="crow" href="/card/{row.id.replace(/--.*$/, '')}" style="--fc: {fcolor(row.faction)}">
-					<span class="cname">{row.name}</span>
+				<a
+					class="crow"
+					class:forced={row.id === forceA || row.id === forceB}
+					href="/card/{row.id.replace(/--.*$/, '')}"
+					style="--fc: {fcolor(row.faction)}"
+				>
+					<span class="cname"
+						>{row.name}{#if row.id === forceA || row.id === forceB}
+							<em class="ftesttag">testée</em>{/if}</span
+					>
 					<span class="cbar"><span style="width: {row.winrate * 100}%"></span></span>
 					<span class="cpct">{Math.round(row.winrate * 100)}%</span>
 					<span class="cplays">×{row.plays}</span>
@@ -350,13 +528,37 @@
 		margin-bottom: 1.6rem; padding: 1rem 1.4rem;
 		background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px;
 	}
-	.pick { display: flex; align-items: center; gap: 0.9rem; }
+	.pick { display: flex; align-items: stretch; gap: 0.9rem; flex-wrap: wrap; }
+	.sidecfg {
+		display: flex; align-items: flex-end; gap: 0.7rem; flex-wrap: wrap;
+		padding: 0.8rem 1rem; border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 12px; background: rgba(255, 255, 255, 0.025);
+	}
+	.sidename {
+		align-self: center; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em;
+		text-transform: uppercase; color: #c9a445; writing-mode: vertical-rl; rotate: 180deg;
+	}
+	.copies select { min-width: 3.4rem; }
+	.gamesctl, .seedctl {
+		display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem;
+		letter-spacing: 0.12em; text-transform: uppercase; color: rgba(242, 240, 234, 0.45);
+	}
+	.gamesctl select, .seedctl input {
+		font-family: inherit; font-size: 0.85rem; padding: 0.4rem 0.7rem;
+		color: #f2f0ea; background: #14161c; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px;
+	}
+	.seedctl input { width: 7.5rem; }
+	.crow.forced { border-color: rgba(213, 178, 94, 0.55) !important; background: rgba(213, 178, 94, 0.07); }
+	.ftesttag {
+		margin-left: 0.5em; padding: 0.05rem 0.5rem; border-radius: 999px; font-style: normal;
+		font-size: 0.66rem; font-weight: 700; color: #171b10;
+		background: linear-gradient(180deg, #f0d68a, #c9a445);
+	}
 	.pick label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242, 240, 234, 0.45); }
 	.pick select {
 		font-family: inherit; font-size: 0.9rem; padding: 0.45rem 0.8rem;
 		color: #f2f0ea; background: #14161c; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px;
 	}
-	.vs { font-size: 0.8rem; color: rgba(242, 240, 234, 0.4); padding-top: 1rem; }
 	.actions { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
 	.primary, .ghost {
 		font-family: inherit; font-size: 0.88rem; font-weight: 600; padding: 0.6rem 1.2rem;
