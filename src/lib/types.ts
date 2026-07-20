@@ -10,13 +10,15 @@
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'prism';
 
 export type FoilPreset =
+	// famille SIMEY (recettes shine/glare)
 	| 'mat'
-	| 'holo'
+	| 'regular'
 	| 'amazing'
 	| 'cosmos'
 	| 'secret'
 	| 'radiant'
-	// legacy (conservés pour rétro-compat des anciennes données)
+	// famille MAISON (couches .foil-a/b)
+	| 'holo'
 	| 'prismatic'
 	| 'galaxy'
 	| 'prism';

@@ -97,16 +97,18 @@
 	   cosmos (galaxie) · secret (rainbow alt) · radiant (rayons métalliques). */
 	const holoRarity = $derived(
 		{
+			// FAMILLE SIMEY (recettes shine/glare)
 			mat: 'commune',
-			holo: 'rare holo',
+			regular: 'rare holo',
 			amazing: 'amazing rare',
 			cosmos: 'rare holo cosmos',
 			secret: 'rare rainbow alt',
 			radiant: 'radiant rare',
-			// legacy
-			prismatic: 'rare holo',
-			galaxy: 'rare holo cosmos',
-			prism: 'rare rainbow alt'
+			// FAMILLE MAISON (couches .foil-a/b via data-foil) → pas de recette simey
+			holo: '',
+			prismatic: '',
+			galaxy: '',
+			prism: ''
 		}[foil.preset] ?? ''
 	);
 </script>
@@ -132,6 +134,13 @@
 					<!-- foil : recettes shine/glare de simeydotme (GPL v3) -->
 					<div class="card__shine" aria-hidden="true"></div>
 					<div class="card__glare" aria-hidden="true"></div>
+					<!-- foils MAISON (data-foil = holo/prismatic/galaxy/prism) : recettes
+					     Expelled d'origine. Invisibles pour les presets simey (pas de
+					     règle data-foil correspondante). -->
+					<div class="foil-a" aria-hidden="true"></div>
+					<div class="foil-b" aria-hidden="true"></div>
+					<div class="sparkles" aria-hidden="true"></div>
+					<div class="prism-veil" aria-hidden="true"></div>
 				</div>
 
 				<span class="cost" title="Coût en Volonté">{card.cost}</span>
@@ -907,15 +916,11 @@
 		visibility: visible;
 		transition: opacity 0.25s ease;
 	}
-	/* On est passé aux foils simeydotme (data-rarity → recettes shine/glare).
-	   On neutralise les anciennes couches holo maison ; seul le glare diffus
-	   (.glare/.glare2) reste — c'est la lens douce commune à toutes les cartes. */
-	.foil-a,
-	.foil-b,
-	.sparkles,
-	.prism-veil {
-		display: none;
-	}
+	/* Deux familles de foils coexistent :
+	   - MAISON (data-foil = holo/prismatic/galaxy/prism) → couches .foil-a/.foil-b…
+	   - SIMEY (data-rarity via holoRarity) → couches .card__shine/.card__glare
+	   Chaque preset ne route que vers UNE famille (cf. holoRarity), donc pas de
+	   double rendu. Le glare diffus (.glare/.glare2) reste commun à tout. */
 
 	/* holo (rare) : bandes irisées double couche en contre-parallaxe.
 	   L'angle des bandes suit l'atan2 du pointeur ; la course du fond est

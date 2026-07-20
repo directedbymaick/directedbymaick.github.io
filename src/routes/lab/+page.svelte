@@ -7,24 +7,40 @@
 	// Le Lab est la charte design incarnée : on règle la matière en live,
 	// puis on reporte les choix dans charter.json / les presets.
 
-	// Noms lisibles des foils (recettes simeydotme)
+	// Noms lisibles des foils. Deux familles : SIMEY (recettes simeydotme) et
+	// MAISON (couches .foil-a/b d'origine Expelled).
 	const foilLabels: Record<FoilPreset, string> = {
+		// simey
 		mat: 'Satin mat',
-		holo: 'Holographique',
+		regular: 'Holographique',
 		cosmos: 'Cosmique',
 		amazing: 'Cristallin',
 		radiant: 'Radiant',
 		secret: 'Prismatique',
-		// legacy → même famille
-		prismatic: 'Holographique',
-		galaxy: 'Cosmique',
-		prism: 'Prismatique'
+		// maison (anciens)
+		holo: 'Holo maison',
+		prismatic: 'Prismatique maison',
+		galaxy: 'Galaxie maison',
+		prism: 'Prisme maison'
 	};
-	// Foils disponibles PAR rareté (le 1er = le foil par défaut de la charte).
+	// Tous les foils (mode labo) : simey puis maison.
+	const allFoils: FoilPreset[] = [
+		'mat',
+		'regular',
+		'amazing',
+		'cosmos',
+		'secret',
+		'radiant',
+		'holo',
+		'prismatic',
+		'galaxy',
+		'prism'
+	];
+	// Foils recommandés PAR rareté (le 1er = le foil par défaut de la charte).
 	// Échelle premium : mat → holo → cosmique → radiant → prismatique.
 	const rarityFoils: Record<Rarity, FoilPreset[]> = {
 		common: ['mat'],
-		rare: ['holo'],
+		rare: ['regular'],
 		epic: ['cosmos', 'amazing'],
 		legendary: ['radiant', 'cosmos'],
 		prism: ['secret', 'radiant']
@@ -35,11 +51,14 @@
 
 	let base = $state(structuredClone($state.snapshot(cards[0]) as CardData));
 	let cardW = $state(380);
+	// mode labo : expose TOUS les foils (simey + maison), hors filtre de rareté
+	let showAllFoils = $state(false);
 
 	const availableFoils = $derived(rarityFoils[base.rarity] ?? ['mat']);
-	// le foil reste toujours cohérent avec la rareté sélectionnée
+	const foilOptions = $derived(showAllFoils ? allFoils : availableFoils);
+	// en mode filtré, le foil reste cohérent avec la rareté ; en mode labo, libre
 	$effect(() => {
-		if (!availableFoils.includes(base.gene.foilPreset)) {
+		if (!showAllFoils && !availableFoils.includes(base.gene.foilPreset)) {
 			base.gene.foilPreset = availableFoils[0];
 		}
 	});
@@ -99,18 +118,24 @@
 			</div>
 		</div>
 
-		<label>
-			Foil {availableFoils.length > 1 ? '— variantes de cette rareté' : ''}
-			{#if availableFoils.length > 1}
+		<div class="field">
+			<span class="field-label">
+				Foil {showAllFoils ? '— tous (labo)' : availableFoils.length > 1 ? '— variantes de cette rareté' : ''}
+			</span>
+			{#if foilOptions.length > 1}
 				<select bind:value={base.gene.foilPreset}>
-					{#each availableFoils as f (f)}
+					{#each foilOptions as f (f)}
 						<option value={f}>{foilLabels[f]}</option>
 					{/each}
 				</select>
 			{:else}
 				<span class="foil-static">{foilLabels[base.gene.foilPreset]}</span>
 			{/if}
-		</label>
+			<label class="row toggle">
+				<input type="checkbox" bind:checked={showAllFoils} />
+				Tous les foils (simey + maison)
+			</label>
+		</div>
 
 		<label>
 			Faction (couleur du cadre)
@@ -266,6 +291,14 @@
 		background: #14161e;
 		color: #8f8b80;
 		font-size: 0.9rem;
+	}
+	.toggle {
+		font-size: 0.8rem;
+		color: #8f8b80;
+	}
+	.toggle input {
+		width: auto;
+		accent-color: #d5b25e;
 	}
 	fieldset {
 		border: 1px solid #2c2f3d;

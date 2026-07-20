@@ -14,7 +14,7 @@
 		"rare": {
 			"name": "Rare",
 			"material": "nacre",
-			"foilPreset": "holo",
+			"foilPreset": "regular",
 			"statBudgetPerCost": 2.2,
 			"maxCopies": 2
 		},
