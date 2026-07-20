@@ -631,30 +631,9 @@
 				rgba(0, 0, 0, 0.52) 100%
 			);
 	}
-	/* plis de tension près des soudures — striés DENSES comme les parties argentées
-	   (mêmes cannelures serrées que le sertissage), pas quelques traits épars */
-	.plastic::before,
-	.plastic::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		right: 0;
-		height: 11%;
-		background: repeating-linear-gradient(
-			90deg,
-			rgba(0, 0, 0, 0.14) 0 0.4cqw,
-			rgba(255, 255, 255, 0.09) 0.4cqw 0.75cqw,
-			transparent 0.75cqw 1.5cqw
-		);
-	}
-	.plastic::before {
-		top: 0;
-		mask-image: linear-gradient(180deg, #fff, transparent);
-	}
-	.plastic::after {
-		bottom: 0;
-		mask-image: linear-gradient(0deg, #fff, transparent);
-	}
+	/* (les hachures de tension sur l'illustration ont été retirées : elles
+	   n'apportaient rien. Les traits des parties argentées, eux, sont conservés
+	   sur le sertissage et l'opercule.) */
 	/* le grain du foil : micro-texture qui accroche la lumière, très discret */
 	.foilgrain {
 		position: absolute;
@@ -681,33 +660,9 @@
 		background-image: var(--foiltex);
 		background-size: 360px 400px; /* de grands plis, peu nombreux */
 	}
-	/* la LUMIÈRE qui se déplace sur les plis : un halo au pointeur, MASQUÉ par la
-	   texture des plis → il n'éclaire que les arêtes d'aluminium, et voyage avec
-	   le pointeur. Remplace l'ancien reflet en blob. */
+	/* (ancienne « lampe torche » au survol supprimée — trop agressive) */
 	.glare3d {
-		position: absolute;
-		inset: 0;
-		z-index: 5;
-		pointer-events: none;
-		background: radial-gradient(
-			42% 34% at var(--gx, 50%) var(--gy, 35%),
-			rgba(255, 255, 255, 0.95),
-			rgba(255, 255, 255, 0.35) 42%,
-			transparent 70%
-		);
-		-webkit-mask-image: var(--foiltex);
-		mask-image: var(--foiltex);
-		-webkit-mask-size: 300px 340px;
-		mask-size: 300px 340px;
-		mix-blend-mode: screen;
-		opacity: 0;
-		transition: opacity 0.35s ease;
-	}
-	.pack.hover .glare3d {
-		opacity: 1;
-	}
-	.pack.torn .glare3d {
-		opacity: 0;
+		display: none;
 	}
 	.sheen {
 		position: absolute;
