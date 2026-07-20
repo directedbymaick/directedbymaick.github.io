@@ -105,7 +105,7 @@
 		{#if hasFullArt}
 			<label class="row toggle fullart-toggle">
 				<input type="checkbox" bind:checked={showFullArt} />
-				Version Full Art (illustration plein cadre)
+				Version Full Art (le chase — cadre prismatique)
 			</label>
 		{/if}
 

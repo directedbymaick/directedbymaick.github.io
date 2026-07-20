@@ -433,41 +433,6 @@
 		pointer-events: none;
 	}
 
-	/* ============ FULL ART : l'artwork couvre toute la carte ============
-	   (version d'origine, commit 10d7c9d) Les panneaux deviennent du verre flouté
-	   posé sur l'image ; les foils, logés dans .art, s'étendent à toute la carte. */
-	.card[data-fullart='true'] .art {
-		position: absolute;
-		inset: 0;
-		height: 100%;
-		z-index: 0;
-	}
-	.card[data-fullart='true'] .scrim {
-		background: linear-gradient(
-			180deg,
-			rgba(16, 17, 23, 0.3) 0%,
-			transparent 18%,
-			transparent 46%,
-			rgba(10, 11, 16, 0.82) 78%,
-			rgba(9, 10, 15, 0.94) 100%
-		);
-	}
-	.card[data-fullart='true'] .content {
-		margin-top: auto;
-		flex: none;
-	}
-	.card[data-fullart='true'] .plate {
-		background: rgba(10, 11, 16, 0.66);
-		backdrop-filter: blur(6px);
-	}
-	.card[data-fullart='true'] .cartouche {
-		flex: none;
-		background: rgba(8, 9, 14, 0.6);
-		backdrop-filter: blur(9px);
-		box-shadow:
-			inset 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.35),
-			inset 0 -1px 0 rgba(255, 255, 255, 0.06);
-	}
 
 	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
 	   simeydotme), et le personnage DÉTOURÉ vient PAR-DESSUS le holo → il ressort
