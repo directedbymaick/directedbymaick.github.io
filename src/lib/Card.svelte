@@ -442,7 +442,7 @@
 		object-position: var(--art-pos, center 8%);
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
 		/* calage vertical fin pour matcher l'illustration de fond */
-		transform: translateY(-3.5%);
+		transform: translateY(-4%);
 		pointer-events: none;
 	}
 	/* voile sombre de la partie basse : DEVANT le sujet (z-index 2), DERRIÈRE le
