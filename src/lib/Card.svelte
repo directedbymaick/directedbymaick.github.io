@@ -466,14 +466,14 @@
 	}
 	/* coût : nombre nu, auréole d'or au-dessus (comme sur une tête) */
 	.card[data-fullart='true'] .cost {
-		top: 6cqw;
-		left: 5.4cqw;
+		top: 7.4cqw;
+		left: 7cqw;
 		width: auto;
 		height: auto;
 		background: none;
 		box-shadow: none;
 		overflow: visible;
-		font-size: 8.6cqw;
+		font-size: 6.4cqw;
 		text-shadow: 0 0.4cqw 1.4cqw rgba(0, 0, 0, 0.85);
 	}
 	.card[data-fullart='true'] .cost::before {
@@ -481,18 +481,18 @@
 		position: absolute;
 		inset: auto;
 		left: 50%;
-		top: -3.4cqw;
-		width: 9.5cqw;
-		height: 3cqw;
+		top: -2.5cqw;
+		width: 7cqw;
+		height: 2.2cqw;
 		transform: translateX(-50%) rotate(-9deg);
 		border-radius: 50%;
-		border: 0.45cqw solid rgba(232, 200, 118, 0.95);
+		border: 0.35cqw solid rgba(232, 200, 118, 0.95);
 		border-bottom-color: rgba(232, 200, 118, 0.35);
 		background: none;
 		padding: 0;
 		-webkit-mask: none;
 		mask: none;
-		filter: blur(0.35px) drop-shadow(0 0 2.4cqw rgba(201, 164, 69, 0.8));
+		filter: blur(0.35px) drop-shadow(0 0 1.8cqw rgba(201, 164, 69, 0.8));
 	}
 	.card[data-fullart='true'] .cost::after {
 		display: none;
