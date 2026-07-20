@@ -419,18 +419,9 @@
 		pointer-events: none;
 	}
 
-	/* ===== SHOWCASE : le personnage détouré flotte au-dessus d'un holo prismatique ===== */
-	.art.showcase .art-base {
-		/* le fond devient un halo sombre et flou : le holo scintille dessus,
-		   sans double du personnage pour parasiter la lecture */
-		filter: brightness(0.32) saturate(1.25) blur(9px);
-		transform: scale(1.14);
-	}
-	.art.showcase .scrim {
-		background:
-			radial-gradient(120% 80% at 50% 28%, transparent 42%, rgba(8, 9, 14, 0.5) 100%),
-			linear-gradient(180deg, transparent 62%, #101117 100%);
-	}
+	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
+	   simeydotme), et le personnage DÉTOURÉ vient PAR-DESSUS le holo → il ressort
+	   du foil qui ne scintille que sur le décor autour de lui. ===== */
 	.art .cutout {
 		z-index: 6; /* AU-DESSUS du shine/glare → le holo passe DERRIÈRE le sujet */
 		object-fit: cover;
