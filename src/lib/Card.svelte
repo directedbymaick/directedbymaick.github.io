@@ -129,7 +129,7 @@
 		data-rarity={holoRarity}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -458,8 +458,8 @@
 		object-fit: cover;
 		object-position: var(--art-pos, center 8%);
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
-		/* calage vertical : défaut -4%, surchargeable par carte via --cutout-y */
-		transform: translateY(var(--cutout-y, -4%));
+		/* calage vertical + échelle, surchargeables par carte (--cutout-y / --cutout-scale) */
+		transform: translateY(var(--cutout-y, -4%)) scale(var(--cutout-scale, 1));
 		pointer-events: none;
 	}
 	/* voile sombre de la partie basse : DEVANT le sujet (z-index 2), DERRIÈRE le
