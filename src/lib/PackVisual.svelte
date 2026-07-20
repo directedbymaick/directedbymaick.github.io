@@ -318,8 +318,6 @@
 		<canvas bind:this={ripCv} class="ripcv" aria-hidden="true"></canvas>
 	</div>
 
-	<div class="leak" aria-hidden="true"></div>
-
 	<!-- rails latéraux : la soudure du sachet -->
 	<div class="rail left" aria-hidden="true"></div>
 	<div class="rail right" aria-hidden="true"></div>
@@ -331,7 +329,6 @@
 		<div class="plastic" aria-hidden="true"></div>
 		<div class="foilgrain" aria-hidden="true"></div>
 		<div class="sheen" aria-hidden="true"></div>
-			<div class="aura" aria-hidden="true"></div>
 
 		<span class="brand-pill">Expelled</span>
 		<span class="badges">
@@ -353,6 +350,10 @@
 	</div>
 
 	<div class="crimp-bottom" style="clip-path: {SAW_BOTTOM}" aria-hidden="true"></div>
+
+	<!-- la lueur : cœur brillant sur la fente + scintillement, DEVANT — suit le
+	     pack (enfant de .pack). Le halo qui rayonne derrière est sur .pack::before. -->
+	<div class="aura" aria-hidden="true"></div>
 </div>
 </div>
 
@@ -447,87 +448,61 @@
 			opacity 0.5s ease;
 	}
 
-	/* la lumière fuit UNIQUEMENT par la fente déchirée (sous l'opercule) et
-	   monte vers le haut, dans l'ouverture qui s'élargit — jamais autour du sachet.
-	   .leak = le cœur brillant le long de la coupe ; ::after = le faisceau qui
-	   s'échappe vers le haut. Couleur du meilleur tirage du sachet. */
-	.leak {
-		position: absolute;
-		top: 8%; /* la ligne de déchirure, juste sous l'opercule */
-		left: 10%;
-		right: 10%;
-		height: 1.6%;
-		z-index: 4;
-		pointer-events: none;
-		border-radius: 50%;
-		background: radial-gradient(
-			60% 130% at 50% 50%,
-			#fff,
-			color-mix(in srgb, var(--glow) 80%, #fff) 40%,
-			color-mix(in srgb, var(--glow) 30%, transparent) 70%,
-			transparent 88%
-		);
-		filter: blur(1.4px);
-		opacity: calc(var(--p, 0) * var(--p, 0));
-		transform: scaleX(calc(0.55 + var(--p, 0) * 0.55));
-		mix-blend-mode: screen;
-	}
-	.pack.bursting .leak {
-		animation: leakflare 0.5s ease-out forwards;
-	}
-	@keyframes leakflare {
-		to {
-			opacity: 1;
-			transform: scaleX(1.35);
-			filter: blur(2.4px);
-		}
-	}
-
-	/* ---------- l'aura : le cœur de lumière DANS le pack ----------
-	   Vit dans .body (overflow:hidden) → jamais un pixel hors de la silhouette.
-	   Brillante à l'ouverture (haut), elle irradie vers le bas et scintille. */
+	/* ---------- LA LUEUR : la lumière naturelle qui remplit la DÉCHIRURE ----------
+	   Une bande PLEINE LARGEUR ancrée sur la ligne de coupe (haut du corps). À
+	   mesure qu'on arrache, elle grandit et s'intensifie : on voit la lumière
+	   sourdre de l'ouverture qui s'élargit, comme un vrai sachet qu'on déchire.
+	   Enfant de .pack → elle suit l'inclinaison et le flottement. */
 	.aura {
 		position: absolute;
-		inset: 0;
-		z-index: 3;
+		z-index: 6;
+		left: 1.6%; /* pile la largeur du corps */
+		right: 1.6%;
+		top: 8.2%; /* la ligne de déchirure */
+		height: 3.6%;
 		pointer-events: none;
 		mix-blend-mode: screen;
-		background: radial-gradient(
-			135% 62% at 50% 4%,
-			color-mix(in srgb, var(--glow) 92%, #fff) 0%,
-			color-mix(in srgb, var(--glow) 55%, transparent) 22%,
-			color-mix(in srgb, var(--glow) 20%, transparent) 46%,
-			transparent 72%
+		transform-origin: center top;
+		/* pleine largeur : coeur blanc sur la coupe, fondu vers le bas dans le pack */
+		background: linear-gradient(
+			180deg,
+			#fff 0%,
+			color-mix(in srgb, var(--glow) 82%, #fff) 16%,
+			color-mix(in srgb, var(--glow) 45%, transparent) 46%,
+			color-mix(in srgb, var(--glow) 16%, transparent) 72%,
+			transparent 100%
 		);
-		opacity: calc(var(--p, 0) * var(--p, 0) * 1.15);
+		border-radius: 0 0 6px 6px;
+		filter: blur(1.4px);
+		opacity: calc(var(--p, 0) * var(--p, 0) * 1.4);
+		transform: scaleY(calc(0.5 + var(--p, 0) * 5.5)); /* grandit en déchirant */
 	}
-	/* le scintillement : les paillettes de simeydotme, allumées là où l'aura brille,
+	/* le scintillement : les paillettes de simeydotme, allumées dans la lumière,
 	   qui « twinklent » par sauts — une lumière vivante, pas un aplat */
 	.aura::before {
 		content: '';
 		position: absolute;
 		inset: 0;
 		background-image: url('/img/glitter.png');
-		background-size: 26%;
+		background-size: 60% 220%;
 		mix-blend-mode: screen;
-		-webkit-mask-image: radial-gradient(135% 60% at 50% 2%, #fff 0%, rgba(255, 255, 255, 0.35) 40%, transparent 66%);
-		mask-image: radial-gradient(135% 60% at 50% 2%, #fff 0%, rgba(255, 255, 255, 0.35) 40%, transparent 66%);
-		opacity: calc(var(--p, 0) * 0.9);
+		-webkit-mask-image: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.5) 40%, transparent 78%);
+		mask-image: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.5) 40%, transparent 78%);
+		opacity: calc(var(--p, 0) * 0.85);
 		animation: twinkle 1.9s steps(1, end) infinite;
 	}
 	@keyframes twinkle {
 		0% { background-position: 0% 0%; }
-		25% { background-position: 34% 22%; }
-		50% { background-position: 12% 58%; }
-		75% { background-position: 58% 40%; }
+		25% { background-position: 40% 0%; }
+		50% { background-position: 15% 30%; }
+		75% { background-position: 70% 10%; }
 		100% { background-position: 0% 0%; }
 	}
-	/* halo intérieur qui gonfle à l'arrachage — reste dans le corps */
 	.pack.bursting .aura {
 		animation: auraflare 0.5s ease-out forwards;
 	}
 	@keyframes auraflare {
-		to { opacity: 1.5; }
+		to { opacity: 1.6; transform: scaleY(9); }
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.aura::before { animation: none; }
