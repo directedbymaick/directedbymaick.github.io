@@ -9,7 +9,17 @@
 
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'prism';
 
-export type FoilPreset = 'mat' | 'holo' | 'prismatic' | 'galaxy' | 'prism';
+export type FoilPreset =
+	| 'mat'
+	| 'holo'
+	| 'amazing'
+	| 'cosmos'
+	| 'secret'
+	| 'radiant'
+	// legacy (conservés pour rétro-compat des anciennes données)
+	| 'prismatic'
+	| 'galaxy'
+	| 'prism';
 
 /** Matériau du cadre — la rareté EST un matériau. */
 export type FrameMaterial = 'carbone' | 'nacre' | 'argent' | 'or' | 'prisme';

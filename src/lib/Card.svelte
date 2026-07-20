@@ -92,14 +92,22 @@
 	);
 
 	/* notre preset → la rareté simeydotme dont on emprunte la recette exacte */
+	/* notre preset → la rareté simeydotme dont on emprunte la recette exacte.
+	   6 foils : commune (subtil) · holo (regular) · amazing (illusion) ·
+	   cosmos (galaxie) · secret (rainbow alt) · radiant (rayons métalliques). */
 	const holoRarity = $derived(
-		foil.preset === 'holo' || foil.preset === 'prismatic'
-			? 'rare holo'
-			: foil.preset === 'galaxy'
-				? 'rare holo cosmos'
-				: foil.preset === 'prism'
-					? 'rare rainbow alt'
-					: ''
+		{
+			mat: 'commune',
+			holo: 'rare holo',
+			amazing: 'amazing rare',
+			cosmos: 'rare holo cosmos',
+			secret: 'rare rainbow alt',
+			radiant: 'radiant rare',
+			// legacy
+			prismatic: 'rare holo',
+			galaxy: 'rare holo cosmos',
+			prism: 'rare rainbow alt'
+		}[foil.preset] ?? ''
 	);
 </script>
 
@@ -898,6 +906,15 @@
 	.card.hover .prism-veil {
 		visibility: visible;
 		transition: opacity 0.25s ease;
+	}
+	/* On est passé aux foils simeydotme (data-rarity → recettes shine/glare).
+	   On neutralise les anciennes couches holo maison ; seul le glare diffus
+	   (.glare/.glare2) reste — c'est la lens douce commune à toutes les cartes. */
+	.foil-a,
+	.foil-b,
+	.sparkles,
+	.prism-veil {
+		display: none;
 	}
 
 	/* holo (rare) : bandes irisées double couche en contre-parallaxe.

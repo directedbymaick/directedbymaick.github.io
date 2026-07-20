@@ -7,7 +7,8 @@
 	// Le Lab est la charte design incarnée : on règle la matière en live,
 	// puis on reporte les choix dans charter.json / les presets.
 
-	const foilPresets: FoilPreset[] = ['mat', 'holo', 'prismatic', 'galaxy', 'prism'];
+	// 6 foils simeydotme : commune · rare · épique · légendaire · prisma 1 · prisma 2
+	const foilPresets: FoilPreset[] = ['mat', 'holo', 'amazing', 'cosmos', 'secret', 'radiant'];
 	const rarities = Object.keys(charter.rarities) as Rarity[];
 	const factions = Object.keys(charter.factions) as FactionId[];
 
