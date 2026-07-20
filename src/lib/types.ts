@@ -66,6 +66,9 @@ export interface CardData {
 	/** Illustration détourée (fond transparent) pour le foil « showcase » : le
 	    personnage flotte au-dessus d'un holo prismatique. Optionnel. */
 	cutout?: string;
+	/** Calage vertical du détourage (translateY, ex. '-9%') pour matcher pile
+	    l'illustration de fond. Défaut global : -4%. Optionnel, par carte. */
+	cutoutY?: string;
 	/** Obsolète : toutes les cartes sont rendues en full art (le champ est ignoré par Card.svelte). */
 	fullArt?: boolean;
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
