@@ -433,6 +433,41 @@
 		pointer-events: none;
 	}
 
+	/* ===== FULL ART : illustration PLEIN CADRE, pas de cadre inférieur =====
+	   L'art remplit toute la carte ; le nom + les stats sont posés en bas sur un
+	   dégradé, la cartouche de texte disparaît. Déclenché par le prop `fullArt`. */
+	.card[data-fullart='true'] .art {
+		height: 100%;
+	}
+	.card[data-fullart='true'] .content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin-top: 0;
+		z-index: 6;
+		padding: 16cqw 3.4cqw 3.4cqw;
+		background: linear-gradient(
+			180deg,
+			transparent 0%,
+			rgba(6, 7, 11, 0.72) 58%,
+			rgba(6, 7, 11, 0.94) 100%
+		);
+	}
+	.card[data-fullart='true'] .cartouche {
+		display: none;
+	}
+	.card[data-fullart='true'] .plate {
+		background: none;
+		box-shadow: none;
+		border: none;
+		padding: 0 0 0.6cqw;
+	}
+	.card[data-fullart='true'] .plate::before,
+	.card[data-fullart='true'] .plate::after {
+		display: none;
+	}
+
 	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
 	   simeydotme), et le personnage DÉTOURÉ vient PAR-DESSUS le holo → il ressort
 	   du foil qui ne scintille que sur le décor autour de lui. ===== */

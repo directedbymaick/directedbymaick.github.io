@@ -51,17 +51,18 @@ function pickCard(rarity: Rarity, avoid: Set<string>): CardData {
 /** Chance qu'une carte éligible sorte en version Full Art. Publiée sur la page. */
 export const FULLART_RATE = 0.06;
 
-function eligibleFullArt(c: CardData): boolean {
+export function eligibleFullArt(c: CardData): boolean {
 	return !!c.fullArt || c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism';
 }
 
-/** Vue Full Art d'une carte : cadre prismatique + foil « showcase ». Si la carte a
-    un détourage (cutout), le personnage flotte au-dessus du holo ; sinon, holo seul. */
+/** Vue Full Art d'une carte : illustration PLEIN CADRE (full-bleed, pas de cadre
+    inférieur), cadre prismatique + holo secret. Le layout full-bleed est déclenché
+    par le prop `fullArt` du composant Card. */
 export function fullArtView(c: CardData): CardData {
 	const v = structuredClone(c);
 	v.id = `${c.id}--fullart`;
 	v.rarity = 'prism';
-	v.gene = { ...v.gene, foilPreset: 'showcase' };
+	v.gene = { ...v.gene, foilPreset: 'secret' };
 	return v;
 }
 

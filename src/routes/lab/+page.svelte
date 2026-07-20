@@ -2,7 +2,7 @@
 	import Card from '$lib/Card.svelte';
 	import { cards } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import { fullArtView } from '$lib/gacha';
+	import { fullArtView, eligibleFullArt } from '$lib/gacha';
 	import type { CardData, FactionId, FoilPreset, Rarity } from '$lib/types';
 
 	// Le Lab est la charte design incarnée : on règle la matière en live,
@@ -71,7 +71,7 @@
 
 	// Version Full Art (le chase) : dispo pour les cartes qui ont un détourage.
 	let showFullArt = $state(false);
-	const hasFullArt = $derived(!!base.cutout);
+	const hasFullArt = $derived(eligibleFullArt(base));
 	// snapshot : fullArtView fait un structuredClone → il faut un objet simple, pas le proxy $state
 	const preview = $derived(
 		showFullArt && hasFullArt ? fullArtView($state.snapshot(base) as CardData) : base
@@ -89,7 +89,7 @@
 
 <div class="lab" style="--card-w: {cardW}px">
 	<div class="preview">
-		<Card card={preview} />
+		<Card card={preview} fullArt={showFullArt && hasFullArt} />
 	</div>
 
 	<form class="controls" onsubmit={(e) => e.preventDefault()}>
@@ -105,7 +105,7 @@
 		{#if hasFullArt}
 			<label class="row toggle fullart-toggle">
 				<input type="checkbox" bind:checked={showFullArt} />
-				Version Full Art (détourage sur holo)
+				Version Full Art (illustration plein cadre)
 			</label>
 		{/if}
 
