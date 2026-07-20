@@ -352,7 +352,13 @@
 		</div>
 	{:else if stage === 'reveal'}
 		<div class="stage-inner">
-			<div class="fan">
+			<div
+					class="reveal-glow"
+					class:prisma={packPrisma}
+					aria-hidden="true"
+					style="--rglow: {TIER_GLOW[bestTier]}"
+				></div>
+				<div class="fan">
 				<!-- couche de lueurs : derrière TOUT l'éventail, jamais coupée par une carte voisine.
 				     La lueur ne s'allume qu'APRÈS la révélation — le dos d'une carte ne trahit rien. -->
 				<div class="glowrail" aria-hidden="true">
@@ -718,8 +724,61 @@
 		);
 	}
 
+	/* ---------- reveal : apparition soignée — lumière douce qui monte ---------- */
+	.reveal-glow {
+		position: absolute;
+		left: 50%;
+		top: 34%;
+		width: min(720px, 82%);
+		height: 60%;
+		translate: -50% -50%;
+		z-index: 0;
+		pointer-events: none;
+		/* très diffuse : aucune forme, aucun bord — juste une chaleur qui sourd */
+		background: radial-gradient(
+			50% 50% at 50% 50%,
+			color-mix(in srgb, var(--rglow, #e9c96a) 34%, transparent) 0%,
+			color-mix(in srgb, var(--rglow, #e9c96a) 12%, transparent) 42%,
+			transparent 74%
+		);
+		filter: blur(34px);
+		mix-blend-mode: screen;
+		animation: reveal-swell 0.9s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1)) both;
+	}
+	.reveal-glow.prisma {
+		background: radial-gradient(
+			50% 50% at 50% 50%,
+			rgba(203, 184, 255, 0.32) 0%,
+			rgba(168, 200, 255, 0.12) 42%,
+			transparent 74%
+		);
+	}
+	/* la montée : fondu + léger gonflement, puis respiration lente — pas un flash */
+	@keyframes reveal-swell {
+		0% {
+			opacity: 0;
+			scale: 0.86;
+		}
+		60% {
+			opacity: 1;
+			scale: 1.03;
+		}
+		100% {
+			opacity: 0.82;
+			scale: 1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.reveal-glow {
+			animation: none;
+			opacity: 0.7;
+		}
+	}
+
 	/* ---------- reveal : l'éventail de dos à retourner ---------- */
 	.fan {
+		position: relative;
+		z-index: 1;
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
