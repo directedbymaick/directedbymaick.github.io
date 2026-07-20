@@ -1018,7 +1018,7 @@
 		mask-image:
 			var(--grain),
 			radial-gradient(farthest-corner circle at var(--px) var(--py), #fff 16%, transparent 78%);
-		mask-size: 28cqw, cover;
+		mask-size: 48cqw, cover;
 		-webkit-mask-composite: source-in;
 		mask-composite: intersect;
 		mix-blend-mode: color-dodge;
@@ -1036,7 +1036,7 @@
 		background-size: 300% 300%;
 		background-position: calc(100% - var(--bgx, 50%)) var(--bgy, 50%);
 		mask-image: var(--grain);
-		mask-size: 52cqw;
+		mask-size: 72cqw;
 		mix-blend-mode: overlay;
 		filter: brightness(0.95) contrast(1.25) saturate(1.4);
 	}
@@ -1055,11 +1055,11 @@
 				var(--band-angle),
 				var(--c0) 0%, #ffe6a7 8%, var(--c1) 16%, #a7e6ff 24%, var(--c2) 32%, #e6a7ff 40%, var(--c0) 48%
 			);
-		background-size: 15cqw 15cqw, 220% 400%;
+		background-size: 26cqw 26cqw, 220% 400%;
 		background-position: center center, 0% var(--bgy, 50%);
 		background-blend-mode: overlay;
 		mix-blend-mode: color-dodge;
-		filter: brightness(calc(var(--from-center) * 0.35 + 0.35)) contrast(2.6) saturate(1.8);
+		filter: brightness(calc(var(--from-center) * 0.3 + 0.3)) contrast(1.7) saturate(1.7);
 	}
 	.card[data-foil='prismatic'] .sparkles::before {
 		content: '';
@@ -1071,11 +1071,11 @@
 				calc(var(--band-angle) - 60deg),
 				var(--c1) 0%, #ffe9c4 9%, var(--c2) 18%, #c4e0ff 27%, var(--c1) 36%
 			);
-		background-size: 15cqw 15cqw, 400% 400%;
+		background-size: 26cqw 26cqw, 400% 400%;
 		background-position: center center, calc(var(--bgx, 50%) * -1.5) calc(var(--bgy, 50%) * -1.5);
 		background-blend-mode: overlay;
 		mix-blend-mode: color-dodge;
-		filter: brightness(calc(var(--from-center) * 0.5 + 0.55)) contrast(3) saturate(1.2);
+		filter: brightness(calc(var(--from-center) * 0.4 + 0.5)) contrast(1.9) saturate(1.2);
 		opacity: calc(1.1 - var(--from-center) * 0.4);
 	}
 	.card[data-foil='prismatic'].hover .sparkles {
