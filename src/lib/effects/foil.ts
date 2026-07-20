@@ -19,16 +19,25 @@ function mulberry32(seed: number): () => number {
 }
 
 /** Masque de bruit procédural : SVG feTurbulence encodé en data-URI. */
-export function noiseMaskUri(seed: number, baseFrequency: number, octaves = 2): string {
+export function noiseMaskUri(
+	seed: number,
+	baseFrequency: number,
+	octaves = 2,
+	table = '0 0 0 .4 .7 1'
+): string {
 	const svg =
 		`<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">` +
 		`<filter id="n"><feTurbulence type="fractalNoise" baseFrequency="${baseFrequency}" ` +
 		`numOctaves="${octaves}" seed="${seed % 1000}" stitchTiles="stitch"/>` +
 		`<feColorMatrix type="saturate" values="0"/>` +
-		`<feComponentTransfer><feFuncA type="discrete" tableValues="0 0 0 .4 .7 1"/></feComponentTransfer>` +
+		`<feComponentTransfer><feFuncA type="discrete" tableValues="${table}"/></feComponentTransfer>` +
 		`</filter><rect width="256" height="256" filter="url(%23n)"/></svg>`;
 	return `url("data:image/svg+xml,${svg.replaceAll('"', "'").replaceAll('#', '%23').replaceAll('<', '%3C').replaceAll('>', '%3E')}")`;
 }
+
+/** Paillettes : points épars ultra-contrastés — l'équivalent procédural du
+ *  glitter.png de packs.com (seuls les pics du bruit survivent). */
+const GLITTER_TABLE = '0 0 0 0 0 0 0 .85 1';
 
 export interface FoilParams {
 	/** Variables CSS injectées sur l'élément racine de la carte. */
@@ -60,7 +69,13 @@ export function resolveFoil(card: CardData, frameColor: string): FoilParams {
 		'--hue-shift': `${hueShift}deg`,
 		'--grain': noiseMaskUri(card.gene.seed, grainFreq, 2),
 		'--galaxy': noiseMaskUri(card.gene.seed + 7, galaxyFreq, 3),
-		'--sparkle': noiseMaskUri(card.gene.seed + 13, sparkleFreq, 1)
+		'--sparkle': noiseMaskUri(card.gene.seed + 13, sparkleFreq, 1),
+		/* Foil v4 (recettes packs.com) : paillettes éparses, second plan de
+		   nébuleuse, et graine de position — chaque carte a SON foil. */
+		'--glitter': noiseMaskUri(card.gene.seed + 21, 1.15 + rand() * 0.5, 2, GLITTER_TABLE),
+		'--galaxy2': noiseMaskUri(card.gene.seed + 31, galaxyFreq * 2.1, 3),
+		'--seedx': `${Math.round(rand() * 100)}%`,
+		'--seedy': `${Math.round(rand() * 100)}%`
 	};
 
 	return { vars, preset: card.gene.foilPreset };

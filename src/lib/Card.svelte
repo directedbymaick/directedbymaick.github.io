@@ -933,6 +933,25 @@
 		mix-blend-mode: overlay;
 		filter: brightness(0.9) contrast(1.3) saturate(1.3);
 	}
+	/* les BARRES D'EXCLUSION packs.com : deux bandes grises croisées, fondues en
+	   exclusion puis posées en hard-light — l'interférence métallique du foil.
+	   (héritées du masque du parent : elles ne vivent qu'autour du pointeur) */
+	.card[data-foil='holo'] .foil-a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(calc(var(--ry, 0deg) * -0.9), #000 24%, #797979 30%, #000 36%),
+			linear-gradient(calc(var(--ry, 0deg) * 0.9), #000 24%, #797979 30%, #000 36%);
+		background-size: 300% 300%;
+		background-position:
+			50% calc(var(--bgy, 50%) * 1.7),
+			50% calc(120% - var(--bgy, 50%) * 1.3);
+		background-blend-mode: exclusion;
+		mix-blend-mode: hard-light;
+		filter: contrast(0.8) brightness(1.05);
+		opacity: 0.75;
+	}
 
 	/* prismatic (épique) : roue conique + bandes en contre-parallaxe */
 	.card[data-foil='prismatic'] .foil-a {
@@ -979,6 +998,22 @@
 		mask-size: 52cqw;
 		mix-blend-mode: overlay;
 		filter: brightness(0.95) contrast(1.25) saturate(1.4);
+	}
+	/* le GLITTER packs.com : points épars en plus-lighter, allumés près du
+	   pointeur ; le masque glisse avec lui (+ graine par carte) → il SCINTILLE */
+	.card[data-foil='prismatic'] .sparkles {
+		background: radial-gradient(
+			55cqw 55cqw at var(--px) var(--py),
+			#fff 0%,
+			#ffe9c4 30%,
+			transparent 68%
+		);
+		mask-image: var(--glitter);
+		mask-size: 17cqw;
+		mask-position: calc(var(--seedx, 0%) + (var(--pxn, 0.5) - 0.5) * 9%)
+			calc(var(--seedy, 0%) + (var(--pyn, 0.5) - 0.5) * 9%);
+		mix-blend-mode: plus-lighter;
+		filter: contrast(2) brightness(1.05);
 	}
 
 	/* galaxy (légendaire) : nébuleuse + bandes lentes + paillettes */
@@ -1029,10 +1064,33 @@
 			#ffe9c4 25%,
 			transparent 65%
 		);
-		mask-image: var(--sparkle);
-		mask-size: 24cqw;
+		mask-image: var(--glitter);
+		mask-size: 19cqw;
+		mask-position: calc(var(--seedx, 0%) + (var(--pxn, 0.5) - 0.5) * 8%)
+			calc(var(--seedy, 0%) + (var(--pyn, 0.5) - 0.5) * 8%);
+		mix-blend-mode: plus-lighter;
+		filter: contrast(2.2) brightness(0.95);
+	}
+	/* le COSMOS packs.com : un SECOND plan de nébuleuse en contre-parallaxe —
+	   la profondeur du foil galaxie vient de ce décalage entre les deux nappes */
+	.card[data-foil='galaxy'] .prism-veil {
+		z-index: 4;
+		background:
+			radial-gradient(
+				100cqw 80cqw at calc(100% - var(--bgx, 50%)) calc(100% - var(--bgy, 50%)),
+				color-mix(in oklab, var(--c2) 72%, #fff) 0%,
+				transparent 55%
+			),
+			linear-gradient(calc(var(--band-angle) + 90deg), var(--c1), var(--c0), var(--c2));
+		background-blend-mode: screen;
+		mask-image: var(--galaxy2);
+		mask-size: cover;
+		mask-position: calc(100% - var(--seedx, 0%)) var(--seedy, 0%);
 		mix-blend-mode: color-dodge;
-		filter: contrast(2.2) brightness(0.9);
+		filter: brightness(0.55) contrast(1.5) saturate(1.5);
+	}
+	.card[data-foil='galaxy'].hover .prism-veil {
+		opacity: calc(0.25 + var(--from-center) * 0.35);
 	}
 
 	/* prism (prismatique) : l'art reçoit le foil conique ET un voile irise
@@ -1081,6 +1139,38 @@
 		mask-size: 50cqw;
 		mix-blend-mode: overlay;
 		filter: brightness(0.9) contrast(1.3) saturate(1.5);
+	}
+	/* barres d'exclusion, version prismatique : le croisement est plus ouvert */
+	.card[data-foil='prism'] .foil-a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(calc(var(--ry, 0deg) * -1.1), #000 22%, #8a8a8a 30%, #000 38%),
+			linear-gradient(calc(var(--ry, 0deg) * 1.1), #000 22%, #8a8a8a 30%, #000 38%);
+		background-size: 300% 300%;
+		background-position:
+			50% calc(var(--bgy, 50%) * 1.7),
+			50% calc(120% - var(--bgy, 50%) * 1.3);
+		background-blend-mode: exclusion;
+		mix-blend-mode: hard-light;
+		filter: contrast(0.8) brightness(1.08);
+		opacity: 0.8;
+	}
+	/* glitter froid — blanc-violet, la lumière d'un autre monde */
+	.card[data-foil='prism'] .sparkles {
+		background: radial-gradient(
+			58cqw 58cqw at var(--px) var(--py),
+			#fff 0%,
+			#e8dcff 28%,
+			transparent 66%
+		);
+		mask-image: var(--glitter);
+		mask-size: 15cqw;
+		mask-position: calc(var(--seedx, 0%) + (var(--pxn, 0.5) - 0.5) * 10%)
+			calc(var(--seedy, 0%) + (var(--pyn, 0.5) - 0.5) * 10%);
+		mix-blend-mode: plus-lighter;
+		filter: contrast(2.2) brightness(1.05);
 	}
 	.card[data-foil='prism'] .prism-veil {
 		z-index: 5;

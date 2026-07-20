@@ -223,7 +223,11 @@ Principes de composition (identiques dans chaque recette) :
    `--card-effect-*`, la maths exacte (rotations divisées /3.5 et /2.8, fond borné 37-63 %,
    atan2 pour l'angle holo), le retour-ressort à la sortie, le fondu par
    `--card-effect-opacity`, le masque radial au pointeur, et le glare double.
-   Générer NOS textures (glitter/grain/iri) en SVG procédural — pas les leurs.
+   Générer NOS textures (glitter/grain/iri) en SVG procédural — pas les leurs. ✅ fait.
+3bis. **Foil v4** ✅ fait : barres d'exclusion hard-light (holo + prism), glitter
+   plus-lighter à masque glissant + graine par carte (epic/legendary/prism — il
+   scintille au mouvement), cosmos 2 plans de nébuleuse en contre-parallaxe
+   (legendary), textures procédurales (--glitter table éparse, --galaxy2).
 4. **Peel 2D évolué** : notre PackVisual garde le drag ; adopter le mapping
    progress = dx/largeur, l'inclinaison `rotate(0.18*progress rad)`, la languette qui
    suit le doigt, le retour élastique sous le seuil, et l'anticipation-chute à la sortie.
