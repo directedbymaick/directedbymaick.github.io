@@ -7,13 +7,42 @@
 	// Le Lab est la charte design incarnée : on règle la matière en live,
 	// puis on reporte les choix dans charter.json / les presets.
 
-	// 6 foils simeydotme : commune · rare · épique · légendaire · prisma 1 · prisma 2
-	const foilPresets: FoilPreset[] = ['mat', 'holo', 'amazing', 'cosmos', 'secret', 'radiant'];
+	// Noms lisibles des foils (recettes simeydotme)
+	const foilLabels: Record<FoilPreset, string> = {
+		mat: 'Satin mat',
+		holo: 'Holographique',
+		cosmos: 'Cosmique',
+		amazing: 'Cristallin',
+		radiant: 'Radiant',
+		secret: 'Prismatique',
+		// legacy → même famille
+		prismatic: 'Holographique',
+		galaxy: 'Cosmique',
+		prism: 'Prismatique'
+	};
+	// Foils disponibles PAR rareté (le 1er = le foil par défaut de la charte).
+	// Échelle premium : mat → holo → cosmique → radiant → prismatique.
+	const rarityFoils: Record<Rarity, FoilPreset[]> = {
+		common: ['mat'],
+		rare: ['holo'],
+		epic: ['cosmos', 'amazing'],
+		legendary: ['radiant', 'cosmos'],
+		prism: ['secret', 'radiant']
+	};
+
 	const rarities = Object.keys(charter.rarities) as Rarity[];
 	const factions = Object.keys(charter.factions) as FactionId[];
 
 	let base = $state(structuredClone($state.snapshot(cards[0]) as CardData));
 	let cardW = $state(380);
+
+	const availableFoils = $derived(rarityFoils[base.rarity] ?? ['mat']);
+	// le foil reste toujours cohérent avec la rareté sélectionnée
+	$effect(() => {
+		if (!availableFoils.includes(base.gene.foilPreset)) {
+			base.gene.foilPreset = availableFoils[0];
+		}
+	});
 
 	function loadCard(id: string) {
 		const found = cards.find((c) => c.id === id);
@@ -22,7 +51,7 @@
 
 	function setRarity(r: Rarity) {
 		base.rarity = r;
-		base.gene.foilPreset = charter.rarities[r].foilPreset;
+		base.gene.foilPreset = rarityFoils[r][0];
 	}
 
 	function reroll() {
@@ -54,25 +83,33 @@
 			</select>
 		</label>
 
-		<label>
-			Rareté (applique le preset de la charte)
-			<select
-				value={base.rarity}
-				onchange={(e) => setRarity(e.currentTarget.value as Rarity)}
-			>
+		<div class="field">
+			<span class="field-label">Rareté</span>
+			<div class="chips">
 				{#each rarities as r (r)}
-					<option value={r}>{charter.rarities[r].name}</option>
+					<button
+						type="button"
+						class="chip"
+						class:on={base.rarity === r}
+						onclick={() => setRarity(r)}
+					>
+						{charter.rarities[r].name}
+					</button>
 				{/each}
-			</select>
-		</label>
+			</div>
+		</div>
 
 		<label>
-			Foil (override manuel)
-			<select bind:value={base.gene.foilPreset}>
-				{#each foilPresets as f (f)}
-					<option value={f}>{f}</option>
-				{/each}
-			</select>
+			Foil {availableFoils.length > 1 ? '— variantes de cette rareté' : ''}
+			{#if availableFoils.length > 1}
+				<select bind:value={base.gene.foilPreset}>
+					{#each availableFoils as f (f)}
+						<option value={f}>{foilLabels[f]}</option>
+					{/each}
+				</select>
+			{:else}
+				<span class="foil-static">{foilLabels[base.gene.foilPreset]}</span>
+			{/if}
 		</label>
 
 		<label>
@@ -182,6 +219,53 @@
 	}
 	button:hover {
 		border-color: #4a4f66;
+	}
+	/* Rareté en pastilles : on voit les combinaisons d'un coup d'œil */
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+	.field-label {
+		font-size: 0.9rem;
+		color: #b9b5a9;
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.chip {
+		align-self: auto;
+		padding: 0.4rem 0.85rem;
+		border-radius: 999px;
+		background: #1a1c26;
+		border: 1px solid #2c2f3d;
+		color: #b9b5a9;
+		font-size: 0.86rem;
+		font-weight: 550;
+		transition:
+			border-color 0.15s ease,
+			color 0.15s ease,
+			background 0.15s ease;
+	}
+	.chip:hover {
+		color: #e8e6df;
+	}
+	.chip.on {
+		background: rgba(213, 178, 94, 0.12);
+		border-color: rgba(213, 178, 94, 0.6);
+		color: #f0e6cf;
+		box-shadow: 0 0 14px rgba(213, 178, 94, 0.18);
+	}
+	.foil-static {
+		align-self: flex-start;
+		padding: 0.45rem 0.6rem;
+		border: 1px solid #2c2f3d;
+		border-radius: 6px;
+		background: #14161e;
+		color: #8f8b80;
+		font-size: 0.9rem;
 	}
 	fieldset {
 		border: 1px solid #2c2f3d;

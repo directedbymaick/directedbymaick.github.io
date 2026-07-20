@@ -21,14 +21,14 @@
 		"epic": {
 			"name": "Épique",
 			"material": "argent",
-			"foilPreset": "amazing",
+			"foilPreset": "cosmos",
 			"statBudgetPerCost": 2.4,
 			"maxCopies": 2
 		},
 		"legendary": {
 			"name": "Légendaire",
 			"material": "or",
-			"foilPreset": "cosmos",
+			"foilPreset": "radiant",
 			"statBudgetPerCost": 2.6,
 			"maxCopies": 1
 		},
