@@ -56,17 +56,23 @@ function drawCover(c: CanvasRenderingContext2D, im: HTMLImageElement) {
 
 function crimpBand(c: CanvasRenderingContext2D, y0: number, y1: number) {
 	const h = y1 - y0;
-	// la matière pincée : plus claire, désaturée, cannelée verticalement
+	// le sertissage ARGENTÉ : la feuille foil nue des soudures, cannelée
 	c.save();
-	c.fillStyle = 'rgba(235,238,245,0.09)';
+	const base = c.createLinearGradient(0, y0, 0, y1);
+	base.addColorStop(0, '#f5f7fa');
+	base.addColorStop(0.28, '#c6ccd6');
+	base.addColorStop(0.52, '#eef1f5');
+	base.addColorStop(0.78, '#aab2bf');
+	base.addColorStop(1, '#dfe4ea');
+	c.fillStyle = base;
 	c.fillRect(0, y0, TEX_W, h);
 	const pitch = TEX_W / 88;
 	for (let x = 0; x < TEX_W; x += pitch) {
 		const g = c.createLinearGradient(x, 0, x + pitch, 0);
-		g.addColorStop(0, 'rgba(0,0,0,0.30)');
-		g.addColorStop(0.35, 'rgba(255,255,255,0.14)');
-		g.addColorStop(0.7, 'rgba(0,0,0,0.10)');
-		g.addColorStop(1, 'rgba(0,0,0,0.30)');
+		g.addColorStop(0, 'rgba(70,78,92,0.28)');
+		g.addColorStop(0.35, 'rgba(255,255,255,0.35)');
+		g.addColorStop(0.7, 'rgba(120,128,142,0.12)');
+		g.addColorStop(1, 'rgba(70,78,92,0.28)');
 		c.fillStyle = g;
 		c.fillRect(x, y0, pitch, h);
 	}
