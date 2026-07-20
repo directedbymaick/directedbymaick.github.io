@@ -433,6 +433,111 @@
 		pointer-events: none;
 	}
 
+	/* ============ FULL ART « L'AURÉOLE » (maquette v1, commit eb80749) ============
+	   Zéro cadre, texte centré, coût NU surmonté d'une auréole d'or (comme sur une
+	   tête). Le nom et le texte reposent sur l'image via un simple dégradé. */
+	.card[data-fullart='true'] .art {
+		position: absolute;
+		inset: 0;
+		height: 100%;
+		z-index: 0;
+	}
+	.card[data-fullart='true'] .scrim {
+		background: linear-gradient(
+			180deg,
+			rgba(10, 10, 14, 0.32) 0%,
+			transparent 20%,
+			transparent 44%,
+			rgba(8, 9, 13, 0.9) 72%,
+			rgba(6, 7, 10, 0.97) 100%
+		);
+	}
+	/* pas de cadre : on aplatit la matière + le sertissage du corps */
+	.card[data-fullart='true'] .face {
+		border: none;
+		box-shadow: none;
+	}
+	.card[data-fullart='true'] .body {
+		box-shadow: none;
+	}
+	.card[data-fullart='true'] .frame-footer,
+	.card[data-fullart='true'] .etch {
+		display: none;
+	}
+	/* coût : nombre nu, auréole d'or au-dessus (comme sur une tête) */
+	.card[data-fullart='true'] .cost {
+		top: 6cqw;
+		left: 5.4cqw;
+		width: auto;
+		height: auto;
+		background: none;
+		box-shadow: none;
+		overflow: visible;
+		font-size: 8.6cqw;
+		text-shadow: 0 0.4cqw 1.4cqw rgba(0, 0, 0, 0.85);
+	}
+	.card[data-fullart='true'] .cost::before {
+		content: '';
+		position: absolute;
+		inset: auto;
+		left: 50%;
+		top: -3.4cqw;
+		width: 9.5cqw;
+		height: 3cqw;
+		transform: translateX(-50%) rotate(-9deg);
+		border-radius: 50%;
+		border: 0.45cqw solid rgba(232, 200, 118, 0.95);
+		border-bottom-color: rgba(232, 200, 118, 0.35);
+		background: none;
+		padding: 0;
+		-webkit-mask: none;
+		mask: none;
+		filter: blur(0.35px) drop-shadow(0 0 2.4cqw rgba(201, 164, 69, 0.8));
+	}
+	.card[data-fullart='true'] .cost::after {
+		display: none;
+	}
+	/* panneau : posé en bas, CENTRÉ, sans boîte */
+	.card[data-fullart='true'] .content {
+		position: absolute;
+		inset: auto 0 0;
+		margin: 0;
+		padding: 0 6cqw 5.4cqw;
+		text-align: center;
+		z-index: 6;
+	}
+	.card[data-fullart='true'] .plate {
+		background: none;
+		box-shadow: none;
+		border: none;
+		padding: 0;
+		align-self: stretch;
+	}
+	.card[data-fullart='true'] .plate::before,
+	.card[data-fullart='true'] .plate::after {
+		display: none;
+	}
+	.card[data-fullart='true'] .name {
+		text-align: center;
+	}
+	.card[data-fullart='true'] .cellline {
+		justify-content: center;
+	}
+	.card[data-fullart='true'] .cartouche {
+		background: none;
+		box-shadow: none;
+		backdrop-filter: none;
+		padding: 1.6cqw 0 0;
+		text-align: center;
+	}
+	.card[data-fullart='true'] .cartouche .watermark {
+		display: none;
+	}
+	.card[data-fullart='true'] .statbar {
+		justify-content: space-between;
+		padding: 0;
+	}
+
 
 	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
 	   simeydotme), et le personnage DÉTOURÉ vient PAR-DESSUS le holo → il ressort
