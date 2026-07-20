@@ -26,8 +26,10 @@
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const foil = $derived(resolveFoil(card, faction.color));
 
-	// Springs : le pointeur cible, la carte suit avec inertie (mode local).
-	const pointer = new Spring({ x: 0.5, y: 0.5 }, { stiffness: 0.12, damping: 0.5 });
+	// Spring : le pointeur cible, la carte suit avec inertie — et REVIENT par le
+	// même ressort à la sortie (jamais de snap). Légèrement sous-amorti, comme
+	// le {tension:300, friction:30} de packs.com (cf. PACKSCOM-CODES.md §2.4).
+	const pointer = new Spring({ x: 0.5, y: 0.5 }, { stiffness: 0.16, damping: 0.78 });
 	let hover = $state(false);
 
 	function onMove(e: PointerEvent) {
@@ -57,14 +59,25 @@
 
 	const px = $derived(pointer.current.x);
 	const py = $derived(pointer.current.y);
-	const rx = $derived(hover ? (py - 0.5) * -20 : 0);
-	const ry = $derived(hover ? (px - 0.5) * 24 : 0);
-	const fromCenter = $derived(hover ? Math.min(1, Math.hypot(px - 0.5, py - 0.5) * 2.2) : 0);
+	/* La maths packs.com, à l'identique (PACKSCOM-CODES.md §2.3) :
+	   tout dérive du spring — le retour au repos est donc lui aussi un ressort. */
+	const centerX = $derived((px - 0.5) * 100); // -50..50
+	const centerY = $derived((py - 0.5) * 100);
+	const rx = $derived(centerY / 2.8); // rotateX : max ±17.9°
+	const ry = $derived(-(centerX / 3.5)); // rotateY : max ±14.3°, sens « pression »
+	const fromCenter = $derived(Math.min(1, Math.hypot(centerX, centerY) / 50));
+	/* angle du pointeur (atan2, 0-360°) : oriente les bandes holo */
+	const pang = $derived(((Math.atan2(centerX, -centerY) * 180) / Math.PI + 360) % 360);
+	/* fond holo borné 37–63 % / 33–67 % : la retenue premium */
+	const bgx = $derived(37 + px * 26);
+	const bgy = $derived(33 + py * 34);
 
 	const pointerVars = $derived(
 		`--px: ${(px * 100).toFixed(2)}%; --py: ${(py * 100).toFixed(2)}%; ` +
 			`--pxn: ${px.toFixed(3)}; --pyn: ${py.toFixed(3)}; ` +
 			`--from-center: ${fromCenter.toFixed(3)}; ` +
+			`--pang: ${pang.toFixed(1)}deg; ` +
+			`--bgx: ${bgx.toFixed(2)}%; --bgy: ${bgy.toFixed(2)}%; ` +
 			`--rx: ${rx.toFixed(2)}deg; --ry: ${ry.toFixed(2)}deg`
 	);
 </script>
@@ -139,6 +152,7 @@
 				<div class="prism-veil" aria-hidden="true"></div>
 				<div class="etch" aria-hidden="true"></div>
 				<div class="glare" aria-hidden="true"></div>
+				<div class="glare2" aria-hidden="true"></div>
 			</div>
 			<footer class="frame-footer" aria-hidden="true">
 				<span class="ff-serial"
@@ -844,23 +858,33 @@
 	.foil-b,
 	.sparkles,
 	.glare,
+	.glare2,
 	.prism-veil {
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
 		opacity: 0;
-		/* hors activation, la couche ne coûte rien au compositeur */
+		/* sortie : l'holo S'ÉTEINT en fondu (le code packs.com — jamais de snap),
+		   puis la couche se masque pour ne rien coûter au compositeur au repos */
 		visibility: hidden;
+		transition:
+			opacity 0.45s ease,
+			visibility 0s linear 0.45s;
 	}
 	.card.hover .foil-a,
 	.card.hover .foil-b,
 	.card.hover .sparkles,
 	.card.hover .glare,
+	.card.hover .glare2,
 	.card.hover .prism-veil {
 		visibility: visible;
+		transition: opacity 0.25s ease;
 	}
 
-	/* holo (rare) : bandes irisées double couche en contre-parallaxe */
+	/* holo (rare) : bandes irisées double couche en contre-parallaxe.
+	   L'angle des bandes suit l'atan2 du pointeur ; la course du fond est
+	   bornée (37-63 %) ; le grain est INTERSECTÉ avec un masque radial au
+	   pointeur — l'holo ne s'allume qu'autour du curseur (le code packs.com). */
 	.card[data-foil='holo'] .foil-a {
 		background:
 			radial-gradient(
@@ -870,7 +894,7 @@
 				#000 100%
 			),
 			repeating-linear-gradient(
-				var(--band-angle),
+				calc(var(--band-angle) + (var(--pang, 180deg) - 180deg) * 0.12),
 				var(--c0) 0%,
 				#ffe6a7 7%,
 				var(--c1) 14%,
@@ -883,15 +907,19 @@
 		background-size: 120% 120%, 300% 300%;
 		background-position:
 			center,
-			calc(10% + var(--pxn) * 80%) calc(10% + var(--pyn) * 80%);
-		mask-image: var(--grain);
-		mask-size: 34cqw;
+			var(--bgx, 50%) var(--bgy, 50%);
+		mask-image:
+			var(--grain),
+			radial-gradient(farthest-corner circle at var(--px) var(--py), #fff 16%, transparent 78%);
+		mask-size: 34cqw, cover;
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
 		mix-blend-mode: color-dodge;
 		filter: brightness(0.7) contrast(1.6) saturate(1.4);
 	}
 	.card[data-foil='holo'] .foil-b {
 		background: repeating-linear-gradient(
-			calc(var(--band-angle) + 55deg),
+			calc(var(--band-angle) + 55deg - (var(--pang, 180deg) - 180deg) * 0.08),
 			var(--c2) 0%,
 			#fff3c4 9%,
 			var(--c1) 18%,
@@ -899,7 +927,7 @@
 			var(--c2) 36%
 		);
 		background-size: 340% 340%;
-		background-position: calc(20% + (1 - var(--pxn)) * 60%) calc(20% + (1 - var(--pyn)) * 60%);
+		background-position: calc(100% - var(--bgx, 50%)) calc(100% - var(--bgy, 50%));
 		mask-image: var(--grain);
 		mask-size: 58cqw;
 		mix-blend-mode: overlay;
@@ -927,14 +955,18 @@
 				var(--c0)
 			);
 		background-blend-mode: multiply;
-		mask-image: var(--grain);
-		mask-size: 28cqw;
+		mask-image:
+			var(--grain),
+			radial-gradient(farthest-corner circle at var(--px) var(--py), #fff 16%, transparent 78%);
+		mask-size: 28cqw, cover;
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
 		mix-blend-mode: color-dodge;
 		filter: brightness(0.68) contrast(1.7) saturate(1.6);
 	}
 	.card[data-foil='prismatic'] .foil-b {
 		background: repeating-linear-gradient(
-			var(--band-angle),
+			calc(var(--band-angle) + (var(--pang, 180deg) - 180deg) * 0.1),
 			var(--c1) 0%,
 			#ffe9c4 8%,
 			var(--c2) 16%,
@@ -942,7 +974,7 @@
 			var(--c1) 32%
 		);
 		background-size: 300% 300%;
-		background-position: calc(15% + (1 - var(--pxn)) * 70%) calc(15% + var(--pyn) * 70%);
+		background-position: calc(100% - var(--bgx, 50%)) var(--bgy, 50%);
 		mask-image: var(--grain);
 		mask-size: 52cqw;
 		mix-blend-mode: overlay;
@@ -958,16 +990,25 @@
 				transparent 55%
 			),
 			radial-gradient(90cqw 120cqw at var(--px) var(--py), var(--c0) 0%, transparent 60%),
-			linear-gradient(var(--band-angle), var(--c2), var(--c1), var(--c0));
+			linear-gradient(
+				calc(var(--band-angle) + (var(--pang, 180deg) - 180deg) * 0.1),
+				var(--c2),
+				var(--c1),
+				var(--c0)
+			);
 		background-blend-mode: screen;
-		mask-image: var(--galaxy);
-		mask-size: cover;
+		mask-image:
+			var(--galaxy),
+			radial-gradient(farthest-corner circle at var(--px) var(--py), #fff 22%, transparent 85%);
+		mask-size: cover, cover;
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
 		mix-blend-mode: color-dodge;
 		filter: brightness(0.62) contrast(1.35) saturate(1.6);
 	}
 	.card[data-foil='galaxy'] .foil-b {
 		background: repeating-linear-gradient(
-			calc(var(--band-angle) - 40deg),
+			calc(var(--band-angle) - 40deg - (var(--pang, 180deg) - 180deg) * 0.08),
 			var(--c0) 0%,
 			#ffe6a7 10%,
 			var(--c1) 20%,
@@ -975,7 +1016,7 @@
 			var(--c0) 40%
 		);
 		background-size: 320% 320%;
-		background-position: calc(20% + (1 - var(--pxn)) * 60%) calc(10% + var(--pyn) * 80%);
+		background-position: calc(100% - var(--bgx, 50%)) var(--bgy, 50%);
 		mask-image: var(--grain);
 		mask-size: 46cqw;
 		mix-blend-mode: overlay;
@@ -1014,14 +1055,18 @@
 				#e8a7b8
 			);
 		background-blend-mode: multiply;
-		mask-image: var(--grain);
-		mask-size: 26cqw;
+		mask-image:
+			var(--grain),
+			radial-gradient(farthest-corner circle at var(--px) var(--py), #fff 16%, transparent 80%);
+		mask-size: 26cqw, cover;
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
 		mix-blend-mode: color-dodge;
 		filter: brightness(0.7) contrast(1.7) saturate(1.5);
 	}
 	.card[data-foil='prism'] .foil-b {
 		background: repeating-linear-gradient(
-			calc(var(--band-angle) + 30deg),
+			calc(var(--band-angle) + 30deg + (var(--pang, 180deg) - 180deg) * 0.1),
 			var(--c0) 0%,
 			#fff0c4 8%,
 			var(--c1) 16%,
@@ -1031,7 +1076,7 @@
 			var(--c0) 48%
 		);
 		background-size: 300% 300%;
-		background-position: calc(15% + (1 - var(--pxn)) * 70%) calc(15% + var(--pyn) * 70%);
+		background-position: calc(100% - var(--bgx, 50%)) var(--bgy, 50%);
 		mask-image: var(--grain);
 		mask-size: 50cqw;
 		mix-blend-mode: overlay;
@@ -1048,7 +1093,7 @@
 			rgba(201, 167, 232, 0.5)
 		);
 		background-size: 250% 250%;
-		background-position: calc(var(--pxn) * 100%) calc(var(--pyn) * 100%);
+		background-position: var(--bgx, 50%) var(--bgy, 50%);
 		mask-image: var(--galaxy);
 		mask-size: cover;
 		mix-blend-mode: color-dodge;
@@ -1153,6 +1198,21 @@
 	}
 	.card.hover .glare {
 		opacity: calc(0.55 + var(--from-center) * 0.3);
-		transition: opacity 0.25s ease;
+	}
+	/* le second glare packs.com : l'ombre opposée — un voile multiply à la
+	   position INVERSE du pointeur. C'est lui qui donne le volume : la lumière
+	   d'un côté, la pénombre de l'autre. */
+	.glare2 {
+		z-index: 6;
+		background: radial-gradient(
+			farthest-corner circle at calc(100% - var(--px)) calc(100% - var(--py)),
+			rgba(16, 18, 26, 0) 30%,
+			rgba(10, 12, 18, 0.28) 78%,
+			rgba(6, 8, 12, 0.42) 100%
+		);
+		mix-blend-mode: multiply;
+	}
+	.card.hover .glare2 {
+		opacity: calc(0.4 + var(--from-center) * 0.35);
 	}
 </style>
