@@ -427,6 +427,14 @@
 	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
 	   simeydotme), et le personnage DÉTOURÉ vient PAR-DESSUS le holo → il ressort
 	   du foil qui ne scintille que sur le décor autour de lui. ===== */
+	/* en showcase, la fenêtre d'art devient un contexte d'empilement isolé : le
+	   foil (shine/glare) reste CONFINÉ à l'image de fond (doran full) et ne peut
+	   plus passer par-dessus le détourage. Le blend du foil se fait avec l'art de
+	   fond, comme voulu ; le personnage détouré reste net, sans holo dessus. */
+	.art.showcase {
+		isolation: isolate;
+		z-index: 0;
+	}
 	/* le détourage déborde la fenêtre d'art et descend dans le corps, DERRIÈRE le
 	   texte : z-index 2 (le holo est en dessous, le contenu/coût/sigil au-dessus).
 	   Il tourne avec la carte en 3D (rotateX/rotateY), comme simeydotme — pas de
