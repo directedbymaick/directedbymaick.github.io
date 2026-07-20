@@ -55,12 +55,13 @@ function eligibleFullArt(c: CardData): boolean {
 	return !!c.fullArt || c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism';
 }
 
-/** Vue Full Art d'une carte : cadre prismatique, art plein cadre, id dédié (collectible à part). */
+/** Vue Full Art d'une carte : cadre prismatique + foil « showcase ». Si la carte a
+    un détourage (cutout), le personnage flotte au-dessus du holo ; sinon, holo seul. */
 export function fullArtView(c: CardData): CardData {
 	const v = structuredClone(c);
 	v.id = `${c.id}--fullart`;
 	v.rarity = 'prism';
-	v.gene = { ...v.gene, foilPreset: 'secret' };
+	v.gene = { ...v.gene, foilPreset: 'showcase' };
 	return v;
 }
 
