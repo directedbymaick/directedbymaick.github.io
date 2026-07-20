@@ -92,12 +92,13 @@
 	   la couleur du meilleur tirage qui dort dedans. */
 	let pending: Pull[] = $state([]);
 	const TIER_RANK: Record<FxTier, number> = { common: 0, rare: 1, epic: 2, legendary: 3, prism: 4, fullart: 5 };
+	/* la couleur de l'aura selon le meilleur tirage : argent → or → prismatique */
 	const TIER_GLOW: Record<FxTier, string> = {
-		common: '#ffcd6e',
-		rare: '#ffcd6e',
-		epic: '#cfe0f4',
-		legendary: '#ffd977',
-		prism: '#cbb8ff',
+		common: '#d7dde7', // argent
+		rare: '#e6ecf5', // argent clair
+		epic: '#ecc878', // or
+		legendary: '#ffd977', // or riche
+		prism: '#cbb8ff', // prismatique
 		fullart: '#cbb8ff'
 	};
 	const bestTier = $derived(
