@@ -35,9 +35,24 @@ export function noiseMaskUri(
 	return `url("data:image/svg+xml,${svg.replaceAll('"', "'").replaceAll('#', '%23').replaceAll('<', '%3C').replaceAll('>', '%3E')}")`;
 }
 
-/** Paillettes : points épars ultra-contrastés — l'équivalent procédural du
- *  glitter.png de packs.com (seuls les pics du bruit survivent). */
-const GLITTER_TABLE = '0 0 0 0 0 0 0 .85 1';
+/** Paillettes : points BLANCS épars — l'équivalent procédural du glitter.png
+ *  de packs.com. Une IMAGE (pas un masque) : posée en fond, INCRUSTÉE dans la
+ *  carte (position fixe), elle s'allume par l'opacité et les blend modes. */
+export function glitterUri(seed: number, baseFrequency: number): string {
+	const svg =
+		`<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192">` +
+		`<filter id="g"><feTurbulence type="fractalNoise" baseFrequency="${baseFrequency}" ` +
+		`numOctaves="2" seed="${seed % 1000}" stitchTiles="stitch"/>` +
+		`<feColorMatrix type="saturate" values="0"/>` +
+		`<feComponentTransfer>` +
+		`<feFuncR type="linear" slope="0" intercept="1"/>` +
+		`<feFuncG type="linear" slope="0" intercept="1"/>` +
+		`<feFuncB type="linear" slope="0" intercept="1"/>` +
+		`<feFuncA type="discrete" tableValues="0 0 0 0 0 0 0 .9 1"/>` +
+		`</feComponentTransfer>` +
+		`</filter><rect width="192" height="192" filter="url(%23g)"/></svg>`;
+	return `url("data:image/svg+xml,${svg.replaceAll('"', "'").replaceAll('#', '%23').replaceAll('<', '%3C').replaceAll('>', '%3E')}")`;
+}
 
 export interface FoilParams {
 	/** Variables CSS injectées sur l'élément racine de la carte. */
@@ -72,7 +87,7 @@ export function resolveFoil(card: CardData, frameColor: string): FoilParams {
 		'--sparkle': noiseMaskUri(card.gene.seed + 13, sparkleFreq, 1),
 		/* Foil v4 (recettes packs.com) : paillettes éparses, second plan de
 		   nébuleuse, et graine de position — chaque carte a SON foil. */
-		'--glitter': noiseMaskUri(card.gene.seed + 21, 1.15 + rand() * 0.5, 2, GLITTER_TABLE),
+		'--glitter': glitterUri(card.gene.seed + 21, 1.15 + rand() * 0.5),
 		'--galaxy2': noiseMaskUri(card.gene.seed + 31, galaxyFreq * 2.1, 3),
 		'--seedx': `${Math.round(rand() * 100)}%`,
 		'--seedy': `${Math.round(rand() * 100)}%`
