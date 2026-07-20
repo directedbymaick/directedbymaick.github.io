@@ -525,9 +525,21 @@
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
 	}
+	/* écart symétrique autour du filet : on annule le letter-spacing résiduel
+	   après ÊTRE (et après VASAR) → même marge des deux côtés */
+	.card[data-fullart='true'] .kindlabel,
+	.card[data-fullart='true'] .fname {
+		margin-right: -0.14em;
+	}
 	.card[data-fullart='true'] .hairline {
 		flex: 0 0 auto;
 		width: 5cqw;
+	}
+	/* on remonte légèrement les textes (nom + effet), sans bouger les stats ni le
+	   coût : transform visuel, la mise en page (donc ATQ/INT) reste inchangée */
+	.card[data-fullart='true'] .plate,
+	.card[data-fullart='true'] .cartouche {
+		transform: translateY(-3cqw);
 	}
 	.card[data-fullart='true'] .cartouche {
 		background: none;
