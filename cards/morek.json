@@ -11,7 +11,7 @@
 	"faction": "exar",
 	"art": "/art/morek.webp",
 	"cutout": "/art/morek-cutout.webp",
-	"cutoutY": "5%",
+	"cutoutY": "9%",
 	"artPosition": "center 4%",
 	"fullArt": true,
 	"gene": {
