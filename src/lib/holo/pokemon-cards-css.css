@@ -448,8 +448,26 @@
   --imgsize: 25% auto;
 }
 
-/* ── AJOUT EXPELLED : la « lens » (glare) supprimée sur nos rares/épiques
-   (arts déjà lumineux) — inutile, elle lavait l'illustration. ── */
-.card[data-rarity="rare holo"] .card__glare {
+/* ── AJOUT EXPELLED : rare/épique réutilisent la MÊME lens que les communes ──
+   On annule la lens forte spécifique à chaque rareté (+ son ::after très
+   contrasté) et on rétablit le glare de BASE (celui des communes) : radial
+   doux qui suit le pointeur, overlay, opacité = --card-opacity. */
+.card[data-rarity="rare holo"] .card__glare,
+.card[data-rarity="rare holo cosmos"] .card__glare,
+.card[data-rarity="rare rainbow alt"] .card__glare {
+  display: block;
+  filter: none;
+  opacity: var(--card-opacity);
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsla(0, 0%, 100%, 0.8) 10%,
+    hsla(0, 0%, 100%, 0.65) 20%,
+    hsla(0, 0%, 0%, 0.5) 90%
+  );
+  mix-blend-mode: overlay;
+}
+.card[data-rarity="rare holo"] .card__glare:after,
+.card[data-rarity="rare holo cosmos"] .card__glare:after,
+.card[data-rarity="rare rainbow alt"] .card__glare:after {
   display: none;
 }
