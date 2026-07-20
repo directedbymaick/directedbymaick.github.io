@@ -17,6 +17,10 @@
 	import '@fontsource/cinzel/700.css';
 	import '@fontsource/cormorant-garamond/400.css';
 	import '@fontsource/cormorant-garamond/400-italic.css';
+	// display condensé façon MTG (substitut libre de Gotham Narrow) pour titres de section + nav
+	import '@fontsource/barlow-semi-condensed/600.css';
+	import '@fontsource/barlow-semi-condensed/700.css';
+	import '@fontsource/barlow-semi-condensed/800.css';
 
 	let { children } = $props();
 
@@ -198,7 +202,37 @@
 	</main>
 
 	<footer>
-		<p>{charter.game.tagline}</p>
+		<div class="foot-inner">
+			<div class="foot-brand">
+				<img class="foot-emblem" src={logo} alt="" aria-hidden="true" />
+				<p class="foot-word">{charter.game.name}</p>
+				<p class="foot-tag">{charter.game.tagline}</p>
+			</div>
+			<nav class="foot-col">
+				<h4>Le jeu</h4>
+				{#each links as l (l.href)}
+					<a href={l.href}>{l.label}</a>
+				{/each}
+			</nav>
+			<nav class="foot-col">
+				<h4>Apprendre</h4>
+				<a href="/regles">Règles</a>
+				<a href="/tuto">Tutoriel</a>
+				<a href="/decks">Decks conseillés</a>
+				<a href="/profil">Mon espace</a>
+			</nav>
+			<nav class="foot-col">
+				<h4>Univers</h4>
+				<a href="/">Le Silence · Set 01</a>
+				<a href="/packs">Boosters</a>
+				<a href="/arene">Arène</a>
+				<a href="/versus">Salons</a>
+			</nav>
+		</div>
+		<div class="foot-bar">
+			<span>© 2026 Expelled · Le Silence</span>
+			<span>Set 01 · 1ʳᵉ Édition</span>
+		</div>
 	</footer>
 
 	<span class="uid" aria-hidden="true">UID : KOR-701606888</span>
@@ -241,6 +275,10 @@
 		--gold: #d5b25e;
 		--gold-deep: #c9a445;
 		--cream: #efe8d8;
+		/* DA MTG (hybride) : display condensé + rouge flamme en accent secondaire */
+		--display: 'Barlow Semi Condensed', 'Arial Narrow', system-ui, sans-serif;
+		--accent-red: #d3202a;
+		--accent-red-deep: #a5151d;
 	}
 	:global(html) {
 		scroll-behavior: smooth;
@@ -333,25 +371,33 @@
 		margin-left: 1rem;
 	}
 	.links a {
+		position: relative;
 		text-decoration: none;
-		font-size: 0.84rem;
-		font-weight: 550;
-		padding: 0.42rem 1rem;
-		border-radius: 999px;
-		color: rgba(238, 240, 245, 0.6);
-		transition:
-			color 0.18s ease,
-			background 0.18s ease;
+		font-family: var(--display);
+		font-size: 0.98rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 0.42rem 0.7rem;
+		color: rgba(238, 240, 245, 0.62);
+		transition: color 0.18s ease;
 	}
 	.links a:hover {
 		color: var(--ink);
-		background: rgba(140, 170, 220, 0.1);
 	}
-	/* l'onglet actif : pill crème, texte nuit — le code HSR */
+	/* l'onglet actif façon MTG : texte or, filet or dessous (plus de pill) */
 	.links a.active {
-		color: #171b10;
-		background: var(--cream);
-		box-shadow: 0 0 16px rgba(213, 178, 94, 0.25);
+		color: var(--gold);
+	}
+	.links a.active::after {
+		content: '';
+		position: absolute;
+		left: 0.7rem;
+		right: 0.7rem;
+		bottom: -0.05rem;
+		height: 2px;
+		background: var(--gold);
+		box-shadow: 0 0 10px rgba(213, 178, 94, 0.55);
 	}
 	.setcount {
 		margin-left: auto;
@@ -658,24 +704,127 @@
 
 	footer {
 		position: relative;
-		padding: 5rem 2rem 3rem;
+		margin-top: 4rem;
+		padding: 3.6rem 2rem 2rem;
+		background: linear-gradient(180deg, transparent, rgba(4, 8, 16, 0.6));
+		border-top: 1px solid rgba(140, 170, 220, 0.12);
 	}
-	footer::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 20%;
-		right: 20%;
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(213, 178, 94, 0.4), transparent);
-	}
-	footer p {
+	.foot-inner {
 		max-width: 1280px;
 		margin: 0 auto;
-		text-align: center;
+		display: grid;
+		grid-template-columns: 1.7fr 1fr 1fr 1fr;
+		gap: 2.5rem;
+	}
+	.foot-brand {
+		max-width: 22rem;
+	}
+	.foot-emblem {
+		width: 2.4rem;
+		height: 2.4rem;
+		filter: drop-shadow(0 0 10px rgba(213, 178, 94, 0.4));
+	}
+	.foot-word {
+		margin: 0.6rem 0 0.35rem;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		letter-spacing: 0.26em;
+		font-size: 0.95rem;
+		color: var(--ink);
+	}
+	.foot-tag {
+		margin: 0;
 		font-family: 'Cormorant Garamond', Georgia, serif;
 		font-style: italic;
-		font-size: 1.05rem;
-		color: rgba(238, 240, 245, 0.42);
+		font-size: 1.02rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
+	.foot-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.55rem;
+	}
+	.foot-col h4 {
+		margin: 0 0 0.4rem;
+		font-family: var(--display);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		font-size: 0.82rem;
+		color: var(--gold);
+	}
+	.foot-col a {
+		text-decoration: none;
+		font-size: 0.86rem;
+		color: rgba(238, 240, 245, 0.55);
+		transition: color 0.15s ease;
+	}
+	.foot-col a:hover {
+		color: var(--ink);
+	}
+	.foot-bar {
+		max-width: 1280px;
+		margin: 2.6rem auto 0;
+		padding-top: 1.4rem;
+		border-top: 1px solid rgba(140, 170, 220, 0.1);
+		display: flex;
+		justify-content: space-between;
+		font-family: var(--display);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-size: 0.74rem;
+		color: rgba(238, 240, 245, 0.4);
+	}
+	@media (max-width: 760px) {
+		.foot-inner {
+			grid-template-columns: 1fr 1fr;
+		}
+		.foot-brand {
+			grid-column: 1 / -1;
+		}
+		.foot-bar {
+			flex-direction: column;
+			gap: 0.4rem;
+			text-align: center;
+		}
+	}
+
+	/* ===== Utilitaires DA « hybride MTG » — vocabulaire partagé des pages =====
+	   .mtg-eyebrow  : petit label or majuscule au-dessus d'un titre
+	   .mtg-title    : titre de section condensé bold majuscule (Gotham-like)
+	   .mtg-tag      : pastille de catégorie (or par défaut, .red pour le rouge flamme) */
+	:global(.mtg-eyebrow) {
+		font-family: var(--display);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.22em;
+		font-size: 0.78rem;
+		color: var(--gold);
+	}
+	:global(.mtg-title) {
+		font-family: var(--display);
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.01em;
+		line-height: 0.98;
+		font-size: clamp(1.9rem, 4vw, 2.8rem);
+		color: var(--ink);
+		margin: 0;
+	}
+	:global(.mtg-tag) {
+		display: inline-block;
+		font-family: var(--display);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-size: 0.68rem;
+		padding: 0.22rem 0.6rem;
+		border-radius: 3px;
+		background: var(--gold);
+		color: #171b10;
+	}
+	:global(.mtg-tag.red) {
+		background: var(--accent-red);
+		color: #fff;
 	}
 </style>
