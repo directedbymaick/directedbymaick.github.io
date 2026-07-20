@@ -135,9 +135,12 @@
 				</div>
 
 				{#if isShowcase}
-					<!-- showcase : le personnage détouré descend DERRIÈRE le texte
-					     (z-index bas), sa partie basse passe sous le cartouche sombre. -->
+					<!-- showcase : le personnage détouré descend DERRIÈRE le texte. -->
 					<img class="cutout" src={card.cutout} alt="" aria-hidden="true" draggable="false" />
+					<!-- voile sombre de la partie basse : passe DEVANT le sujet (mais
+					     derrière le texte) → la moitié inférieure disparaît « sous » la
+					     zone noire de la carte, exactement comme demandé. -->
+					<div class="showcase-veil" aria-hidden="true"></div>
 				{/if}
 
 				<span class="cost" title="Coût en Volonté">{card.cost}</span>
@@ -434,16 +437,32 @@
 		left: 0;
 		width: 100%;
 		height: 84%;
-		z-index: 2;
+		z-index: 1; /* AU-DESSUS du holo, mais SOUS le voile sombre et le texte */
 		object-fit: cover;
 		object-position: var(--art-pos, center 8%);
-		/* fondu bas de sécurité : le sujet se dissout en descendant sous le texte */
-		-webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 94%);
-		mask-image: linear-gradient(to bottom, #000 70%, transparent 94%);
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
 		/* calage vertical fin pour matcher l'illustration de fond */
 		transform: translateY(-1%);
 		pointer-events: none;
+	}
+	/* voile sombre de la partie basse : DEVANT le sujet (z-index 2), DERRIÈRE le
+	   texte (contenu z-index 3) → la moitié inférieure du personnage disparaît sous
+	   la zone noire de la carte. Le dégradé raccorde la teinte du corps. */
+	.body > .showcase-veil {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 52%;
+		z-index: 2;
+		pointer-events: none;
+		background: linear-gradient(
+			to bottom,
+			transparent 0%,
+			color-mix(in srgb, var(--accent) 5%, #0d0e14) 26%,
+			#0d0e14 48%,
+			#101119 100%
+		);
 	}
 
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
