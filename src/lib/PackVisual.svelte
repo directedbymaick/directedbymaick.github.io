@@ -386,8 +386,9 @@
 		/* l'élancement d'un vrai booster (cf. photo de référence MTG) */
 		aspect-ratio: 3 / 5.05;
 		container-type: inline-size;
-		filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
-		transition: filter 0.3s ease;
+		/* PAS d'ombre sur .pack : elle engloberait le canvas de l'opercule
+		   (300% de haut) et dessinerait un rectangle. L'ombre est portée par le
+		   corps seul (.body), qui a la vraie silhouette du sachet. */
 	}
 	@keyframes float {
 		0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -564,6 +565,9 @@
 		right: 1.6%;
 		overflow: hidden;
 		background: #0c0f15;
+		/* l'ombre naturelle du sachet : portée par le corps (sa vraie forme),
+		   douce et vers le bas — plus de cadre rectangulaire autour de l'opercule */
+		filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.55));
 		transition:
 			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
 			opacity 0.5s ease,
