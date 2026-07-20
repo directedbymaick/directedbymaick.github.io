@@ -478,13 +478,13 @@
 		pointer-events: none;
 		background: radial-gradient(
 			68% 56% at 50% 50%,
-			color-mix(in srgb, var(--glow) 62%, #fff) 0%,
-			color-mix(in srgb, var(--glow) 32%, transparent) 34%,
-			color-mix(in srgb, var(--glow) 10%, transparent) 60%,
-			transparent 82%
+			color-mix(in srgb, var(--glow) 34%, transparent) 0%,
+			color-mix(in srgb, var(--glow) 14%, transparent) 40%,
+			color-mix(in srgb, var(--glow) 5%, transparent) 66%,
+			transparent 86%
 		);
-		filter: blur(9px);
-		opacity: calc(var(--p, 0) * var(--p, 0));
+		filter: blur(14px); /* très flou : une chaleur, aucune forme */
+		opacity: calc(var(--p, 0) * var(--p, 0) * 0.55);
 	}
 	.pack.bursting::before {
 		animation: glowflare 0.55s ease-out forwards;
