@@ -194,30 +194,8 @@
 		}
 
 		stage = 'reveal';
-		await tick();
-		// les 5 dos jaillissent DU sachet : jet dispersé (x, rotation) qui se range en éventail
-		if (gsap && stageEl) {
-			gsap.fromTo(
-				stageEl.querySelectorAll('.fc-pop'),
-				{
-					x: () => gsap!.utils.random(-140, 140),
-					y: 210,
-					scale: 0.4,
-					autoAlpha: 0,
-					rotate: () => gsap!.utils.random(-38, 38)
-				},
-				{
-					x: 0,
-					y: 0,
-					scale: 1,
-					autoAlpha: 1,
-					rotate: 0,
-					duration: 0.9,
-					ease: 'back.out(1.4)',
-					stagger: { each: 0.08, from: 'center' }
-				}
-			);
-		}
+		// l'entrée des dos est en CSS pur (.fc-pop, keyframes rise-in) :
+		// sortie du sachet sobre — fondu + légère montée, ressort linear().
 	}
 
 	function flip(i: number) {
@@ -276,7 +254,6 @@
 	/* ---- ouverture groupée : 5 boosters d'un coup, récap direct ---- */
 	let godHit = $state(false);
 	let bulk = $state(false); // le récap vient d'une ouverture ×5
-	let spilling = $state(false); // pendant la cascade ×5, on masque puis on projette
 	const BULK_N = 5;
 	const canAffordBulk = $derived(eco.balance >= PACK_PRICE * BULK_N);
 
@@ -315,89 +292,22 @@
 		godHit = god;
 		bulk = true;
 		pending = openPack();
-		spilling = !reduced && !!gsap;
 		stage = 'recap';
 		await tick();
-		spillReveal();
-	}
-
-	/* La cascade ×5 : les cartes jaillissent du sachet (haut-centre du stage) et
-	   se déploient vers leurs cases dans la grille du récap, en salve rapide. */
-	async function spillReveal() {
-		if (!spilling || !gsap || !stageEl) {
-			spilling = false;
-			return;
-		}
-		const cells = Array.from(stageEl.querySelectorAll('.recap-cell')) as HTMLElement[];
-		if (!cells.length) {
-			spilling = false;
-			return;
-		}
-		const sr = stageEl.getBoundingClientRect();
-		const sx = sr.left + sr.width / 2; // point d'émission : le sachet
-		const sy = sr.top + 96;
-
-		// déflagration d'ouverture, aux couleurs du meilleur lot
-		if (fx && fxLayer) {
+		// une seule note de lumière au point du sachet — le reste est en CSS
+		// (cascade sobre : fondu + scale .92→1, ressort linear(), cf. PACKSCOM-CODES.md §3.3)
+		if (fx && fxLayer && stageEl) {
 			const fr = fxLayer.getBoundingClientRect();
-			const colors = godHit
-				? BURST.fullart.fx.colors
-				: pulls.some((p) => fxOf(p) === 'prism' || fxOf(p) === 'fullart')
-					? BURST.prism.fx.colors
-					: ['#ffedc0', '#e9c96a', '#fff8e6'];
-			fx.burst(sx - fr.left, sy - fr.top, { colors, orbs: 34, streaks: 16, power: 340, bloom: true });
-			if (godHit || pulls.some((p) => fxOf(p) === 'fullart' || fxOf(p) === 'prism')) {
-				const f = document.createElement('div');
-				f.className = 'flash prisma';
-				fxLayer.appendChild(f);
-				gsap.fromTo(f, { opacity: 0 }, { opacity: 1, duration: 0.14, yoyo: true, repeat: 1, ease: 'power1.inOut', onComplete: () => f.remove() });
-			}
+			const sr = stageEl.getBoundingClientRect();
+			const prisma = god || all.some((p) => fxOf(p) === 'prism' || fxOf(p) === 'fullart');
+			const colors = prisma ? BURST.prism.fx.colors : ['#ffedc0', '#e9c96a', '#fff8e6'];
+			fx.burst(sr.left + sr.width / 2 - fr.left, sr.top + 90 - fr.top, {
+				colors,
+				orbs: 14,
+				streaks: 5,
+				power: 210
+			});
 		}
-
-		// vecteur sachet → case, mémorisé par carte pour l'animation d'entrée
-		cells.forEach((cell) => {
-			const r = cell.getBoundingClientRect();
-			cell.style.setProperty('--dx', `${(sx - (r.left + r.width / 2)).toFixed(0)}px`);
-			cell.style.setProperty('--dy', `${(sy - (r.top + r.height / 2)).toFixed(0)}px`);
-		});
-
-		const dx = (i: number, t: Element) => parseFloat((t as HTMLElement).style.getPropertyValue('--dx')) || 0;
-		const dy = (i: number, t: Element) => parseFloat((t as HTMLElement).style.getPropertyValue('--dy')) || 0;
-
-		// filet de sécurité : si l'onglet passe en arrière-plan (rAF gelé) et que
-		// onComplete ne se déclenche pas, on révèle les cartes coûte que coûte.
-		const reveal = () => {
-			gsap?.set(cells, { clearProps: 'all' });
-			spilling = false;
-		};
-		const safety = setTimeout(reveal, 2600);
-
-		try {
-			gsap.fromTo(
-				cells,
-				{ x: dx, y: dy, scale: 0.18, rotate: () => gsap!.utils.random(-55, 55), autoAlpha: 0 },
-				{
-					x: 0,
-					y: 0,
-					scale: 1,
-					rotate: 0,
-					autoAlpha: 1,
-					duration: 0.72,
-					ease: 'back.out(1.3)',
-					stagger: { each: 0.045, from: 'center' },
-					clearProps: 'transform,opacity,visibility',
-					onComplete: () => {
-						clearTimeout(safety);
-						spilling = false;
-					}
-				}
-			);
-		} catch {
-			clearTimeout(safety);
-			reveal();
-		}
-		if (godHit && stageEl)
-			gsap.fromTo(stageEl, { x: 0 }, { x: 9, duration: 0.6, ease: 'packShake', clearProps: 'x' });
 	}
 
 	/* loupe : une carte révélée se clique pour être examinée en grand */
@@ -478,7 +388,7 @@
 						class="fan-card"
 						class:flipped={flipped[i]}
 						data-fx={fxOf(p)}
-						style={slotStyle(i, pulls.length)}
+						style="--i: {i}; {slotStyle(i, pulls.length)}"
 						aria-label={flipped[i] ? p.card.name : `Révéler la carte ${i + 1}`}
 						title={flipped[i] ? 'Agrandir' : undefined}
 						onclick={() => (flipped[i] ? (zoomed = p) : flip(i))}
@@ -507,7 +417,7 @@
 			</div>
 		</div>
 	{:else if stage === 'recap'}
-		<div class="stage-inner recap" class:spilling>
+		<div class="stage-inner recap">
 			{#if godHit}
 				<div class="godbanner">
 					<span class="god-em">✦</span> Booster EXPELLED <span class="god-em">✦</span>
@@ -517,7 +427,7 @@
 			<h2 class="recap-title">{bulk ? `Ton ouverture · ${pulls.length} cartes` : 'Ton tirage'}</h2>
 			<div class="recap-grid">
 				{#each pulls as p, i (i)}
-					<div class="recap-cell">
+					<div class="recap-cell" style="--i: {i}">
 						{#if p.fullArt}
 							<span class="fabadge">Full Art</span>
 						{:else if freshIds.includes(p.card.id) && pulls.findIndex((q) => q.card.id === p.card.id) === i}
@@ -857,6 +767,26 @@
 	}
 	.fc-pop {
 		transition: transform 0.25s ease;
+		/* sortie du sachet : montée douce + fondu, ressort CSS (compositor-friendly,
+		   insensible aux gels de requestAnimationFrame). `backwards` : caché pendant
+		   le délai, puis relâché — le hover et le flip reprennent la main après. */
+		animation: rise-in 0.65s var(--ease-spring) backwards;
+		animation-delay: calc(var(--i, 0) * 75ms);
+	}
+	@keyframes rise-in {
+		from {
+			opacity: 0;
+			transform: translateY(26px) scale(0.94);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.fc-pop {
+			animation: none;
+		}
 	}
 	/* dès le flip, GSAP pilote .fc-pop en inline : la transition CSS ne doit plus interférer */
 	.fan-card.flipped .fc-pop {
@@ -1166,13 +1096,25 @@
 		align-items: center;
 		gap: 0.6rem;
 		--card-w: 100%;
+		/* la cascade du récap : le reveal packs.com — fondu + scale .92→1, en vague.
+		   38 ms d'écart : 25 cartes se déploient en ~1 s sans jamais s'agiter. */
+		animation: recap-in 0.55s var(--ease-spring) backwards;
+		animation-delay: calc(var(--i, 0) * 38ms);
 	}
-	/* avant que GSAP ne projette les cartes : cases masquées, aucune grille figée ne clignote */
-	.recap.spilling .recap-cell {
-		visibility: hidden;
+	@keyframes recap-in {
+		from {
+			opacity: 0;
+			transform: translateY(14px) scale(0.92);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
 	}
-	.recap.spilling .recap-grid {
-		will-change: transform;
+	@media (prefers-reduced-motion: reduce) {
+		.recap-cell {
+			animation: none;
+		}
 	}
 	.newbadge {
 		position: absolute;
