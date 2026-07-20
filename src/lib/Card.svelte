@@ -523,6 +523,10 @@
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
 	}
+	.card[data-fullart='true'] .hairline {
+		flex: 0 0 auto;
+		width: 5cqw;
+	}
 	.card[data-fullart='true'] .cartouche {
 		background: none;
 		box-shadow: none;
