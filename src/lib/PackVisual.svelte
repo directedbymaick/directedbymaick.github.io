@@ -648,23 +648,21 @@
 	   turbulence SPÉCULAIRE (feSpecularLighting) → arêtes brillantes sur fond
 	   noir. Deux échelles : grands froissés + fines cassures. */
 	.pack {
-		/* la texture des plis : de GRANDS froissés cohérents. --foiltex = les
-		   arêtes brillantes (spéculaire) ; --foilrelief = le relief embossé
-		   (diffus, ombre+lumière) qui rend les plis visibles au repos. */
-		--foiltex:
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 480 480' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008 0.013' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeSpecularLighting surfaceScale='3.4' specularConstant='0.95' specularExponent='14' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='235' elevation='52'/%3E%3C/feSpecularLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
-		--foilrelief:
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 480 480' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008 0.013' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting surfaceScale='4' diffuseConstant='1' lighting-color='%23808080'%3E%3CfeDistantLight azimuth='235' elevation='50'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+		/* la texture de plis réelle (photo de mylar froissé), fournie par le
+		   projet. Une seule copie en cover → aucune couture. */
+		--foilimg: url("/img/foil-crumple.jpg");
 	}
-	/* le relief des plis, visible au repos (embossage doux, ni washing) */
+	/* les plis, INCRUSTÉS sur l'illustration : blend screen → les stries claires
+	   des plis s'ajoutent sur l'art, le fond noir du plastique disparaît. */
 	.crumple {
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
-		mix-blend-mode: soft-light;
-		opacity: 0.85;
-		background-image: var(--foilrelief);
-		background-size: 420px 460px; /* de grands plis, peu nombreux */
+		background-image: var(--foilimg);
+		background-size: cover;
+		background-position: center;
+		mix-blend-mode: screen;
+		opacity: 0.42;
 	}
 	/* les reflets qui apparaissent/disparaissent sur les plis selon la souris :
 	   une nappe de lumière DOUCE et large au pointeur, MASQUÉE par les arêtes des
@@ -681,10 +679,13 @@
 			rgba(255, 250, 235, 0.14) 45%,
 			transparent 78%
 		);
-		-webkit-mask-image: var(--foiltex);
-		mask-image: var(--foiltex);
-		-webkit-mask-size: 480px 520px;
-		mask-size: 480px 520px;
+		-webkit-mask-image: var(--foilimg);
+		mask-image: var(--foilimg);
+		-webkit-mask-size: cover;
+		mask-size: cover;
+		-webkit-mask-position: center;
+		mask-position: center;
+		mask-mode: luminance; /* les stries claires des plis = où la lumière accroche */
 		mix-blend-mode: screen;
 		opacity: 0;
 		transition: opacity 0.4s ease;
