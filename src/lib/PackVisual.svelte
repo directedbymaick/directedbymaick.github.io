@@ -167,14 +167,6 @@
 		const R = h * 1.05; // rayon d'enroulement
 		const step = Math.max(1, Math.round(CDPR));
 
-		// ombre portée de la boucle sur le corps du sachet
-		if (F > 4) {
-			const sh = c.createLinearGradient(0, baseY + h * 0.15, 0, chh);
-			sh.addColorStop(0, `rgba(0,0,0,${(0.3 * Math.min(1, p * 1.5)).toFixed(3)})`);
-			sh.addColorStop(1, 'rgba(0,0,0,0)');
-			c.fillStyle = sh;
-			c.fillRect(0, baseY + h * 0.15, F, h);
-		}
 
 		for (let x = 0; x < w; x += step) {
 			const u = x / w;
@@ -386,9 +378,8 @@
 		/* l'élancement d'un vrai booster (cf. photo de référence MTG) */
 		aspect-ratio: 3 / 5.05;
 		container-type: inline-size;
-		/* PAS d'ombre sur .pack : elle engloberait le canvas de l'opercule
-		   (300% de haut) et dessinerait un rectangle. L'ombre est portée par le
-		   corps seul (.body), qui a la vraie silhouette du sachet. */
+		filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+		transition: filter 0.3s ease;
 	}
 	@keyframes float {
 		0%, 100% { transform: translateY(0) rotate(0deg); }
