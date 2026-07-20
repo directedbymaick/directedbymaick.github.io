@@ -2,6 +2,7 @@
 	import Card from '$lib/Card.svelte';
 	import { cards } from '$lib/cards';
 	import { charter } from '$lib/charter';
+	import { fullArtView } from '$lib/gacha';
 	import type { CardData, FactionId, FoilPreset, Rarity } from '$lib/types';
 
 	// Le Lab est la charte design incarnée : on règle la matière en live,
@@ -67,6 +68,11 @@
 	function reroll() {
 		base.gene.seed = Math.floor(Math.random() * 1_000_000);
 	}
+
+	// Version Full Art (le chase) : dispo pour les cartes qui ont un détourage.
+	let showFullArt = $state(false);
+	const hasFullArt = $derived(!!base.cutout);
+	const preview = $derived(showFullArt && hasFullArt ? fullArtView(base) : base);
 </script>
 
 <svelte:head>
@@ -80,7 +86,7 @@
 
 <div class="lab" style="--card-w: {cardW}px">
 	<div class="preview">
-		<Card card={base} />
+		<Card card={preview} />
 	</div>
 
 	<form class="controls" onsubmit={(e) => e.preventDefault()}>
@@ -92,6 +98,13 @@
 				{/each}
 			</select>
 		</label>
+
+		{#if hasFullArt}
+			<label class="row toggle fullart-toggle">
+				<input type="checkbox" bind:checked={showFullArt} />
+				Version Full Art (détourage sur holo)
+			</label>
+		{/if}
 
 		<div class="field">
 			<span class="field-label">Rareté</span>
