@@ -455,18 +455,18 @@
 		z-index: -1;
 		left: 50%;
 		top: 8%; /* la ligne de déchirure */
-		width: 106%; /* toute la largeur du pack, d'un bout à l'autre de la coupe */
+		width: 88%; /* CONTENU : la lumière s'éteint AVANT les bords du pack */
 		height: 8%; /* une LIGNE de lumière, pas une sphère */
 		translate: -50% -50%;
 		pointer-events: none;
-		/* wide-thin : bande lumineuse qui court sur toute la largeur, fondue aux
-		   extrémités (ellipse très large) → pas de bord, pas de rectangle */
+		/* wide-thin : bande lumineuse fondue aux extrémités (ellipse très large)
+		   → aucun bord, aucun rectangle, et rien qui déborde à gauche/droite */
 		background: radial-gradient(
-			72% 58% at 50% 50%,
+			70% 58% at 50% 50%,
 			color-mix(in srgb, var(--glow) 78%, #fff) 0%,
-			color-mix(in srgb, var(--glow) 45%, transparent) 34%,
-			color-mix(in srgb, var(--glow) 16%, transparent) 62%,
-			transparent 86%
+			color-mix(in srgb, var(--glow) 45%, transparent) 32%,
+			color-mix(in srgb, var(--glow) 16%, transparent) 58%,
+			transparent 80%
 		);
 		filter: blur(6px);
 		opacity: calc(var(--p, 0) * var(--p, 0));
@@ -475,7 +475,7 @@
 		animation: glowflare 0.55s ease-out forwards;
 	}
 	@keyframes glowflare {
-		to { opacity: 1; width: 122%; height: 13%; }
+		to { opacity: 1; width: 94%; height: 12%; }
 	}
 	/* la lumière s'éteint EN MÊME TEMPS que le pack cède — ils ne font qu'un */
 	.pack.torn::before {
