@@ -432,6 +432,8 @@
 		-webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 84%);
 		mask-image: linear-gradient(to bottom, #000 58%, transparent 84%);
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.45));
+		/* calage vertical : remonte le détourage pour matcher pile l'illustration de fond */
+		transform: translateY(-4%);
 	}
 
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
