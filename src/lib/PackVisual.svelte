@@ -670,16 +670,16 @@
 	   noir. Deux échelles : grands froissés + fines cassures. */
 	.pack {
 		--foiltex:
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.045 0.075' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeSpecularLighting surfaceScale='1.6' specularConstant='0.85' specularExponent='19' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='235' elevation='56'/%3E%3C/feSpecularLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
+			url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.019' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeSpecularLighting surfaceScale='2.2' specularConstant='0.9' specularExponent='17' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='235' elevation='56'/%3E%3C/feSpecularLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
 	}
 	.crumple {
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
 		mix-blend-mode: screen; /* les arêtes claires s'ajoutent, le noir n'agit pas */
-		opacity: 0.14; /* un LÉGER grain d'aluminium — l'art reste net dessous */
+		opacity: 0.15; /* un LÉGER froissé d'aluminium — l'art reste net dessous */
 		background-image: var(--foiltex);
-		background-size: 190px 220px;
+		background-size: 360px 400px; /* de grands plis, peu nombreux */
 	}
 	/* la LUMIÈRE qui se déplace sur les plis : un halo au pointeur, MASQUÉ par la
 	   texture des plis → il n'éclaire que les arêtes d'aluminium, et voyage avec
