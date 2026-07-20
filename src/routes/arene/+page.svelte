@@ -295,7 +295,7 @@
 	<!-- ============ ÉCRAN DE MISE EN JEU ============ -->
 	<header class="setup-hero">
 		<p class="kicker">◯ L'Arène</p>
-		<h1>Joueur contre IA</h1>
+		<h1>Duel d'entraînement</h1>
 		<p class="tagline">
 			Trente cartes, 25 d'Intégrité au Korum. Jouez vos cartes, choisissez vos cibles, prononcez au
 			bon moment — l'IA du Silence ne pardonne pas grand-chose.

@@ -50,14 +50,14 @@
 </script>
 
 <svelte:head>
-	<title>Tuto — {charter.game.name}</title>
+	<title>Initiation — {charter.game.name}</title>
 	<meta name="description" content="Votre première Prononciation : apprendre à jouer à {charter.game.name} en 6 étapes." />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◯</span> Première prononciation</p>
-	<h1>Tuto</h1>
-	<p class="tagline">Six étapes pour votre premier duel. Le Créateur se tait — à vous de parler.</p>
+	<p class="kicker"><span class="k-diamond">◯</span> Premiers mots</p>
+	<h1>Initiation</h1>
+	<p class="tagline">Six gestes avant le duel. KOR se tait — votre Volonté parlera.</p>
 </header>
 
 <section>

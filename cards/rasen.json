@@ -1,12 +1,13 @@
 {
 	"id": "rasen",
-	"name": "Rasen, le Premier Expulsé",
+	"name": "Rasen, question sans réponse",
 	"kind": "etre",
 	"cost": 7,
 	"text": "",
 	"rarity": "prism",
 	"faction": "exar",
 	"art": "/art/rasen.webp",
+	"cutout": "/art/rasen-cutout.webp",
 	"gene": {
 		"palette": [
 			"#382429",

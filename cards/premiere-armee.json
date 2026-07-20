@@ -1,6 +1,6 @@
 {
 	"id": "premiere-armee",
-	"name": "La Première Armée",
+	"name": "Première Armée",
 	"kind": "verbe",
 	"cost": 6,
 	"text": "Invoque trois Bannis (jetons 2/1).",

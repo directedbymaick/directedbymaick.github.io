@@ -437,7 +437,7 @@
 {:else if mode === 'menu'}
 	<header class="setup-hero">
 		<p class="kicker">◯ Salons en ligne</p>
-		<h1>Joueur contre Joueur</h1>
+		<h1>Duel entre Noms</h1>
 		<p class="tagline">
 			Créez un salon et partagez son code, ou entrez le code d'un ami. La connexion est directe
 			entre vos deux navigateurs.

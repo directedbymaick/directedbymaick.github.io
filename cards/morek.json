@@ -1,6 +1,6 @@
 {
 	"id": "morek",
-	"name": "Morek, porteur de chaîne",
+	"name": "Morek, dix ans de chaîne",
 	"kind": "etre",
 	"cost": 2,
 	"attack": 3,
@@ -10,6 +10,7 @@
 	"rarity": "common",
 	"faction": "exar",
 	"art": "/art/morek.webp",
+	"cutout": "/art/morek-cutout.webp",
 	"artPosition": "center 4%",
 	"fullArt": true,
 	"gene": {

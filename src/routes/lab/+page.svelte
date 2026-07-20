@@ -30,10 +30,10 @@
 	// Foils recommandés PAR rareté (le 1er = le foil par défaut de la charte).
 	// Échelle premium : mat → holo → cosmique → radiant → prismatique.
 	const rarityFoils: Record<Rarity, FoilPreset[]> = {
-		common: ['mat'],
-		rare: ['regular'],
-		epic: ['cosmos', 'amazing'],
-		legendary: ['radiant', 'cosmos'],
+		common: ['mat', 'showcase'],
+		rare: ['regular', 'showcase'],
+		epic: ['cosmos', 'amazing', 'showcase'],
+		legendary: ['radiant', 'cosmos', 'showcase'],
 		prism: ['secret', 'radiant', 'showcase']
 	};
 

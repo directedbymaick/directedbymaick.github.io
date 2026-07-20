@@ -1,12 +1,13 @@
 {
 	"id": "velsa",
-	"name": "Velsa, plongeuse du bord",
+	"name": "Velsa, sans garde-fou",
 	"kind": "etre",
 	"cost": 2,
 	"text": "Élan (peut attaquer dès son arrivée).",
 	"rarity": "common",
 	"faction": "velar",
 	"art": "/art/velsa.webp",
+	"cutout": "/art/velsa-cutout.webp",
 	"fullArt": true,
 	"gene": {
 		"palette": [

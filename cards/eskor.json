@@ -1,6 +1,6 @@
 {
 	"id": "eskor",
-	"name": "Eskor, collecteur d'exil",
+	"name": "Eskor, passeur d'exil",
 	"kind": "etre",
 	"cost": 4,
 	"text": "Quand il entre en jeu : récupérez une carte exilée.",

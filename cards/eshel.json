@@ -1,6 +1,6 @@
 {
 	"id": "eshel",
-	"name": "Eshel, l'Archiviste",
+	"name": "Eshel, mémoire intacte",
 	"kind": "etre",
 	"cost": 5,
 	"text": "Quand elle entre en jeu : cherchez n'importe quelle carte de votre deck et mettez-la en main.",

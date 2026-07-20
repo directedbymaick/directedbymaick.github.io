@@ -1,6 +1,6 @@
 {
 	"id": "senel",
-	"name": "Senel, sentinelle des lisières",
+	"name": "Senel, oreille des lisières",
 	"kind": "etre",
 	"cost": 3,
 	"attack": 2,
@@ -10,6 +10,7 @@
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/senel.webp",
+	"cutout": "/art/senel-cutout.webp",
 	"fullArt": true,
 	"gene": {
 		"palette": [

@@ -50,12 +50,12 @@
 
 	const links = [
 		{ href: '/', label: 'Registre' },
-		{ href: '/packs', label: 'Boosters' },
+		{ href: '/packs', label: 'Réquisition' },
 		{ href: '/arene', label: 'Arène' },
 		{ href: '/versus', label: 'Salons' },
 		{ href: '/decks', label: 'Decks' },
 		{ href: '/regles', label: 'Règles' },
-		{ href: '/tuto', label: 'Tuto' },
+		{ href: '/tuto', label: 'Initiation' },
 		{ href: '/lab', label: 'Lab' }
 	];
 
@@ -126,7 +126,7 @@
 					<a href={l.href} class:active={page.url.pathname === l.href}>{l.label}</a>
 				{/each}
 			</div>
-			<span class="setcount">Indexées <b>{cards.length}</b>/60</span>
+			<span class="setcount">Registre <b>{cards.length}</b>/60</span>
 
 			<!-- les Éclats -->
 			<a class="wallet" href="/packs" title="Éclats — la monnaie du Silence">
@@ -217,14 +217,14 @@
 			<nav class="foot-col">
 				<h4>Apprendre</h4>
 				<a href="/regles">Règles</a>
-				<a href="/tuto">Tutoriel</a>
-				<a href="/decks">Decks conseillés</a>
+				<a href="/tuto">Initiation</a>
+				<a href="/decks">Voies conseillées</a>
 				<a href="/profil">Mon espace</a>
 			</nav>
 			<nav class="foot-col">
 				<h4>Univers</h4>
 				<a href="/">Le Silence · Set 01</a>
-				<a href="/packs">Boosters</a>
+				<a href="/packs">Réquisition</a>
 				<a href="/arene">Arène</a>
 				<a href="/versus">Salons</a>
 			</nav>

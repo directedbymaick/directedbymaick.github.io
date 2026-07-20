@@ -1,6 +1,6 @@
 {
 	"id": "korsa",
-	"name": "Korsa, briseuse de cercles",
+	"name": "Korsa, brise-cercle",
 	"kind": "etre",
 	"cost": 4,
 	"text": "Quand elle entre en jeu : détruit une Relique ou un Lieu adverse.",

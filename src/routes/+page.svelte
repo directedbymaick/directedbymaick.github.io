@@ -183,7 +183,7 @@
 			<div class="hero-art" aria-hidden="true"><img src={heroArt} alt="" /></div>
 		{/if}
 		<div class="hero-inner">
-			<p class="quiet kicker">Set 01</p>
+			<p class="quiet kicker">Premier cycle</p>
 			<h1><span class="line">Le Silence</span></h1>
 			<p class="tagline">
 				<span class="line">Le Créateur se tait.</span>
@@ -192,7 +192,7 @@
 			<div class="quiet meter" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
 				<span class="meter-fill" style="width: {pct}%"></span>
 			</div>
-			<p class="quiet meter-label">{cards.length} / {SET_SIZE} cartes forgées</p>
+			<p class="quiet meter-label">{cards.length} / {SET_SIZE} noms inscrits</p>
 		</div>
 		<p class="quiet scrollhint">Défiler</p>
 	</header>
@@ -200,7 +200,7 @@
 	<!-- ============ LE REGISTRE : sidebar + chapitres ============ -->
 	<div class="registre">
 		<aside class="side">
-			<p class="side-title">Banque du Silence</p>
+			<p class="side-title">Registre du Silence</p>
 			<button class="srow" class:active={sel === 'all'} onclick={() => (sel = 'all')}>
 				<span class="s-ico">✦</span>
 				<span class="s-label">Tous</span>

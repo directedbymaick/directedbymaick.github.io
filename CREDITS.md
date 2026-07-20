@@ -3,9 +3,9 @@
 ## Effets foil des cartes — pokemon-cards-css
 
 Les effets holographiques des cartes (couches `shine` / `glare`, recettes
-`regular-holo`, `cosmos-holo`, `rainbow-alt`, `amazing-rare`, `radiant-holo`,
+`regular-holo`, `cosmos-holo`, `rainbow-alt`, `amazing-rare`, `radiant-holo`, `reverse-holo`, `secret-rare`,
 et les textures `glitter.png`, `cosmos-*.png`, `illusion.png`, `metal.png`,
-`grain.webp`) sont l'œuvre de **Simon Goellner (@simeydotme)**.
+`geometric.png`, `grain.webp`) sont l'œuvre de **Simon Goellner (@simeydotme)**.
 
 - Projet : **pokemon-cards-css** — https://github.com/simeydotme/pokemon-cards-css
 - Démo : https://poke-holo.simey.me

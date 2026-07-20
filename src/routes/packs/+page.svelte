@@ -303,16 +303,16 @@
 />
 
 <svelte:head>
-	<title>Packs — {charter.game.name}</title>
-	<meta name="description" content="Ouvre des boosters du Silence : 5 cartes, odds publiées, collection locale." />
+	<title>Réquisition — {charter.game.name}</title>
+	<meta name="description" content="Ouvrez des sachets du Silence : cinq cartes, probabilités publiques et collection persistante." />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◆</span> Réquisition de matériel</p>
-	<h1>Packs</h1>
+	<p class="kicker"><span class="k-diamond">◆</span> Archives scellées</p>
+	<h1>Réquisition</h1>
 	<p class="tagline">
-		Le booster du Silence : {PACK_SIZE} cartes par sachet, odds publiées, zéro compte. Ta
-		collection vit dans ce navigateur.
+		Chaque sceau contient {PACK_SIZE} cartes. Les probabilités sont publiques ; chaque tirage
+		rejoint votre Registre.
 	</p>
 	<p class="colstat">
 		<span class="colstat-n">{stats.unique}</span>/{cards.length} cartes uniques ·
@@ -438,7 +438,7 @@
 
 <!-- ============ ODDS PUBLIÉES ============ -->
 <section class="odds">
-	<h2><span class="tab">Odds publiées</span><span class="rule"></span></h2>
+	<h2><span class="tab">Probabilités</span><span class="rule"></span></h2>
 	<div class="odds-grid">
 		{#each SLOT_ODDS as slot (slot.label)}
 			<div class="odds-card">

@@ -67,11 +67,10 @@
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◯</span> Manuel de jeu · v1 (en écriture)</p>
+	<p class="kicker"><span class="k-diamond">◯</span> Grammaire du duel · v1</p>
 	<h1>Règles</h1>
 	<p class="tagline">
-		{charter.game.tagline} Deux volontés se prononcent l'une contre l'autre —
-		le premier qui fait taire le Nom adverse l'emporte.
+		Deux Volontés s'affrontent. Brisez l'Intégrité du Nom adverse avant qu'il ne brise la vôtre.
 	</p>
 </header>
 
@@ -131,8 +130,8 @@
 		</tbody>
 	</table>
 	<p class="note">
-		Set 01 « Le Silence » : {cards.length}/60 cartes forgées. Les règles complètes (RULES v2)
-		sont en écriture — le Korum, lui, est déjà écrit.
+		Premier cycle, « Le Silence » : {cards.length}/60 noms inscrits. Cette grammaire évoluera
+		avec les prochains duels.
 	</p>
 </section>
 

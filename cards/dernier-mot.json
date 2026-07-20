@@ -1,6 +1,6 @@
 {
 	"id": "dernier-mot",
-	"name": "Le Dernier Mot",
+	"name": "Dernier Mot",
 	"kind": "verbe",
 	"cost": 5,
 	"text": "Inflige 3 dégâts à tous les Êtres adverses.",

@@ -1,6 +1,6 @@
 {
 	"id": "morna",
-	"name": "Morna, marquée du trait",
+	"name": "Morna, trait noir",
 	"kind": "etre",
 	"cost": 3,
 	"attack": 4,
@@ -10,6 +10,7 @@
 	"rarity": "common",
 	"faction": "exar",
 	"art": "/art/morna.webp",
+	"cutout": "/art/morna-cutout.webp",
 	"gene": {
 		"palette": [
 			"#272836",

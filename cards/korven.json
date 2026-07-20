@@ -1,6 +1,6 @@
 {
 	"id": "korven",
-	"name": "Korven, forgeron de sentences",
+	"name": "Korven, poids des mots",
 	"kind": "etre",
 	"cost": 4,
 	"attack": 3,
