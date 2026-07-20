@@ -49,6 +49,7 @@
   --clip: none;
   --clip-stage: none;
   --clip-trainer: none;
+  --clip-borders: none;
   --mask: none;
   --foil: none;
 }
@@ -458,30 +459,6 @@
   --imgsize: 25% auto;
 }
 
-/* ── AJOUT EXPELLED : rare/épique réutilisent la MÊME lens que les communes ──
-   On annule la lens forte spécifique à chaque rareté (+ son ::after très
-   contrasté) et on rétablit le glare de BASE (celui des communes) : radial
-   doux qui suit le pointeur, overlay, opacité = --card-opacity. */
-.card[data-rarity="rare holo"] .card__glare,
-.card[data-rarity="rare holo cosmos"] .card__glare,
-.card[data-rarity="rare rainbow alt"] .card__glare {
-  display: block;
-  filter: none;
-  opacity: var(--card-opacity);
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.8) 10%,
-    hsla(0, 0%, 100%, 0.65) 20%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-  mix-blend-mode: overlay;
-}
-.card[data-rarity="rare holo"] .card__glare:after,
-.card[data-rarity="rare holo cosmos"] .card__glare:after,
-.card[data-rarity="rare rainbow alt"] .card__glare:after {
-  display: none;
-}
-
 /* ===== AMAZING RARE (amazing-rare.css) — verbatim, adapté à nos cartes (no-mask) ===== */
 .card[data-rarity="amazing rare"] .card__shine {
   background-image:
@@ -538,15 +515,18 @@
   mix-blend-mode: saturation;
 }
 
-/* ===== RADIANT HOLO (radiant-holo.css) — verbatim, adapté (no-mask, --foil:none) ===== */
+/* ===== RADIANT HOLO (radiant-holo.css) — VERBATIM simeydotme ===== */
 .card[data-rarity="radiant rare"] .card__shine {
-  /* EXPELLED : barres LARGES (1.2%→8%) → plus de quadrillage fin « bugué »,
-     de larges bandes métalliques douces qui coulent. */
-  --barwidth: 8%;
+  clip-path: var(--clip-borders);
+}
+.card[data-rarity="radiant rare"] .card__shine:after {
+  clip-path: var(--clip);
+}
+.card[data-rarity="radiant rare"] .card__shine {
+  --barwidth: 1.2%;
   --space: 200px;
   --hue: 50;
   --imgsize: cover;
-  --foil: none;
   background-image:
     radial-gradient(
       farthest-corner ellipse
@@ -586,10 +566,8 @@
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% ),
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% );
   background-blend-mode: exclusion, darken, color-dodge;
-  /* EXPELLED : flou + contraste doux + soft-light → les bandes se fondent dans
-     l'illustration (incrustées), rendu lisse sans grille ni grain. */
-  filter: brightness(.7) contrast(1.35) saturate(1.6) blur(1px);
-  mix-blend-mode: soft-light;
+  filter: brightness(.5) contrast(2) saturate(1.75);
+  mix-blend-mode: color-dodge;
 }
 .card[data-rarity="radiant rare"] .card__shine:after {
   content: "";
@@ -606,9 +584,8 @@
     );
   background-size: var(--imgsize), 400% 100%;
   background-position: center, calc( ((var(--background-x) - 50%) * -2.5) + 50% ) calc( ((var(--background-y) - 50%) * -2.5) + 50% );
-  filter: brightness(.6) contrast(2.2) saturate(1.9);
-  /* EXPELLED : rainbow en overlay → épouse les formes de l'art (incrusté) */
-  mix-blend-mode: overlay;
+  filter: brightness(.6) contrast(3) saturate(2);
+  mix-blend-mode: color-dodge;
   background-blend-mode: hard-light;
 }
 .card[data-rarity="radiant rare"] .card__shine:before {
@@ -624,47 +601,42 @@
       hsla(0, 0%, 20%, 0.5) 50%
     );
   background-position: center;
-  /* EXPELLED : glitter agrandi (15%→26%) + léger flou → plus de petits carrés */
-  background-size: 26% 26%, 350% 350%;
+  background-size: 15% 15%, 350% 350%;
   background-blend-mode: color-dodge;
   mix-blend-mode: overlay;
-  filter: brightness(.66) contrast(1.6) saturate(.5) blur(0.4px);
+  filter: brightness(.66) contrast(2) saturate(.5);
 }
 
-/* ── AJOUT EXPELLED : COMMUNE — foil très subtil (fine poussière glitter + satin léger) ── */
-.card[data-rarity="commune"] .card__shine {
+/* radiant : GLARE (VERBATIM simeydotme) */
+.card[data-rarity="radiant rare"] .card__glare {
   background-image:
-    var(--glitter),
     radial-gradient(
       farthest-corner circle at var(--pointer-x) var(--pointer-y),
-      hsla(0, 0%, 100%, 0.18) 10%,
-      hsla(0, 0%, 60%, 0.05) 45%,
-      hsla(0, 0%, 0%, 0.25) 90%
+      hsla(0, 0%, 100%, 0.33) 0%,
+      hsl(0, 0%, 25%) 110%
     );
-  background-size: 18% 18%, cover;
-  background-position: center, center;
-  background-blend-mode: overlay;
-  filter: brightness(.9) contrast(1.1) saturate(.8);
-  opacity: calc(var(--card-opacity) * 0.5);
+  filter: brightness(1) contrast(1.5);
+  mix-blend-mode: hard-light;
+}
+/* radiant : cartes NON masquées (les nôtres) → --foil = trainerbg (VERBATIM) */
+.card:not(.masked)[data-rarity="radiant rare"] .card__shine,
+.card:not(.masked)[data-rarity="radiant rare"] .card__shine:after {
+  --mask: none;
+  --foil: url("/img/trainerbg.png");
+  --imgsize: 25% auto;
+}
+.card:not(.masked)[data-rarity="radiant rare"] .card__shine:after {
+  background-blend-mode: difference;
 }
 
-/* toutes les nouvelles raretés partagent la MÊME lens diffuse que les communes */
-.card[data-rarity="amazing rare"] .card__glare,
-.card[data-rarity="radiant rare"] .card__glare,
-.card[data-rarity="commune"] .card__glare {
-  display: block;
-  filter: none;
-  opacity: var(--card-opacity);
-  background-image: radial-gradient(
-    farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsla(0, 0%, 100%, 0.8) 10%,
-    hsla(0, 0%, 100%, 0.65) 20%,
-    hsla(0, 0%, 0%, 0.5) 90%
-  );
-  mix-blend-mode: overlay;
-}
-.card[data-rarity="amazing rare"] .card__glare:after,
-.card[data-rarity="radiant rare"] .card__glare:after,
-.card[data-rarity="commune"] .card__glare:after {
-  display: none;
+/* amazing : GLARE cartes NON masquées (VERBATIM simeydotme) */
+.card:not(.masked)[data-rarity="amazing rare"] .card__glare {
+  background-image:
+    radial-gradient(
+      farthest-corner circle at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 100%, 1) 10%,
+      hsla(0, 0%, 100%, 0.85) 20%,
+      hsla(0, 0%, 0%, 0.35) 90%
+    );
+  mix-blend-mode: multiply;
 }

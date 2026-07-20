@@ -97,8 +97,8 @@
 	   cosmos (galaxie) · secret (rainbow alt) · radiant (rayons métalliques). */
 	const holoRarity = $derived(
 		{
-			// FAMILLE SIMEY (recettes shine/glare)
-			mat: 'commune',
+			// FAMILLE SIMEY (recettes shine/glare) — verbatim, comme le repo simeydotme
+			mat: '',
 			regular: 'rare holo',
 			amazing: 'amazing rare',
 			cosmos: 'rare holo cosmos',
