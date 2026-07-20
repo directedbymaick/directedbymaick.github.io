@@ -584,7 +584,9 @@
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% ),
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% );
   background-blend-mode: exclusion, darken, color-dodge;
-  filter: brightness(.5) contrast(2) saturate(1.75);
+  /* EXPELLED : léger flou + contraste réduit → on lisse le quadrillage 45/-45°
+     (fini les cellules « carrées »), rendu métallique plus propre. */
+  filter: brightness(.55) contrast(1.55) saturate(1.7) blur(0.7px);
   mix-blend-mode: color-dodge;
 }
 .card[data-rarity="radiant rare"] .card__shine:after {
@@ -619,10 +621,11 @@
       hsla(0, 0%, 20%, 0.5) 50%
     );
   background-position: center;
-  background-size: 15% 15%, 350% 350%;
+  /* EXPELLED : glitter agrandi (15%→26%) + léger flou → plus de petits carrés */
+  background-size: 26% 26%, 350% 350%;
   background-blend-mode: color-dodge;
   mix-blend-mode: overlay;
-  filter: brightness(.66) contrast(2) saturate(.5);
+  filter: brightness(.66) contrast(1.6) saturate(.5) blur(0.4px);
 }
 
 /* ── AJOUT EXPELLED : COMMUNE — foil très subtil (fine poussière glitter + satin léger) ── */
