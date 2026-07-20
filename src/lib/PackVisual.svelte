@@ -462,33 +462,35 @@
 	   s'élargit et auréoler le haut. Radiale, TRÈS floutée → aucun bord, aucune
 	   forme lisible, juste de la lumière diffuse. Enfant de .pack → suit ses
 	   mouvements ET s'efface avec lui (l'opacité du parent emporte le pseudo). */
+	/* ---------- LA LUEUR : une bande de lumière douce derrière la fente ----------
+	   DERRIÈRE le pack (z-index -1), contenue dans sa largeur, diffuse. Rien de
+	   plus qu'une lumière qui sourd de l'ouverture. Couleur du meilleur tirage ;
+	   enfant de .pack → suit ses mouvements et s'éteint avec lui. */
 	.pack::before {
 		content: '';
 		position: absolute;
 		z-index: -1;
 		left: 50%;
-		top: 8%; /* la ligne de déchirure */
-		width: 88%; /* CONTENU : la lumière s'éteint AVANT les bords du pack */
-		height: 8%; /* une LIGNE de lumière, pas une sphère */
+		top: 8%; /* la fente */
+		width: 84%; /* contenu : s'éteint avant les bords */
+		height: 7%;
 		translate: -50% -50%;
 		pointer-events: none;
-		/* wide-thin : bande lumineuse fondue aux extrémités (ellipse très large)
-		   → aucun bord, aucun rectangle, et rien qui déborde à gauche/droite */
 		background: radial-gradient(
-			70% 58% at 50% 50%,
-			color-mix(in srgb, var(--glow) 78%, #fff) 0%,
-			color-mix(in srgb, var(--glow) 45%, transparent) 32%,
-			color-mix(in srgb, var(--glow) 16%, transparent) 58%,
-			transparent 80%
+			68% 56% at 50% 50%,
+			color-mix(in srgb, var(--glow) 62%, #fff) 0%,
+			color-mix(in srgb, var(--glow) 32%, transparent) 34%,
+			color-mix(in srgb, var(--glow) 10%, transparent) 60%,
+			transparent 82%
 		);
-		filter: blur(6px);
+		filter: blur(9px);
 		opacity: calc(var(--p, 0) * var(--p, 0));
 	}
 	.pack.bursting::before {
 		animation: glowflare 0.55s ease-out forwards;
 	}
 	@keyframes glowflare {
-		to { opacity: 1; width: 94%; height: 12%; }
+		to { opacity: 1; }
 	}
 
 	/* le trait de lumière qui court sur le bord déchiré, au pixel */
