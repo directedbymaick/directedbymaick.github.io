@@ -565,9 +565,6 @@
 		right: 1.6%;
 		overflow: hidden;
 		background: #0c0f15;
-		/* l'ombre naturelle du sachet : portée par le corps (sa vraie forme),
-		   douce et vers le bas — plus de cadre rectangulaire autour de l'opercule */
-		filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.55));
 		transition:
 			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
 			opacity 0.5s ease,
