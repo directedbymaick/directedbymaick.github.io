@@ -543,6 +543,9 @@
 	.card[data-fullart='true'] .statbar {
 		justify-content: space-between;
 		padding: 0;
+		/* ATQ/INT gardent EXACTEMENT la position du mode normal : on annule le
+		   sur-padding du panneau full-art (horizontal) et on redescend au bas. */
+		margin: 0 -2.6cqw -3cqw;
 	}
 	/* étoile prismatique : le signal « Full Art » */
 	.fa-star {
