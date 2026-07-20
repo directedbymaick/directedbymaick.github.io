@@ -433,39 +433,40 @@
 		pointer-events: none;
 	}
 
-	/* ===== FULL ART : illustration PLEIN CADRE, pas de cadre inférieur =====
-	   L'art remplit toute la carte ; le nom + les stats sont posés en bas sur un
-	   dégradé, la cartouche de texte disparaît. Déclenché par le prop `fullArt`. */
+	/* ============ FULL ART : l'artwork couvre toute la carte ============
+	   (version d'origine, commit 10d7c9d) Les panneaux deviennent du verre flouté
+	   posé sur l'image ; les foils, logés dans .art, s'étendent à toute la carte. */
 	.card[data-fullart='true'] .art {
-		height: 100%;
-	}
-	.card[data-fullart='true'] .content {
 		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		margin-top: 0;
-		z-index: 6;
-		padding: 16cqw 3.4cqw 3.4cqw;
+		inset: 0;
+		height: 100%;
+		z-index: 0;
+	}
+	.card[data-fullart='true'] .scrim {
 		background: linear-gradient(
 			180deg,
-			transparent 0%,
-			rgba(6, 7, 11, 0.72) 58%,
-			rgba(6, 7, 11, 0.94) 100%
+			rgba(16, 17, 23, 0.3) 0%,
+			transparent 18%,
+			transparent 46%,
+			rgba(10, 11, 16, 0.82) 78%,
+			rgba(9, 10, 15, 0.94) 100%
 		);
 	}
-	.card[data-fullart='true'] .cartouche {
-		display: none;
+	.card[data-fullart='true'] .content {
+		margin-top: auto;
+		flex: none;
 	}
 	.card[data-fullart='true'] .plate {
-		background: none;
-		box-shadow: none;
-		border: none;
-		padding: 0 0 0.6cqw;
+		background: rgba(10, 11, 16, 0.66);
+		backdrop-filter: blur(6px);
 	}
-	.card[data-fullart='true'] .plate::before,
-	.card[data-fullart='true'] .plate::after {
-		display: none;
+	.card[data-fullart='true'] .cartouche {
+		flex: none;
+		background: rgba(8, 9, 14, 0.6);
+		backdrop-filter: blur(9px);
+		box-shadow:
+			inset 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.35),
+			inset 0 -1px 0 rgba(255, 255, 255, 0.06);
 	}
 
 	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
