@@ -382,42 +382,11 @@
 		0%, 100% { transform: translateY(0) rotate(0deg); }
 		50% { transform: translateY(-8px) rotate(0.5deg); }
 	}
-	/* le bloom : une boule de lumière DERRIÈRE le sachet — jamais un contour qui épouse
-	   la silhouette (le drop-shadow coloré dessinait un rectangle arrondi, interdit) */
-	.pack::before {
-		content: '';
-		position: absolute;
-		inset: -35%;
-		z-index: -1;
-		pointer-events: none;
-		background: radial-gradient(
-			50% 50% at 50% 46%,
-			color-mix(in srgb, var(--glow) 42%, transparent),
-			color-mix(in srgb, var(--glow) 16%, transparent) 42%,
-			color-mix(in srgb, var(--glow) 5%, transparent) 62%,
-			transparent 78%
-		);
-		opacity: 0;
-		transition: opacity 0.35s ease;
-	}
 	.pack.dragging {
 		animation-play-state: paused;
 	}
-	.pack.dragging::before {
-		opacity: calc(var(--p) * 0.9);
-	}
 	.pack.bursting {
 		animation: rumble 0.43s linear forwards;
-	}
-	.pack.bursting::before {
-		opacity: 1;
-		animation: bloomup 0.43s ease-in forwards;
-	}
-	@keyframes bloomup {
-		to {
-			transform: scale(1.3);
-			opacity: 1;
-		}
 	}
 	@keyframes rumble {
 		0% { transform: translate(0, 0) rotate(0deg); }
@@ -477,42 +446,78 @@
 			opacity 0.5s ease;
 	}
 
-	/* la lumière qui fuit par la déchirure — couleur du meilleur tirage du sachet */
+	/* la lumière fuit UNIQUEMENT par la fente déchirée (sous l'opercule) et
+	   monte vers le haut, dans l'ouverture qui s'élargit — jamais autour du sachet.
+	   .leak = le cœur brillant le long de la coupe ; ::after = le faisceau qui
+	   s'échappe vers le haut. Couleur du meilleur tirage du sachet. */
 	.leak {
 		position: absolute;
-		top: 7.2%;
-		left: 2%;
-		right: 2%;
-		height: 4%;
-		z-index: 2;
+		top: 8%; /* la ligne de déchirure, juste sous l'opercule */
+		left: 8%;
+		right: 8%;
+		height: 2%;
+		z-index: 4;
 		pointer-events: none;
+		border-radius: 50%;
 		background: radial-gradient(
-			50% 100% at 50% 50%,
-			color-mix(in srgb, var(--glow) 92%, #fff),
-			color-mix(in srgb, var(--glow) 45%, transparent) 55%,
-			transparent 85%
+			62% 130% at 50% 50%,
+			color-mix(in srgb, var(--glow) 96%, #fff),
+			color-mix(in srgb, var(--glow) 42%, transparent) 55%,
+			transparent 82%
 		);
-		filter: blur(3px);
+		filter: blur(1.6px);
 		opacity: calc(var(--p, 0) * var(--p, 0));
-		transform: scaleY(calc(0.4 + var(--p, 0) * 1.4));
+		transform: scaleX(calc(0.5 + var(--p, 0) * 0.6));
+		mix-blend-mode: screen;
 	}
-	/* un prismatique / full art dort dedans : la fuite est froide, blanc-violet —
-	   une lumière d'un autre monde, pas une guirlande */
+	/* le faisceau : prend racine SUR la fente et s'échappe vers le haut */
+	.leak::after {
+		content: '';
+		position: absolute;
+		left: -45%;
+		right: -45%;
+		bottom: -30%;
+		height: 900%; /* s'étend vers le haut depuis la fente */
+		background: radial-gradient(
+			52% 100% at 50% 100%,
+			color-mix(in srgb, var(--glow) 60%, transparent),
+			color-mix(in srgb, var(--glow) 20%, transparent) 38%,
+			transparent 70%
+		);
+		transform-origin: 50% 100%;
+		transform: scaleY(calc(0.25 + var(--p, 0) * 0.9));
+		opacity: calc(var(--p, 0) * 0.85);
+	}
+	/* un prismatique / full art dort dedans : la fuite est froide, blanc-violet */
 	.pack.prisma .leak {
 		background: radial-gradient(
-			50% 100% at 50% 50%,
-			rgba(244, 240, 255, 0.95),
-			rgba(203, 184, 255, 0.45) 52%,
-			rgba(168, 200, 255, 0.18) 72%,
-			transparent 88%
+			62% 130% at 50% 50%,
+			rgba(248, 244, 255, 0.98),
+			rgba(203, 184, 255, 0.42) 55%,
+			transparent 84%
 		);
 	}
-	.pack.bursting .leak { animation: leakflare 0.43s ease-in forwards; }
+	.pack.prisma .leak::after {
+		background: radial-gradient(
+			52% 100% at 50% 100%,
+			rgba(214, 198, 255, 0.6),
+			rgba(168, 200, 255, 0.2) 40%,
+			transparent 72%
+		);
+	}
+	.pack.bursting .leak { animation: leakflare 0.5s ease-out forwards; }
+	.pack.bursting .leak::after { animation: leakbeam 0.5s ease-out forwards; }
 	@keyframes leakflare {
 		to {
 			opacity: 1;
-			transform: scaleY(4);
-			filter: blur(6px);
+			transform: scaleX(1.4);
+			filter: blur(3px);
+		}
+	}
+	@keyframes leakbeam {
+		to {
+			opacity: 1;
+			transform: scaleY(2.6);
 		}
 	}
 
