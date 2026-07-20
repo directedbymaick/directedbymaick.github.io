@@ -72,7 +72,10 @@
 	// Version Full Art (le chase) : dispo pour les cartes qui ont un détourage.
 	let showFullArt = $state(false);
 	const hasFullArt = $derived(!!base.cutout);
-	const preview = $derived(showFullArt && hasFullArt ? fullArtView(base) : base);
+	// snapshot : fullArtView fait un structuredClone → il faut un objet simple, pas le proxy $state
+	const preview = $derived(
+		showFullArt && hasFullArt ? fullArtView($state.snapshot(base) as CardData) : base
+	);
 </script>
 
 <svelte:head>

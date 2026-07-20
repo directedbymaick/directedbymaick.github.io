@@ -451,15 +451,18 @@
 	.body > .cutout {
 		position: absolute;
 		top: 0;
-		left: 0;
-		width: 100%;
-		height: 84%;
+		/* échelle appliquée via width/height (PAS transform:scale) : un calque filtré
+		   scalé par transform serait rasterisé puis agrandi → flou. Ici le drop-shadow
+		   reste net. left recentre horizontalement quand on réduit. */
+		left: calc(50% * (1 - var(--cutout-scale, 1)));
+		width: calc(100% * var(--cutout-scale, 1));
+		height: calc(84% * var(--cutout-scale, 1));
 		z-index: 1; /* AU-DESSUS du holo, mais SOUS le voile sombre et le texte */
 		object-fit: cover;
 		object-position: var(--art-pos, center 8%);
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
-		/* calage vertical + échelle, surchargeables par carte (--cutout-y / --cutout-scale) */
-		transform: translateY(var(--cutout-y, -4%)) scale(var(--cutout-scale, 1));
+		/* calage vertical surchargeable par carte (--cutout-y) */
+		transform: translateY(var(--cutout-y, -4%));
 		pointer-events: none;
 	}
 	/* voile sombre de la partie basse : DEVANT le sujet (z-index 2), DERRIÈRE le
