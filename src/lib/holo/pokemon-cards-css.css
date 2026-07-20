@@ -447,3 +447,14 @@
 .card[data-rarity="rare rainbow alt"] .card__shine {
   --imgsize: 25% auto;
 }
+
+/* ── AJOUT EXPELLED : la « lens » (glare) trop forte sur nos rares/épiques
+   (arts déjà lumineux) → intensité réduite. Réglage local, recettes intactes. ── */
+.card[data-rarity="rare holo"] .card__glare {
+  opacity: calc(var(--card-opacity) * 0.42);
+  filter: brightness(0.68) contrast(1.35);
+}
+.card[data-rarity="rare holo"] .card__glare:after {
+  opacity: 0.55;
+  filter: brightness(0.5) contrast(2.4);
+}
