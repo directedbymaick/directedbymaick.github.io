@@ -101,7 +101,16 @@
 
 	/* Le corps se découvre quand l'opercule se soulève. */
 	const bodyT = $derived(torn || bursting ? 1 : Math.max(0, (progress - 0.3) / 0.7));
-	const clipBody = $derived(poly(lerpPts(BODY_CLEAN_PTS, BODY_TORN_PTS, bodyT)));
+	const clipBodyPts = $derived(lerpPts(BODY_CLEAN_PTS, BODY_TORN_PTS, bodyT));
+	const clipBody = $derived(poly(clipBodyPts));
+	/* le bord déchiré seul (sans les coins bas) : le trait de lumière l'épouse
+	   au pixel — MÊMES points que la découpe du corps. */
+	const tearEdge = $derived(
+		clipBodyPts
+			.slice(1, -1)
+			.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`)
+			.join(' ')
+	);
 
 	/* ---- l'opercule : rendu canvas avec VRAI enroulement (page-curl) ----
 	   Chaque colonne de pixels s'enroule autour d'un cylindre virtuel placé au
@@ -329,6 +338,10 @@
 		<div class="plastic" aria-hidden="true"></div>
 		<div class="foilgrain" aria-hidden="true"></div>
 		<div class="sheen" aria-hidden="true"></div>
+			<!-- le trait de lumière qui ÉPOUSE le bord déchiré (mêmes points que la découpe) -->
+			<svg class="tearline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+				<polyline points={tearEdge} vector-effect="non-scaling-stroke" />
+			</svg>
 
 		<span class="brand-pill">Expelled</span>
 		<span class="badges">
@@ -476,6 +489,30 @@
 	}
 	@keyframes glowflare {
 		to { opacity: 1; width: 94%; height: 12%; }
+	}
+
+	/* le trait de lumière qui court sur le bord déchiré, au pixel */
+	.tearline {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		pointer-events: none;
+		overflow: visible;
+		opacity: calc(var(--p, 0) * var(--p, 0));
+	}
+	.tearline polyline {
+		fill: none;
+		stroke: color-mix(in srgb, var(--glow) 45%, #fff);
+		stroke-width: 1.4;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+		filter:
+			drop-shadow(0 0 2px color-mix(in srgb, var(--glow) 80%, #fff))
+			drop-shadow(0 0 5px var(--glow));
+	}
+	.pack.torn .tearline {
+		opacity: 0;
+		transition: opacity 0.4s ease;
 	}
 	/* la lumière s'éteint EN MÊME TEMPS que le pack cède — ils ne font qu'un */
 	.pack.torn::before {
