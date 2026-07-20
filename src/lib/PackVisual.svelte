@@ -1,6 +1,67 @@
+<script lang="ts" module>
+	/* Géométrie du sachet : dents de sertissage régulières, déchirure irrégulière.
+	   Tout est précalculé en polygones clip-path — même rendu partout, zéro asset. */
+
+	/** Bord cranté régulier (sertissage industriel). */
+	function saw(edge: 'top' | 'bottom', teeth: number, depth: number): string {
+		const pts: string[] = [];
+		if (edge === 'top') {
+			pts.push('0% 100%');
+			for (let i = 0; i <= teeth * 2; i++)
+				pts.push(`${((i / (teeth * 2)) * 100).toFixed(2)}% ${i % 2 === 0 ? depth : 0}%`);
+			pts.push('100% 100%');
+		} else {
+			pts.push('0% 0%');
+			for (let i = 0; i <= teeth * 2; i++)
+				pts.push(`${((i / (teeth * 2)) * 100).toFixed(2)}% ${i % 2 === 0 ? 100 - depth : 100}%`);
+			pts.push('100% 0%');
+		}
+		return `polygon(${pts.join(',')})`;
+	}
+
+	/* L'opercule : sertissage denté en haut, bord bas NET au repos (sachet scellé).
+	   Les formes sont des listes de points de même longueur : la déchirure
+	   s'INTERPOLE avec la progression du geste — on déchire, on ne déclenche pas. */
+	type Pts = [number, number][];
+	function bodyPts(jagged: boolean): Pts {
+		let s = 13;
+		const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+		const pts: Pts = [[0, 100]];
+		for (let i = 0; i <= 30; i++) pts.push([(i / 30) * 100, jagged ? rnd() * 2.2 : 0]);
+		pts.push([100, 100]);
+		return pts;
+	}
+	const BODY_CLEAN_PTS = bodyPts(false);
+	const BODY_TORN_PTS = bodyPts(true);
+
+	const poly = (pts: Pts) =>
+		`polygon(${pts.map(([x, y]) => `${x.toFixed(2)}% ${y.toFixed(2)}%`).join(',')})`;
+	const lerpPts = (a: Pts, b: Pts, t: number): Pts =>
+		a.map(([x, y], i) => [x + (b[i][0] - x) * t, y + (b[i][1] - y) * t]);
+
+	/* Échantillonneurs pour le rendu canvas de l'opercule :
+	   bord haut denté (fixe) et bord bas déchiré (interpolé). En % de la hauteur. */
+	const sawTopY = (u: number) => 16 * Math.abs(2 * ((u * 26) % 1) - 1);
+	const BOT_TORN: number[] = (() => {
+		let s = 7;
+		const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+		const a: number[] = [];
+		for (let i = 30; i >= 0; i--) a[i] = 56 + rnd() * 40;
+		return a;
+	})();
+	function tornBottomY(u: number, t: number): number {
+		const x = Math.min(29.999, u * 30);
+		const i = Math.floor(x);
+		const f = x - i;
+		const jag = BOT_TORN[i] + (BOT_TORN[i + 1] - BOT_TORN[i]) * f;
+		return 88 + (jag - 88) * t;
+	}
+
+	const SAW_BOTTOM = saw('bottom', 26, 40);
+</script>
+
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { PackScene } from '$lib/pack3d/packScene';
+	import { Spring } from 'svelte/motion';
 
 	let {
 		ontorn,
@@ -12,201 +73,309 @@
 	let dragging = $state(false);
 	let torn = $state(false);
 	let bursting = $state(false); // la seconde de rage avant que le sachet cède
-	let hover = $state(false);
-	let webgl = $state(true);
 	let startX = 0;
-
+	let stripEl: HTMLElement;
 	let wrapEl: HTMLElement;
-	let cv = $state<HTMLCanvasElement>();
-	let tabEl = $state<HTMLElement>();
-	let scene: PackScene | null = null;
+
+	/* ---- relief : le sachet est un objet. Il s'incline sous le pointeur,
+	   le reflet glisse sur le mylar — ressort physique, comme les cartes. ---- */
+	const tilt = new Spring({ x: 0.5, y: 0.5 }, { stiffness: 0.08, damping: 0.6 });
+	let hover = $state(false);
+	function tiltMove(e: PointerEvent) {
+		if (dragging || bursting || torn) return;
+		const r = wrapEl.getBoundingClientRect();
+		tilt.target = {
+			x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)),
+			y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))
+		};
+	}
+	function tiltLeave() {
+		hover = false;
+		tilt.target = { x: 0.5, y: 0.5 };
+	}
+	const rx = $derived((0.5 - tilt.current.y) * 9);
+	const ry = $derived((tilt.current.x - 0.5) * 13);
 
 	const THRESHOLD = 0.85;
 
-	onMount(() => {
-		let ro: ResizeObserver | undefined;
-		(async () => {
-			try {
-				if (!cv) throw new Error('no canvas');
-				const canvas = cv;
-				const { createPackScene } = await import('$lib/pack3d/packScene');
-				scene = createPackScene(canvas, {
-					glow,
-					art: '/art/rasen.webp',
-					onHinge: (h) => {
-						if (!tabEl || torn) return;
-						// la pilule court le long de la ligne de coupe projetée
-						const x = canvas.offsetLeft + h.x0 + (h.x1 - h.x0) * (0.06 + progress * 0.82);
-						const y = canvas.offsetTop + h.y;
-						tabEl.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
+	/* Le corps se découvre quand l'opercule se soulève. */
+	const bodyT = $derived(torn || bursting ? 1 : Math.max(0, (progress - 0.3) / 0.7));
+	const clipBody = $derived(poly(lerpPts(BODY_CLEAN_PTS, BODY_TORN_PTS, bodyT)));
+
+	/* ---- l'opercule : rendu canvas avec VRAI enroulement (page-curl) ----
+	   Chaque colonne de pixels s'enroule autour d'un cylindre virtuel placé au
+	   front de déchirure : raccourci horizontal en cos(θ), levée en R(1-cos θ),
+	   ombrage de courbure, reflet sur la crête, dos de feuille au-delà de 90°. */
+	let ripCv: HTMLCanvasElement;
+	let tex: HTMLCanvasElement | null = null;
+	let texW = 0;
+	let texH = 0;
+	const CDPR = Math.min(globalThis.devicePixelRatio || 1, 2);
+
+	function buildTexture(w: number, h: number) {
+		tex = document.createElement('canvas');
+		tex.width = w;
+		tex.height = h;
+		const c = tex.getContext('2d')!;
+		const g = c.createLinearGradient(0, 0, 0, h);
+		g.addColorStop(0, '#f5f7fa');
+		g.addColorStop(0.28, '#c6ccd6');
+		g.addColorStop(0.52, '#eef1f5');
+		g.addColorStop(0.78, '#aab2bf');
+		g.addColorStop(1, '#dfe4ea');
+		c.fillStyle = g;
+		c.fillRect(0, 0, w, h);
+		// cannelures verticales du sertissage
+		c.fillStyle = 'rgba(0,0,0,0.05)';
+		const pitch = Math.max(4, Math.round(w / 90));
+		for (let x = 0; x < w; x += pitch) c.fillRect(x, 0, Math.max(1, Math.round(w / 320)), h);
+		// l'indice de geste, gravé dans la matière — il se courbe avec elle
+		c.fillStyle = 'rgba(40,48,60,0.7)';
+		c.font = `600 ${Math.round(h * 0.28)}px Consolas, monospace`;
+		c.textAlign = 'center';
+		c.textBaseline = 'middle';
+		c.fillText('⠿  T I R E R  →', w / 2, h * 0.45);
+	}
+
+	function drawCurl() {
+		if (!ripCv || !tex) return;
+		const c = ripCv.getContext('2d')!;
+		const cw = ripCv.width;
+		const chh = ripCv.height;
+		c.clearRect(0, 0, cw, chh);
+		const w = texW;
+		const h = texH;
+		const baseY = chh - h;
+		const p = torn ? 1 : progress;
+		const t = torn || bursting ? 1 : Math.pow(progress, 1.6);
+		const F = p * w; // front de déchirure
+		const R = h * 1.05; // rayon d'enroulement
+		const step = Math.max(1, Math.round(CDPR));
+
+		// ombre portée de la boucle sur le corps du sachet
+		if (F > 4) {
+			const sh = c.createLinearGradient(0, baseY + h * 0.15, 0, chh);
+			sh.addColorStop(0, `rgba(0,0,0,${(0.3 * Math.min(1, p * 1.5)).toFixed(3)})`);
+			sh.addColorStop(1, 'rgba(0,0,0,0)');
+			c.fillStyle = sh;
+			c.fillRect(0, baseY + h * 0.15, F, h);
+		}
+
+		for (let x = 0; x < w; x += step) {
+			const u = x / w;
+			const topY = (sawTopY(u) / 100) * h;
+			const botY = (tornBottomY(u, t) / 100) * h;
+			const colH = botY - topY;
+			if (colH <= 0) continue;
+			if (x >= F) {
+				// encore soudé : à plat
+				c.drawImage(tex, x, topY, step, colH, x, baseY + topY, step, colH);
+			} else {
+				const th = Math.min((F - x) / R, 2.2);
+				const cosT = Math.cos(th);
+				const xP = F - R * Math.sin(th);
+				const lift = R * (1 - cosT) * 0.85;
+				const wCol = Math.max(0.7, step * Math.max(0.25, Math.abs(cosT)));
+				const y = baseY + topY - lift;
+				if (th <= Math.PI / 2) {
+					// face avant qui s'enroule
+					c.drawImage(tex, x, topY, step, colH, xP, y, wCol, colH);
+					const dark = (1 - cosT) * 0.34;
+					if (dark > 0.02) {
+						c.fillStyle = `rgba(15,20,28,${dark.toFixed(3)})`;
+						c.fillRect(xP, y, wCol, colH);
 					}
-				});
-				ro = new ResizeObserver(() => scene?.resize());
-				ro.observe(canvas);
-			} catch {
-				webgl = false; // secours : sachet statique, ouverture au clic
+					const spec = Math.max(0, 1 - Math.abs(th - 0.9) / 0.45) * 0.22;
+					if (spec > 0.02) {
+						c.fillStyle = `rgba(255,255,255,${spec.toFixed(3)})`;
+						c.fillRect(xP, y, wCol, colH);
+					}
+				} else {
+					// le dos de l'opercule : feuille argentée mate, dans l'ombre
+					c.fillStyle = 'rgba(168,176,190,0.92)';
+					c.fillRect(xP, y, wCol, colH);
+					c.fillStyle = `rgba(60,70,84,${(0.25 + Math.min(0.3, (th - Math.PI / 2) * 0.3)).toFixed(3)})`;
+					c.fillRect(xP, y, wCol, colH);
+				}
 			}
-		})();
-		return () => {
-			ro?.disconnect();
-			scene?.destroy();
-			scene = null;
-		};
+		}
+	}
+
+	$effect(() => {
+		void progress;
+		void torn;
+		void bursting;
+		drawCurl();
 	});
 
 	$effect(() => {
-		scene?.setGlow(glow);
-	});
-	$effect(() => {
-		scene?.setProgress(progress);
+		if (!stripEl || !ripCv) return;
+		const ro = new ResizeObserver(() => {
+			const w = Math.max(1, Math.round(stripEl.offsetWidth * CDPR));
+			const h = Math.max(1, Math.round(stripEl.offsetHeight * CDPR));
+			ripCv.width = w;
+			ripCv.height = h * 3; // marge haute : la boucle monte au-dessus de l'opercule
+			texW = w;
+			texH = h;
+			buildTexture(w, h);
+			drawCurl();
+		});
+		ro.observe(stripEl);
+		return () => ro.disconnect();
 	});
 
-	/* ---- parallaxe idle : le sachet suit doucement le pointeur ---- */
-	function parallax(e: PointerEvent) {
-		if (torn || bursting) return;
-		const r = wrapEl.getBoundingClientRect();
-		scene?.setPointer(
-			Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width) * 2 - 1)),
-			Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height) * 2 - 1))
-		);
-	}
-	function leave() {
-		hover = false;
-		scene?.clearPointer();
-	}
-
-	/* ---- le geste : tirer la languette ---- */
 	function down(e: PointerEvent) {
 		if (torn || bursting) return;
 		dragging = true;
 		startX = e.clientX;
 		try {
-			wrapEl.setPointerCapture(e.pointerId);
+			stripEl.setPointerCapture(e.pointerId);
 		} catch {
 			/* évènement synthétique : pas de capture */
 		}
 	}
 	function move(e: PointerEvent) {
-		parallax(e);
 		if (!dragging || torn || bursting) return;
-		const w = wrapEl.clientWidth || 300;
-		progress = Math.min(1, Math.max(0, (e.clientX - startX) / (w * 0.9)));
+		const w = stripEl.parentElement?.clientWidth ?? 300;
+		// tout le geste compte : ~un sachet de large pour arracher l'opercule
+		progress = Math.min(1, Math.max(0, (e.clientX - startX) / (w * 0.95)));
 		if (progress >= THRESHOLD) tear();
 	}
 	function up() {
 		if (torn || bursting) return;
 		dragging = false;
-		// rescellage élastique : la languette se repose
+		// le sachet se rescelle en douceur : la boucle se déroule et se repose
 		const p0 = progress;
 		const t0 = performance.now();
 		const dur = 420;
 		const reseal = (now: number) => {
 			if (dragging || bursting || torn) return;
 			const k = Math.min(1, (now - t0) / dur);
-			progress = p0 * Math.pow(1 - k, 3);
+			progress = p0 * (1 - (1 - Math.pow(1 - k, 3)));
 			if (k < 1) requestAnimationFrame(reseal);
 		};
 		requestAnimationFrame(reseal);
 	}
-
-	/** Déchire le sachet (drag abouti, ou ouverture rapide via bind). */
+	/** Déchire le sachet (drag abouti, ou ouverture rapide via bind).
+	 *  L'arrachage se TERMINE dans l'élan : la progression file vers 1 en accélérant,
+	 *  puis tremblement + fuite de lumière → le sachet cède → burst parent. */
 	export function tear() {
 		if (torn || bursting) return;
 		bursting = true;
 		dragging = false;
-		// la languette finit de se plier dans l'élan
 		const p0 = progress;
 		const t0 = performance.now();
-		const dur = 240;
+		const dur = 260;
 		const finish = (now: number) => {
 			const k = Math.min(1, (now - t0) / dur);
 			progress = p0 + (1 - p0) * k * k;
 			if (k < 1) requestAnimationFrame(finish);
 		};
 		requestAnimationFrame(finish);
-		setTimeout(() => {
-			torn = true;
-			scene?.fling(); // la languette s'envole en tournoyant
-		}, 430);
-		// la chute du sachet (.7 s dès torn) chevauche la levée des cartes
-		setTimeout(() => ontorn?.(), 980);
+		setTimeout(() => (torn = true), 430);
+		setTimeout(() => ontorn?.(), 800);
 	}
 </script>
 
 <div
 	class="pack3d"
 	bind:this={wrapEl}
-	role="slider"
-	aria-label="Tirer la languette pour ouvrir le booster"
-	aria-valuenow={Math.round(progress * 100)}
-	tabindex="0"
-	onpointermove={move}
-	onpointerdown={down}
-	onpointerup={up}
-	onpointercancel={up}
+	role="presentation"
+	onpointermove={tiltMove}
 	onpointerenter={() => (hover = true)}
-	onpointerleave={leave}
-	onkeydown={(e) => e.key === 'Enter' && tear()}
+	onpointerleave={tiltLeave}
+	style="--rx: {rx.toFixed(2)}deg; --ry: {ry.toFixed(2)}deg; --gx: {(tilt.current.x * 100).toFixed(1)}%; --gy: {(tilt.current.y * 100).toFixed(1)}%"
 >
+<div
+	class="pack"
+	class:torn
+	class:dragging
+	class:bursting
+	class:prisma
+	class:hover
+	style="--p: {progress}; --glow: {glow}"
+>
+	<!-- l'opercule serti qu'on arrache -->
 	<div
-		class="pack"
-		class:torn
-		class:dragging
-		class:bursting
-		class:prisma
-		class:hover
-		style="--p: {progress}; --glow: {glow}"
+		bind:this={stripEl}
+		class="rip"
+		role="slider"
+		aria-label="Glisser pour ouvrir le booster"
+		aria-valuenow={Math.round(progress * 100)}
+		tabindex="0"
+		onpointerdown={down}
+		onpointermove={move}
+		onpointerup={up}
+		onpointercancel={up}
+		onkeydown={(e) => e.key === 'Enter' && tear()}
 	>
-		{#if webgl}
-			<canvas bind:this={cv} class="cv3d" aria-hidden="true"></canvas>
-			{#if !torn}
-				<span class="tab" bind:this={tabEl} aria-hidden="true">
-					<i></i><i></i><i></i><i></i><i></i><i></i>
-				</span>
-			{/if}
-		{:else}
-			<!-- secours sans WebGL : la couverture seule, ouverture au clavier/clic -->
-			<img class="flat" src="/art/rasen.webp" alt="" draggable="false" />
-		{/if}
+		<canvas bind:this={ripCv} class="ripcv" aria-hidden="true"></canvas>
 	</div>
+
+	<div class="leak" aria-hidden="true"></div>
+
+	<!-- rails latéraux : la soudure du sachet -->
+	<div class="rail left" aria-hidden="true"></div>
+	<div class="rail right" aria-hidden="true"></div>
+
+	<!-- le corps : couverture pleine, habillage éditorial façon booster réel -->
+	<div class="body" style="clip-path: {clipBody}">
+		<img class="cover" src="/art/rasen.webp" alt="" draggable="false" />
+		<div class="grade" aria-hidden="true"></div>
+		<div class="plastic" aria-hidden="true"></div>
+		<div class="sheen" aria-hidden="true"></div>
+
+		<span class="brand-pill">Expelled</span>
+		<span class="badges">
+			<span class="badge red">Set 01</span>
+			<span class="badge dark">1ʳᵉ Édition</span>
+		</span>
+
+		<div class="logo-block">
+			<p class="logo-over">Trading Card Game</p>
+			<p class="wordmark">Expelled</p>
+			<p class="set-banner">Le Silence</p>
+		</div>
+
+		<p class="count">5 cartes<br /><small>par sachet</small></p>
+		<p class="legal">© 2026 Expelled · Set 01 · Le Silence</p>
+
+		<!-- le reflet qui suit le pointeur — clippé par le corps, jamais de voile fantôme -->
+		<div class="glare3d" aria-hidden="true"></div>
+	</div>
+
+	<div class="crimp-bottom" style="clip-path: {SAW_BOTTOM}" aria-hidden="true"></div>
+</div>
 </div>
 
 <style>
+	/* ---------- relief : perspective + inclinaison au pointeur ---------- */
 	.pack3d {
-		cursor: grab;
-		touch-action: none;
-		user-select: none;
-		-webkit-user-select: none;
+		perspective: 1100px;
+		animation: float 5.2s ease-in-out infinite;
 	}
-	.pack3d:active {
-		cursor: grabbing;
+	/* on n'inspecte pas un objet qui bouge : le flottement s'arrête sous le pointeur */
+	.pack3d:hover {
+		animation-play-state: paused;
+	}
+	.pack3d .pack {
+		transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+		will-change: transform;
 	}
 	.pack {
 		position: relative;
-		width: var(--pack-w, 268px);
-		aspect-ratio: 3 / 5.16; /* l'élancement d'un vrai booster */
+		width: var(--pack-w, 300px);
+		aspect-ratio: 3 / 4.3;
 		container-type: inline-size;
+		filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+		transition: filter 0.3s ease;
 	}
-	/* le canvas déborde du cadre : marges de respiration pour la parallaxe,
-	   l'envol de la languette et les rayons — le sachet 3D remplit le layout */
-	.cv3d {
-		position: absolute;
-		inset: -16% -18%;
-		width: 136%;
-		height: 132%;
-		display: block;
-		pointer-events: none;
+	@keyframes float {
+		0%, 100% { transform: translateY(0) rotate(0deg); }
+		50% { transform: translateY(-8px) rotate(0.5deg); }
 	}
-	.flat {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 3cqw;
-	}
-
-	/* le bloom : une boule de lumière DERRIÈRE le sachet */
+	/* le bloom : une boule de lumière DERRIÈRE le sachet — jamais un contour qui épouse
+	   la silhouette (le drop-shadow coloré dessinait un rectangle arrondi, interdit) */
 	.pack::before {
 		content: '';
 		position: absolute;
@@ -223,8 +392,8 @@
 		opacity: 0;
 		transition: opacity 0.35s ease;
 	}
-	.pack.hover:not(.dragging):not(.bursting):not(.torn)::before {
-		opacity: 0.22;
+	.pack.dragging {
+		animation-play-state: paused;
 	}
 	.pack.dragging::before {
 		opacity: calc(var(--p) * 0.9);
@@ -235,25 +404,6 @@
 	.pack.bursting::before {
 		opacity: 1;
 		animation: bloomup 0.43s ease-in forwards;
-	}
-	/* la sortie packs.com : sursaut d'anticipation, puis le sachet vidé tombe */
-	.pack.torn {
-		animation: pack-exit 0.7s cubic-bezier(0.33, 0, 0.18, 1) both;
-		pointer-events: none;
-	}
-	@keyframes pack-exit {
-		0% {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-		14% {
-			opacity: 1;
-			transform: translateY(-8px) scale(1.02);
-		}
-		to {
-			opacity: 0;
-			transform: translateY(75%) scale(0.95);
-		}
 	}
 	@keyframes bloomup {
 		to {
@@ -272,42 +422,362 @@
 		84% { transform: translate(-5px, 3px) rotate(-1.2deg); }
 		100% { transform: translate(3px, -2px) rotate(0.8deg); }
 	}
+	@media (prefers-reduced-motion: reduce) {
+		.pack3d, .pack, .pack.bursting { animation: none; }
+		.pack3d .pack { transform: none; }
+	}
 
-	/* la pilule à grip : positionnée chaque frame sur la ligne de coupe projetée */
-	.tab {
+	/* ---------- métal argenté commun (sertissage bas + rails) ---------- */
+	.crimp-bottom,
+	.rail {
+		background:
+			repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.045) 0 2px, transparent 2px 7px),
+			linear-gradient(180deg, #f5f7fa 0%, #c6ccd6 28%, #eef1f5 52%, #aab2bf 78%, #dfe4ea 100%);
+	}
+
+	/* ---------- l'opercule ---------- */
+	.rip {
 		position: absolute;
 		top: 0;
 		left: 0;
-		z-index: 4;
-		width: 11cqw;
-		height: 4.4cqw;
-		display: grid;
-		grid-template-columns: repeat(3, auto);
-		place-content: center;
-		gap: 0.6cqw 1.1cqw;
-		border-radius: 999px;
-		background: linear-gradient(180deg, #f7f3ea 0%, #ddd5c4 55%, #efe8d8 100%);
-		border: 0.3cqw solid rgba(120, 100, 60, 0.35);
-		box-shadow:
-			0 0.8cqw 2.2cqw rgba(0, 0, 0, 0.5),
-			inset 0 0.3cqw 0.4cqw rgba(255, 255, 255, 0.8),
-			0 0 2.6cqw color-mix(in srgb, var(--glow) 40%, transparent);
+		right: 0;
+		height: 12%;
+		z-index: 3;
+		cursor: grab;
+		touch-action: none;
+		user-select: none;
+	}
+	.pack.dragging .rip { cursor: grabbing; }
+	/* la boucle du curl monte au-dessus de l'opercule : le canvas déborde vers le haut */
+	.ripcv {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		height: 300%;
 		pointer-events: none;
-		will-change: transform;
 	}
-	.tab i {
-		width: 0.65cqw;
-		height: 0.65cqw;
-		border-radius: 50%;
-		background: rgba(90, 78, 50, 0.55);
-		box-shadow: inset 0 0.2cqw 0.25cqw rgba(0, 0, 0, 0.3);
-	}
-	.pack.dragging .tab {
-		scale: 1.08;
+	.pack.torn .rip {
+		transform: translate(60%, -120%) rotate(18deg);
+		opacity: 0;
+		transition:
+			transform 0.55s cubic-bezier(0.3, 0, 0.7, 0.2),
+			opacity 0.5s ease;
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.pack.bursting { animation: none; }
-		.pack.torn { animation: none; opacity: 0; }
+	/* la lumière qui fuit par la déchirure — couleur du meilleur tirage du sachet */
+	.leak {
+		position: absolute;
+		top: 9%;
+		left: 2%;
+		right: 2%;
+		height: 4.5%;
+		z-index: 2;
+		pointer-events: none;
+		background: radial-gradient(
+			50% 100% at 50% 50%,
+			color-mix(in srgb, var(--glow) 92%, #fff),
+			color-mix(in srgb, var(--glow) 45%, transparent) 55%,
+			transparent 85%
+		);
+		filter: blur(3px);
+		opacity: calc(var(--p, 0) * var(--p, 0));
+		transform: scaleY(calc(0.4 + var(--p, 0) * 1.4));
+	}
+	/* un prismatique / full art dort dedans : la fuite est froide, blanc-violet —
+	   une lumière d'un autre monde, pas une guirlande */
+	.pack.prisma .leak {
+		background: radial-gradient(
+			50% 100% at 50% 50%,
+			rgba(244, 240, 255, 0.95),
+			rgba(203, 184, 255, 0.45) 52%,
+			rgba(168, 200, 255, 0.18) 72%,
+			transparent 88%
+		);
+	}
+	.pack.bursting .leak { animation: leakflare 0.43s ease-in forwards; }
+	@keyframes leakflare {
+		to {
+			opacity: 1;
+			transform: scaleY(4);
+			filter: blur(6px);
+		}
+	}
+
+	/* ---------- rails latéraux (soudure) ---------- */
+	.rail {
+		position: absolute;
+		top: 10%;
+		bottom: 4.5%;
+		width: 1.6%;
+		z-index: 1;
+		transition: opacity 0.4s ease;
+	}
+	.rail.left { left: 0; }
+	.rail.right { right: 0; }
+	.pack.torn .rail { opacity: 0; }
+
+	/* ---------- le corps ---------- */
+	.body {
+		position: absolute;
+		top: 10%;
+		bottom: 4.5%;
+		left: 1.6%;
+		right: 1.6%;
+		overflow: hidden;
+		background: #0c0f15;
+		transition:
+			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
+			opacity 0.5s ease,
+			clip-path 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	.pack.dragging .body {
+		transition: none; /* la découpe suit le doigt sans latence */
+	}
+	.pack.torn .body {
+		transform: translateY(26%) scale(0.96);
+		opacity: 0;
+	}
+	.crimp-bottom {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 5%;
+		transition:
+			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
+			opacity 0.5s ease;
+	}
+	.pack.torn .crimp-bottom {
+		transform: translateY(160%);
+		opacity: 0;
+	}
+
+	.cover {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 18%;
+	}
+	/* étalonnage : garde le sujet lisible, assoit le tiers logo */
+	.grade {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(180deg, rgba(8, 10, 15, 0.5) 0%, transparent 20%),
+			linear-gradient(180deg, transparent 42%, rgba(8, 10, 14, 0.6) 66%, rgba(6, 8, 12, 0.94) 100%),
+			radial-gradient(130% 90% at 50% 38%, transparent 55%, rgba(5, 7, 11, 0.45) 100%);
+	}
+	/* galbe en coussin : le sachet bombe au centre, se pince aux sertissages */
+	.plastic {
+		position: absolute;
+		inset: 0;
+		background:
+			/* pincements haut/bas — la matière tendue près des soudures */
+			linear-gradient(
+				180deg,
+				rgba(0, 0, 0, 0.4) 0%,
+				transparent 11%,
+				transparent 89%,
+				rgba(0, 0, 0, 0.45) 100%
+			),
+			/* bombé horizontal : ombres latérales, rehauts, dorsale centrale */
+			linear-gradient(
+				90deg,
+				rgba(0, 0, 0, 0.45) 0%,
+				transparent 9%,
+				rgba(255, 255, 255, 0.06) 17%,
+				transparent 30%,
+				rgba(255, 255, 255, 0.07) 47%,
+				rgba(255, 255, 255, 0.07) 53%,
+				transparent 70%,
+				rgba(255, 255, 255, 0.055) 83%,
+				transparent 91%,
+				rgba(0, 0, 0, 0.48) 100%
+			);
+	}
+	/* le reflet au pointeur : une source de lumière qui glisse sur la surface bombée */
+	.glare3d {
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		pointer-events: none;
+		background: radial-gradient(
+			55% 42% at var(--gx, 50%) var(--gy, 35%),
+			rgba(255, 255, 255, 0.14),
+			rgba(255, 255, 255, 0.05) 45%,
+			transparent 72%
+		);
+		opacity: 0;
+		transition: opacity 0.35s ease;
+	}
+	.pack.hover .glare3d {
+		opacity: 1;
+	}
+	.pack.torn .glare3d {
+		opacity: 0;
+	}
+	.sheen {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			115deg,
+			transparent 30%,
+			rgba(255, 255, 255, 0.07) 45%,
+			rgba(255, 255, 255, 0.14) 50%,
+			rgba(255, 255, 255, 0.07) 55%,
+			transparent 70%
+		);
+		background-size: 250% 100%;
+		animation: sweep 4.2s ease-in-out infinite;
+	}
+	@keyframes sweep {
+		0%, 55% { background-position: 120% 0; }
+		100% { background-position: -60% 0; }
+	}
+
+	/* ---------- habillage éditorial (structure booster réel) ---------- */
+	/* la pastille de marque, haut centre — l'équivalent du cartouche éditeur */
+	.brand-pill {
+		position: absolute;
+		top: 3cqw;
+		left: 50%;
+		translate: -50% 0;
+		padding: 1.1cqw 4cqw 0.9cqw;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: 3cqw;
+		letter-spacing: 0.34em;
+		text-indent: 0.34em;
+		text-transform: uppercase;
+		color: #e9cf8d;
+		background: rgba(10, 12, 18, 0.82);
+		border: 0.4cqw solid rgba(216, 180, 92, 0.85);
+		border-radius: 999px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+	}
+	/* badges d'édition, haut droite — l'empilement des vrais sachets */
+	.badges {
+		position: absolute;
+		top: 3cqw;
+		right: 2.6cqw;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 1cqw;
+	}
+	.badge {
+		padding: 0.8cqw 2.2cqw 0.7cqw;
+		font-family: Bahnschrift, 'Segoe UI', sans-serif;
+		font-weight: 700;
+		font-size: 2.3cqw;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		border-radius: 0.9cqw;
+		box-shadow: 0 1px 5px rgba(0, 0, 0, 0.55);
+	}
+	.badge.red {
+		color: #fff;
+		background: linear-gradient(180deg, #c93247, #8e1626);
+		border: 0.3cqw solid rgba(255, 255, 255, 0.8);
+	}
+	.badge.dark {
+		font-family: Cinzel, Georgia, serif;
+		color: #e9cf8d;
+		background: rgba(10, 12, 18, 0.85);
+		border: 0.3cqw solid rgba(216, 180, 92, 0.8);
+	}
+
+	/* le bloc logo du tiers bas : surtitre, wordmark métallique, bannière de set */
+	.logo-block {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 13cqw;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0;
+	}
+	.logo-over {
+		margin: 0 0 0.6cqw;
+		font-family: Bahnschrift, 'Segoe UI', sans-serif;
+		font-weight: 700;
+		font-size: 2cqw;
+		letter-spacing: 0.5em;
+		text-indent: 0.5em;
+		text-transform: uppercase;
+		color: rgba(236, 232, 225, 0.75);
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+	}
+	.wordmark {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 900;
+		font-size: 9.6cqw;
+		line-height: 1;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		background: linear-gradient(180deg, #fff6d8 8%, #ecc76a 38%, #8a6a1f 55%, #f4dc94 72%, #b3892c 100%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		filter:
+			drop-shadow(0 1px 0 rgba(60, 40, 5, 0.9))
+			drop-shadow(0 3px 8px rgba(0, 0, 0, 0.85));
+	}
+	.set-banner {
+		margin: 1.6cqw 0 0;
+		padding: 1.3cqw 6cqw 1.1cqw;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: 5cqw;
+		letter-spacing: 0.16em;
+		text-indent: 0.16em;
+		text-transform: uppercase;
+		background:
+			linear-gradient(180deg, rgba(20, 14, 4, 0.92), rgba(4, 3, 1, 0.95)) padding-box,
+			linear-gradient(180deg, #f4dc94, #8a6a1f 45%, #e9cf8d) border-box;
+		border: 0.55cqw solid transparent;
+		border-radius: 2.2cqw;
+		color: #f2e3b6;
+		text-shadow: 0 0 3cqw rgba(233, 207, 141, 0.4), 0 1px 2px #000;
+		box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+	}
+
+	/* mentions basses : compte à gauche, légal centré */
+	.count {
+		position: absolute;
+		left: 3cqw;
+		bottom: 4.6cqw;
+		margin: 0;
+		font-family: Bahnschrift, 'Segoe UI', sans-serif;
+		font-weight: 800;
+		font-size: 2.7cqw;
+		line-height: 1.25;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		text-align: left;
+		color: #f0ede6;
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+	}
+	.count small {
+		font-size: 1.9cqw;
+		font-weight: 700;
+		color: rgba(240, 237, 230, 0.75);
+	}
+	.legal {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 1.4cqw;
+		margin: 0;
+		font-family: Consolas, monospace;
+		font-size: 1.7cqw;
+		letter-spacing: 0.12em;
+		color: rgba(236, 232, 225, 0.5);
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 	}
 </style>
