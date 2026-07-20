@@ -14,16 +14,25 @@
 		amazing: 'Cristallin',
 		cosmos: 'Cosmique',
 		secret: 'Prismatique',
-		radiant: 'Radiant'
+		radiant: 'Radiant',
+		shinyv: 'V Full Art'
 	};
 	// Tous les foils (mode labo).
-	const allFoils: FoilPreset[] = ['mat', 'regular', 'amazing', 'cosmos', 'secret', 'radiant'];
+	const allFoils: FoilPreset[] = [
+		'mat',
+		'regular',
+		'amazing',
+		'cosmos',
+		'secret',
+		'radiant',
+		'shinyv'
+	];
 	// Foils recommandés PAR rareté (le 1er = le foil par défaut de la charte).
 	// Échelle premium : mat → holo → cosmique → radiant → prismatique.
 	const rarityFoils: Record<Rarity, FoilPreset[]> = {
 		common: ['mat'],
-		rare: ['regular'],
-		epic: ['cosmos', 'amazing'],
+		rare: ['regular', 'shinyv'],
+		epic: ['cosmos', 'amazing', 'shinyv'],
 		legendary: ['radiant', 'cosmos'],
 		prism: ['secret', 'radiant']
 	};

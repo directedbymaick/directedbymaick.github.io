@@ -102,7 +102,8 @@
 			amazing: 'amazing rare',
 			cosmos: 'rare holo cosmos',
 			secret: 'rare rainbow alt',
-			radiant: 'radiant rare'
+			radiant: 'radiant rare',
+			shinyv: 'rare shiny v'
 		}[foil.preset] ?? ''
 	);
 </script>
