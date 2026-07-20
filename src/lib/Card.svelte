@@ -527,6 +527,7 @@
 		background: none;
 		box-shadow: none;
 		backdrop-filter: none;
+		border: none;
 		padding: 1.6cqw 0 0;
 		text-align: center;
 	}
