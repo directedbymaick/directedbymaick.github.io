@@ -15,7 +15,7 @@
 		cosmos: 'Cosmique',
 		secret: 'Prismatique',
 		radiant: 'Radiant',
-		shinyv: 'V Full Art'
+		showcase: 'Illustration spéciale'
 	};
 	// Tous les foils (mode labo).
 	const allFoils: FoilPreset[] = [
@@ -25,16 +25,16 @@
 		'cosmos',
 		'secret',
 		'radiant',
-		'shinyv'
+		'showcase'
 	];
 	// Foils recommandés PAR rareté (le 1er = le foil par défaut de la charte).
 	// Échelle premium : mat → holo → cosmique → radiant → prismatique.
 	const rarityFoils: Record<Rarity, FoilPreset[]> = {
 		common: ['mat'],
-		rare: ['regular', 'shinyv'],
-		epic: ['cosmos', 'amazing', 'shinyv'],
+		rare: ['regular'],
+		epic: ['cosmos', 'amazing'],
 		legendary: ['radiant', 'cosmos'],
-		prism: ['secret', 'radiant']
+		prism: ['secret', 'radiant', 'showcase']
 	};
 
 	const rarities = Object.keys(charter.rarities) as Rarity[];

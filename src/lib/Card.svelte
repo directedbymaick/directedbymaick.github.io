@@ -103,9 +103,12 @@
 			cosmos: 'rare holo cosmos',
 			secret: 'rare rainbow alt',
 			radiant: 'radiant rare',
-			shinyv: 'rare shiny v'
+			// showcase = holo prismatique (rainbow alt) DERRIÈRE le personnage détouré
+			showcase: 'rare rainbow alt'
 		}[foil.preset] ?? ''
 	);
+	// mode « showcase » : illustration détourée qui flotte au-dessus du holo
+	const isShowcase = $derived(foil.preset === 'showcase' && !!card.cutout);
 </script>
 
 <div class="scene">
@@ -123,12 +126,16 @@
 	>
 		<div class="face">
 			<div class="body">
-				<div class="art">
-					<img src={card.art} alt={card.name} draggable="false" />
+				<div class="art" class:showcase={isShowcase}>
+					<img class="art-base" src={card.art} alt={card.name} draggable="false" />
 					<div class="scrim" aria-hidden="true"></div>
 					<!-- foil : recettes shine/glare de simeydotme (GPL v3), verbatim -->
 					<div class="card__shine" aria-hidden="true"></div>
 					<div class="card__glare" aria-hidden="true"></div>
+					{#if isShowcase}
+						<!-- showcase : le personnage détouré flotte AU-DESSUS du holo -->
+						<img class="cutout" src={card.cutout} alt="" aria-hidden="true" draggable="false" />
+					{/if}
 				</div>
 
 				<span class="cost" title="Coût en Volonté">{card.cost}</span>
@@ -410,6 +417,32 @@
 		inset: 0;
 		background: linear-gradient(180deg, rgba(16, 17, 23, 0.25) 0%, transparent 22%, transparent 68%, #101117 100%);
 		pointer-events: none;
+	}
+
+	/* ===== SHOWCASE : le personnage détouré flotte au-dessus d'un holo prismatique ===== */
+	.art.showcase .art-base {
+		/* le fond devient un halo sombre et flou : le holo scintille dessus,
+		   sans double du personnage pour parasiter la lecture */
+		filter: brightness(0.32) saturate(1.25) blur(9px);
+		transform: scale(1.14);
+	}
+	.art.showcase .scrim {
+		background:
+			radial-gradient(120% 80% at 50% 28%, transparent 42%, rgba(8, 9, 14, 0.5) 100%),
+			linear-gradient(180deg, transparent 62%, #101117 100%);
+	}
+	.art .cutout {
+		z-index: 6; /* AU-DESSUS du shine/glare → le holo passe DERRIÈRE le sujet */
+		object-fit: cover;
+		object-position: var(--art-pos, center 8%);
+		/* contre-parallaxe : le sujet glisse à l'inverse du pointeur = profondeur */
+		transform: translate3d(
+			calc((var(--pxn, 0.5) - 0.5) * -14px),
+			calc((var(--pyn, 0.5) - 0.5) * -14px),
+			0
+		);
+		filter: drop-shadow(0 0.6cqw 1.2cqw rgba(0, 0, 0, 0.55));
+		transition: transform 0.12s ease-out;
 	}
 
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.

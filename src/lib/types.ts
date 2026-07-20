@@ -10,7 +10,7 @@
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'prism';
 
 // Foils = recettes verbatim de simeydotme (pokemon-cards-css)
-export type FoilPreset = 'mat' | 'regular' | 'amazing' | 'cosmos' | 'secret' | 'radiant' | 'shinyv';
+export type FoilPreset = 'mat' | 'regular' | 'amazing' | 'cosmos' | 'secret' | 'radiant' | 'showcase';
 
 /** Matériau du cadre — la rareté EST un matériau. */
 export type FrameMaterial = 'carbone' | 'nacre' | 'argent' | 'or' | 'prisme';
@@ -63,6 +63,9 @@ export interface CardData {
 	art: string;
 	/** Cadrage de l'art dans sa fenêtre (object-position CSS). Défaut : 'center 12%' — préserve le haut des portraits. */
 	artPosition?: string;
+	/** Illustration détourée (fond transparent) pour le foil « showcase » : le
+	    personnage flotte au-dessus d'un holo prismatique. Optionnel. */
+	cutout?: string;
 	/** Obsolète : toutes les cartes sont rendues en full art (le champ est ignoré par Card.svelte). */
 	fullArt?: boolean;
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */

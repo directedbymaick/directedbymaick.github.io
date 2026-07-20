@@ -10,6 +10,7 @@
 	"rarity": "prism",
 	"faction": "vasar",
 	"art": "/art/doran.webp",
+	"cutout": "/art/doran-cutout.webp",
 	"gene": {
 		"palette": [
 			"#997358",
