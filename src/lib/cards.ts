@@ -28,7 +28,7 @@ export function altView(card: CardData, art: string, index: number): CardData {
 		alt: index + 1,
 		gene: {
 			...card.gene,
-			foilPreset: card.gene.foilPreset === 'mat' ? 'holo' : card.gene.foilPreset,
+			foilPreset: card.gene.foilPreset === 'mat' ? 'regular' : card.gene.foilPreset,
 			seed: card.gene.seed + 97 * (index + 1)
 		}
 	};

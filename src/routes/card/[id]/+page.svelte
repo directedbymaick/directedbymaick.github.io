@@ -29,7 +29,7 @@
 		const view = structuredClone(source);
 		view.id = `${source.id}--fullart`;
 		view.rarity = 'prism';
-		view.gene.foilPreset = 'prism';
+		view.gene.foilPreset = 'secret';
 		return view;
 	}
 	const artOptions: ArtOption[] = $derived([

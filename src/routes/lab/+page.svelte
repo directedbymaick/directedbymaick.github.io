@@ -7,35 +7,17 @@
 	// Le Lab est la charte design incarnée : on règle la matière en live,
 	// puis on reporte les choix dans charter.json / les presets.
 
-	// Noms lisibles des foils. Deux familles : SIMEY (recettes simeydotme) et
-	// MAISON (couches .foil-a/b d'origine Expelled).
+	// Noms lisibles des foils — recettes verbatim de simeydotme.
 	const foilLabels: Record<FoilPreset, string> = {
-		// simey
-		mat: 'Satin mat',
+		mat: 'Satin mat (aucun)',
 		regular: 'Holographique',
-		cosmos: 'Cosmique',
 		amazing: 'Cristallin',
-		radiant: 'Radiant',
+		cosmos: 'Cosmique',
 		secret: 'Prismatique',
-		// maison (anciens)
-		holo: 'Holo maison',
-		prismatic: 'Prismatique maison',
-		galaxy: 'Galaxie maison',
-		prism: 'Prisme maison'
+		radiant: 'Radiant'
 	};
-	// Tous les foils (mode labo) : simey puis maison.
-	const allFoils: FoilPreset[] = [
-		'mat',
-		'regular',
-		'amazing',
-		'cosmos',
-		'secret',
-		'radiant',
-		'holo',
-		'prismatic',
-		'galaxy',
-		'prism'
-	];
+	// Tous les foils (mode labo).
+	const allFoils: FoilPreset[] = ['mat', 'regular', 'amazing', 'cosmos', 'secret', 'radiant'];
 	// Foils recommandés PAR rareté (le 1er = le foil par défaut de la charte).
 	// Échelle premium : mat → holo → cosmique → radiant → prismatique.
 	const rarityFoils: Record<Rarity, FoilPreset[]> = {
@@ -133,7 +115,7 @@
 			{/if}
 			<label class="row toggle">
 				<input type="checkbox" bind:checked={showAllFoils} />
-				Tous les foils (simey + maison)
+				Tous les foils (hors filtre de rareté)
 			</label>
 		</div>
 

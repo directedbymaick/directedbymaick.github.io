@@ -9,19 +9,8 @@
 
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'prism';
 
-export type FoilPreset =
-	// famille SIMEY (recettes shine/glare)
-	| 'mat'
-	| 'regular'
-	| 'amazing'
-	| 'cosmos'
-	| 'secret'
-	| 'radiant'
-	// famille MAISON (couches .foil-a/b)
-	| 'holo'
-	| 'prismatic'
-	| 'galaxy'
-	| 'prism';
+// Foils = recettes verbatim de simeydotme (pokemon-cards-css)
+export type FoilPreset = 'mat' | 'regular' | 'amazing' | 'cosmos' | 'secret' | 'radiant';
 
 /** Matériau du cadre — la rareté EST un matériau. */
 export type FrameMaterial = 'carbone' | 'nacre' | 'argent' | 'or' | 'prisme';
