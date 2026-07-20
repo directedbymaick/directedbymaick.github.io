@@ -540,7 +540,9 @@
 
 /* ===== RADIANT HOLO (radiant-holo.css) — verbatim, adapté (no-mask, --foil:none) ===== */
 .card[data-rarity="radiant rare"] .card__shine {
-  --barwidth: 1.2%;
+  /* EXPELLED : barres LARGES (1.2%→8%) → plus de quadrillage fin « bugué »,
+     de larges bandes métalliques douces qui coulent. */
+  --barwidth: 8%;
   --space: 200px;
   --hue: 50;
   --imgsize: cover;
@@ -584,10 +586,10 @@
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% ),
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% );
   background-blend-mode: exclusion, darken, color-dodge;
-  /* EXPELLED : léger flou + contraste réduit → on lisse le quadrillage 45/-45°
-     (fini les cellules « carrées »), rendu métallique plus propre. */
-  filter: brightness(.55) contrast(1.55) saturate(1.7) blur(0.7px);
-  mix-blend-mode: color-dodge;
+  /* EXPELLED : flou + contraste doux + soft-light → les bandes se fondent dans
+     l'illustration (incrustées), rendu lisse sans grille ni grain. */
+  filter: brightness(.7) contrast(1.35) saturate(1.6) blur(1px);
+  mix-blend-mode: soft-light;
 }
 .card[data-rarity="radiant rare"] .card__shine:after {
   content: "";
@@ -604,8 +606,9 @@
     );
   background-size: var(--imgsize), 400% 100%;
   background-position: center, calc( ((var(--background-x) - 50%) * -2.5) + 50% ) calc( ((var(--background-y) - 50%) * -2.5) + 50% );
-  filter: brightness(.6) contrast(3) saturate(2);
-  mix-blend-mode: color-dodge;
+  filter: brightness(.6) contrast(2.2) saturate(1.9);
+  /* EXPELLED : rainbow en overlay → épouse les formes de l'art (incrusté) */
+  mix-blend-mode: overlay;
   background-blend-mode: hard-light;
 }
 .card[data-rarity="radiant rare"] .card__shine:before {
