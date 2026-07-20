@@ -85,10 +85,10 @@ export function resolveFoil(card: CardData, frameColor: string): FoilParams {
 		'--grain': noiseMaskUri(card.gene.seed, grainFreq, 2),
 		'--galaxy': noiseMaskUri(card.gene.seed + 7, galaxyFreq, 3),
 		'--sparkle': noiseMaskUri(card.gene.seed + 13, sparkleFreq, 1),
-		/* Foil v4 (recettes packs.com) : paillettes éparses, second plan de
-		   nébuleuse, et graine de position — chaque carte a SON foil. */
-		'--glitter': glitterUri(card.gene.seed + 21, 1.15 + rand() * 0.5),
-		'--galaxy2': noiseMaskUri(card.gene.seed + 31, galaxyFreq * 2.1, 3),
+		/* Le glitter et le grain viennent des textures de simeydotme (globales,
+		   /img/) : on ne les surcharge PAS ici. On ne pose que la graine de
+		   position du cosmos, pour que chaque carte ait son ciel. */
+		'--cosmosbg': `${Math.round(rand() * 300 - 150)}px ${Math.round(rand() * 300 - 150)}px`,
 		'--seedx': `${Math.round(rand() * 100)}%`,
 		'--seedy': `${Math.round(rand() * 100)}%`
 	};

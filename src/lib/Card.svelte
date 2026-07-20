@@ -4,6 +4,8 @@
 	import { resolveFoil, styleString } from '$lib/effects/foil';
 	import { charter } from '$lib/charter';
 	import FactionSigil from '$lib/FactionSigil.svelte';
+	// Effets foil de simeydotme (GPL v3) — cf. src/lib/holo/LICENSE.txt
+	import '$lib/holo/pokemon-cards-css.css';
 
 	let {
 		card,
@@ -78,7 +80,24 @@
 			`--from-center: ${fromCenter.toFixed(3)}; ` +
 			`--pang: ${pang.toFixed(1)}deg; ` +
 			`--bgx: ${bgx.toFixed(2)}%; --bgy: ${bgy.toFixed(2)}%; ` +
-			`--rx: ${rx.toFixed(2)}deg; --ry: ${ry.toFixed(2)}deg`
+			`--rx: ${rx.toFixed(2)}deg; --ry: ${ry.toFixed(2)}deg; ` +
+			/* les variables au modèle EXACT de simeydotme, pour ses recettes shine/glare */
+			`--pointer-x: ${(px * 100).toFixed(2)}%; --pointer-y: ${(py * 100).toFixed(2)}%; ` +
+			`--pointer-from-center: ${fromCenter.toFixed(3)}; ` +
+			`--pointer-from-top: ${py.toFixed(3)}; --pointer-from-left: ${px.toFixed(3)}; ` +
+			`--background-x: ${bgx.toFixed(2)}%; --background-y: ${bgy.toFixed(2)}%; ` +
+			`--card-opacity: ${hover ? 1 : 0}`
+	);
+
+	/* notre preset → la rareté simeydotme dont on emprunte la recette exacte */
+	const holoRarity = $derived(
+		foil.preset === 'holo' || foil.preset === 'prismatic'
+			? 'rare holo'
+			: foil.preset === 'galaxy'
+				? 'rare holo cosmos'
+				: foil.preset === 'prism'
+					? 'rare rainbow alt'
+					: ''
 	);
 </script>
 
@@ -88,6 +107,7 @@
 		class:hover
 		data-material={rarityDef.material}
 		data-foil={foil.preset}
+		data-rarity={holoRarity}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
 		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}"
@@ -98,10 +118,10 @@
 			<div class="body">
 				<div class="art">
 					<img src={card.art} alt={card.name} draggable="false" />
-					<div class="foil-a" aria-hidden="true"></div>
-					<div class="foil-b" aria-hidden="true"></div>
-					<div class="sparkles" aria-hidden="true"></div>
 					<div class="scrim" aria-hidden="true"></div>
+					<!-- foil : recettes shine/glare de simeydotme (GPL v3) -->
+					<div class="card__shine" aria-hidden="true"></div>
+					<div class="card__glare" aria-hidden="true"></div>
 				</div>
 
 				<span class="cost" title="Coût en Volonté">{card.cost}</span>
@@ -149,10 +169,7 @@
 					{/if}
 				</div>
 
-				<div class="prism-veil" aria-hidden="true"></div>
 				<div class="etch" aria-hidden="true"></div>
-				<div class="glare" aria-hidden="true"></div>
-				<div class="glare2" aria-hidden="true"></div>
 			</div>
 			<footer class="frame-footer" aria-hidden="true">
 				<span class="ff-serial"
