@@ -205,6 +205,9 @@
 							>Alt {card.alt}</span
 						>{/if}</span
 				>
+				{#if fullArt}
+					<span class="fa-star" title="Full Art"></span>
+				{/if}
 				<span class="ff-rarity">◯ {rarityDef.name} · Le Silence</span>
 			</footer>
 			<div class="conduits" aria-hidden="true"></div>
@@ -460,7 +463,6 @@
 	.card[data-fullart='true'] .body {
 		box-shadow: none;
 	}
-	.card[data-fullart='true'] .frame-footer,
 	.card[data-fullart='true'] .etch {
 		display: none;
 	}
@@ -541,6 +543,34 @@
 	.card[data-fullart='true'] .statbar {
 		justify-content: space-between;
 		padding: 0;
+	}
+	/* étoile prismatique : le signal « Full Art » */
+	.fa-star {
+		flex: none;
+		width: 3.2cqw;
+		height: 3.2cqw;
+		background: conic-gradient(
+			from 210deg,
+			#c87a8c,
+			#d2b46e,
+			#78c8a0,
+			#6ea0d2,
+			#aa78d2,
+			#c87a8c
+		);
+		clip-path: polygon(
+			50% 0%,
+			61% 35%,
+			98% 35%,
+			68% 57%,
+			79% 91%,
+			50% 70%,
+			21% 91%,
+			32% 57%,
+			2% 35%,
+			39% 35%
+		);
+		filter: drop-shadow(0 0 1.2cqw rgba(200, 160, 220, 0.7));
 	}
 
 
