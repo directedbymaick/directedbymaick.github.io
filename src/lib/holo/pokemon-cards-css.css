@@ -585,9 +585,7 @@
     calc( ((var(--background-x) - 50%) * 1.5) + 50% ) calc( ((var(--background-y) - 50%) * 1.5) + 50% );
   background-blend-mode: exclusion, darken, color-dodge;
   filter: brightness(.5) contrast(2) saturate(1.75);
-  /* EXPELLED : overlay au lieu de color-dodge → l'effet s'INCRUSTE dans l'illustration
-     (modulé par la luminance de l'image) au lieu de se poser par-dessus. */
-  mix-blend-mode: overlay;
+  mix-blend-mode: color-dodge;
 }
 .card[data-rarity="radiant rare"] .card__shine:after {
   content: "";
@@ -605,8 +603,7 @@
   background-size: var(--imgsize), 400% 100%;
   background-position: center, calc( ((var(--background-x) - 50%) * -2.5) + 50% ) calc( ((var(--background-y) - 50%) * -2.5) + 50% );
   filter: brightness(.6) contrast(3) saturate(2);
-  /* EXPELLED : le rainbow s'incruste aussi (overlay) → épouse les formes de l'art */
-  mix-blend-mode: overlay;
+  mix-blend-mode: color-dodge;
   background-blend-mode: hard-light;
 }
 .card[data-rarity="radiant rare"] .card__shine:before {
@@ -624,8 +621,7 @@
   background-position: center;
   background-size: 15% 15%, 350% 350%;
   background-blend-mode: color-dodge;
-  /* EXPELLED : les paillettes en soft-light → discrètes et fondues dans l'image */
-  mix-blend-mode: soft-light;
+  mix-blend-mode: overlay;
   filter: brightness(.66) contrast(2) saturate(.5);
 }
 
