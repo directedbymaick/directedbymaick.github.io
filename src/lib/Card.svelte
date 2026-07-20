@@ -426,14 +426,12 @@
 		z-index: 6; /* AU-DESSUS du shine/glare → le holo passe DERRIÈRE le sujet */
 		object-fit: cover;
 		object-position: var(--art-pos, center 8%);
-		/* contre-parallaxe : le sujet glisse à l'inverse du pointeur = profondeur */
-		transform: translate3d(
-			calc((var(--pxn, 0.5) - 0.5) * -14px),
-			calc((var(--pyn, 0.5) - 0.5) * -14px),
-			0
-		);
-		filter: drop-shadow(0 0.6cqw 1.2cqw rgba(0, 0, 0, 0.55));
-		transition: transform 0.12s ease-out;
+		/* le sujet se fond AVANT le bas de la fenêtre d'art → il ne déborde jamais
+		   sur le cartouche/texte. Pas de translation : il tourne avec la carte en
+		   3D (rotateX/rotateY), comme simeydotme — pas de parallaxe indépendante. */
+		-webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 84%);
+		mask-image: linear-gradient(to bottom, #000 58%, transparent 84%);
+		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.45));
 	}
 
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.
