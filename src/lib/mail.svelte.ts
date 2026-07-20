@@ -36,6 +36,18 @@ export const MAILBOX: MailDef[] = [
 		]
 	},
 	{
+		id: 'test-funds-x5',
+		from: 'Le Bureau du Silence',
+		subject: "Fonds d'essai — ouvertures ×5",
+		date: '2026-07-20T12:00:00Z',
+		to: 'mcksuperdukegaming@gmail.com',
+		coins: 100000,
+		body: [
+			'Le Bureau crédite votre bourse pour la campagne d’essai des réquisitions groupées.',
+			'100 000 Éclats — de quoi ouvrir deux cents boosters ×5.'
+		]
+	},
+	{
 		id: 'founder-gift-999999',
 		from: 'Le Bureau du Silence',
 		subject: 'Dotation de fondateur',
