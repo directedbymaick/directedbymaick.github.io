@@ -279,12 +279,12 @@
 		top: 0;
 		left: 0;
 		z-index: 4;
-		width: 16cqw;
-		height: 6.6cqw;
+		width: 11cqw;
+		height: 4.4cqw;
 		display: grid;
 		grid-template-columns: repeat(3, auto);
 		place-content: center;
-		gap: 0.85cqw 1.5cqw;
+		gap: 0.6cqw 1.1cqw;
 		border-radius: 999px;
 		background: linear-gradient(180deg, #f7f3ea 0%, #ddd5c4 55%, #efe8d8 100%);
 		border: 0.3cqw solid rgba(120, 100, 60, 0.35);
@@ -296,8 +296,8 @@
 		will-change: transform;
 	}
 	.tab i {
-		width: 0.85cqw;
-		height: 0.85cqw;
+		width: 0.65cqw;
+		height: 0.65cqw;
 		border-radius: 50%;
 		background: rgba(90, 78, 50, 0.55);
 		box-shadow: inset 0 0.2cqw 0.25cqw rgba(0, 0, 0, 0.3);

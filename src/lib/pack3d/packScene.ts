@@ -34,8 +34,8 @@ export interface PackScene {
 
 const TEX_W = 1024;
 const TEX_H = 1468; // aspect 3 / 4.3
-const STRIP_F = 0.115; // fraction haute occupée par l'opercule
-const CRIMP_B = 0.045; // sertissage bas
+const STRIP_F = 0.095; // fraction haute occupée par l'opercule
+const CRIMP_B = 0.04; // sertissage bas
 
 async function loadImage(src: string): Promise<HTMLImageElement | null> {
 	return new Promise((res) => {
@@ -246,23 +246,30 @@ async function buildPackTexture(art: string): Promise<HTMLCanvasElement> {
 
 const PW = 3; // largeur monde
 const PH = PW * (4.3 / 3);
-const BULGE = PW * 0.085;
+const BULGE = PW * 0.03; // une PILE DE CARTES : mince, pas un coussin
 const SEGX = 48;
 const SEGY = 64;
 
-/** z du coussin : bombé au centre, plat aux sertissages, micro-froissures. */
+const smooth = (t: number) => {
+	const x = Math.max(0, Math.min(1, t));
+	return x * x * (3 - 2 * x);
+};
+
+/** z du sachet : un PLATEAU — la pile de cartes rigide affleure la face,
+ *  le mylar ne s'arrondit qu'aux bords et se pince aux sertissages. */
 function pillowZ(u: number, v: number): number {
-	// v : 0 bas → 1 haut (repère plan). aplatir dans les bandes serties
 	const crimpTop = 1 - STRIP_F;
 	let flat = 1;
-	if (v > crimpTop) flat = Math.max(0, 1 - (v - crimpTop) / STRIP_F) * 0.35;
-	else if (v < CRIMP_B * 1.6) flat = (v / (CRIMP_B * 1.6)) * 0.9 + 0.1;
-	const dome = Math.pow(Math.sin(Math.PI * u), 0.85) * Math.pow(Math.sin(Math.PI * Math.min(1, v / crimpTop)), 0.8);
-	// froissures fines du mylar — à peine perceptibles, jamais des stries
-	const wrinkle =
-		0.006 * Math.sin(u * 12.4 + 1.3) * Math.sin(v * 9.1 + 0.7) +
-		0.003 * Math.sin(u * 33.3 + 2.1) * Math.sin(v * 27.7 + 4.2);
-	return (BULGE * dome + wrinkle * PW * 0.2) * flat;
+	if (v > crimpTop) flat = Math.max(0, 1 - (v - crimpTop) / STRIP_F) * 0.3;
+	else if (v < CRIMP_B * 1.5) flat = (v / (CRIMP_B * 1.5)) * 0.9 + 0.1;
+	// plateau : pente LARGE et douce — aucun liseré spéculaire au bord de la pile
+	const vn = Math.min(1, v / crimpTop);
+	const plateau =
+		smooth(Math.min(u, 1 - u) / 0.22) * smooth(Math.min(vn, 1 - vn) / 0.16);
+	// la tension du film : plis UNIQUEMENT près des soudures haut/bas
+	const pinch = Math.max(0, 1 - vn / 0.1) + Math.max(0, 1 - (1 - vn) / 0.1);
+	const wrinkle = 0.009 * pinch * Math.sin(u * 24.1 + 1.3);
+	return (BULGE * plateau + wrinkle * PW * 0.2) * flat;
 }
 
 function buildBody(tex: THREE.Texture): THREE.Mesh {
@@ -277,10 +284,13 @@ function buildBody(tex: THREE.Texture): THREE.Mesh {
 		uv.setY(i, uv.getY(i) * (1 - STRIP_F)); // la texture ne se répète JAMAIS
 	}
 	geo.computeVertexNormals();
-	const mat = new THREE.MeshStandardMaterial({
+	const mat = new THREE.MeshPhysicalMaterial({
 		map: tex,
-		metalness: 0.3,
-		roughness: 0.52,
+		metalness: 0.45,
+		roughness: 0.34,
+		clearcoat: 0.6, // le vernis du film plastique : LE brillant des vrais sachets
+		clearcoatRoughness: 0.22,
+		envMapIntensity: 0.7,
 		side: THREE.FrontSide
 	});
 	const m = new THREE.Mesh(geo, mat);
@@ -308,10 +318,13 @@ function buildStrip(tex: THREE.Texture): StripBundle {
 		uv.setY(i, vFull); // continuité parfaite de la texture avec le corps
 	}
 	geo.computeVertexNormals();
-	const mat = new THREE.MeshStandardMaterial({
+	const mat = new THREE.MeshPhysicalMaterial({
 		map: tex,
-		metalness: 0.3,
-		roughness: 0.52,
+		metalness: 0.45,
+		roughness: 0.34,
+		clearcoat: 0.6,
+		clearcoatRoughness: 0.22,
+		envMapIntensity: 0.7,
 		transparent: true,
 		side: THREE.FrontSide
 	});
@@ -424,7 +437,7 @@ export function createPackScene(canvas: HTMLCanvasElement, opts: PackSceneOpts):
 	renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 	renderer.outputColorSpace = THREE.SRGBColorSpace;
 	renderer.toneMapping = THREE.ACESFilmicToneMapping;
-	renderer.toneMappingExposure = 1.12;
+	renderer.toneMappingExposure = 0.95;
 
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
@@ -433,10 +446,10 @@ export function createPackScene(canvas: HTMLCanvasElement, opts: PackSceneOpts):
 	// lumière : environnement neutre (le foil vit de reflets) + une directionnelle
 	const pmrem = new THREE.PMREMGenerator(renderer);
 	scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
-	const key = new THREE.DirectionalLight(0xfff2dd, 1.35);
+	const key = new THREE.DirectionalLight(0xfff2dd, 0.7);
 	key.position.set(-3, 4, 6);
 	scene.add(key);
-	const rim = new THREE.DirectionalLight(0xaec4ff, 0.5);
+	const rim = new THREE.DirectionalLight(0xaec4ff, 0.28);
 	rim.position.set(4, -2, 5);
 	scene.add(rim);
 
