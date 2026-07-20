@@ -183,8 +183,8 @@
 	}
 	.pack {
 		position: relative;
-		width: var(--pack-w, 320px);
-		aspect-ratio: 3 / 4.3;
+		width: var(--pack-w, 268px);
+		aspect-ratio: 3 / 5.16; /* l'élancement d'un vrai booster */
 		container-type: inline-size;
 	}
 	/* le canvas déborde du cadre : marges de respiration pour la parallaxe,

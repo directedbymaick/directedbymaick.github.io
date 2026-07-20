@@ -33,9 +33,9 @@ export interface PackScene {
 /* ------------------------- la texture du sachet ------------------------- */
 
 const TEX_W = 1024;
-const TEX_H = 1468; // aspect 3 / 4.3
-const STRIP_F = 0.095; // fraction haute occupée par l'opercule
-const CRIMP_B = 0.04; // sertissage bas
+const TEX_H = 1760; // aspect élancé d'un vrai booster (≈ 3 / 5.16)
+const STRIP_F = 0.07; // fraction haute occupée par l'opercule
+const CRIMP_B = 0.042; // sertissage bas
 
 async function loadImage(src: string): Promise<HTMLImageElement | null> {
 	return new Promise((res) => {
@@ -220,6 +220,29 @@ async function buildPackTexture(art: string): Promise<HTMLCanvasElement> {
 	c.fillText('LE SILENCE', cx + 4, baseY + 76);
 	c.restore();
 
+	/* bords crantés haut/bas : la découpe d'usine en zigzag (cf. photo) —
+	   gravée en transparence dans la texture, la silhouette 3D suit. */
+	c.save();
+	c.globalCompositeOperation = 'destination-out';
+	const TEETH = 34;
+	const DEPTH = TEX_H * 0.0075;
+	for (const top of [true, false]) {
+		c.beginPath();
+		const yEdge = top ? 0 : TEX_H;
+		const dir = top ? 1 : -1;
+		c.moveTo(0, yEdge);
+		for (let i = 0; i <= TEETH; i++) {
+			const x = (i / TEETH) * TEX_W;
+			const xm = ((i + 0.5) / TEETH) * TEX_W;
+			c.lineTo(x, yEdge + dir * DEPTH);
+			if (i < TEETH) c.lineTo(xm, yEdge);
+		}
+		c.lineTo(TEX_W, yEdge);
+		c.closePath();
+		c.fill();
+	}
+	c.restore();
+
 	// mentions basses
 	c.save();
 	c.textAlign = 'left';
@@ -245,31 +268,34 @@ async function buildPackTexture(art: string): Promise<HTMLCanvasElement> {
 /* --------------------------- la géométrie coussin --------------------------- */
 
 const PW = 3; // largeur monde
-const PH = PW * (4.3 / 3);
-const BULGE = PW * 0.03; // une PILE DE CARTES : mince, pas un coussin
+const PH = PW * (TEX_H / TEX_W); // même aspect élancé que la texture
+const BULGE = PW * 0.058; // l'arc du booster : galbe cylindrique dans la largeur
 const SEGX = 48;
-const SEGY = 64;
+const SEGY = 80;
 
 const smooth = (t: number) => {
 	const x = Math.max(0, Math.min(1, t));
 	return x * x * (3 - 2 * x);
 };
 
-/** z du sachet : un PLATEAU — la pile de cartes rigide affleure la face,
- *  le mylar ne s'arrondit qu'aux bords et se pince aux sertissages. */
+/** z du sachet — la forme du VRAI booster (cf. photo de référence) :
+ *  un arc cylindrique doux dans la LARGEUR (une seule bande de reflet
+ *  verticale), constant sur la hauteur du corps, pincé aux sertissages
+ *  avec de petits plis de tension en éventail. */
 function pillowZ(u: number, v: number): number {
 	const crimpTop = 1 - STRIP_F;
 	let flat = 1;
-	if (v > crimpTop) flat = Math.max(0, 1 - (v - crimpTop) / STRIP_F) * 0.3;
-	else if (v < CRIMP_B * 1.5) flat = (v / (CRIMP_B * 1.5)) * 0.9 + 0.1;
-	// plateau : pente LARGE et douce — aucun liseré spéculaire au bord de la pile
-	const vn = Math.min(1, v / crimpTop);
-	const plateau =
-		smooth(Math.min(u, 1 - u) / 0.22) * smooth(Math.min(vn, 1 - vn) / 0.16);
-	// la tension du film : plis UNIQUEMENT près des soudures haut/bas
-	const pinch = Math.max(0, 1 - vn / 0.1) + Math.max(0, 1 - (1 - vn) / 0.1);
-	const wrinkle = 0.009 * pinch * Math.sin(u * 24.1 + 1.3);
-	return (BULGE * plateau + wrinkle * PW * 0.2) * flat;
+	if (v > crimpTop) flat = Math.max(0.12, 1 - ((v - crimpTop) / STRIP_F) * 0.9);
+	else if (v < CRIMP_B * 1.4) flat = 0.15 + (v / (CRIMP_B * 1.4)) * 0.85;
+	const vn = Math.min(1, Math.max(0, v / crimpTop));
+	// l'arc : sin^1.3 → bombé doux au centre, tombée franche aux flancs
+	const arc = Math.pow(Math.sin(Math.PI * u), 1.3);
+	// constant sur la hauteur, fondu court vers les soudures
+	const taper = smooth(vn / 0.09) * smooth((1 - vn) / 0.09);
+	// plis de tension en éventail près des soudures (comme sur la photo)
+	const pinch = Math.max(0, 1 - vn / 0.09) + Math.max(0, 1 - (1 - vn) / 0.09);
+	const wrinkle = 0.012 * pinch * Math.sin(u * 19.7 + 1.3) * Math.pow(Math.sin(Math.PI * u), 0.5);
+	return (BULGE * arc * taper + wrinkle * PW * 0.2) * flat;
 }
 
 function buildBody(tex: THREE.Texture): THREE.Mesh {
@@ -286,11 +312,12 @@ function buildBody(tex: THREE.Texture): THREE.Mesh {
 	geo.computeVertexNormals();
 	const mat = new THREE.MeshPhysicalMaterial({
 		map: tex,
-		metalness: 0.45,
-		roughness: 0.34,
-		clearcoat: 0.6, // le vernis du film plastique : LE brillant des vrais sachets
-		clearcoatRoughness: 0.22,
-		envMapIntensity: 0.7,
+		metalness: 0.22,
+		roughness: 0.46,
+		clearcoat: 0.35, // satin : le film brille en douceur, jamais il n'éblouit
+		clearcoatRoughness: 0.32,
+		envMapIntensity: 0.5,
+		alphaTest: 0.5, // les crans découpés dans la texture
 		side: THREE.FrontSide
 	});
 	const m = new THREE.Mesh(geo, mat);
@@ -320,11 +347,12 @@ function buildStrip(tex: THREE.Texture): StripBundle {
 	geo.computeVertexNormals();
 	const mat = new THREE.MeshPhysicalMaterial({
 		map: tex,
-		metalness: 0.45,
-		roughness: 0.34,
-		clearcoat: 0.6,
-		clearcoatRoughness: 0.22,
-		envMapIntensity: 0.7,
+		metalness: 0.22,
+		roughness: 0.46,
+		clearcoat: 0.35,
+		clearcoatRoughness: 0.32,
+		envMapIntensity: 0.5,
+		alphaTest: 0.5,
 		transparent: true,
 		side: THREE.FrontSide
 	});
@@ -350,11 +378,13 @@ function buildStrip(tex: THREE.Texture): StripBundle {
 	const hingeY = -stripH / 2; // la ligne de coupe, en local
 
 	/** LA courbure : chaque vertex tourne autour de la charnière d'un angle qui
-	 *  croît vers le bout ET vers la gauche — la feuille PLIE, elle ne pivote pas. */
+	 *  croît vers le bout ET vers la gauche — la feuille PLIE, elle ne pivote pas.
+	 *  Plafonnée à ~106° : la languette pliée reste DEBOUT, bien visible
+	 *  au-dessus du sachet (cf. la vidéo packs.com), jamais escamotée derrière. */
 	function deform(p: number) {
 		const arr = pos.array as Float32Array;
 		const backPos = (back.geometry.attributes.position as THREE.BufferAttribute).array as Float32Array;
-		const thetaMax = 2.15; // ~123°
+		const thetaMax = 2.0;
 		for (let i = 0; i < pos.count; i++) {
 			const ix = i * 3;
 			const bx = base[ix];
@@ -363,9 +393,10 @@ function buildStrip(tex: THREE.Texture): StripBundle {
 			const u = bx / PW + 0.5;
 			const d = by - hingeY; // distance à la charnière
 			const dn = d / (stripH || 1);
-			// le côté gauche (départ du geste) mène ; le bout se courbe plus que la racine
+			// le côté gauche (départ du geste) mène ; la racine se lève (~45°),
+			// le BOUT s'enroule (~115°) — la feuille visible qui plie, pas un volet
 			const lead = 0.72 + 0.28 * (1 - u);
-			const theta = p * thetaMax * lead * (0.5 + 0.5 * dn);
+			const theta = p * thetaMax * lead * (0.35 + 0.65 * dn);
 			const cos = Math.cos(theta);
 			const sin = Math.sin(theta);
 			arr[ix] = bx;
@@ -437,7 +468,7 @@ export function createPackScene(canvas: HTMLCanvasElement, opts: PackSceneOpts):
 	renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 	renderer.outputColorSpace = THREE.SRGBColorSpace;
 	renderer.toneMapping = THREE.ACESFilmicToneMapping;
-	renderer.toneMappingExposure = 0.95;
+	renderer.toneMappingExposure = 0.88;
 
 	const scene = new THREE.Scene();
 	const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
@@ -446,10 +477,10 @@ export function createPackScene(canvas: HTMLCanvasElement, opts: PackSceneOpts):
 	// lumière : environnement neutre (le foil vit de reflets) + une directionnelle
 	const pmrem = new THREE.PMREMGenerator(renderer);
 	scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
-	const key = new THREE.DirectionalLight(0xfff2dd, 0.7);
+	const key = new THREE.DirectionalLight(0xfff2dd, 0.5);
 	key.position.set(-3, 4, 6);
 	scene.add(key);
-	const rim = new THREE.DirectionalLight(0xaec4ff, 0.28);
+	const rim = new THREE.DirectionalLight(0xaec4ff, 0.2);
 	rim.position.set(4, -2, 5);
 	scene.add(rim);
 
@@ -516,7 +547,7 @@ export function createPackScene(canvas: HTMLCanvasElement, opts: PackSceneOpts):
 		}
 
 		if (rays) {
-			rays.mat.opacity = Math.pow(progress, 1.6) * (0.75 + 0.25 * Math.sin(t * 9));
+			rays.mat.opacity = Math.pow(progress, 1.6) * (0.5 + 0.14 * Math.sin(t * 9));
 			rays.mesh.scale.x = 0.35 + progress * 0.85;
 			rays.mesh.scale.y = 0.3 + progress * 1.1;
 		}
