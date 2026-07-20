@@ -1003,29 +1003,42 @@
 	   (position fixe, graine par carte) — c'est l'OPACITÉ qui s'allume avec
 	   l'inclinaison, et un jumeau en parallaxe ±2.5 % DANS le sens du pointeur
 	   donne la profondeur. Rien ne glisse contre la carte. */
+	/* méthode simey/packs.com : le GLITTER est FIXE (center, jamais déplacé) ;
+	   c'est l'arc-en-ciel DERRIÈRE qui glisse avec --bg → la lumière balaie des
+	   paillettes incrustées. Le scintillement vient du blend, pas d'un mouvement
+	   des points. Un jumeau ::before glisse en SENS INVERSE = le miroitement. */
 	.card[data-foil='prismatic'] .sparkles {
-		background-image: var(--glitter);
-		background-size: 16cqw;
-		background-position: var(--seedx, 50%) var(--seedy, 50%);
-		background-repeat: repeat;
-		mix-blend-mode: plus-lighter;
-		filter: contrast(2) saturate(1.2);
+		background-image:
+			var(--glitter),
+			repeating-linear-gradient(
+				var(--band-angle),
+				var(--c0) 0%, #ffe6a7 8%, var(--c1) 16%, #a7e6ff 24%, var(--c2) 32%, #e6a7ff 40%, var(--c0) 48%
+			);
+		background-size: 15cqw 15cqw, 220% 400%;
+		background-position: center center, 0% var(--bgy, 50%);
+		background-blend-mode: overlay;
+		mix-blend-mode: color-dodge;
+		filter: brightness(calc(var(--from-center) * 0.35 + 0.35)) contrast(2.6) saturate(1.8);
 	}
 	.card[data-foil='prismatic'] .sparkles::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background-image: var(--glitter);
-		background-size: 16cqw;
-		background-position: calc(var(--seedx, 50%) + 11% + var(--pxn, 0.5) * 5%)
-			calc(var(--seedy, 50%) + 6% + var(--pyn, 0.5) * 5%);
-		background-repeat: repeat;
-		mix-blend-mode: overlay;
-		filter: brightness(2) contrast(1.2) saturate(2);
-		opacity: var(--pyn, 0.5);
+		background-image:
+			var(--glitter),
+			repeating-linear-gradient(
+				calc(var(--band-angle) - 60deg),
+				var(--c1) 0%, #ffe9c4 9%, var(--c2) 18%, #c4e0ff 27%, var(--c1) 36%
+			);
+		background-size: 15cqw 15cqw, 400% 400%;
+		background-position: center center, calc(var(--bgx, 50%) * -1.5) calc(var(--bgy, 50%) * -1.5);
+		background-blend-mode: overlay;
+		mix-blend-mode: color-dodge;
+		filter: brightness(calc(var(--from-center) * 0.5 + 0.55)) contrast(3) saturate(1.2);
+		opacity: calc(1.1 - var(--from-center) * 0.4);
 	}
 	.card[data-foil='prismatic'].hover .sparkles {
-		opacity: calc(0.2 + var(--from-center) * 0.55);
+		opacity: calc(0.35 + var(--from-center) * 0.5);
 	}
 
 	/* galaxy (légendaire) : nébuleuse + bandes lentes + paillettes */
@@ -1069,30 +1082,39 @@
 		mix-blend-mode: overlay;
 		filter: brightness(0.85) contrast(1.4) saturate(1.5);
 	}
-	/* paillettes du cosmos : INCRUSTÉES (position fixe), allumées par l'opacité */
+	/* paillettes du cosmos : FIXES, allumées par un arc-en-ciel mobile derrière */
 	.card[data-foil='galaxy'] .sparkles {
-		background-image: var(--glitter);
-		background-size: 19cqw;
-		background-position: var(--seedx, 50%) var(--seedy, 50%);
-		background-repeat: repeat;
-		mix-blend-mode: plus-lighter;
-		filter: contrast(2) saturate(1.15) brightness(0.95);
+		background-image:
+			var(--glitter),
+			repeating-linear-gradient(
+				var(--band-angle),
+				var(--c0) 0%, #ffe6a7 10%, var(--c1) 20%, #a7e6ff 30%, var(--c2) 40%, var(--c0) 50%
+			);
+		background-size: 18cqw 18cqw, 220% 400%;
+		background-position: center center, 0% var(--bgy, 50%);
+		background-blend-mode: overlay;
+		mix-blend-mode: color-dodge;
+		filter: brightness(calc(var(--from-center) * 0.3 + 0.3)) contrast(2.6) saturate(1.6);
 	}
 	.card[data-foil='galaxy'] .sparkles::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background-image: var(--glitter);
-		background-size: 19cqw;
-		background-position: calc(var(--seedx, 50%) + 13% + var(--pxn, 0.5) * 5%)
-			calc(var(--seedy, 50%) + 8% + var(--pyn, 0.5) * 5%);
-		background-repeat: repeat;
-		mix-blend-mode: overlay;
-		filter: brightness(2) contrast(1.2) saturate(1.6);
-		opacity: var(--pyn, 0.5);
+		background-image:
+			var(--glitter),
+			repeating-linear-gradient(
+				calc(var(--band-angle) - 60deg),
+				var(--c1) 0%, #ffe9c4 10%, var(--c2) 20%, #c4e0ff 30%, var(--c1) 40%
+			);
+		background-size: 18cqw 18cqw, 400% 400%;
+		background-position: center center, calc(var(--bgx, 50%) * -1.5) calc(var(--bgy, 50%) * -1.5);
+		background-blend-mode: overlay;
+		mix-blend-mode: color-dodge;
+		filter: brightness(calc(var(--from-center) * 0.5 + 0.5)) contrast(3);
+		opacity: calc(1.1 - var(--from-center) * 0.4);
 	}
 	.card[data-foil='galaxy'].hover .sparkles {
-		opacity: calc(0.22 + var(--from-center) * 0.55);
+		opacity: calc(0.28 + var(--from-center) * 0.5);
 	}
 	/* le COSMOS packs.com : un SECOND plan de nébuleuse en contre-parallaxe —
 	   la profondeur du foil galaxie vient de ce décalage entre les deux nappes */
@@ -1180,30 +1202,39 @@
 		filter: contrast(0.8) brightness(1.08);
 		opacity: 0.8;
 	}
-	/* glitter froid — INCRUSTÉ, jumeau en parallaxe de profondeur */
+	/* glitter froid — FIXE, allumé par un arc-en-ciel blanc-violet mobile */
 	.card[data-foil='prism'] .sparkles {
-		background-image: var(--glitter);
-		background-size: 14cqw;
-		background-position: var(--seedx, 50%) var(--seedy, 50%);
-		background-repeat: repeat;
-		mix-blend-mode: plus-lighter;
-		filter: contrast(2.1) saturate(1.1) brightness(1.05);
+		background-image:
+			var(--glitter),
+			repeating-linear-gradient(
+				var(--band-angle),
+				#e8a7b8 0%, #e8d3a7 12%, #a7e8c6 24%, #a7c6e8 36%, #c9a7e8 48%
+			);
+		background-size: 13cqw 13cqw, 220% 400%;
+		background-position: center center, 0% var(--bgy, 50%);
+		background-blend-mode: overlay;
+		mix-blend-mode: color-dodge;
+		filter: brightness(calc(var(--from-center) * 0.4 + 0.4)) contrast(2.4) saturate(1.4);
 	}
 	.card[data-foil='prism'] .sparkles::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background-image: var(--glitter);
-		background-size: 14cqw;
-		background-position: calc(var(--seedx, 50%) + 9% + var(--pxn, 0.5) * 5%)
-			calc(var(--seedy, 50%) + 5% + var(--pyn, 0.5) * 5%);
-		background-repeat: repeat;
-		mix-blend-mode: overlay;
-		filter: brightness(2) contrast(1.25) saturate(1.8);
-		opacity: var(--pyn, 0.5);
+		background-image:
+			var(--glitter),
+			repeating-linear-gradient(
+				calc(var(--band-angle) - 60deg),
+				#c4e6ff 0%, #f0c4ff 12%, #fff0c4 24%, #c4e6ff 36%
+			);
+		background-size: 13cqw 13cqw, 400% 400%;
+		background-position: center center, calc(var(--bgx, 50%) * -1.5) calc(var(--bgy, 50%) * -1.5);
+		background-blend-mode: overlay;
+		mix-blend-mode: color-dodge;
+		filter: brightness(calc(var(--from-center) * 0.5 + 0.6)) contrast(3) saturate(1.3);
+		opacity: calc(1.1 - var(--from-center) * 0.4);
 	}
 	.card[data-foil='prism'].hover .sparkles {
-		opacity: calc(0.25 + var(--from-center) * 0.6);
+		opacity: calc(0.4 + var(--from-center) * 0.55);
 	}
 	.card[data-foil='prism'] .prism-veil {
 		z-index: 5;
