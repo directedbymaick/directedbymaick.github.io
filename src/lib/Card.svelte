@@ -132,11 +132,13 @@
 					<!-- foil : recettes shine/glare de simeydotme (GPL v3), verbatim -->
 					<div class="card__shine" aria-hidden="true"></div>
 					<div class="card__glare" aria-hidden="true"></div>
-					{#if isShowcase}
-						<!-- showcase : le personnage détouré flotte AU-DESSUS du holo -->
-						<img class="cutout" src={card.cutout} alt="" aria-hidden="true" draggable="false" />
-					{/if}
 				</div>
+
+				{#if isShowcase}
+					<!-- showcase : le personnage détouré descend DERRIÈRE le texte
+					     (z-index bas), sa partie basse passe sous le cartouche sombre. -->
+					<img class="cutout" src={card.cutout} alt="" aria-hidden="true" draggable="false" />
+				{/if}
 
 				<span class="cost" title="Coût en Volonté">{card.cost}</span>
 				<span class="sigil" title={faction.name}><FactionSigil faction={card.faction} /></span>
@@ -422,18 +424,26 @@
 	/* ===== SHOWCASE : illustration ORIGINALE en fond (le foil s'y applique, comme
 	   simeydotme), et le personnage DÉTOURÉ vient PAR-DESSUS le holo → il ressort
 	   du foil qui ne scintille que sur le décor autour de lui. ===== */
-	.art .cutout {
-		z-index: 6; /* AU-DESSUS du shine/glare → le holo passe DERRIÈRE le sujet */
+	/* le détourage déborde la fenêtre d'art et descend dans le corps, DERRIÈRE le
+	   texte : z-index 2 (le holo est en dessous, le contenu/coût/sigil au-dessus).
+	   Il tourne avec la carte en 3D (rotateX/rotateY), comme simeydotme — pas de
+	   parallaxe indépendante. */
+	.body > .cutout {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 84%;
+		z-index: 2;
 		object-fit: cover;
 		object-position: var(--art-pos, center 8%);
-		/* le sujet se fond AVANT le bas de la fenêtre d'art → il ne déborde jamais
-		   sur le cartouche/texte. Pas de translation : il tourne avec la carte en
-		   3D (rotateX/rotateY), comme simeydotme — pas de parallaxe indépendante. */
-		-webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 84%);
-		mask-image: linear-gradient(to bottom, #000 58%, transparent 84%);
-		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.45));
-		/* calage vertical : remonte le détourage pour matcher pile l'illustration de fond */
-		transform: translateY(-2.5%);
+		/* fondu bas de sécurité : le sujet se dissout en descendant sous le texte */
+		-webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 94%);
+		mask-image: linear-gradient(to bottom, #000 70%, transparent 94%);
+		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
+		/* calage vertical fin pour matcher l'illustration de fond */
+		transform: translateY(-1%);
+		pointer-events: none;
 	}
 
 	/* footer de bordure : série, rareté, code du set — gravés dans le cadre.

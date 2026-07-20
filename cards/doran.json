@@ -1,6 +1,6 @@
 {
 	"id": "doran",
-	"name": "Doran, le Juge",
+	"name": "Doran, sentence incarnée",
 	"kind": "etre",
 	"cost": 7,
 	"attack": 5,
@@ -17,7 +17,7 @@
 			"#4b3529",
 			"#c8a587"
 		],
-		"foilPreset": "prism",
+		"foilPreset": "secret",
 		"accent": "#c9a445",
 		"seed": 152151
 	}
