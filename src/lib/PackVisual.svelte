@@ -273,7 +273,9 @@
 		};
 		requestAnimationFrame(finish);
 		setTimeout(() => (torn = true), 430);
-		setTimeout(() => ontorn?.(), 800);
+		// la chute du sachet (.7 s dès torn) chevauche la levée des cartes — le
+		// raccord packs.com : on coupe quand le sachet est presque éteint.
+		setTimeout(() => ontorn?.(), 980);
 	}
 </script>
 
@@ -360,7 +362,18 @@
 	}
 	.pack3d .pack {
 		transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-		will-change: transform;
+		/* le code packs.com : le sachet S'INCLINE en tirant (0.18 rad ≈ 10° à fond).
+		   La propriété rotate compose avec transform sans le disputer. */
+		rotate: calc(var(--p, 0) * 8deg);
+		will-change: transform, rotate;
+		transition: scale 0.45s var(--ease-out-cubic, ease);
+	}
+	/* survol : le sachet avance doucement, le bloom s'éveille — l'invitation */
+	.pack3d:hover .pack {
+		scale: 1.03;
+	}
+	.pack.hover:not(.dragging):not(.bursting):not(.torn)::before {
+		opacity: 0.22;
 	}
 	.pack {
 		position: relative;
@@ -405,6 +418,26 @@
 		opacity: 1;
 		animation: bloomup 0.43s ease-in forwards;
 	}
+	/* la sortie packs.com : petit sursaut d'anticipation (14 %), puis le sachet
+	   vidé tombe hors champ en fondant — pendant que les cartes se lèvent. */
+	.pack.torn {
+		animation: pack-exit 0.7s cubic-bezier(0.33, 0, 0.18, 1) both;
+		pointer-events: none;
+	}
+	@keyframes pack-exit {
+		0% {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+		14% {
+			opacity: 1;
+			transform: translateY(-8px) scale(1.02);
+		}
+		to {
+			opacity: 0;
+			transform: translateY(75%) scale(0.95);
+		}
+	}
 	@keyframes bloomup {
 		to {
 			transform: scale(1.3);
@@ -424,7 +457,8 @@
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.pack3d, .pack, .pack.bursting { animation: none; }
-		.pack3d .pack { transform: none; }
+		.pack3d .pack { transform: none; rotate: none; }
+		.pack.torn { animation: none; opacity: 0; }
 	}
 
 	/* ---------- métal argenté commun (sertissage bas + rails) ---------- */
@@ -515,7 +549,6 @@
 	}
 	.rail.left { left: 0; }
 	.rail.right { right: 0; }
-	.pack.torn .rail { opacity: 0; }
 
 	/* ---------- le corps ---------- */
 	.body {
@@ -534,23 +567,12 @@
 	.pack.dragging .body {
 		transition: none; /* la découpe suit le doigt sans latence */
 	}
-	.pack.torn .body {
-		transform: translateY(26%) scale(0.96);
-		opacity: 0;
-	}
 	.crimp-bottom {
 		position: absolute;
 		left: 0;
 		right: 0;
 		bottom: 0;
 		height: 5%;
-		transition:
-			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
-			opacity 0.5s ease;
-	}
-	.pack.torn .crimp-bottom {
-		transform: translateY(160%);
-		opacity: 0;
 	}
 
 	.cover {
