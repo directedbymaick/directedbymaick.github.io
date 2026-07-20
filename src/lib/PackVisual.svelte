@@ -631,20 +631,20 @@
 				rgba(0, 0, 0, 0.52) 100%
 			);
 	}
-	/* plis de tension en éventail près des soudures — comme un vrai mylar pincé */
+	/* plis de tension près des soudures — striés DENSES comme les parties argentées
+	   (mêmes cannelures serrées que le sertissage), pas quelques traits épars */
 	.plastic::before,
 	.plastic::after {
 		content: '';
 		position: absolute;
 		left: 0;
 		right: 0;
-		height: 9%;
+		height: 11%;
 		background: repeating-linear-gradient(
 			90deg,
-			transparent 0 3.2cqw,
-			rgba(255, 255, 255, 0.05) 3.2cqw 3.8cqw,
-			transparent 3.8cqw 5.4cqw,
-			rgba(0, 0, 0, 0.1) 5.4cqw 6cqw
+			rgba(0, 0, 0, 0.14) 0 0.4cqw,
+			rgba(255, 255, 255, 0.09) 0.4cqw 0.75cqw,
+			transparent 0.75cqw 1.5cqw
 		);
 	}
 	.plastic::before {
@@ -665,33 +665,41 @@
 		opacity: 0.18;
 		pointer-events: none;
 	}
-	/* mylar chiffonné : turbulence basse fréquence ÉCLAIRÉE (feDiffuseLighting) →
-	   micro-plis d'aluminium qui accrochent la lumière. Très subtil, soft-light.
-	   Deux plans à échelles différentes = gros froissés + fines cassures. */
+	/* la texture des plis d'aluminium, réutilisée pour le relief ET la lumière :
+	   turbulence SPÉCULAIRE (feSpecularLighting) → arêtes brillantes sur fond
+	   noir. Deux échelles : grands froissés + fines cassures. */
+	.pack {
+		--foiltex:
+			url("data:image/svg+xml,%3Csvg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.045 0.075' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeSpecularLighting surfaceScale='1.6' specularConstant='0.85' specularExponent='19' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='235' elevation='56'/%3E%3C/feSpecularLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
+	}
 	.crumple {
 		position: absolute;
 		inset: 0;
 		pointer-events: none;
-		mix-blend-mode: soft-light;
-		opacity: 0.5;
-		background-image:
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014 0.03' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting surfaceScale='2.4' diffuseConstant='1.15' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='230' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
-			url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05 0.09' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting surfaceScale='1.1' diffuseConstant='1' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='55' elevation='68'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23d)'/%3E%3C/svg%3E");
-		background-size: 300px 340px, 150px 150px;
-		background-blend-mode: soft-light;
+		mix-blend-mode: screen; /* les arêtes claires s'ajoutent, le noir n'agit pas */
+		opacity: 0.14; /* un LÉGER grain d'aluminium — l'art reste net dessous */
+		background-image: var(--foiltex);
+		background-size: 190px 220px;
 	}
-	/* le reflet au pointeur : une source de lumière qui glisse sur la surface bombée */
+	/* la LUMIÈRE qui se déplace sur les plis : un halo au pointeur, MASQUÉ par la
+	   texture des plis → il n'éclaire que les arêtes d'aluminium, et voyage avec
+	   le pointeur. Remplace l'ancien reflet en blob. */
 	.glare3d {
 		position: absolute;
 		inset: 0;
 		z-index: 5;
 		pointer-events: none;
 		background: radial-gradient(
-			55% 42% at var(--gx, 50%) var(--gy, 35%),
-			rgba(255, 255, 255, 0.14),
-			rgba(255, 255, 255, 0.05) 45%,
-			transparent 72%
+			42% 34% at var(--gx, 50%) var(--gy, 35%),
+			rgba(255, 255, 255, 0.95),
+			rgba(255, 255, 255, 0.35) 42%,
+			transparent 70%
 		);
+		-webkit-mask-image: var(--foiltex);
+		mask-image: var(--foiltex);
+		-webkit-mask-size: 300px 340px;
+		mask-size: 300px 340px;
+		mix-blend-mode: screen;
 		opacity: 0;
 		transition: opacity 0.35s ease;
 	}
