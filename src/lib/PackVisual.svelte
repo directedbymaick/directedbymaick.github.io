@@ -39,24 +39,6 @@
 	const lerpPts = (a: Pts, b: Pts, t: number): Pts =>
 		a.map(([x, y], i) => [x + (b[i][0] - x) * t, y + (b[i][1] - y) * t]);
 
-	/* Échantillonneurs pour le rendu canvas de l'opercule :
-	   bord haut denté (fixe) et bord bas déchiré (interpolé). En % de la hauteur. */
-	const sawTopY = (u: number) => 16 * Math.abs(2 * ((u * 26) % 1) - 1);
-	const BOT_TORN: number[] = (() => {
-		let s = 7;
-		const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
-		const a: number[] = [];
-		for (let i = 30; i >= 0; i--) a[i] = 56 + rnd() * 40;
-		return a;
-	})();
-	function tornBottomY(u: number, t: number): number {
-		const x = Math.min(29.999, u * 30);
-		const i = Math.floor(x);
-		const f = x - i;
-		const jag = BOT_TORN[i] + (BOT_TORN[i + 1] - BOT_TORN[i]) * f;
-		return 88 + (jag - 88) * t;
-	}
-
 	const SAW_BOTTOM = saw('bottom', 26, 40);
 </script>
 
@@ -101,128 +83,6 @@
 	/* Le corps se découvre quand l'opercule se soulève. */
 	const bodyT = $derived(torn || bursting ? 1 : Math.max(0, (progress - 0.3) / 0.7));
 	const clipBody = $derived(poly(lerpPts(BODY_CLEAN_PTS, BODY_TORN_PTS, bodyT)));
-
-	/* ---- l'opercule : rendu canvas avec VRAI enroulement (page-curl) ----
-	   Chaque colonne de pixels s'enroule autour d'un cylindre virtuel placé au
-	   front de déchirure : raccourci horizontal en cos(θ), levée en R(1-cos θ),
-	   ombrage de courbure, reflet sur la crête, dos de feuille au-delà de 90°. */
-	let ripCv: HTMLCanvasElement;
-	let tex: HTMLCanvasElement | null = null;
-	let texW = 0;
-	let texH = 0;
-	const CDPR = Math.min(globalThis.devicePixelRatio || 1, 2);
-
-	function buildTexture(w: number, h: number) {
-		tex = document.createElement('canvas');
-		tex.width = w;
-		tex.height = h;
-		const c = tex.getContext('2d')!;
-		const g = c.createLinearGradient(0, 0, 0, h);
-		g.addColorStop(0, '#f5f7fa');
-		g.addColorStop(0.28, '#c6ccd6');
-		g.addColorStop(0.52, '#eef1f5');
-		g.addColorStop(0.78, '#aab2bf');
-		g.addColorStop(1, '#dfe4ea');
-		c.fillStyle = g;
-		c.fillRect(0, 0, w, h);
-		// cannelures verticales du sertissage
-		c.fillStyle = 'rgba(0,0,0,0.05)';
-		const pitch = Math.max(4, Math.round(w / 90));
-		for (let x = 0; x < w; x += pitch) c.fillRect(x, 0, Math.max(1, Math.round(w / 320)), h);
-		// l'indice de geste, gravé dans la matière — il se courbe avec elle
-		c.fillStyle = 'rgba(40,48,60,0.7)';
-		c.font = `600 ${Math.round(h * 0.28)}px Consolas, monospace`;
-		c.textAlign = 'center';
-		c.textBaseline = 'middle';
-		c.fillText('⠿  T I R E R  →', w / 2, h * 0.45);
-	}
-
-	function drawCurl() {
-		if (!ripCv || !tex) return;
-		const c = ripCv.getContext('2d')!;
-		const cw = ripCv.width;
-		const chh = ripCv.height;
-		c.clearRect(0, 0, cw, chh);
-		const w = texW;
-		const h = texH;
-		const baseY = chh - h;
-		const p = torn ? 1 : progress;
-		const t = torn || bursting ? 1 : Math.pow(progress, 1.6);
-		const F = p * w; // front de déchirure
-		const R = h * 1.05; // rayon d'enroulement
-		const step = Math.max(1, Math.round(CDPR));
-
-		// ombre portée de la boucle sur le corps du sachet
-		if (F > 4) {
-			const sh = c.createLinearGradient(0, baseY + h * 0.15, 0, chh);
-			sh.addColorStop(0, `rgba(0,0,0,${(0.3 * Math.min(1, p * 1.5)).toFixed(3)})`);
-			sh.addColorStop(1, 'rgba(0,0,0,0)');
-			c.fillStyle = sh;
-			c.fillRect(0, baseY + h * 0.15, F, h);
-		}
-
-		for (let x = 0; x < w; x += step) {
-			const u = x / w;
-			const topY = (sawTopY(u) / 100) * h;
-			const botY = (tornBottomY(u, t) / 100) * h;
-			const colH = botY - topY;
-			if (colH <= 0) continue;
-			if (x >= F) {
-				// encore soudé : à plat
-				c.drawImage(tex, x, topY, step, colH, x, baseY + topY, step, colH);
-			} else {
-				const th = Math.min((F - x) / R, 2.2);
-				const cosT = Math.cos(th);
-				const xP = F - R * Math.sin(th);
-				const lift = R * (1 - cosT) * 0.85;
-				const wCol = Math.max(0.7, step * Math.max(0.25, Math.abs(cosT)));
-				const y = baseY + topY - lift;
-				if (th <= Math.PI / 2) {
-					// face avant qui s'enroule
-					c.drawImage(tex, x, topY, step, colH, xP, y, wCol, colH);
-					const dark = (1 - cosT) * 0.34;
-					if (dark > 0.02) {
-						c.fillStyle = `rgba(15,20,28,${dark.toFixed(3)})`;
-						c.fillRect(xP, y, wCol, colH);
-					}
-					const spec = Math.max(0, 1 - Math.abs(th - 0.9) / 0.45) * 0.22;
-					if (spec > 0.02) {
-						c.fillStyle = `rgba(255,255,255,${spec.toFixed(3)})`;
-						c.fillRect(xP, y, wCol, colH);
-					}
-				} else {
-					// le dos de l'opercule : feuille argentée mate, dans l'ombre
-					c.fillStyle = 'rgba(168,176,190,0.92)';
-					c.fillRect(xP, y, wCol, colH);
-					c.fillStyle = `rgba(60,70,84,${(0.25 + Math.min(0.3, (th - Math.PI / 2) * 0.3)).toFixed(3)})`;
-					c.fillRect(xP, y, wCol, colH);
-				}
-			}
-		}
-	}
-
-	$effect(() => {
-		void progress;
-		void torn;
-		void bursting;
-		drawCurl();
-	});
-
-	$effect(() => {
-		if (!stripEl || !ripCv) return;
-		const ro = new ResizeObserver(() => {
-			const w = Math.max(1, Math.round(stripEl.offsetWidth * CDPR));
-			const h = Math.max(1, Math.round(stripEl.offsetHeight * CDPR));
-			ripCv.width = w;
-			ripCv.height = h * 3; // marge haute : la boucle monte au-dessus de l'opercule
-			texW = w;
-			texH = h;
-			buildTexture(w, h);
-			drawCurl();
-		});
-		ro.observe(stripEl);
-		return () => ro.disconnect();
-	});
 
 	function down(e: PointerEvent) {
 		if (torn || bursting) return;
@@ -297,12 +157,13 @@
 	class:hover
 	style="--p: {progress}; --glow: {glow}"
 >
-	<!-- l'opercule serti qu'on arrache -->
+	<!-- l'opercule serti qu'on arrache : la languette-pilule court le long de la
+	     découpe, l'opercule SE REPLIE vers l'arrière (le geste packs.com) -->
 	<div
 		bind:this={stripEl}
 		class="rip"
 		role="slider"
-		aria-label="Glisser pour ouvrir le booster"
+		aria-label="Glisser la languette pour ouvrir le booster"
 		aria-valuenow={Math.round(progress * 100)}
 		tabindex="0"
 		onpointerdown={down}
@@ -311,7 +172,16 @@
 		onpointercancel={up}
 		onkeydown={(e) => e.key === 'Enter' && tear()}
 	>
-		<canvas bind:this={ripCv} class="ripcv" aria-hidden="true"></canvas>
+		<div class="strip" aria-hidden="true">
+			<div class="strip-front"></div>
+			<div class="strip-back"></div>
+		</div>
+		<!-- la ligne de coupe : une brûlure de lumière qui progresse avec le geste -->
+		<div class="tearline" aria-hidden="true"></div>
+		<!-- la pilule à grip : elle SUIT le doigt le long de la découpe -->
+		<span class="tab" aria-hidden="true">
+			<i></i><i></i><i></i><i></i><i></i><i></i>
+		</span>
 	</div>
 
 	<div class="leak" aria-hidden="true"></div>
@@ -469,7 +339,7 @@
 			linear-gradient(180deg, #f5f7fa 0%, #c6ccd6 28%, #eef1f5 52%, #aab2bf 78%, #dfe4ea 100%);
 	}
 
-	/* ---------- l'opercule ---------- */
+	/* ---------- l'opercule : le repli packs.com ---------- */
 	.rip {
 		position: absolute;
 		top: 0;
@@ -480,23 +350,137 @@
 		cursor: grab;
 		touch-action: none;
 		user-select: none;
+		perspective: 90cqw;
 	}
 	.pack.dragging .rip { cursor: grabbing; }
-	/* la boucle du curl monte au-dessus de l'opercule : le canvas déborde vers le haut */
-	.ripcv {
+
+	/* l'opercule : charnière sur la ligne de coupe (bord bas), il SE REPLIE vers
+	   l'arrière en tirant — l'art continue dessus, le dos est une feuille foil. */
+	.strip {
+		position: absolute;
+		inset: 0;
+		transform-origin: 50% 100%;
+		transform-style: preserve-3d;
+		transform: rotateX(calc(var(--p, 0) * -118deg)) rotateZ(calc(var(--p, 0) * -3deg));
+		will-change: transform;
+	}
+	.strip-front,
+	.strip-back {
+		position: absolute;
+		inset: 0;
+		backface-visibility: hidden;
+	}
+	/* face avant : la continuité de l'artwork + le sertissage cranté */
+	.strip-front {
+		background:
+			/* pincement de soudure le long de la coupe */
+			linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 22%, transparent 72%, rgba(0, 0, 0, 0.42) 100%),
+			/* cannelures verticales du sertissage */
+			repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 1.1cqw, transparent 1.1cqw 3.2cqw, rgba(255, 255, 255, 0.06) 3.2cqw 4.3cqw),
+			/* l'art du sachet, tranche haute */
+			url('/art/rasen.webp') 50% 0 / 100% 850% no-repeat,
+			#171a22;
+	}
+	/* dos : la feuille argentée mate, visible quand l'opercule bascule au-delà de 90° */
+	.strip-back {
+		transform: rotateX(180deg);
+		background:
+			repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.06) 0 2px, transparent 2px 7px),
+			linear-gradient(180deg, #cdd3dd 0%, #9aa2af 40%, #c3c9d3 70%, #8f97a4 100%);
+	}
+	/* ombre portée de l'opercule levé sur le corps */
+	.strip::after {
+		content: '';
 		position: absolute;
 		left: 0;
-		bottom: 0;
-		width: 100%;
-		height: 300%;
+		right: 0;
+		bottom: -2.2cqw;
+		height: 2.2cqw;
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent);
+		opacity: calc(var(--p, 0) * 0.9);
+		transform: rotateX(calc(var(--p, 0) * 118deg)); /* reste plaquée au corps */
+	}
+
+	/* la ligne de coupe : une brûlure de lumière qui progresse de gauche à droite */
+	.tearline {
+		position: absolute;
+		left: 1%;
+		right: 1%;
+		bottom: -0.4cqw;
+		height: 0.9cqw;
+		border-radius: 999px;
+		transform-origin: 0 50%;
+		transform: scaleX(var(--p, 0));
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--glow) 60%, #fff),
+			color-mix(in srgb, var(--glow) 85%, #fff) 85%,
+			#fff
+		);
+		filter: blur(0.35cqw);
+		opacity: calc(var(--p, 0) * 1.6);
+		box-shadow: 0 0 3cqw color-mix(in srgb, var(--glow) 80%, transparent);
 		pointer-events: none;
 	}
+
+	/* la pilule à grip : elle court le long de la découpe, sous le doigt */
+	.tab {
+		position: absolute;
+		bottom: 0;
+		left: calc(2% + var(--p, 0) * 78%);
+		translate: 0 50%;
+		width: 17cqw;
+		height: 7cqw;
+		display: grid;
+		grid-template-columns: repeat(3, auto);
+		place-content: center;
+		gap: 0.9cqw 1.6cqw;
+		border-radius: 999px;
+		background: linear-gradient(180deg, #f7f3ea 0%, #ddd5c4 55%, #efe8d8 100%);
+		border: 0.3cqw solid rgba(120, 100, 60, 0.35);
+		box-shadow:
+			0 0.8cqw 2.2cqw rgba(0, 0, 0, 0.5),
+			inset 0 0.3cqw 0.4cqw rgba(255, 255, 255, 0.8),
+			0 0 2.6cqw color-mix(in srgb, var(--glow) 40%, transparent);
+		pointer-events: none;
+		transition: scale 0.2s ease;
+	}
+	.tab i {
+		width: 0.9cqw;
+		height: 0.9cqw;
+		border-radius: 50%;
+		background: rgba(90, 78, 50, 0.55);
+		box-shadow: inset 0 0.2cqw 0.25cqw rgba(0, 0, 0, 0.3);
+	}
+	.pack.dragging .tab {
+		scale: 1.08;
+	}
+	.pack.hover:not(.dragging) .tab {
+		animation: tabnudge 1.8s ease-in-out infinite;
+	}
+	@keyframes tabnudge {
+		0%, 100% { translate: 0 50%; }
+		50% { translate: 1.6cqw 50%; }
+	}
+
+	/* l'arrachage : l'opercule (et sa pilule) s'envole en tournoyant, haut-droite */
 	.pack.torn .rip {
-		transform: translate(60%, -120%) rotate(18deg);
-		opacity: 0;
-		transition:
-			transform 0.55s cubic-bezier(0.3, 0, 0.7, 0.2),
-			opacity 0.5s ease;
+		animation: rip-fling 0.55s cubic-bezier(0.3, 0, 0.7, 0.2) both;
+		pointer-events: none;
+	}
+	@keyframes rip-fling {
+		0% {
+			opacity: 1;
+			transform: translate(0, 0) rotate(0deg);
+		}
+		to {
+			opacity: 0;
+			transform: translate(75%, -260%) rotate(38deg);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.pack.torn .rip { animation: none; opacity: 0; }
+		.pack.hover:not(.dragging) .tab { animation: none; }
 	}
 
 	/* la lumière qui fuit par la déchirure — couleur du meilleur tirage du sachet */
