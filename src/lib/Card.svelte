@@ -86,7 +86,9 @@
 			`--pointer-from-center: ${fromCenter.toFixed(3)}; ` +
 			`--pointer-from-top: ${py.toFixed(3)}; --pointer-from-left: ${px.toFixed(3)}; ` +
 			`--background-x: ${bgx.toFixed(2)}%; --background-y: ${bgy.toFixed(2)}%; ` +
-			`--card-opacity: ${hover ? 1 : 0}`
+			/* intensité du foil : toutes les couches de simey sont × --card-opacity.
+			   On plafonne à 0.5 pour un rendu plus discret, sans toucher ses recettes. */
+			`--card-opacity: ${hover ? 0.5 : 0}`
 	);
 
 	/* notre preset → la rareté simeydotme dont on emprunte la recette exacte */
