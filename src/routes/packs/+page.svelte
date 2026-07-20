@@ -175,25 +175,6 @@
 		bulk = false;
 		flipped = pulls.map(() => false);
 
-		// flash + déflagration à l'emplacement du sachet, aux couleurs du meilleur tirage
-		if (gsap && fx && fxLayer && stageEl) {
-			const c = centerOf(stageEl.querySelector('.stage-inner') ?? stageEl);
-			const colors = packPrisma
-				? BURST.prism.fx.colors
-				: bestTier === 'epic'
-					? BURST.epic.fx.colors
-					: ['#ffedc0', '#e9c96a', '#fff8e6'];
-			fx.burst(c.x, c.y, { colors, orbs: 30, streaks: 12, power: 330 });
-			const f = document.createElement('div');
-			f.className = packPrisma ? 'flash prisma' : 'flash';
-			fxLayer.appendChild(f);
-			gsap.fromTo(
-				f,
-				{ opacity: 0 },
-				{ opacity: 1, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut', onComplete: () => f.remove() }
-			);
-		}
-
 		stage = 'reveal';
 		// l'entrée des dos est en CSS pur (.fc-pop, keyframes rise-in) :
 		// sortie du sachet sobre — fondu + légère montée, ressort linear().
