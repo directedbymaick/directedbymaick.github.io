@@ -323,6 +323,7 @@
 		<img class="cover" src="/art/rasen.webp" alt="" draggable="false" />
 		<div class="grade" aria-hidden="true"></div>
 		<div class="plastic" aria-hidden="true"></div>
+		<div class="foilgrain" aria-hidden="true"></div>
 		<div class="sheen" aria-hidden="true"></div>
 
 		<span class="brand-pill">Expelled</span>
@@ -364,8 +365,9 @@
 	}
 	.pack {
 		position: relative;
-		width: var(--pack-w, 300px);
-		aspect-ratio: 3 / 4.3;
+		width: var(--pack-w, 274px);
+		/* l'élancement d'un vrai booster (cf. photo de référence MTG) */
+		aspect-ratio: 3 / 5.05;
 		container-type: inline-size;
 		filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
 		transition: filter 0.3s ease;
@@ -570,7 +572,8 @@
 			linear-gradient(180deg, transparent 42%, rgba(8, 10, 14, 0.6) 66%, rgba(6, 8, 12, 0.94) 100%),
 			radial-gradient(130% 90% at 50% 38%, transparent 55%, rgba(5, 7, 11, 0.45) 100%);
 	}
-	/* galbe en coussin : le sachet bombe au centre, se pince aux sertissages */
+	/* galbe CYLINDRIQUE (cf. photo de référence) : UNE dorsale de lumière au
+	   centre, tombée progressive vers les flancs, pincements aux soudures. */
 	.plastic {
 		position: absolute;
 		inset: 0;
@@ -578,25 +581,58 @@
 			/* pincements haut/bas — la matière tendue près des soudures */
 			linear-gradient(
 				180deg,
-				rgba(0, 0, 0, 0.4) 0%,
-				transparent 11%,
-				transparent 89%,
-				rgba(0, 0, 0, 0.45) 100%
+				rgba(0, 0, 0, 0.42) 0%,
+				transparent 10%,
+				transparent 90%,
+				rgba(0, 0, 0, 0.46) 100%
 			),
-			/* bombé horizontal : ombres latérales, rehauts, dorsale centrale */
+			/* l'arc : une seule bande de reflet, large et douce, au centre */
 			linear-gradient(
 				90deg,
-				rgba(0, 0, 0, 0.45) 0%,
-				transparent 9%,
-				rgba(255, 255, 255, 0.06) 17%,
-				transparent 30%,
-				rgba(255, 255, 255, 0.07) 47%,
-				rgba(255, 255, 255, 0.07) 53%,
-				transparent 70%,
-				rgba(255, 255, 255, 0.055) 83%,
-				transparent 91%,
-				rgba(0, 0, 0, 0.48) 100%
+				rgba(0, 0, 0, 0.5) 0%,
+				rgba(0, 0, 0, 0.22) 7%,
+				transparent 22%,
+				rgba(255, 255, 255, 0.045) 38%,
+				rgba(255, 255, 255, 0.1) 50%,
+				rgba(255, 255, 255, 0.045) 62%,
+				transparent 78%,
+				rgba(0, 0, 0, 0.22) 93%,
+				rgba(0, 0, 0, 0.52) 100%
 			);
+	}
+	/* plis de tension en éventail près des soudures — comme un vrai mylar pincé */
+	.plastic::before,
+	.plastic::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 9%;
+		background: repeating-linear-gradient(
+			90deg,
+			transparent 0 3.2cqw,
+			rgba(255, 255, 255, 0.05) 3.2cqw 3.8cqw,
+			transparent 3.8cqw 5.4cqw,
+			rgba(0, 0, 0, 0.1) 5.4cqw 6cqw
+		);
+	}
+	.plastic::before {
+		top: 0;
+		mask-image: linear-gradient(180deg, #fff, transparent);
+	}
+	.plastic::after {
+		bottom: 0;
+		mask-image: linear-gradient(0deg, #fff, transparent);
+	}
+	/* le grain du foil : micro-texture qui accroche la lumière, très discret */
+	.foilgrain {
+		position: absolute;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+		background-size: 160px 160px;
+		mix-blend-mode: overlay;
+		opacity: 0.22;
+		pointer-events: none;
 	}
 	/* le reflet au pointeur : une source de lumière qui glisse sur la surface bombée */
 	.glare3d {
