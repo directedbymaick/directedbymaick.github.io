@@ -40,8 +40,9 @@
 		a.map(([x, y], i) => [x + (b[i][0] - x) * t, y + (b[i][1] - y) * t]);
 
 	/* Échantillonneurs pour le rendu canvas de l'opercule :
-	   bord haut denté (fixe) et bord bas déchiré (interpolé). En % de la hauteur. */
-	const sawTopY = (u: number) => 16 * Math.abs(2 * ((u * 26) % 1) - 1);
+	   bord haut denté (fixe) et bord bas déchiré (interpolé). En % de la hauteur.
+	   Crans FINS, comme la découpe d'usine d'un vrai booster. */
+	const sawTopY = (u: number) => 11 * Math.abs(2 * ((u * 42) % 1) - 1);
 	const BOT_TORN: number[] = (() => {
 		let s = 7;
 		const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
@@ -57,7 +58,7 @@
 		return 88 + (jag - 88) * t;
 	}
 
-	const SAW_BOTTOM = saw('bottom', 26, 40);
+	const SAW_BOTTOM = saw('bottom', 44, 30);
 </script>
 
 <script lang="ts">
@@ -125,10 +126,15 @@
 		g.addColorStop(1, '#dfe4ea');
 		c.fillStyle = g;
 		c.fillRect(0, 0, w, h);
-		// cannelures verticales du sertissage
-		c.fillStyle = 'rgba(0,0,0,0.05)';
-		const pitch = Math.max(4, Math.round(w / 90));
-		for (let x = 0; x < w; x += pitch) c.fillRect(x, 0, Math.max(1, Math.round(w / 320)), h);
+		// cannelures du sertissage : paires ombre/lumière serrées — le métal gaufré
+		const pitch = Math.max(4, Math.round(w / 70));
+		const lw = Math.max(1, Math.round(w / 300));
+		for (let x = 0; x < w; x += pitch) {
+			c.fillStyle = 'rgba(30,36,46,0.16)';
+			c.fillRect(x, 0, lw, h);
+			c.fillStyle = 'rgba(255,255,255,0.38)';
+			c.fillRect(x + lw, 0, lw, h);
+		}
 		// l'indice de geste, gravé dans la matière — il se courbe avec elle
 		c.fillStyle = 'rgba(40,48,60,0.7)';
 		c.font = `600 ${Math.round(h * 0.28)}px Consolas, monospace`;
@@ -429,11 +435,15 @@
 		.pack3d .pack { transform: none; }
 	}
 
-	/* ---------- métal argenté commun (sertissage bas + rails) ---------- */
-	.crimp-bottom,
-	.rail {
+	/* ---------- métal argenté du sertissage bas : gaufré ombre/lumière ---------- */
+	.crimp-bottom {
 		background:
-			repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.045) 0 2px, transparent 2px 7px),
+			repeating-linear-gradient(
+				90deg,
+				rgba(30, 36, 46, 0.14) 0 1.5px,
+				rgba(255, 255, 255, 0.32) 1.5px 3px,
+				transparent 3px 7px
+			),
 			linear-gradient(180deg, #f5f7fa 0%, #c6ccd6 28%, #eef1f5 52%, #aab2bf 78%, #dfe4ea 100%);
 	}
 
@@ -443,7 +453,7 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		height: 12%;
+		height: 9.5%; /* la bande d'un vrai booster : plus fine */
 		z-index: 3;
 		cursor: grab;
 		touch-action: none;
@@ -470,10 +480,10 @@
 	/* la lumière qui fuit par la déchirure — couleur du meilleur tirage du sachet */
 	.leak {
 		position: absolute;
-		top: 9%;
+		top: 7.2%;
 		left: 2%;
 		right: 2%;
-		height: 4.5%;
+		height: 4%;
 		z-index: 2;
 		pointer-events: none;
 		background: radial-gradient(
@@ -506,24 +516,43 @@
 		}
 	}
 
-	/* ---------- rails latéraux (soudure) ---------- */
+	/* ---------- bords enveloppés : un booster n'a PAS de soudure latérale
+	   au recto — le film s'enroule vers l'arrière. Ombre de fuite + arête. */
 	.rail {
 		position: absolute;
-		top: 10%;
-		bottom: 4.5%;
+		top: 8.2%;
+		bottom: 3.8%;
 		width: 1.6%;
 		z-index: 1;
 		transition: opacity 0.4s ease;
 	}
-	.rail.left { left: 0; }
-	.rail.right { right: 0; }
+	.rail.left {
+		left: 0;
+		background: linear-gradient(
+			90deg,
+			rgba(2, 3, 6, 0.92) 0%,
+			rgba(8, 10, 15, 0.55) 35%,
+			rgba(255, 255, 255, 0.1) 78%,
+			rgba(10, 12, 18, 0.35) 100%
+		);
+	}
+	.rail.right {
+		right: 0;
+		background: linear-gradient(
+			270deg,
+			rgba(2, 3, 6, 0.92) 0%,
+			rgba(8, 10, 15, 0.55) 35%,
+			rgba(255, 255, 255, 0.1) 78%,
+			rgba(10, 12, 18, 0.35) 100%
+		);
+	}
 	.pack.torn .rail { opacity: 0; }
 
 	/* ---------- le corps ---------- */
 	.body {
 		position: absolute;
-		top: 10%;
-		bottom: 4.5%;
+		top: 8.2%;
+		bottom: 3.8%;
 		left: 1.6%;
 		right: 1.6%;
 		overflow: hidden;
@@ -545,7 +574,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		height: 5%;
+		height: 4.2%;
 		transition:
 			transform 0.55s cubic-bezier(0.5, 0, 0.8, 0.4),
 			opacity 0.5s ease;
@@ -562,6 +591,8 @@
 		height: 100%;
 		object-fit: cover;
 		object-position: center 18%;
+		/* l'impression d'un vrai sachet : encres denses, légèrement contrastées */
+		filter: saturate(1.08) contrast(1.05);
 	}
 	/* étalonnage : garde le sujet lisible, assoit le tiers logo */
 	.grade {
