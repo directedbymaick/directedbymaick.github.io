@@ -908,8 +908,8 @@
 		background:
 			radial-gradient(
 				farthest-corner circle at var(--px) var(--py),
-				rgba(255, 255, 255, 0.55) 5%,
-				rgba(120, 120, 120, 0.5) 40%,
+				rgba(255, 255, 255, 0.22) 8%,
+				rgba(120, 120, 120, 0.42) 48%,
 				#000 100%
 			),
 			repeating-linear-gradient(
@@ -977,8 +977,8 @@
 		background:
 			radial-gradient(
 				farthest-corner circle at var(--px) var(--py),
-				rgba(255, 255, 255, 0.5) 4%,
-				rgba(110, 110, 110, 0.45) 35%,
+				rgba(255, 255, 255, 0.22) 8%,
+				rgba(110, 110, 110, 0.4) 46%,
 				#000 100%
 			),
 			conic-gradient(
@@ -1163,8 +1163,8 @@
 		background:
 			radial-gradient(
 				farthest-corner circle at var(--px) var(--py),
-				rgba(255, 255, 255, 0.55) 4%,
-				rgba(110, 110, 110, 0.5) 35%,
+				rgba(255, 255, 255, 0.22) 8%,
+				rgba(110, 110, 110, 0.44) 46%,
 				#000 100%
 			),
 			conic-gradient(
