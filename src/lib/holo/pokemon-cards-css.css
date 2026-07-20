@@ -449,12 +449,12 @@
 }
 
 /* ── AJOUT EXPELLED : la « lens » (glare) trop forte sur nos rares/épiques
-   (arts déjà lumineux) → intensité réduite. Réglage local, recettes intactes. ── */
+   (arts déjà lumineux) → intensité DRASTIQUEMENT réduite. Réglage local. ── */
 .card[data-rarity="rare holo"] .card__glare {
-  opacity: calc(var(--card-opacity) * 0.42);
-  filter: brightness(0.68) contrast(1.35);
+  opacity: calc(var(--card-opacity) * 0.14);
+  filter: brightness(0.55) contrast(1.2);
 }
 .card[data-rarity="rare holo"] .card__glare:after {
-  opacity: 0.55;
-  filter: brightness(0.5) contrast(2.4);
+  opacity: 0.16;
+  filter: brightness(0.45) contrast(2);
 }

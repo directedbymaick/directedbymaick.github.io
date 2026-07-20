@@ -329,6 +329,7 @@
 		<div class="grade" aria-hidden="true"></div>
 		<div class="plastic" aria-hidden="true"></div>
 		<div class="foilgrain" aria-hidden="true"></div>
+			<div class="crumple" aria-hidden="true"></div>
 		<div class="sheen" aria-hidden="true"></div>
 			<!-- le trait de lumière qui ÉPOUSE le bord déchiré (mêmes points que la découpe) -->
 			<svg class="tearline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -661,8 +662,23 @@
 		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 		background-size: 160px 160px;
 		mix-blend-mode: overlay;
-		opacity: 0.22;
+		opacity: 0.18;
 		pointer-events: none;
+	}
+	/* mylar chiffonné : turbulence basse fréquence ÉCLAIRÉE (feDiffuseLighting) →
+	   micro-plis d'aluminium qui accrochent la lumière. Très subtil, soft-light.
+	   Deux plans à échelles différentes = gros froissés + fines cassures. */
+	.crumple {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		mix-blend-mode: soft-light;
+		opacity: 0.5;
+		background-image:
+			url("data:image/svg+xml,%3Csvg viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014 0.03' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting surfaceScale='2.4' diffuseConstant='1.15' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='230' elevation='62'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"),
+			url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05 0.09' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeDiffuseLighting surfaceScale='1.1' diffuseConstant='1' lighting-color='%23ffffff'%3E%3CfeDistantLight azimuth='55' elevation='68'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23d)'/%3E%3C/svg%3E");
+		background-size: 300px 340px, 150px 150px;
+		background-blend-mode: soft-light;
 	}
 	/* le reflet au pointeur : une source de lumière qui glisse sur la surface bombée */
 	.glare3d {
