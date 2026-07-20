@@ -661,8 +661,8 @@
 		background-image: var(--foilimg);
 		background-size: cover;
 		background-position: center;
-		mix-blend-mode: soft-light;
-		opacity: 0.55;
+		mix-blend-mode: overlay;
+		opacity: 0.85;
 	}
 	/* les reflets qui apparaissent/disparaissent sur les plis selon la souris :
 	   une nappe de lumière DOUCE et large au pointeur, MASQUÉE par les arêtes des
