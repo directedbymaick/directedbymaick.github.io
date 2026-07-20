@@ -650,7 +650,7 @@
 	.pack {
 		/* la texture de plis réelle (photo de mylar froissé), fournie par le
 		   projet. Une seule copie en cover → aucune couture. */
-		--foilimg: url("/img/foil-crumple.jpg");
+		--foilimg: url("/img/foil-crumple.png");
 	}
 	/* les plis, INCRUSTÉS sur l'illustration : blend screen → les stries claires
 	   des plis s'ajoutent sur l'art, le fond noir du plastique disparaît. */
