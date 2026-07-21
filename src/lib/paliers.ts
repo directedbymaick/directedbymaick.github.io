@@ -2,7 +2,7 @@ import type { CardData, FoilPreset, Rarity } from '$lib/types';
 import { cards } from '$lib/cards';
 import { charter } from '$lib/charter';
 import { FULLART_RATE, SLOT_ODDS } from '$lib/gacha';
-import { versionsOf, FOIL_LABEL } from '$lib/variants';
+import { versionsOf, foilLabel } from '$lib/variants';
 
 /**
  * L'échelle réelle du jeu.
@@ -77,7 +77,7 @@ export function paliers(): Palier[] {
 				label: [
 					charter.rarities[rarity].name,
 					v.fullArt ? 'Full Art' : null,
-					v.foil ? FOIL_LABEL[v.foil] : 'Raw',
+					v.foil ? foilLabel(v.foil, c) : 'Raw',
 					nobg ? 'no bg' : null
 				]
 					.filter(Boolean)

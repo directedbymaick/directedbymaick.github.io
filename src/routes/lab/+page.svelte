@@ -16,7 +16,8 @@
 		amazing: 'Cristallin',
 		cosmos: 'Cosmique',
 		galerie: 'Galerie',
-		showcase: 'Illustration spéciale'
+		// « Reflet » sans détourage, « Illustration spéciale » avec (cf. variants.ts)
+		showcase: 'Illustration spéciale / Reflet'
 	};
 	// Tous les foils (mode labo).
 	const allFoils: FoilPreset[] = [

@@ -21,6 +21,19 @@ export const FOIL_LABEL: Record<FoilPreset, string> = {
 	showcase: 'Illustration spéciale'
 };
 
+/**
+ * Le foil « showcase » recouvre deux objets très différents :
+ *  — avec détourage, le personnage flotte au-dessus du holo : c'est bien une
+ *    illustration spéciale, et la carte porte le tag « no bg » ;
+ *  — sans détourage, il ne fait qu'appliquer le holo de la rareté sous l'art
+ *    normal. Rien n'est « spécial » là-dedans, et les nommer pareil rendait les
+ *    vraies illisibles. Ces 28 cartes s'appellent donc « Reflet ».
+ */
+export function foilLabel(foil: FoilPreset, card: Pick<CardData, 'cutout'>): string {
+	if (foil === 'showcase' && !card.cutout) return 'Reflet';
+	return FOIL_LABEL[foil];
+}
+
 export interface CardVersion {
 	/** identifiant de collection — c'est lui qui distingue les exemplaires */
 	key: string;
@@ -91,7 +104,7 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		for (const f of foils) {
 			versions.push({
 				key: `${card.id}${suffixe}--${f}`,
-				label: `${fullArt ? 'Full Art · ' : ''}${FOIL_LABEL[f]}`,
+				label: `${fullArt ? 'Full Art · ' : ''}${foilLabel(f, card)}`,
 				foil: f,
 				fullArt,
 				rate: (pForme * FOIL_RATE * poids(f)) / total,
