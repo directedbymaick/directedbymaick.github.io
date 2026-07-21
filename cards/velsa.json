@@ -7,7 +7,6 @@
 	"rarity": "common",
 	"faction": "velar",
 	"art": "/art/velsa.webp",
-	"cutout": "/art/velsa-cutout.webp",
 	"fullArt": true,
 	"gene": {
 		"palette": [
@@ -24,6 +23,5 @@
 	"flavor": "Le bord du monde est un plongeoir.",
 	"alts": [
 		"/art/alt/velsa-alt1.webp"
-	],
-	"cutoutY": "-3.8%"
+	]
 }
