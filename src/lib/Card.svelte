@@ -732,7 +732,11 @@
 	.ff-nobg {
 		display: inline-block;
 		margin-left: 1.2cqw;
-		padding: 0.3cqw 1.1cqw 0.2cqw;
+		/* les capitales posent sur la ligne de base sans descendante : à rembourrage
+		   égal l'encre tombe sous le centre de la pilule. Plus de marge en bas qu'en
+		   haut, et un léger relèvement pour aligner l'encre sur celle du pied. */
+		padding: 0.26cqw 1.1cqw;
+		vertical-align: 0.06em;
 		font-size: 1.5cqw;
 		font-weight: 700;
 		letter-spacing: 0.16em;
