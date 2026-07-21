@@ -122,10 +122,61 @@
 	 */
 	let version = $state(0);
 
+	/**
+	 * Qui vient d'encaisser. On compare les PV d'un rafraîchissement à l'autre
+	 * plutôt que de se fier au nom d'un événement : ça capte toutes les sources
+	 * de dégâts — attaque, Verbe, effet déclenché — sans rien coder pour chacune.
+	 */
+	let pvPrecedents = new Map<number, number>();
+	let blesses = $state(new Set<number>());
+
+	function marquerBlesses(snaps: [PlayerSnap, PlayerSnap]) {
+		const nouveaux = new Set<number>();
+		const pv = new Map<number, number>();
+		for (const s of snaps)
+			for (const u of s.board) {
+				pv.set(u.uid, u.hp);
+				const avant = pvPrecedents.get(u.uid);
+				if (avant !== undefined && u.hp < avant) nouveaux.add(u.uid);
+			}
+		pvPrecedents = pv;
+		if (!nouveaux.size) return;
+		blesses = new Set([...blesses, ...nouveaux]);
+		setTimeout(() => {
+			blesses = new Set([...blesses].filter((x) => !nouveaux.has(x)));
+		}, 440);
+	}
+
+	/**
+	 * La mort d'un Être : secousse, parasitage rouge et noir, puis effacement.
+	 * Écrite comme transition Svelte plutôt qu'en @keyframes CSS pour que la
+	 * carte reste montée pendant toute sa disparition — sinon elle s'évapore
+	 * d'un coup, ce qui est exactement ce qu'on veut éviter.
+	 */
+	function mort(_node: Element, { duration = 620 }: { duration?: number } = {}) {
+		return {
+			duration: duree(duration),
+			css: (t: number, u: number) => {
+				// t : 1 → 0 ; u : 0 → 1 (progression de la disparition)
+				const secousse = Math.sin(u * 44) * 9 * (1 - u * 0.4);
+				const gite = Math.sin(u * 26) * 3;
+				const parasite = Math.sin(u * 70) > 0.55 ? 'invert(1) hue-rotate(-25deg)' : '';
+				return `
+					transform: translate(${secousse}px, ${Math.abs(secousse) * 0.25}px)
+					           skewX(${gite}deg) scale(${0.8 + t * 0.2});
+					filter: ${parasite} brightness(${1 + u * 1.4}) saturate(${1 + u * 4})
+					        drop-shadow(0 0 ${u * 26}px rgba(214, 48, 42, ${u * 0.9}));
+					opacity: ${Math.max(0, t * 1.15 - 0.15)};
+				`;
+			}
+		};
+	}
+
 	function rafraichir() {
 		if (!duel) return;
 		version++;
 		const [a, b] = duel.state();
+		marquerBlesses([a, b]);
 		moi = a;
 		lui = b;
 		meta = duel.meta();
@@ -337,8 +388,9 @@
 					{@const att = attachements(lui, u.uid)}
 					<button
 						in:scale={{ duration: duree(300), start: 0.82, easing: backOut }}
-						out:scale={{ duration: duree(200), start: 0.7 }}
+						out:mort
 						class="slot occupe"
+						class:frappe={blesses.has(u.uid)}
 						class:ciblable={attaquant !== null && ciblesLegales.units.includes(u.uid)}
 						data-cible={u.uid}
 						onclick={() => clicSonEtre(u.uid)}
@@ -407,8 +459,9 @@
 					{@const att = attachements(moi, u.uid)}
 					<button
 						in:scale={{ duration: duree(300), start: 0.82, easing: backOut }}
-						out:scale={{ duration: duree(200), start: 0.7 }}
+						out:mort
 						class="slot occupe"
+						class:frappe={blesses.has(u.uid)}
 						class:pret={attaquantsPossibles.includes(u.uid)}
 						class:choisi={attaquant === u.uid}
 						class:traine={traine?.uid === u.uid}
@@ -731,6 +784,23 @@
 	}
 	.slot.traine {
 		opacity: 0.75;
+	}
+	/* le coup encaissé : vibration courte et sèche, teintée de rouge */
+	.slot.frappe {
+		animation: frappe 0.44s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+	}
+	@keyframes frappe {
+		0%, 100% { transform: translateX(0); filter: none; }
+		12% { transform: translateX(-7px); filter: brightness(1.5) saturate(2.2); }
+		28% { transform: translateX(6px); filter: brightness(1.3) saturate(1.8); }
+		44% { transform: translateX(-4px); }
+		62% { transform: translateX(3px); }
+		80% { transform: translateX(-2px); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.slot.frappe {
+			animation: none;
+		}
 	}
 	.slot.ciblable {
 		border-color: #e8703f;
