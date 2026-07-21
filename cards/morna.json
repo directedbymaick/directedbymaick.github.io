@@ -20,5 +20,6 @@
 		"foilPreset": "mat",
 		"accent": "#b3273a",
 		"seed": 540272
-	}
+	},
+	"cutoutScale": 0.998
 }
