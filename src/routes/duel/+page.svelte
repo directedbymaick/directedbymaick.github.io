@@ -395,8 +395,16 @@
 		{/each}
 	</div>
 
-	<!-- rangée adverse -->
-	<section class="rangee adverse">
+	<!-- Rangée adverse. Elle porte data-cible="korum" : lâcher une attaque dans le
+	     vide de la zone ennemie frappe le Korum, sans avoir à viser le petit badge
+	     du bandeau. Un emplacement occupé, lui, capte le lâcher avant la rangée —
+	     `closest()` remonte au plus proche. Le moteur refuse de toute façon le
+	     Korum tant qu'un Être peut encore intercepter. -->
+	<section
+		class="rangee adverse"
+		class:zone-visee={attaquant !== null && ciblesLegales.korum}
+		data-cible="korum"
+	>
 		{#if lieuDe(lui)}
 			{@const c = getCard(lieuDe(lui)!.cardId)}
 			<button class="pile lieu occupe" title="Lire {c?.name}" onclick={() => (carteZoom = c ?? null)}>
@@ -786,6 +794,16 @@
 		grid-template-columns: auto 1fr auto;
 		align-items: center;
 		gap: 0.8rem;
+		padding: 0.3rem;
+		border-radius: 14px;
+		transition:
+			background 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+	/* quand le Korum est ouvert, c'est toute la zone adverse qui s'allume */
+	.rangee.zone-visee {
+		background: rgba(232, 112, 63, 0.07);
+		box-shadow: inset 0 0 0 1px rgba(232, 112, 63, 0.35);
 	}
 	.slots {
 		display: grid;
