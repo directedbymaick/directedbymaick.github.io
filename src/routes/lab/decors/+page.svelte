@@ -5,7 +5,7 @@
 	const source = getCard('doran')!;
 	const haloCard = structuredClone(source);
 	haloCard.rarity = 'prism';
-	haloCard.gene.foilPreset = 'ultra';
+	haloCard.gene.foilPreset = 'vfoil';
 </script>
 
 <svelte:head>

@@ -768,17 +768,24 @@
   filter: brightness( calc( ( var( --pointer-from-center ) * 0.3 ) + 0.2 ) ) contrast(2) saturate(0.75);
 }
 
-/* ===== V FULL ART / RARE ULTRA (v-full-art.css) — VERBATIM simeydotme =====
-   Seule adaptation Expelled : ses sélecteurs qualifient la carte par
-   [data-supertype="pokémon"] / [data-subtypes*="supporter"] / trainer-gallery,
-   attributs que notre moteur n'expose pas. Ils sont retirés, la recette cible
-   donc simplement [data-rarity="rare ultra"]. Déclarations inchangées.
-   Texture /img/illusion.png © simeydotme, déjà dans static/img/. */
+/* ===== V REGULAR (v-regular.css) — VERBATIM simeydotme =====
+   Recette 100% dégradés : aucune texture externe, contrairement à radiant et
+   ultra dont l'image de fond écrasait la structure sur nos illustrations
+   pleine carte.
+   Seule adaptation Expelled : ses sélecteurs doublent chaque règle pour
+   [data-subtypes="v-union"], attribut que notre moteur n'expose pas ; ces
+   lignes sont retirées. Déclarations inchangées. */
 /*
 
-  V FULL ART (ULTRA RARE)
+  V REGULAR
 
 */
+
+
+
+
+
+
 
 /*
 
@@ -786,15 +793,23 @@
 
 */
 
-.card[data-rarity="rare ultra"] .card__shine,
-.card[data-rarity="rare ultra"] .card__shine:after {
+.card[data-rarity="rare holo v"]:not(.masked) .card__shine,
+.card[data-rarity="rare holo v"]:not(.masked) .card__shine {
+
+  filter: brightness(.7) contrast(2) saturate(.5);
+
+}
+
+.card[data-rarity="rare holo v"] .card__shine,
+.card[data-rarity="rare holo v"] .card__shine:after,
+.card[data-rarity="rare holo v"] .card__shine:after {
 
   --space: 5%;
   --angle: 133deg;
-  --imgsize: cover;
+  --imgsize: 500px;
 
   background-image:
-    var(--foil),
+    var(--grain),
     repeating-linear-gradient( 0deg, 
       var(--sunpillar-clr-1) calc(var(--space)*1), 
       var(--sunpillar-clr-2) calc(var(--space)*2), 
@@ -821,55 +836,37 @@
       hsla(0, 0%, 0%, 0.25) 120%
     );
 
-  background-position: 
-    center center, 
-    0% var(--background-y), 
-    calc( var(--background-x) + (var(--background-y)*0.2) ) var(--background-y), 
-    var(--background-x) var(--background-y);
-
-  background-blend-mode: soft-light, hue, hard-light;
-  background-size: var(--imgsize), 200% 700%, 300% 100%, 200% 100%;
-
-  filter: brightness(calc((var(--pointer-from-center)*0.4) + .4)) contrast(1.4) saturate(2.25);
+  background-blend-mode: screen, hue, hard-light;
+  background-size: var(--imgsize) 100%, 200% 700%, 300% 100%, 200% 100%;
+  background-position: center, 0% var(--background-y), var(--background-x) var(--background-y), var(--background-x) var(--background-y);
+  
+  filter: brightness(.8) contrast(2.95) saturate(.65);
 
 }
 
-.card[data-rarity="rare ultra"] .card__shine:after {
+.card[data-rarity="rare holo v"] .card__shine:after,
+.card[data-rarity="rare holo v"] .card__shine:after {
 
   content: "";
 
-  background-position: 
-    center center, 
-    0% var(--background-y), 
-    calc( (var(--background-x) + (var(--background-y)*0.2)) * -1) calc( var(--background-y) * -1), 
-    var(--background-x) var(--background-y);
+  background-position: center, 0% var(--background-y), calc( var(--background-x) * -1) calc( var(--background-y) * -1), var(--background-x) var(--background-y);
+  background-size: var(--imgsize) 100%, 200% 400%, 195% 100%, 200% 100%;
 
-  background-size: var(--imgsize), 200% 400%, 195% 100%, 200% 100%;
-
-  filter: brightness(calc((var(--pointer-from-center)*.4) + .8)) contrast(1.5) saturate(1.25);
-  mix-blend-mode: exclusion;
+  filter: brightness(1) contrast(2.5) saturate(1.75);
+  mix-blend-mode: soft-light;
 
 }
 
-.card[data-rarity="rare ultra"] .card__shine:before {
 
-  content: "";
-  -webkit-mask-image: none;
-  mask-image: none;
-  
-  background-image: 
-    radial-gradient( farthest-corner circle at var(--pointer-x) var(--pointer-y), 
-      hsl(0, 0%, 100%) 0%, 
-      hsla(0, 0%, 0%, 0) 40% 
-    );
-  background-position: center;
-  background-size: cover;
-  mix-blend-mode: overlay;
-  
-  opacity: 0.75;
-  z-index: 1;
 
-}
+
+
+
+
+
+
+
+
 
 /*
 
@@ -877,66 +874,20 @@
 
 */
 
-.card[data-rarity="rare ultra"] .card__glare {
+.card[data-rarity="rare holo v"] .card__glare,
+.card[data-rarity="rare holo v"] .card__glare {
 
   background-image: 
     radial-gradient( 
       farthest-corner circle at var(--pointer-x) var(--pointer-y), 
-      hsl(0, 0%, 75%) 5%, 
-      hsl(200, 5%, 35%) 60%, 
-      hsl(320, 40%, 10%) 150% 
-    );
+        hsl(0, 0%, 100%) 0%, 
+        hsla(210, 3%, 54%, 0.33) 45%, 
+        hsla(0, 0%, 20%, 0.9) 130% 
+      );
 
-  background-size: 120% 150%;
-  background-position: center center;
-
-  mix-blend-mode: hard-light;
-  filter: brightness(1) contrast(1.2) saturate(1);
+  opacity: calc(var(--card-opacity)*.5);
   
-  opacity: calc(var(--card-opacity) * .75 );
+  mix-blend-mode: hard-light;
+  filter: brightness(.9) contrast(1.75);
 
-}
-
-/*
-
-  NO MASK
-
-*/
-
-.card:not(.masked)[data-rarity="rare ultra"] .card__shine,
-.card:not(.masked)[data-rarity="rare ultra"] .card__shine:after {
-
-  --mask: none;
-  --foil: url("/img/illusion.png"); 
-  --imgsize: 33%;
-
-  -webkit-mask-image: var(--mask);
-  mask-image: var(--mask);
-	-webkit-mask-size: var(--imgsize);
-  mask-size: var(--imgsize);
-
-  background-blend-mode: exclusion, hue, hard-light;
-  filter: brightness(calc((var(--pointer-from-center)*.3) + .35)) contrast(2) saturate(1.5);
-
-}
-
-.card:not(.masked)[data-rarity="rare ultra"] .card__shine:before {
-  content: none;
-  display: none;
-}
-
-.card:not(.masked)[data-rarity="rare ultra"] .card__shine:after {
-  filter: brightness(calc((var(--pointer-from-center)*.5) + .8)) contrast(1.6) saturate(1.4);
-}
-
-/* ── AJOUT EXPELLED (config, pas une recette) : ultra ──────────────────────
-   Pour ses cartes non masquées, simey tuile illusion.png à --imgsize: 33%.
-   Sur nos illustrations pleine carte, ces petits motifs circulaires répétés
-   saturent le rendu et écrasent les fines lignes diagonales, qui sont
-   pourtant le cœur de l'effet. On repasse la texture en `cover` — la valeur
-   qu'il emploie lui-même pour sa variante masquée. Aucune déclaration de sa
-   recette n'est touchée, seule cette variable change. ── */
-.card:not(.masked)[data-rarity='rare ultra'] .card__shine,
-.card:not(.masked)[data-rarity='rare ultra'] .card__shine:after {
-	--imgsize: cover;
 }

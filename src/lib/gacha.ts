@@ -63,7 +63,7 @@ export function fullArtView(c: CardData): CardData {
 	v.id = `${c.id}--fullart`;
 	v.sourceRarity = c.rarity;
 	v.rarity = 'prism';
-	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'ultra' };
+	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'vfoil' };
 	return v;
 }
 

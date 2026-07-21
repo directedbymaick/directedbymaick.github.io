@@ -28,14 +28,14 @@
 		"legendary": {
 			"name": "Légendaire",
 			"material": "or",
-			"foilPreset": "ultra",
+			"foilPreset": "vfoil",
 			"statBudgetPerCost": 2.6,
 			"maxCopies": 1
 		},
 		"prism": {
 			"name": "Prismatique",
 			"material": "prisme",
-			"foilPreset": "ultra",
+			"foilPreset": "vfoil",
 			"statBudgetPerCost": 2.8,
 			"maxCopies": 1
 		}
