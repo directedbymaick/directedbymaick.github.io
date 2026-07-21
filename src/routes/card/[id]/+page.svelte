@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { altView } from '$lib/cards';
-	import { loadCollection, fullArtView } from '$lib/gacha';
+	import { FULLART_RATE } from '$lib/gacha';
+	import { versionsOf, formatRate } from '$lib/variants';
 	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
@@ -12,44 +12,35 @@
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const faction = $derived(charter.factions[card.faction]);
 
-	/* la Full Art n'est proposée que si le joueur l'a tirée — sauf si l'URL la
-	   demande explicitement (?v=fullart), pour que les liens du Registre, qui est
-	   un catalogue de tout le set, ne retombent pas sur la version normale */
-	let collection = $state<Record<string, number>>({});
-	let askedFullArt = $state(false);
-	onMount(() => {
-		collection = loadCollection();
-		askedFullArt = new URLSearchParams(location.search).get('v') === 'fullart';
-	});
-	const ownsFullArt = $derived(askedFullArt || (collection[`${card.id}--fullart`] ?? 0) > 0);
+	/* Toutes les versions existantes de la carte : Raw d'abord, puis les finitions
+	   validées et les Full Art, chacune avec son taux de drop. Le Registre ne
+	   montre que le Raw ; c'est ici qu'on voit ce qui est réellement poolable. */
+	const versions = $derived(versionsOf(card, FULLART_RATE));
 
-	/** Choix de l'artwork : base ou versions alternatives (toujours foil). */
-	interface ArtOption {
-		key: string;
-		label: string;
-		view: CardData;
-	}
-	const artOptions: ArtOption[] = $derived([
-		{ key: 'base', label: 'Standard', view: card },
-		...(ownsFullArt ? [{ key: 'fullart', label: 'Full Art · Auréole', view: fullArtView(card) }] : []),
-		...(card.alts ?? []).flatMap((art, i) => [
-			{
-				key: `alt${i + 2}`,
-				label: `Alt ${i + 1}`,
-				view: altView(card, art, i)
-			}
-		])
-	]);
+	/* les artworks alternatifs restent proposés à la suite (ils ne sont pas des
+	   versions au sens tirage : même carte, autre illustration) */
+	const alts = $derived(
+		(card.alts ?? []).map((art, i) => ({
+			key: `alt${i + 2}`,
+			label: `Alt ${i + 1}`,
+			view: altView(card, art, i)
+		}))
+	);
 
-	let artSel = $state('base');
+	let artSel = $state('');
 	$effect(() => {
 		card.id; // reset à chaque navigation de carte
-		artOptions; // ré-applique quand la Full Art devient disponible (collection chargée)
 		const v = new URLSearchParams(location.search).get('v');
-		artSel = v && artOptions.some((o) => o.key === v) ? v : 'base';
+		const dispo = [...versions.map((x) => x.key), ...alts.map((a) => a.key)];
+		artSel = v && dispo.includes(v) ? v : versions[0].key;
 	});
 
-	const shown: CardData = $derived(artOptions.find((o) => o.key === artSel)?.view ?? card);
+	const shown: CardData = $derived(
+		versions.find((v) => v.key === artSel)?.view ??
+			alts.find((a) => a.key === artSel)?.view ??
+			versions[0].view
+	);
+	const shownFullArt = $derived(versions.find((v) => v.key === artSel)?.fullArt ?? false);
 </script>
 
 <svelte:head>
@@ -64,23 +55,36 @@
 <section class="stage">
 	<div class="showcase">
 		{#key artSel}
-			<Card card={shown} fullArt={artSel === 'fullart' || artSel.endsWith('full')} />
+			<Card card={shown} fullArt={shownFullArt} />
 		{/key}
-		{#if artOptions.length > 1}
-			<div class="variants" role="tablist" aria-label="Versions de la carte">
-				{#each artOptions as o (o.key)}
-					<button
-						class="vbtn"
-						class:active={artSel === o.key}
-						role="tab"
-						aria-selected={artSel === o.key}
-						onclick={() => (artSel = o.key)}
-					>
-						{o.label}
-					</button>
-				{/each}
-			</div>
-		{/if}
+
+		<div class="variants" role="tablist" aria-label="Versions de la carte">
+			{#each versions as v (v.key)}
+				<button
+					class="vbtn"
+					class:active={artSel === v.key}
+					role="tab"
+					aria-selected={artSel === v.key}
+					onclick={() => (artSel = v.key)}
+				>
+					{v.label}
+					<small class="taux">{formatRate(v.rate)}</small>
+				</button>
+			{/each}
+			{#each alts as a (a.key)}
+				<button
+					class="vbtn"
+					class:active={artSel === a.key}
+					role="tab"
+					aria-selected={artSel === a.key}
+					onclick={() => (artSel = a.key)}
+				>
+					{a.label}
+					<small class="taux">artwork alt.</small>
+				</button>
+			{/each}
+		</div>
+		<p class="vhint">Taux de sortie par tirage de cette carte.</p>
 	</div>
 
 	<aside class="meta" style="--fc: {faction?.color ?? '#8892a6'}">
@@ -149,7 +153,8 @@
 
 	/* sélecteur de version — segmented control */
 	.variants {
-		display: inline-flex;
+		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
 		gap: 0.25rem;
 		margin-top: 1.4rem;
@@ -158,6 +163,10 @@
 		border-radius: 999px;
 	}
 	.vbtn {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.1rem;
 		font-family: inherit;
 		font-size: 0.8rem;
 		font-weight: 550;
@@ -177,6 +186,20 @@
 	.vbtn.active {
 		color: #0a0a0d;
 		background: #f2f0ea;
+	}
+	/* taux de drop : discret sous le nom de la version */
+	.taux {
+		font-size: 0.62rem;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.04em;
+		opacity: 0.65;
+	}
+	.vhint {
+		margin: 0.55rem 0 0;
+		text-align: center;
+		font-size: 0.72rem;
+		color: rgba(242, 240, 234, 0.35);
 	}
 
 	.meta {

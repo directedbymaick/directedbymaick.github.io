@@ -1,6 +1,7 @@
 import type { CardData, Rarity } from '$lib/types';
 import { cards } from '$lib/cards';
 import { nsKey, scheduleCloudSync } from '$lib/store';
+import { rollVersion, versionsOf } from '$lib/variants';
 
 /**
  * Le gacha : ouverture de boosters ZONES AVEUGLES, 100% local.
@@ -68,11 +69,17 @@ export function fullArtView(c: CardData): CardData {
 	return v;
 }
 
-/** Un tirage : la carte affichée (vue full art le cas échéant) + son identité de base. */
+/** Un tirage : la version affichée + son identité de base.
+ *  `card.id` porte la clé de version (raw, foil, full art…) : c'est elle qui est
+ *  collectionnée, un Raw et un foil de la même carte étant deux exemplaires. */
 export interface Pull {
 	card: CardData;
 	baseId: string;
 	fullArt: boolean;
+	/** libellé de la version tirée (Raw, Cosmique, Full Art · Raw…) */
+	version: string;
+	/** true si la version tirée porte un foil */
+	foil: boolean;
 }
 
 /** Chance, très rare, d'un booster « EXPELLED » : 5 cartes toutes en Full Art
@@ -96,7 +103,15 @@ function openGodPack(): Pull[] {
 		let guard = 0;
 		while (seen.has(card.id) && guard++ < 40) card = src[Math.floor(Math.random() * src.length)];
 		seen.add(card.id);
-		pulls.push({ card: fullArtView(card), baseId: card.id, fullArt: true });
+		const versions = versionsOf(card, 1).filter((v) => v.fullArt);
+		const v = versions.find((x) => x.foil) ?? versions[0];
+		pulls.push({
+			card: { ...v.view, id: v.key },
+			baseId: card.id,
+			fullArt: true,
+			version: v.label,
+			foil: v.foil !== null
+		});
 	}
 	return pulls;
 }
@@ -116,8 +131,16 @@ export function openPack(): Pull[] {
 	for (const rarity of slots) {
 		const card = pickCard(rarity, seen);
 		seen.add(card.id);
-		const fullArt = eligibleFullArt(card) && Math.random() < FULLART_RATE;
-		pulls.push({ card: fullArt ? fullArtView(card) : card, baseId: card.id, fullArt });
+		/* le Raw est l'état de base : la version foil est un bonus rare, tiré selon
+		   les finitions réellement validées pour cette carte (cf. variants.ts) */
+		const v = rollVersion(card, FULLART_RATE);
+		pulls.push({
+			card: { ...v.view, id: v.key },
+			baseId: card.id,
+			fullArt: v.fullArt,
+			version: v.label,
+			foil: v.foil !== null
+		});
 	}
 	return pulls;
 }

@@ -4,19 +4,15 @@
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import { eligibleFullArt, fullArtView } from '$lib/gacha';
-	import type { FactionId, FoilPreset, Rarity } from '$lib/types';
+	import { FULLART_RATE } from '$lib/gacha';
+	import { versionsOf } from '$lib/variants';
+	import type { CardData, FactionId, Rarity } from '$lib/types';
 
-	/* le foil ne se révèle qu'au survol : on le nomme sous chaque carte pour
-	   qu'on sache quoi survoler, et qu'on repère les six variantes d'un coup d'œil */
-	const FOIL_LABEL: Record<FoilPreset, string> = {
-		mat: 'Satin mat',
-		regular: 'Holographique',
-		amazing: 'Cristallin',
-		cosmos: 'Cosmique',
-		galerie: 'Galerie',
-		showcase: 'Illustration spéciale'
-	};
+	/** nombre de versions existantes (Raw + finitions + Full Art) — indiqué sur la
+	    vignette pour signaler qu'il y a plus à voir sur la fiche */
+	function nbVersions(card: CardData) {
+		return versionsOf(card, FULLART_RATE).length;
+	}
 
 	const SET_SIZE = 60;
 
@@ -40,40 +36,15 @@
 			.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
 	}
 
-	/** Grille d'affichage : chaque carte, sa version Full Art quand elle en a une,
-	    puis ses versions alternatives (toujours foil). Le Registre est un catalogue :
-	    il montre tout ce qui existe dans le set, possédé ou non. */
+	/** Le Registre ne montre QUE le Raw : l'état de base réel de chaque carte,
+	    sans foil. Les finitions et les Full Art se consultent sur la fiche de la
+	    carte, avec leur taux de drop — ça garde la grille lisible et légère. */
 	function entriesFor(f: FactionId) {
-		return byFaction(f).flatMap((card) => [
-			{ key: card.id, card, alt: 0, fullArt: false, href: `/card/${card.id}` },
-			...(eligibleFullArt(card)
-				? [
-						{
-							key: `${card.id}--fullart`,
-							card: fullArtView(card),
-							alt: 0,
-							fullArt: true,
-							href: `/card/${card.id}?v=fullart`
-						}
-					]
-				: []),
-			...(card.variants ?? []).map((v, i) => ({
-				key: `${card.id}--var${i}`,
-				card: v.fullArt
-					? { ...fullArtView(card), gene: { ...card.gene, foilPreset: v.foilPreset } }
-					: { ...card, gene: { ...card.gene, foilPreset: v.foilPreset } },
-				alt: 0,
-				fullArt: !!v.fullArt,
-				href: `/card/${card.id}`
-			})),
-			...(card.alts ?? []).map((art, i) => ({
-				key: `${card.id}--alt${i + 2}`,
-				card: altView(card, art, i),
-				alt: i + 1,
-				fullArt: false,
-				href: `/card/${card.id}?v=alt${i + 2}`
-			}))
-		]);
+		return byFaction(f).map((card) => ({
+			key: card.id,
+			card: { ...card, gene: { ...card.gene, foilPreset: 'mat' as const } },
+			href: `/card/${card.id}`
+		}));
 	}
 
 	/** L'artwork du bandeau de chapitre : la carte la plus rare du peuple. */
@@ -282,17 +253,15 @@
 					<div class="galerie">
 						{#each entriesFor(f) as e (e.key)}
 							<div class="cell">
-								<Card card={e.card} fullArt={e.fullArt} />
+								<Card card={e.card} />
 								<a class="band" href={e.href}>
 									<span class="bname">{e.card.name}</span>
 									<span class="stars" class:prism={e.card.rarity === 'prism'}
 										>{'★'.repeat(STARS[e.card.rarity])}</span
 									>
-									{#if e.fullArt}<span class="fachip">Full Art</span>{/if}
-									{#if e.alt}<span class="altchip">Alt {e.alt}</span>{/if}
-									<span class="foilchip" class:none={e.card.gene.foilPreset === 'mat'}
-										>{FOIL_LABEL[e.card.gene.foilPreset]}</span
-									>
+									{#if nbVersions(e.card) > 1}
+										<span class="verchip">{nbVersions(e.card)} versions</span>
+									{/if}
 								</a>
 							</div>
 						{/each}
@@ -697,44 +666,18 @@
 		background-clip: text;
 		color: transparent;
 	}
-	.fachip {
+	/* signale qu'il existe d'autres versions (foils, Full Art) sur la fiche */
+	.verchip {
 		flex: none;
 		padding: 0.12em 0.55em;
-		font-size: 0.66rem;
-		font-weight: 650;
-		letter-spacing: 0.06em;
-		color: #12121a;
-		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
-		border-radius: 999px;
-	}
-	/* nom de l'effet, sous la vignette : le foil ne vit qu'au survol */
-	.foilchip {
-		max-width: 285px;
-		box-sizing: border-box;
-		margin-top: -0.35rem;
-		padding: 0.1em 0.6em;
 		font-size: 0.66rem;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: rgba(238, 240, 245, 0.62);
+		letter-spacing: 0.04em;
+		color: rgba(238, 240, 245, 0.55);
 		background: rgba(140, 170, 220, 0.1);
-		border: 1px solid rgba(140, 170, 220, 0.18);
+		border: 1px solid rgba(140, 170, 220, 0.2);
 		border-radius: 999px;
+		white-space: nowrap;
 	}
-	.foilchip.none {
-		color: rgba(238, 240, 245, 0.3);
-		background: transparent;
-		border-color: rgba(238, 240, 245, 0.12);
-	}
-	.altchip {
-		flex: none;
-		padding: 0.12em 0.55em;
-		font-size: 0.66rem;
-		font-weight: 650;
-		letter-spacing: 0.06em;
-		color: #171b10;
-		background: linear-gradient(180deg, #f0d68a, var(--gold-deep));
-		border-radius: 999px;
-	}
+	/* nom de l'effet, sous la vignette : le foil ne vit qu'au survol */
 </style>
