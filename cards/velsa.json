@@ -24,5 +24,6 @@
 	"flavor": "Le bord du monde est un plongeoir.",
 	"alts": [
 		"/art/alt/velsa-alt1.webp"
-	]
+	],
+	"cutoutY": "-3.7%"
 }
