@@ -39,12 +39,77 @@
 	/** Attaque en deux temps : on choisit l'attaquant, puis la cible. */
 	let attaquant = $state<number | null>(null);
 
+	/**
+	 * Attaque au glisser : on tire une flèche depuis l'Être vers le curseur, et
+	 * on frappe ce qui se trouve dessous au relâchement. Le clic en deux temps
+	 * reste actif — il sert au clavier et aux petits écrans.
+	 *
+	 * On travaille au pointeur plutôt qu'au glisser-déposer HTML5 : ce dernier ne
+	 * laisse pas dessiner la ligne, impose son image fantôme et ignore le tactile.
+	 */
+	let traine = $state<{ uid: number; x0: number; y0: number; x: number; y: number } | null>(null);
+
+	function centreDe(el: Element) {
+		const r = el.getBoundingClientRect();
+		return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+	}
+
+	function debutTraine(e: PointerEvent, uid: number) {
+		if (!attaquantsPossibles.includes(uid)) return;
+		const c = centreDe(e.currentTarget as Element);
+		traine = { uid, x0: c.x, y0: c.y, x: e.clientX, y: e.clientY };
+		attaquant = uid;
+		(e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
+	}
+
+	function bougeTraine(e: PointerEvent) {
+		if (!traine) return;
+		traine = { ...traine, x: e.clientX, y: e.clientY };
+	}
+
+	/** Au relâchement, on frappe ce qui est sous le curseur — s'il est légal. */
+	function finTraine(e: PointerEvent) {
+		if (!traine) return;
+		const t = traine;
+		traine = null;
+		const sous = document.elementFromPoint(e.clientX, e.clientY);
+		const cible = sous?.closest('[data-cible]')?.getAttribute('data-cible');
+		if (!cible) return; // relâché dans le vide : on garde l'attaquant sélectionné
+
+		/* On interroge le moteur MAINTENANT plutôt que de lire `ciblesLegales` :
+		   ce $derived dépend de `attaquant`, posé au début du glisser, et Svelte
+		   ne l'a pas forcément recalculé quand on relâche. */
+		const legales = duel?.legalTargets() ?? { units: [], korum: false };
+		if (cible === 'korum' && legales.korum) {
+			duel?.attack(t.uid, 'korum');
+		} else {
+			const uid = Number(cible);
+			if (!legales.units.includes(uid)) return;
+			duel?.attack(t.uid, uid);
+		}
+		attaquant = null;
+		rafraichir();
+	}
+
 	/** Chrono du tour, purement informatif. */
 	let secondes = $state(0);
 	let horloge: ReturnType<typeof setInterval> | null = null;
 
+	/**
+	 * Compteur de rafraîchissement.
+	 *
+	 * Le moteur est impératif : `attackers()`, `legalTargets()` et
+	 * `pronounceable()` lisent un état interne que Svelte ne surveille pas. Sans
+	 * ce compteur, un $derived qui les appelle ne se recalcule QUE si `duel` ou
+	 * `meta` change de valeur — or jouer une carte pendant son tour ne change ni
+	 * l'un ni l'autre. Résultat mesuré : aucun Être ne devenait jamais attaquable
+	 * à l'écran alors que le moteur en proposait à chaque tour.
+	 */
+	let version = $state(0);
+
 	function rafraichir() {
 		if (!duel) return;
+		version++;
 		const [a, b] = duel.state();
 		moi = a;
 		lui = b;
@@ -90,11 +155,13 @@
 	});
 
 	const monTour = $derived(meta.active === 0 && meta.winner === null);
-	const attaquantsPossibles = $derived(duel && monTour ? duel.attackers() : []);
+	const attaquantsPossibles = $derived(version >= 0 && duel && monTour ? duel.attackers() : []);
 	const ciblesLegales = $derived(
-		duel && attaquant !== null ? duel.legalTargets() : { units: [], korum: false }
+		version >= 0 && duel && attaquant !== null
+			? duel.legalTargets()
+			: { units: [], korum: false }
 	);
-	const prononcables = $derived(duel && monTour ? duel.pronounceable() : []);
+	const prononcables = $derived(version >= 0 && duel && monTour ? duel.pronounceable() : []);
 
 	/**
 	 * La carte survolée en main, montrée en grand au-dessus. Une carte de main
@@ -186,7 +253,7 @@
 			<span class="sigil"><FactionSigil faction={lui?.faction ?? 'exar'} flat /></span>
 			{lui?.name ?? 'Adversaire'}
 		</span>
-		<span class="korum" class:vise={ciblesLegales.korum && attaquant !== null}>
+		<span class="korum" class:vise={ciblesLegales.korum && attaquant !== null} data-cible="korum">
 			<button class="korum-btn" disabled={!ciblesLegales.korum || attaquant === null} onclick={frapperKorum}>
 				Korum <b>{lui?.korum ?? 0}</b>
 			</button>
@@ -222,6 +289,7 @@
 					<button
 						class="slot occupe"
 						class:ciblable={attaquant !== null && ciblesLegales.units.includes(u.uid)}
+						data-cible={u.uid}
 						onclick={() => clicSonEtre(u.uid)}
 					>
 						{#if att.length}<span class="attache" title="{att.length} attachement(s)">{att.length}</span>{/if}
@@ -279,6 +347,8 @@
 						class="slot occupe"
 						class:pret={attaquantsPossibles.includes(u.uid)}
 						class:choisi={attaquant === u.uid}
+						class:traine={traine?.uid === u.uid}
+						onpointerdown={(e) => debutTraine(e, u.uid)}
 						onclick={() => clicMonEtre(u.uid)}
 					>
 						{#if att.length}<span class="attache" title="{att.length} attachement(s)">{att.length}</span>{/if}
@@ -351,6 +421,24 @@
 		{/each}
 	</div>
 
+	<!-- la flèche d'attaque : de l'Être au curseur, tant qu'on tire -->
+	{#if traine}
+		<svg class="fleche" aria-hidden="true">
+			<defs>
+				<marker id="pointe" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+					<path d="M0 0 L10 5 L0 10 z" fill="#e8703f" />
+				</marker>
+			</defs>
+			<line
+				x1={traine.x0}
+				y1={traine.y0}
+				x2={traine.x}
+				y2={traine.y}
+				marker-end="url(#pointe)"
+			/>
+		</svg>
+	{/if}
+
 	{#if meta.winner !== null}
 		<div class="fin" role="dialog" aria-modal="true">
 			<p class="fin-txt">
@@ -360,6 +448,8 @@
 		</div>
 	{/if}
 </div>
+
+<svelte:window onpointermove={bougeTraine} onpointerup={finTraine} onpointercancel={() => (traine = null)} />
 
 <!-- ============ consultation de la défausse ============ -->
 {#if defausseOuverte !== null}
@@ -530,6 +620,9 @@
 	.slot.choisi {
 		border-color: #f0d68a;
 		box-shadow: 0 0 22px rgba(240, 214, 138, 0.6);
+	}
+	.slot.traine {
+		opacity: 0.75;
 	}
 	.slot.ciblable {
 		border-color: #e8703f;
@@ -733,6 +826,21 @@
 		--card-w: min(19rem, 26vw);
 		pointer-events: none;
 		filter: drop-shadow(0 1.2rem 2.4rem rgba(0, 0, 0, 0.75));
+	}
+
+	.fleche {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 45;
+		pointer-events: none;
+	}
+	.fleche line {
+		stroke: #e8703f;
+		stroke-width: 4;
+		stroke-linecap: round;
+		filter: drop-shadow(0 0 6px rgba(232, 112, 63, 0.7));
 	}
 
 	.fin {
