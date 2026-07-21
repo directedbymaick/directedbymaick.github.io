@@ -161,6 +161,19 @@ export const MAX_COPIES: Record<string, number> = {
 };
 
 export const MAJORS: FactionId[] = ['vasar', 'exar'];
+
+/** Emplacements d'Êtres : le terrain en compte cinq, pas un de plus. */
+export const BOARD_SLOTS = 5;
+
+/**
+ * Un Être ne peut être joué que s'il reste un emplacement libre. Les Verbes,
+ * Reliques et Lieux ne consomment pas d'emplacement d'Être — le Verbe se résout
+ * puis part à la défausse, la Relique s'attache derrière un Être, le Lieu occupe
+ * sa case dédiée.
+ */
+export function hasSlot(g: { players: { board: unknown[] }[] }, side: number, c: CardData): boolean {
+	return c.kind !== 'etre' || g.players[side].board.length < BOARD_SLOTS;
+}
 const MINORS: FactionId[] = ['eshar', 'morar', 'velar'];
 
 /** Deck de 30 : ~24 cartes du peuple majeur + ~6 renforts mineurs, dans les limites de copies. */
@@ -312,8 +325,18 @@ function draw(g: G, side: Side, n: number, silent = false): void {
 	}
 }
 
-function spawnUnit(g: G, side: Side, card: CardData, silent = false): Unit {
+/**
+ * Point de passage UNIQUE pour poser un Être — invocation, jeton, résurrection.
+ * Le plafond des cinq emplacements se tient donc ici : le poser sur `play()`
+ * seul laissait passer les jetons de la Première Armée et des chœurs, et des
+ * terrains à onze Êtres apparaissaient (mesuré sur 300 parties).
+ *
+ * Renvoie `null` quand le terrain est plein : l'effet s'éteint sans rien créer,
+ * comme dans n'importe quel jeu de cartes.
+ */
+function spawnUnit(g: G, side: Side, card: CardData, silent = false): Unit | null {
 	const p = g.players[side];
+	if (p.board.length >= BOARD_SLOTS) return null;
 	const text = card.text ?? '';
 	const u: Unit = {
 		uid: g.uidSeq++,
@@ -759,7 +782,7 @@ function playCard(g: G, side: Side, c: CardData): void {
 	if (c.kind === 'etre') {
 		ev(g, { t: 'play', side, cardId: c.id, msg: `${p.name} joue ${c.name} (${cost} Volonté)` });
 		const u = spawnUnit(g, side, c);
-		onSummon(g, side, u);
+		if (u) onSummon(g, side, u);
 	} else if (c.kind === 'verbe') {
 		ev(g, { t: 'verb', side, cardId: c.id, msg: `${p.name} prononce ${c.name} (${cost} Volonté)` });
 		resolveVerb(g, side, c, false);
@@ -963,7 +986,9 @@ function playPhase(g: G, side: Side): void {
 		if (g.winner !== null) return;
 		if (tryPrononcer(g, side)) continue;
 		const playable = p.hand
-			.filter((c) => playCost(g, side, c) <= p.will && worthPlaying(g, side, c))
+			.filter(
+				(c) => playCost(g, side, c) <= p.will && hasSlot(g, side, c) && worthPlaying(g, side, c)
+			)
 			.sort((a, b) => handScore(b) - handScore(a));
 		const c = playable[0];
 		if (!c) return;
@@ -1210,7 +1235,7 @@ export class Duel {
 		return p.hand.map((c) => ({
 			card: c,
 			cost: playCost(this.g, 0, c),
-			playable: this.myTurn && playCost(this.g, 0, c) <= p.will
+			playable: this.myTurn && playCost(this.g, 0, c) <= p.will && hasSlot(this.g, 0, c)
 		}));
 	}
 
@@ -1218,6 +1243,7 @@ export class Duel {
 		const p = this.g.players[0];
 		const c = p.hand[index];
 		if (!this.myTurn || !c || playCost(this.g, 0, c) > p.will) return false;
+		if (!hasSlot(this.g, 0, c)) return false; // les cinq emplacements sont pris
 		playCard(this.g, 0, c);
 		return true;
 	}
@@ -1415,7 +1441,8 @@ export class Match {
 		return p.hand.map((c) => ({
 			card: c,
 			cost: playCost(this.g, side, c),
-			playable: this.isTurn(side) && playCost(this.g, side, c) <= p.will
+			playable:
+				this.isTurn(side) && playCost(this.g, side, c) <= p.will && hasSlot(this.g, side, c)
 		}));
 	}
 
@@ -1423,6 +1450,7 @@ export class Match {
 		const p = this.g.players[side];
 		const c = p.hand[index];
 		if (!this.isTurn(side) || !c || playCost(this.g, side, c) > p.will) return false;
+		if (!hasSlot(this.g, side, c)) return false; // les cinq emplacements sont pris
 		playCard(this.g, side, c);
 		return true;
 	}
