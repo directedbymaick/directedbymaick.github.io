@@ -55,14 +55,14 @@ export function eligibleFullArt(c: CardData): boolean {
 	return !!c.fullArt || c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism';
 }
 
-/** Vue Full Art d'une carte : illustration PLEIN CADRE (full-bleed, pas de cadre
-    inférieur), cadre prismatique + holo secret. Le layout full-bleed est déclenché
-    par le prop `fullArt` du composant Card. */
+/** Vue Full Art d'une carte : layout « L'Auréole » (via le prop `fullArt` du
+    composant Card) + cadre prismatique. Si la carte a un détourage, le foil
+    « showcase » s'applique (personnage flottant sur le holo) ; sinon holo secret. */
 export function fullArtView(c: CardData): CardData {
 	const v = structuredClone(c);
 	v.id = `${c.id}--fullart`;
 	v.rarity = 'prism';
-	v.gene = { ...v.gene, foilPreset: 'secret' };
+	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'secret' };
 	return v;
 }
 
