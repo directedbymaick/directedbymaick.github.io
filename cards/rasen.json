@@ -25,5 +25,6 @@
 		"text": "Détruit tous les autres Êtres."
 	},
 	"flavor": "Il ne pose plus qu’une seule question.",
-	"cutoutY": "-3.8%"
+	"cutoutY": "-3.8%",
+	"faCutoutY": "2.95%"
 }
