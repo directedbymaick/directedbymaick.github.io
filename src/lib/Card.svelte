@@ -545,20 +545,16 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
-		/* liseré irisé : des drop-shadow chaînés, pas un text-shadow ni un calque
-		   dupliqué. drop-shadow travaille sur l'alpha du glyphe DÉJÀ peint, donc le
-		   liseré épouse exactement la lettre et reste dessous — un ::before absolu se
-		   décalait et noyait l'or sous un aplat pastel. */
-		filter: drop-shadow(-0.3px -0.3px 0 var(--i-1)) drop-shadow(0.3px 0.3px 0 var(--i-3))
-			drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
+		/* aucune ombre colorée : décalée d'un demi-pixel sous un titre serif fin, elle
+		   se lisait comme un doublon rouge du nom. Seule l'ombre portée sombre reste,
+		   pour détacher le titre de l'illustration. */
+		filter: drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
 		--m-dark: #9a7526;
 		--m-light: #e8c766;
 		--m-hi: #fff6d2;
-		--i-1: rgba(232, 120, 158, 0.75);
-		--i-3: rgba(110, 190, 235, 0.75);
 	}
 	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
 	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
