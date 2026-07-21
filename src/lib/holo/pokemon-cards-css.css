@@ -773,27 +773,28 @@
    Tout ce qui précède est verbatim. Ce bloc ne l'est pas : il est isolé ici
    pour que la frontière reste nette (cf. CREDITS.md / holo/LICENSE.txt).
 
-   Radiant : les vagues de simey balaient tout le spectre (hsl 3 rouge, 29
-   orange, 160 vert…). Mais le rouge ne venait PAS que de là : sur les cartes
-   non masquées — les nôtres — il passe le :after en `background-blend-mode:
-   difference`, qui INVERSE la teinte contre le --foil. Un bleu y ressort donc
-   en rouge, et retoucher les seules couleurs ne pouvait rien changer.
-   On repasse donc en `hard-light` — la valeur de sa propre règle de base — et
-   on resserre les teintes sur un arc bleu → violet clair.
+   Radiant. Sur les cartes non masquées — les nôtres — simey compose le :after
+   en `background-blend-mode: difference`. C'est ce mode qui détache les croix
+   du motif trainerbg : il faut le GARDER. Mais il inverse aussi la teinte, donc
+   les couleurs écrites ici ne sont pas celles qu'on voit à l'écran.
+   D'où le décalage volontaire de 180° : chaque teinte source est la
+   complémentaire de la teinte voulue, pour ressortir bleu → violet APRÈS
+   inversion. (Écrire du bleu ici donnerait du rouge à l'écran — c'était
+   exactement le bug.) Lightness et structure inchangées.
+       source  12 →  192 cyan        source  52 →  232 bleu
+       source  25 →  205 bleu clair  source  68 →  248 indigo
+       source  42 →  222 bleu        source  88 →  268 violet
    ========================================================================== */
 .card[data-rarity='radiant rare'] .card__shine:after {
 	background-image: var(--foil),
 		repeating-linear-gradient(
 			55deg,
-			hsl(205, 95%, 86%) calc(var(--space) * 1),
-			hsl(222, 100%, 87%) calc(var(--space) * 2),
-			hsl(248, 96%, 88%) calc(var(--space) * 3),
-			hsl(268, 92%, 87%) calc(var(--space) * 4),
-			hsl(232, 100%, 88%) calc(var(--space) * 5),
-			hsl(192, 96%, 86%) calc(var(--space) * 6),
-			hsl(205, 95%, 86%) calc(var(--space) * 7)
+			hsl(25, 95%, 85%) calc(var(--space) * 1),
+			hsl(42, 100%, 84%) calc(var(--space) * 2),
+			hsl(68, 96%, 85%) calc(var(--space) * 3),
+			hsl(88, 92%, 86%) calc(var(--space) * 4),
+			hsl(52, 100%, 85%) calc(var(--space) * 5),
+			hsl(12, 96%, 85%) calc(var(--space) * 6),
+			hsl(25, 95%, 85%) calc(var(--space) * 7)
 		);
-}
-.card:not(.masked)[data-rarity='radiant rare'] .card__shine:after {
-	background-blend-mode: hard-light;
 }
