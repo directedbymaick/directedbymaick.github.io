@@ -524,10 +524,11 @@
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
 	}
-	/* le letter-spacing laisse une chasse morte après la DERNIÈRE lettre : elle
-	   n'est visible qu'en fin de ligne (après VASAR), où elle décentre le bloc.
-	   On l'annule là seulement — la compenser aussi après ÊTRE resserrerait le
-	   filet d'un côté (écarts inégaux autour du trait). */
+	/* le letter-spacing laisse une chasse morte après la DERNIÈRE lettre de chaque
+	   mot : invisible, mais comptée dans la boîte. Sans compensation, l'écart
+	   OPTIQUE ÊTRE→filet vaut 8.2px contre 6.2px pour filet→VASAR. On l'annule
+	   après ÊTRE (écarts égaux autour du filet) et après VASAR (bloc centré). */
+	.card[data-fullart='true'] .kindlabel,
 	.card[data-fullart='true'] .fname {
 		margin-right: -0.14em;
 	}
