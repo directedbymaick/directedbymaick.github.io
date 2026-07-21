@@ -370,7 +370,7 @@
 					href="/card/{e.base.id}{e.key === e.base.id ? '' : `?v=${e.key}`}"
 					aria-label="{e.base.name}{e.fullArt ? ' — Full Art' : ''}"
 				>
-					<Card card={e.view} fullArt={e.fullArt} interactive={owned > 0} />
+					<Card card={e.view} fullArt={e.fullArt} interactive={owned > 0} thumb />
 				</a>
 				{#if e.label !== 'Raw'}
 					<span class="fabadge">{e.label}</span>

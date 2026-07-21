@@ -253,7 +253,7 @@
 					<div class="galerie">
 						{#each entriesFor(f) as e (e.key)}
 							<div class="cell">
-								<Card card={e.card} />
+								<Card card={e.card} thumb />
 								<a class="band" href={e.href}>
 									<span class="bname">{e.card.name}</span>
 									<span class="stars" class:prism={e.card.rarity === 'prism'}

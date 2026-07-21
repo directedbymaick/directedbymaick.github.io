@@ -10,10 +10,15 @@
 	let {
 		card,
 		interactive = true,
+		thumb = false,
 		fullArt = false
 	}: {
 		card: CardData;
 		interactive?: boolean;
+		/** Vignette de grille : sert la version 640 px de l'illustration au lieu du
+		    1200 px d'origine. Une carte affichée à 285 px n'a jamais besoin du grand
+		    fichier, et décoder 1200×1500 par vignette coûte 7 Mo de bitmap chacune. */
+		thumb?: boolean;
 		fullArt?: boolean;
 	} = $props();
 
@@ -65,6 +70,13 @@
 		removeEventListener('resize', invalider);
 		pointer.target = { x: 0.5, y: 0.5 };
 	}
+
+	/** `/art/x.webp` → `/art/w640/x.webp` (miroir généré, mêmes sous-dossiers). */
+	function petit(src: string): string {
+		return src.startsWith('/art/') ? src.replace('/art/', '/art/w640/') : src;
+	}
+	const artSrc = $derived(thumb ? petit(card.art) : card.art);
+	const cutoutSrc = $derived(card.cutout ? (thumb ? petit(card.cutout) : card.cutout) : '');
 
 	const kindLabel = $derived(
 		card.kind === 'etre'
@@ -167,7 +179,14 @@
 		<div class="face">
 			<div class="body">
 				<div class="art" class:showcase={isShowcase}>
-					<img class="art-base" src={card.art} alt={card.name} draggable="false" />
+					<img
+						class="art-base"
+						src={artSrc}
+						alt={card.name}
+						draggable="false"
+						decoding="async"
+						loading="lazy"
+					/>
 					<div class="scrim" aria-hidden="true"></div>
 					<!-- foil : recettes shine/glare de simeydotme (GPL v3), verbatim -->
 					<div class="card__shine" aria-hidden="true"></div>
@@ -176,7 +195,15 @@
 
 				{#if isShowcase}
 					<!-- showcase : le personnage détouré descend DERRIÈRE le texte. -->
-					<img class="cutout" src={card.cutout} alt="" aria-hidden="true" draggable="false" />
+					<img
+						class="cutout"
+						src={cutoutSrc}
+						alt=""
+						aria-hidden="true"
+						draggable="false"
+						decoding="async"
+						loading="lazy"
+					/>
 					<!-- voile sombre de la partie basse : passe DEVANT le sujet (mais
 					     derrière le texte) → la moitié inférieure disparaît « sous » la
 					     zone noire de la carte, exactement comme demandé. -->
