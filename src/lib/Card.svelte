@@ -157,7 +157,7 @@
 
 				<div class="content">
 					<header class="plate">
-						<h2 class="name" data-text={card.name}>{card.name}</h2>
+						<h2 class="name">{card.name}</h2>
 						<p class="cellline">
 							<span class="kindlabel">{kindLabel}</span>
 							{#if card.cell}
@@ -545,25 +545,13 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
-		filter: drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
-		position: relative;
-		isolation: isolate;
-	}
-	/* le liseré irisé ne peut PAS être un text-shadow sur .name : un fond clippé au
-	   texte se peint SOUS les ombres, qui recouvriraient le métal. On duplique donc
-	   le titre sur un calque placé dessous, dont seules les arêtes dépassent. */
-	.card[data-fullart='true'] .name::before {
-		content: attr(data-text);
-		position: absolute;
-		inset: 0;
-		z-index: -1;
-		color: transparent;
-		text-shadow:
-			-0.05cqw -0.05cqw 0 var(--i-1),
-			0.05cqw -0.05cqw 0 var(--i-2),
-			0.05cqw 0.05cqw 0 var(--i-3),
-			-0.05cqw 0.05cqw 0 var(--i-4);
-		pointer-events: none;
+		/* liseré irisé : des drop-shadow chaînés, pas un text-shadow ni un calque
+		   dupliqué. drop-shadow travaille sur l'alpha du glyphe DÉJÀ peint, donc le
+		   liseré épouse exactement la lettre et reste dessous — un ::before absolu se
+		   décalait et noyait l'or sous un aplat pastel. */
+		filter: drop-shadow(-0.4px -0.4px 0 var(--i-1)) drop-shadow(0.4px -0.4px 0 var(--i-2))
+			drop-shadow(0.4px 0.4px 0 var(--i-3)) drop-shadow(-0.4px 0.4px 0 var(--i-4))
+			drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
