@@ -5,7 +5,8 @@
 	import logo from '$lib/assets/logo.svg';
 	import { cards, getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
-	import { loadCollection, saveCollection, collectionStats, fullArtView } from '$lib/gacha';
+	import { loadCollection, saveCollection, collectionStats, FULLART_RATE } from '$lib/gacha';
+	import { versionsOf } from '$lib/variants';
 	import { session, initSession, signOut, setPseudo } from '$lib/account.svelte';
 	import AuthPanel from '$lib/AuthPanel.svelte';
 	import { nsKey, scheduleCloudSync } from '$lib/store';
@@ -70,37 +71,43 @@
 			)
 	);
 
-	/** Entrées de la grille : chaque carte de base, suivie de sa Full Art
-	 *  UNIQUEMENT si elle a été tirée. Les doublons gardent l'affichage ×n. */
+	/** Entrées de la grille : TOUTES les versions réellement poolables de chaque
+	 *  carte (Raw, finitions validées, Full Art). Chacune est rendue telle qu'elle
+	 *  existe — jamais une finition qu'on n'a pas tirée sur la vignette de base :
+	 *  la version non possédée s'affiche grisée, pas déguisée en autre chose. */
 	interface ColEntry {
 		key: string;
-		id: string; // clé dans la collection (base ou <id>--fullart)
+		id: string; // clé dans la collection — identique à celle posée par openPack()
+		label: string;
 		view: CardData;
 		fullArt: boolean;
 		base: CardData;
 	}
 	const collectionEntries = $derived<ColEntry[]>(
-		pool.flatMap((c) => {
-			const out: ColEntry[] = [{ key: c.id, id: c.id, view: c, fullArt: false, base: c }];
-			if ((collection[`${c.id}--fullart`] ?? 0) > 0)
-				out.push({
-					key: `${c.id}--fullart`,
-					id: `${c.id}--fullart`,
-					view: fullArtView(c),
-					fullArt: true,
-					base: c
-				});
-			return out;
-		})
+		pool.flatMap((c) =>
+			versionsOf(c, FULLART_RATE).map((v) => ({
+				key: v.key,
+				id: v.key,
+				label: v.label,
+				view: v.view,
+				fullArt: v.fullArt,
+				base: c
+			}))
+		)
 	);
 
-	/** Toutes les vues « vendables » : cartes de base + Full Art possédées. */
-	const sellableViews = $derived<CardData[]>([
-		...cards,
-		...cards
-			.filter((c) => (collection[`${c.id}--fullart`] ?? 0) > 0)
-			.map((c) => fullArtView(c))
-	]);
+	/** Toutes les versions vendables, désignées par leur CLÉ de collection : une
+	 *  finition et son Raw sont deux entrées distinctes, revendre l'une ne doit
+	 *  jamais toucher l'autre. */
+	const sellables = $derived(
+		cards.flatMap((c) =>
+			versionsOf(c, FULLART_RATE).map((v) => ({
+				key: v.key,
+				name: v.label === 'Raw' ? c.name : `${c.name} — ${v.label}`,
+				rarity: v.view.rarity
+			}))
+		)
+	);
 
 	const deckRows = $derived(
 		cur
@@ -156,29 +163,30 @@
 	});
 
 	/* ---- revente du surplus (au-delà de 3 copies) ---- */
-	function surplusOf(c: CardData): number {
-		return Math.max(0, (collection[c.id] ?? 0) - SELL_KEEP);
+	function surplusOf(key: string): number {
+		return Math.max(0, (collection[key] ?? 0) - SELL_KEEP);
 	}
-	const surplusCount = $derived(sellableViews.reduce((s, c) => s + surplusOf(c), 0));
+	const surplusCount = $derived(sellables.reduce((s, v) => s + surplusOf(v.key), 0));
 	const surplusValue = $derived(
-		sellableViews.reduce((s, c) => s + surplusOf(c) * (SELL_VALUE[c.rarity] ?? 5), 0)
+		sellables.reduce((s, v) => s + surplusOf(v.key) * (SELL_VALUE[v.rarity] ?? 5), 0)
 	);
-	function sellSurplus(c: CardData) {
-		const n = surplusOf(c);
-		if (n <= 0) return;
-		collection[c.id] = SELL_KEEP;
+	function sellSurplus(key: string) {
+		const v = sellables.find((x) => x.key === key);
+		const n = surplusOf(key);
+		if (!v || n <= 0) return;
+		collection[key] = SELL_KEEP;
 		collection = { ...collection };
 		saveCollection($state.snapshot(collection));
-		earn(n * (SELL_VALUE[c.rarity] ?? 5), `Revente : ${c.name} ×${n}`);
+		earn(n * (SELL_VALUE[v.rarity] ?? 5), `Revente : ${v.name} ×${n}`);
 	}
 	function sellAllSurplus() {
 		let total = 0;
 		let count = 0;
-		for (const c of sellableViews) {
-			const n = surplusOf(c);
+		for (const v of sellables) {
+			const n = surplusOf(v.key);
 			if (n <= 0) continue;
-			collection[c.id] = SELL_KEEP;
-			total += n * (SELL_VALUE[c.rarity] ?? 5);
+			collection[v.key] = SELL_KEEP;
+			total += n * (SELL_VALUE[v.rarity] ?? 5);
 			count += n;
 		}
 		if (count === 0) return;
@@ -359,26 +367,26 @@
 			{@const owned = collection[e.id] ?? 0}
 			<div class="colcell" class:missing={owned === 0} class:fa={e.fullArt}>
 				<a
-					href="/card/{e.base.id}{e.fullArt ? '?v=fullart' : ''}"
+					href="/card/{e.base.id}{e.key === e.base.id ? '' : `?v=${e.key}`}"
 					aria-label="{e.base.name}{e.fullArt ? ' — Full Art' : ''}"
 				>
 					<Card card={e.view} fullArt={e.fullArt} interactive={owned > 0} />
 				</a>
-				{#if e.fullArt}
-					<span class="fabadge">Full Art</span>
+				{#if e.label !== 'Raw'}
+					<span class="fabadge">{e.label}</span>
 				{/if}
 				{#if owned > 0}
 					<span class="owncount">×{owned}</span>
 				{:else}
 					<span class="lock">Non possédée</span>
 				{/if}
-				{#if surplusOf(e.view) > 0}
+				{#if surplusOf(e.key) > 0}
 					<button
 						class="sellbtn"
 						title="Revendre les copies au-delà de 3"
-						onclick={() => sellSurplus(e.view)}
+						onclick={() => sellSurplus(e.key)}
 					>
-						Revendre ×{surplusOf(e.view)} · +{surplusOf(e.view) * (SELL_VALUE[e.view.rarity] ?? 5)}
+						Revendre ×{surplusOf(e.key)} · +{surplusOf(e.key) * (SELL_VALUE[e.view.rarity] ?? 5)}
 						<i class="shard" aria-hidden="true"></i>
 					</button>
 				{/if}

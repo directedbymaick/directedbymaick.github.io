@@ -3,7 +3,8 @@
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { altView } from '$lib/cards';
-	import { FULLART_RATE } from '$lib/gacha';
+	import { onMount } from 'svelte';
+	import { FULLART_RATE, loadCollection } from '$lib/gacha';
 	import { versionsOf, formatRate } from '$lib/variants';
 	import type { CardData } from '$lib/types';
 
@@ -41,6 +42,20 @@
 			versions[0].view
 	);
 	const shownFullArt = $derived(versions.find((v) => v.key === artSel)?.fullArt ?? false);
+
+	/* Ce qu'on possède réellement. Une version jamais tirée reste VISIBLE — c'est
+	   le catalogue de ce qui existe — mais grisée : on ne se voit pas propriétaire
+	   d'une finition qu'on n'a pas. */
+	let collection = $state<Record<string, number>>({});
+	onMount(() => {
+		collection = loadCollection();
+	});
+	function possedee(key: string): number {
+		return collection[key] ?? 0;
+	}
+	const shownPossedee = $derived(
+		artSel.startsWith('alt') ? possedee(card.id) : possedee(artSel)
+	);
 </script>
 
 <svelte:head>
@@ -54,21 +69,29 @@
 
 <section class="stage">
 	<div class="showcase">
-		{#key artSel}
-			<Card card={shown} fullArt={shownFullArt} />
-		{/key}
+		<div class="porte" class:manquante={shownPossedee === 0}>
+			{#key artSel}
+				<Card card={shown} fullArt={shownFullArt} interactive={shownPossedee > 0} />
+			{/key}
+			{#if shownPossedee === 0}
+				<span class="verrou">Non possédée</span>
+			{/if}
+		</div>
 
 		<div class="variants" role="tablist" aria-label="Versions de la carte">
 			{#each versions as v (v.key)}
 				<button
 					class="vbtn"
 					class:active={artSel === v.key}
+					class:manquante={possedee(v.key) === 0}
 					role="tab"
 					aria-selected={artSel === v.key}
 					onclick={() => (artSel = v.key)}
 				>
 					{v.label}
-					<small class="taux">{formatRate(v.rate)}</small>
+					<small class="taux">
+						{formatRate(v.rate)}{possedee(v.key) > 0 ? ` · ×${possedee(v.key)}` : ''}
+					</small>
 				</button>
 			{/each}
 			{#each alts as a (a.key)}
@@ -179,6 +202,35 @@
 		transition:
 			background 0.18s ease,
 			color 0.18s ease;
+	}
+	/* version jamais tirée : lisible, mais visiblement pas à nous */
+	.vbtn.manquante {
+		color: rgba(242, 240, 234, 0.28);
+	}
+	.vbtn.manquante.active {
+		color: #0a0a0d;
+		background: rgba(242, 240, 234, 0.45);
+	}
+	.porte {
+		position: relative;
+	}
+	.porte.manquante {
+		filter: grayscale(0.92) brightness(0.6);
+	}
+	.verrou {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 5;
+		padding: 0.32rem 0.95rem;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		color: #0a0a0d;
+		background: rgba(242, 240, 234, 0.92);
+		border-radius: 999px;
+		pointer-events: none;
 	}
 	.vbtn:hover {
 		color: #f2f0ea;
