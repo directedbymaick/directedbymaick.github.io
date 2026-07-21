@@ -5,7 +5,18 @@
 	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import { eligibleFullArt, fullArtView } from '$lib/gacha';
-	import type { FactionId, Rarity } from '$lib/types';
+	import type { FactionId, FoilPreset, Rarity } from '$lib/types';
+
+	/* le foil ne se révèle qu'au survol : on le nomme sous chaque carte pour
+	   qu'on sache quoi survoler, et qu'on repère les six variantes d'un coup d'œil */
+	const FOIL_LABEL: Record<FoilPreset, string> = {
+		mat: 'Satin mat',
+		regular: 'Holographique',
+		amazing: 'Cristallin',
+		cosmos: 'Cosmique',
+		galerie: 'Galerie',
+		showcase: 'Illustration spéciale'
+	};
 
 	const SET_SIZE = 60;
 
@@ -270,6 +281,9 @@
 									>
 									{#if e.fullArt}<span class="fachip">Full Art</span>{/if}
 									{#if e.alt}<span class="altchip">Alt {e.alt}</span>{/if}
+									<span class="foilchip" class:none={e.card.gene.foilPreset === 'mat'}
+										>{FOIL_LABEL[e.card.gene.foilPreset]}</span
+									>
 								</a>
 							</div>
 						{/each}
@@ -683,6 +697,26 @@
 		color: #12121a;
 		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
 		border-radius: 999px;
+	}
+	/* nom de l'effet, sous la vignette : le foil ne vit qu'au survol */
+	.foilchip {
+		max-width: 285px;
+		box-sizing: border-box;
+		margin-top: -0.35rem;
+		padding: 0.1em 0.6em;
+		font-size: 0.66rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.62);
+		background: rgba(140, 170, 220, 0.1);
+		border: 1px solid rgba(140, 170, 220, 0.18);
+		border-radius: 999px;
+	}
+	.foilchip.none {
+		color: rgba(238, 240, 245, 0.3);
+		background: transparent;
+		border-color: rgba(238, 240, 245, 0.12);
 	}
 	.altchip {
 		flex: none;

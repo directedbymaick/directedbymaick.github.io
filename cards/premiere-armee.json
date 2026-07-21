@@ -6,14 +6,15 @@
 	"text": "Invoque trois Bannis (jetons 2/1).",
 	"rarity": "epic",
 	"faction": "exar",
-	"art": "/art/premiere-armee.webp", "artPosition": "center 28%",
+	"art": "/art/premiere-armee.webp",
+	"artPosition": "center 28%",
 	"gene": {
 		"palette": [
 			"#273548",
 			"#121820",
 			"#c8a888"
 		],
-		"foilPreset": "prismatic",
+		"foilPreset": "amazing",
 		"accent": "#b3273a",
 		"seed": 236803
 	},
