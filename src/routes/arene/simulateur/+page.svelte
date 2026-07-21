@@ -17,7 +17,11 @@
 	let forceNB = $state(2);
 	let games = $state(100); // taille du lot statistique
 	let seedInput = $state(''); // graine fixe ('' = aléatoire)
-	let speed = $state(420); // ms par événement
+	/* Rythme de relecture, en ms par événement.
+	   420 ms enchaînait trop vite pour suivre ce qui se passe : on voyait le
+	   résultat, pas la partie. 700 ms laisse le temps de lire chaque ligne sans
+	   que le match s'éternise — les moments forts respirent encore plus. */
+	let speed = $state(700);
 
 	let myDecks = $state<Deck[]>([]);
 	onMount(() => {
@@ -147,6 +151,9 @@
 		if (!e) return speed;
 		// les moments forts respirent, la pioche file
 		if (e.t === 'attack' || e.t === 'prononcer' || e.t === 'win') return speed * 1.8;
+		// une pause franche au changement de tour : c'est le repère qui manquait
+		// le plus pour suivre le déroulé
+		if (e.t === 'turn') return speed * 1.5;
 		if (e.t === 'draw' || e.t === 'heal') return speed * 0.55;
 		return speed;
 	}
@@ -327,7 +334,10 @@
 		{/if}
 		<label class="speedctl">
 			<span>Rythme</span>
-			<input type="range" min="120" max="1000" step="20" bind:value={speed} style="direction: rtl" />
+			<!-- plus de direction: rtl — un curseur qui va à l'envers ne se devine
+			     pas. Ici : à gauche ça défile, à droite ça se laisse suivre. -->
+			<input type="range" min="200" max="1600" step="50" bind:value={speed} />
+			<small class="speedval">{(speed / 1000).toFixed(2).replace('.', ',')} s</small>
 		</label>
 		<label class="gamesctl">
 			<span>Lot</span>
@@ -569,6 +579,12 @@
 	.ghost { color: rgba(242, 240, 234, 0.65); background: rgba(255, 255, 255, 0.07); }
 	.ghost:hover { color: #f2f0ea; background: rgba(255, 255, 255, 0.12); }
 	.ghost:disabled { opacity: 0.5; cursor: default; }
+	.speedval {
+		min-width: 3.2rem;
+		font-size: 0.72rem;
+		font-variant-numeric: tabular-nums;
+		color: rgba(238, 240, 245, 0.5);
+	}
 	.speedctl { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(242, 240, 234, 0.45); }
 	.speedctl input { accent-color: #c9a445; width: 110px; }
 
