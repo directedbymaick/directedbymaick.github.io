@@ -13,9 +13,10 @@
 			"#171319",
 			"#fcebe4"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "regular",
 		"accent": "#b3273a",
 		"seed": 660927
 	},
-	"flavor": "L'envers a aussi ses chœurs."
+	"flavor": "L'envers a aussi ses chœurs.",
+	"fullArt": true
 }
