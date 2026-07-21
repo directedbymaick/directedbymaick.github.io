@@ -17,7 +17,10 @@ export interface Palier {
 	rarity: Rarity;
 	fullArt: boolean;
 	foil: FoilPreset | null;
-	/** l'illustration est détourée : le personnage flotte, la carte porte « no bg » */
+	/** l'illustration est détourée : le personnage flotte, la carte porte « no bg ».
+	    Depuis que le showcase sans détourage s'appelle « Reflet », ce booléen vaut
+	    exactement `foil === 'showcase'` — il reste exposé pour filtrer, mais il
+	    n'apparaît plus dans le libellé, où il ne ferait que répéter la finition. */
 	nobg: boolean;
 	label: string;
 	/** nombre de cartes du set qui existent à ce palier */
@@ -77,8 +80,7 @@ export function paliers(): Palier[] {
 				label: [
 					charter.rarities[rarity].name,
 					v.fullArt ? 'Full Art' : null,
-					v.foil ? foilLabel(v.foil, c) : 'Raw',
-					nobg ? 'no bg' : null
+					v.foil ? foilLabel(v.foil, c) : 'Raw'
 				]
 					.filter(Boolean)
 					.join(' · '),
