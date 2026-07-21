@@ -210,61 +210,107 @@
 	</header>
 
 	<!-- ============ LES PEUPLES ============
-	     Grille de rubriques : une étiquette teintée, un nom, un chiffre.
-	     Aucun fond, aucun cadre — la structure vient des filets. -->
-	<section class="ed-section peuples">
-		<div class="sec-tete">
-			<p class="ed-tag">Les cinq peuples</p>
-			<a class="ed-link" href="/registre">Voir le Registre</a>
-		</div>
-		<div class="peuples-grille">
-			{#each factions as f (f)}
-				{@const n = byFaction(f).length}
-				<a class="peuple" href="/registre" style="--fc: {charter.factions[f].color}">
-					<span class="p-sigil"><FactionSigil faction={f} flat /></span>
-					<span class="p-nom">{charter.factions[f].name}</span>
-					<span class="p-tag">{FACTION_TAG[f]}</span>
-					<span class="ed-stat">{n}</span>
-				</a>
-			{/each}
-		</div>
-	</section>
-
-	<!-- ============ BLOC DE RUPTURE ============ -->
-	<section class="rupture">
-		<div class="rupture-inner">
-			<p class="ed-tag">Le jeu</p>
-			<h2 class="ed-heading">Trente cartes.<br />Un nom qu'on prononce une fois.</h2>
-			<p class="rupture-txt">
-				Chaque Être porte un nom, et le prononcer l'exile définitivement. La Volonté monte d'un
-				point par tour. On ne gagne pas en accumulant : on gagne en choisissant ce qu'on accepte
-				de perdre.
+	     Titre centré en capitales, phrase d'intro, puis une grille de blocs
+	     illustrés — la structure de section d'un site de jeu de cartes. -->
+	<section class="sec">
+		<div class="sec-inner">
+			<h2 class="sec-titre">Les cinq peuples</h2>
+			<p class="sec-intro">
+				Cinq façons de tenir un nom. Chaque peuple impose son rythme, ses risques et sa manière
+				de gagner.
 			</p>
-			<div class="rupture-actions">
-				<a class="ed-ghost" href="/regles">Les règles</a>
-				<a class="ed-ghost" href="/tuto">Initiation</a>
-				<a class="ed-ghost" href="/arene">Entrer dans l'Arène</a>
+			<div class="sec-actions">
+				<a class="btn-plein" href="/registre">Parcourir le Registre</a>
+			</div>
+
+			<div class="grille-peuples">
+				{#each factions as f (f)}
+					{@const n = byFaction(f).length}
+					{@const art = bannerArt(f)}
+					<a class="bloc" href="/registre" style="--fc: {charter.factions[f].color}">
+						<span class="bloc-img">
+							{#if art}<img src={art.replace('/art/', '/art/w640/')} alt="" loading="lazy" />{/if}
+							<span class="bloc-sigil"><FactionSigil faction={f} flat /></span>
+						</span>
+						<span class="bloc-nom">{charter.factions[f].name}</span>
+						<span class="bloc-txt">{FACTION_TAG[f]}</span>
+						<span class="bloc-n">{n} cartes</span>
+					</a>
+				{/each}
 			</div>
 		</div>
 	</section>
 
-	<!-- ============ CHIFFRES ============ -->
-	<section class="ed-section chiffres">
-		<div class="chiffre">
-			<span class="ed-stat">{cards.length}</span>
-			<p class="ed-tag">noms inscrits</p>
+	<!-- ============ COMMENT ON JOUE ============ -->
+	<section class="sec sombre">
+		<div class="sec-inner">
+			<h2 class="sec-titre">Comment on joue</h2>
+			<p class="sec-intro">
+				Trente cartes, un Korum à faire tomber, et une Volonté qui monte d'un point par tour. On
+				ne gagne pas en accumulant : on gagne en choisissant ce qu'on accepte de perdre.
+			</p>
+			<div class="sec-actions">
+				<a class="btn-plein" href="/tuto">Apprendre à jouer</a>
+				<a class="btn-contour" href="/regles">Les règles</a>
+			</div>
+
+			<div class="grille-etapes">
+				<div class="etape">
+					<span class="etape-n">01</span>
+					<span class="bloc-nom">Composez</span>
+					<span class="bloc-txt">
+						Trente cartes, trois copies maximum d'une Commune, une seule d'une Prismatique.
+					</span>
+				</div>
+				<div class="etape">
+					<span class="etape-n">02</span>
+					<span class="bloc-nom">Prononcez</span>
+					<span class="bloc-txt">
+						Chaque Être porte un nom. Le prononcer déclenche son effet — puis l'exile pour de bon.
+					</span>
+				</div>
+				<div class="etape">
+					<span class="etape-n">03</span>
+					<span class="bloc-nom">Faites taire</span>
+					<span class="bloc-txt">
+						Le Korum adverse tombe à zéro, ou son deck s'épuise. Il n'y a pas d'autre issue.
+					</span>
+				</div>
+			</div>
 		</div>
-		<div class="chiffre">
-			<span class="ed-stat">33</span>
-			<p class="ed-tag">paliers de rareté</p>
-		</div>
-		<div class="chiffre">
-			<span class="ed-stat">5</span>
-			<p class="ed-tag">peuples</p>
-		</div>
-		<div class="chiffre">
-			<span class="ed-stat">1 / 13 000</span>
-			<p class="ed-tag">le palier le plus rare</p>
+	</section>
+
+	<!-- ============ OBTENIR DES CARTES ============ -->
+	<section class="sec">
+		<div class="sec-inner">
+			<h2 class="sec-titre">Obtenir des cartes</h2>
+			<p class="sec-intro">
+				Deux voies : le hasard d'un booster, ou la patience de reconstituer un nom précis avec
+				les Syllabes glanées sur les Prismatiques.
+			</p>
+
+			<div class="grille-produits">
+				<a class="produit" href="/packs">
+					<span class="bloc-img grand">
+						{#if tuiles[1]}<img src={tuiles[1]} alt="" loading="lazy" />{/if}
+					</span>
+					<span class="bloc-nom">Booster</span>
+					<span class="bloc-txt">
+						Cinq cartes, probabilités publiées, deux garanties : une Prismatique tous les 40
+						boosters au plus tard, un Full Art tous les 25.
+					</span>
+				</a>
+				<a class="produit" href="/packs/noms">
+					<span class="bloc-img grand">
+						{#if tuiles[0]}<img src={tuiles[0]} alt="" loading="lazy" />{/if}
+					</span>
+					<span class="bloc-nom">Le Glanage</span>
+					<span class="bloc-txt">
+						Les 193 versions du set, chacune à son prix. Vous choisissez le nom au lieu de le
+						subir.
+					</span>
+				</a>
+			</div>
 		</div>
 	</section>
 </div>
@@ -416,123 +462,160 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	/* ============ SECTIONS ÉDITORIALES ============ */
+	/* ============ SECTIONS ============
+	   Même moule pour toutes : titre centré en capitales, phrase d'intro, actions,
+	   puis une grille de blocs. C'est la répétition de ce moule qui donne son
+	   rythme à la page — pas la variation. */
 
-	.sec-tete {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: var(--spacing-20);
-		margin-bottom: var(--spacing-50);
-	}
-
-	/* Les peuples : une grille de rubriques. Aucun fond, aucun cadre —
-	   seulement un filet en haut de chaque colonne. */
-	.peuples-grille {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: var(--element-gap);
-	}
-	.peuple {
-		display: flex;
-		flex-direction: column;
-		gap: var(--spacing-10);
-		padding-top: var(--spacing-20);
-		border-top: 1px solid var(--panel-line);
-		text-decoration: none;
-		color: inherit;
-		transition: border-color 0.2s ease;
-	}
-	.peuple:hover {
-		border-top-color: var(--gold);
-	}
-	.p-sigil {
-		width: 1.6rem;
-		height: 1.6rem;
-		color: var(--fc);
-	}
-	.p-nom {
-		font-family: var(--font-grotesque);
-		font-size: var(--text-body);
-		font-weight: var(--fw-550);
-		letter-spacing: var(--tracking-body);
-	}
-	.p-tag {
-		font-family: var(--font-editorial);
-		font-style: italic;
-		font-size: 1rem;
-		color: var(--ink-dim);
-	}
-
-	/* Le bloc de rupture : une surface plus profonde, pleine largeur, où les
-	   actions passent en contour. C'est la respiration de la page. */
-	.rupture {
+	.sec {
 		width: 100vw;
 		margin-left: calc(50% - 50vw);
-		margin-block: var(--section-gap);
-		padding-block: var(--spacing-120);
-		background: var(--surface-deep);
+		padding-block: clamp(4rem, 9vw, 7.5rem);
+	}
+	/* une section sur deux s'assombrit : c'est tout le découpage vertical */
+	.sec.sombre {
+		background: rgba(4, 8, 16, 0.55);
 		border-block: 1px solid var(--panel-line);
-		/* Le bloc s'INVERSE : sur une page de papier c'est le seul endroit sombre,
-		   donc l'encre y redevient claire. Sans ce basculement, le texte héritait
-		   du noir de la page et disparaissait sur le noir du bloc. */
-		--ink: #faf8f2;
-		--ink-dim: rgba(250, 248, 242, 0.6);
-		--panel-line: rgba(250, 248, 242, 0.16);
-		color: #faf8f2;
 	}
-	/* Et les actions y passent en contour clair, comme le veut la référence.
-	   Un sélecteur de plus que celui du layout (.app.papier .ed-ghost) : à
-	   spécificité égale, l'ordre des feuilles décidait, et il ne se contrôle pas. */
-	.rupture .rupture-actions :global(.ed-ghost) {
-		color: #faf8f2;
-		border-color: #faf8f2;
-	}
-	.rupture .rupture-actions :global(.ed-ghost:hover) {
-		color: var(--gold);
-		border-color: var(--gold);
-	}
-	.rupture .rupture-inner :global(.ed-tag) {
-		color: rgba(250, 248, 242, 0.55);
-	}
-	.rupture-inner {
-		max-width: var(--page-max);
+	.sec-inner {
+		max-width: 1240px;
 		margin: 0 auto;
 		padding-inline: var(--spacing-20);
+		text-align: center;
 	}
-	.rupture .ed-heading {
-		margin: var(--spacing-20) 0 var(--spacing-30);
+	.sec-titre {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+		line-height: 1.05;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: #f5f3ec;
 	}
-	.rupture-txt {
-		max-width: 52ch;
-		margin: 0 0 var(--spacing-50);
-		font-family: var(--font-grotesque);
-		font-size: var(--text-body);
-		font-weight: var(--fw-extralight);
-		line-height: 1.5;
-		letter-spacing: var(--tracking-body);
-		color: var(--ink-dim);
+	.sec-intro {
+		max-width: 62ch;
+		margin: var(--spacing-25) auto 0;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: rgba(238, 240, 245, 0.68);
 	}
-	.rupture-actions {
+	.sec-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--element-gap);
+		justify-content: center;
+		gap: var(--spacing-15);
+		margin-top: var(--spacing-35);
 	}
 
-	/* Les chiffres : grande taille, couleur sourde. C'est la couleur éteinte
-	   qui les fait lire comme des données de journal. */
-	.chiffres {
+	/* ---- les blocs illustrés ---- */
+	.grille-peuples {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-		gap: var(--spacing-40);
+		grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+		gap: var(--spacing-25);
+		margin-top: var(--spacing-60);
 	}
-	.chiffre {
+	.grille-produits {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: var(--spacing-35);
+		margin-top: var(--spacing-60);
+	}
+	.bloc,
+	.produit {
 		display: flex;
 		flex-direction: column;
-		gap: var(--spacing-8);
-		padding-top: var(--spacing-20);
-		border-top: 1px solid var(--panel-line);
+		align-items: center;
+		gap: var(--spacing-10);
+		text-decoration: none;
+		color: inherit;
+	}
+	.bloc-img {
+		position: relative;
+		display: block;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		border: 1px solid var(--panel-line);
+		background: rgba(4, 8, 16, 0.5);
+		transition: border-color 0.2s ease;
+	}
+	.bloc-img.grand {
+		aspect-ratio: 16 / 9;
+	}
+	.bloc-img img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0.72;
+		transition:
+			transform 0.4s var(--ease-out-cubic),
+			opacity 0.3s ease;
+	}
+	.bloc:hover .bloc-img,
+	.produit:hover .bloc-img {
+		border-color: var(--fc, var(--gold));
+	}
+	.bloc:hover .bloc-img img,
+	.produit:hover .bloc-img img {
+		transform: scale(1.06);
+		opacity: 0.95;
+	}
+	/* le sigil du peuple, posé sur l'illustration */
+	.bloc-sigil {
+		position: absolute;
+		left: 50%;
+		bottom: 0.7rem;
+		transform: translateX(-50%);
+		width: 2.1rem;
+		height: 2.1rem;
+		color: var(--fc);
+		filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.8));
+	}
+	.bloc-nom {
+		margin-top: var(--spacing-8);
+		font-family: var(--display);
+		font-size: 1.02rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #f5f3ec;
+	}
+	.bloc-txt {
+		max-width: 34ch;
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: rgba(238, 240, 245, 0.6);
+	}
+	.bloc-n {
+		font-family: var(--display);
+		font-size: 0.74rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--gold);
+	}
+
+	/* ---- les trois étapes ---- */
+	.grille-etapes {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: var(--spacing-40);
+		margin-top: var(--spacing-60);
+	}
+	.etape {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-10);
+		padding-top: var(--spacing-25);
+		border-top: 2px solid var(--gold);
+	}
+	.etape-n {
+		font-family: Cinzel, Georgia, serif;
+		font-size: 2.2rem;
+		line-height: 1;
+		color: var(--gold);
 	}
 
 </style>
