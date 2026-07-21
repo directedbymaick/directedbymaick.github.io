@@ -260,37 +260,37 @@
 			</p>
 
 			<div class="grille-lore">
-				<a class="lore-bloc" href="/lore">
+				<a class="lore-bloc" href="/lore#ex">
 					<span class="bloc-img">
 						<img src={artDe('thalen')} alt="" loading="lazy" />
 					</span>
-					<span class="lore-n">Livre II</span>
+					<span class="lore-n">Livre IV</span>
 					<span class="bloc-nom">Le mot que nul n’avait dit</span>
 					<span class="bloc-txt">
 						Thalen entend sous les chœurs une fêlure : EX. Hors. Si un dehors existe, alors la
 						Création a une limite — donc une fin.
 					</span>
 				</a>
-				<a class="lore-bloc" href="/lore">
+				<a class="lore-bloc" href="/lore#fracture">
 					<span class="bloc-img">
 						<img src={artDe('exen')} alt="" loading="lazy" />
 					</span>
-					<span class="lore-n">Livre III</span>
+					<span class="lore-n">Livre V</span>
 					<span class="bloc-nom">La Fracture</span>
 					<span class="bloc-txt">
 						L'Origine n'est pas détruite : elle est fêlée. Tous les noms en descendaient, la
 						fêlure court dans les noms. Puis KOR se tait.
 					</span>
 				</a>
-				<a class="lore-bloc" href="/lore">
+				<a class="lore-bloc" href="/lore#exar">
 					<span class="bloc-img">
 						<img src={artDe('rasen')} alt="" loading="lazy" />
 					</span>
-					<span class="lore-n">Livre V</span>
-					<span class="bloc-nom">La question sans réponse</span>
+					<span class="lore-n">Livre VII</span>
+					<span class="bloc-nom">Rasen et les Exar</span>
 					<span class="bloc-txt">
-						Rasen demande : et dans celui qui juge, le mot n'est pas ? On ne répond pas. On le
-						condamne.
+						Condamné le premier, Rasen reprend sa chaîne d'or et la porte comme un titre. S'il
+						existe un dehors, alors le dehors est à nous.
 					</span>
 				</a>
 			</div>
