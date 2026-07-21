@@ -326,8 +326,13 @@
 
 <style>
 	/* ============================== OUVERTURE ============================== */
+	/* Le <main> du layout plafonne à 1280px : les pleines largeurs doivent s'en
+	   échapper, comme le fait l'accueil. */
 	.hero {
 		position: relative;
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		box-sizing: border-box;
 		min-height: 68vh;
 		display: flex;
 		align-items: flex-end;
@@ -393,12 +398,16 @@
 
 	/* ================================ GRILLE ================================ */
 	.corps {
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		box-sizing: border-box;
 		display: grid;
-		grid-template-columns: 15rem minmax(0, 1fr);
-		gap: clamp(2rem, 5vw, 5rem);
-		max-width: 1320px;
-		margin: 0 auto;
-		padding: clamp(3rem, 7vw, 6rem) var(--spacing-20) 0;
+		grid-template-columns: 16rem minmax(0, 1fr);
+		gap: clamp(2rem, 6vw, 6rem);
+		/* Centrage par le padding, pas par `margin-inline: auto` — ce dernier
+		   écraserait le margin-left qui sert à sortir du <main>. Au-delà de
+		   1760px le rail décrocherait trop loin du texte. */
+		padding: clamp(3rem, 7vw, 6rem) max(clamp(1.5rem, 5vw, 5rem), calc((100% - 1760px) / 2)) 0;
 	}
 
 	/* ================================= RAIL ================================= */
@@ -555,6 +564,11 @@
 		font-style: italic;
 		color: rgba(238, 240, 245, 0.55);
 	}
+	/* La colonne peut grandir, la ligne non : au-delà d'une cinquantaine de
+	   signes l'œil perd le début de la ligne suivante. Le surplus va à l'image. */
+	.chap-txt {
+		max-width: 44rem;
+	}
 	.chap-txt p {
 		font-size: 1.02rem;
 		line-height: 1.72;
@@ -670,13 +684,17 @@
 		line-height: 1.7;
 		color: rgba(238, 240, 245, 0.7);
 	}
+	/* En pleine largeur, une seule colonne étirerait les fiches sur 1200px pour
+	   quatre lignes de texte. Deux colonnes dès qu'il y a la place. */
 	.grille-p {
 		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
 		gap: var(--spacing-20);
 	}
 	.peuple {
 		display: grid;
-		grid-template-columns: 9rem minmax(0, 1fr);
+		grid-template-columns: 8rem minmax(0, 1fr);
+		align-content: start;
 		gap: var(--spacing-25);
 		align-items: center;
 		padding: var(--spacing-20);
@@ -853,8 +871,9 @@
 			top: 4.2rem;
 			z-index: 5;
 			max-height: none;
-			margin: 0 calc(-1 * var(--spacing-20));
-			padding: 0.6rem var(--spacing-20);
+			/* la frise doit toucher les deux bords : elle annule le padding du corps */
+			margin: 0 calc(-1 * clamp(1.5rem, 5vw, 5rem));
+			padding: 0.6rem clamp(1.5rem, 5vw, 5rem);
 			background: rgba(7, 12, 24, 0.92);
 			backdrop-filter: blur(14px);
 			border-bottom: 1px solid var(--panel-line);
