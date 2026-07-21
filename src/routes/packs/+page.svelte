@@ -35,7 +35,10 @@
 		SELL_KEEP,
 		SELL_VALUE,
 		gagnerSyllabes,
-		SYLLABES_PULL
+		SYLLABES_PULL,
+		SYLLABES_DOUBLON,
+		SYLLABES_SP,
+		SYLLABES_FULLART
 	} from '$lib/economy.svelte';
 
 	type Stage = 'idle' | 'reveal' | 'recap';
@@ -192,16 +195,42 @@
 	 * vraie rareté. Sans ça, une Commune Full Art passait pour une Prismatique.
 	 */
 	/**
-	 * Les Syllabes ne tombent que des Prismatiques — les noms restés entiers.
-	 * On compte la VRAIE rareté : la vue Full Art force `rarity: 'prism'`, ce qui
+	 * Les Syllabes viennent des noms restés entiers : la Prismatique d'abord, puis
+	 * la SP et le Full Art, dans cet ordre et sans jamais cumuler — une Prismatique
+	 * Full Art SP compte comme une Prismatique, pas comme les trois.
+	 *
+	 * Une Prismatique DÉJÀ possédée se défait d'elle-même et rend davantage : sans
+	 * cette prime, la source se tarissait dès qu'on avait vu les 12 versions.
+	 *
+	 * On lit la VRAIE rareté : la vue Full Art force `rarity: 'prism'`, ce qui
 	 * ferait passer n'importe quelle Commune Full Art pour une Prismatique.
 	 */
-	function moissonnerSyllabes(lot: Pull[]) {
-		const n = lot.filter((p) => (p.card.sourceRarity ?? p.card.rarity) === 'prism').length;
-		if (!n) return;
+	function syllabesDe(p: Pull, nouveau: boolean): number {
+		if ((p.card.sourceRarity ?? p.card.rarity) === 'prism')
+			return nouveau ? SYLLABES_PULL : SYLLABES_PULL + SYLLABES_DOUBLON;
+		if (p.card.gene.foilPreset === 'showcase' && p.card.cutout) return SYLLABES_SP;
+		if (p.fullArt) return SYLLABES_FULLART;
+		return 0;
+	}
+
+	/** À appeler APRÈS addToCollection : `nouveaux` dit ce qui n'était pas déjà là. */
+	function moissonnerSyllabes(lot: Pull[], nouveaux: string[]) {
+		const neuf = new Set(nouveaux);
+		let total = 0;
+		let entiers = 0;
+		for (const p of lot) {
+			const g = syllabesDe(p, neuf.has(p.card.id));
+			total += g;
+			if (g > 0 && (p.card.sourceRarity ?? p.card.rarity) === 'prism') entiers++;
+		}
+		if (total <= 0) return;
 		gagnerSyllabes(
-			n * SYLLABES_PULL,
-			n > 1 ? `${n} noms entiers ont résonné` : 'Un nom entier a résonné'
+			total,
+			entiers > 1
+				? `${entiers} noms entiers ont résonné`
+				: entiers === 1
+					? 'Un nom entier a résonné'
+					: 'Des syllabes se sont détachées'
 		);
 	}
 
@@ -239,7 +268,7 @@
 		}
 		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
-		moissonnerSyllabes(pulls);
+		moissonnerSyllabes(pulls, freshIds);
 		// revente automatique du surplus (option de l'espace utilisateur)
 		if (eco.autoSell) {
 			let total = 0;
@@ -403,7 +432,7 @@
 		}
 		track('pull', all.length);
 		freshIds = addToCollection(collection, all);
-		moissonnerSyllabes(all);
+		moissonnerSyllabes(all, freshIds);
 		if (eco.autoSell) {
 			let total = 0;
 			let count = 0;

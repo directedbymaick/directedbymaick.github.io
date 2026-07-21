@@ -38,10 +38,20 @@ export const SELL_VALUE: Record<string, number> = {
  * libère quelques-unes, en défaire une en rend beaucoup plus.
  */
 
-/** Syllabes libérées par une Prismatique tirée dans un booster. */
+/* Rendement mesuré sur le tirage réel : ~5,2 Syllabes par booster, soit un nom
+   médian tous les 13 boosters et le sommet du set à 425. Sans la prime aux
+   doublons, la source se tarissait à 1,1 — 1 947 boosters pour le sommet. */
+
+/** Syllabes libérées par une Prismatique tirée pour la PREMIÈRE fois. */
 export const SYLLABES_PULL = 25;
-/** Syllabes rendues en défaisant une Prismatique excédentaire. */
+/** Prime du doublon : une Prismatique déjà possédée se défait d'elle-même. */
+export const SYLLABES_DOUBLON = 50;
+/** Syllabes rendues en défaisant une Prismatique excédentaire, à la main. */
 export const SYLLABES_DEFAIRE = 50;
+/** Une SP non prismatique en libère aussi : c'est la finition la plus rare. */
+export const SYLLABES_SP = 15;
+/** Un Full Art ordinaire, moins. */
+export const SYLLABES_FULLART = 8;
 
 /* Le prix d'un nom ne vit PAS ici : il découle de la rareté réelle du palier
    (rareté × forme × finition), calculée dans paliers.ts — `prixNom(taux)`. Une

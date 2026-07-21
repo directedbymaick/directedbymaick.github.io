@@ -136,8 +136,9 @@
 		assez et vous reconstituerez un nom entier — sans passer par le hasard d'un sceau.
 	</p>
 	<p class="chapo source">
-		Les Syllabes ne viennent que des Prismatiques : <b>+25</b> pour chacune tirée, <b>+50</b> pour chacune
-		défaite dans votre espace.
+		Les Syllabes tombent des noms restés entiers : <b>+25</b> par Prismatique tirée,
+		<b>+75</b> si vous la possédiez déjà — elle se défait d'elle-même —, <b>+15</b> par SP et
+		<b>+8</b> par Full Art. Jamais cumulé : une Prismatique compte pour une Prismatique.
 	</p>
 
 	<div class="bourse">
