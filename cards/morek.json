@@ -11,7 +11,7 @@
 	"faction": "exar",
 	"art": "/art/morek.webp",
 	"cutout": "/art/morek-cutout.webp",
-	"cutoutY": "11%",
+	"cutoutY": "12%",
 	"cutoutScale": 0.88,
 	"artPosition": "center 4%",
 	"fullArt": true,
