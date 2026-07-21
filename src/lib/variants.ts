@@ -58,9 +58,11 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		return [...new Set(list)];
 	};
 
-	/* l'Illustration spéciale est la finition la plus désirable : on lui donne
-	   moins de poids qu'aux autres dans la répartition des 15 % de foil */
-	const poids = (f: FoilPreset) => (f === 'showcase' ? 0.4 : 1);
+	/* L'Illustration spéciale n'est la finition la plus désirable que si la carte a
+	   un DÉTOURAGE : le personnage flotte alors au-dessus du holo, et la carte porte
+	   le tag « no bg ». Sans détourage, ce foil ne fait qu'appliquer le holo de fond
+	   de la rareté — c'est donc une finition ordinaire, au même poids que les autres. */
+	const poids = (f: FoilPreset) => (f === 'showcase' && card.cutout ? 0.4 : 1);
 
 	const eligible = eligibleFullArt(card);
 	const pFA = eligible ? fullArtRate : 0;
