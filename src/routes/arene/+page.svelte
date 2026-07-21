@@ -152,6 +152,9 @@
 	 * Le deck et les peuples voyagent par l'URL, la graine aussi — sans elle, un
 	 * rechargement re-tirerait une partie différente.
 	 */
+	/** Vrai si le navigateur a refusé d'ouvrir la fenêtre du terrain. */
+	let fenetreBloquee = $state(false);
+
 	function ouvrirTerrain() {
 		// 'auto-<peuple>' choisit un deck genere ; sinon deckChoice est un id de deck
 		const auto = deckChoice.startsWith('auto-');
@@ -161,11 +164,18 @@
 			lui: aiFaction
 		});
 		if (!auto) q.set('deck', deckChoice);
-		window.open(
+		const f = window.open(
 			`/duel?${q}`,
 			'expelled-terrain',
 			`popup=yes,width=${screen.availWidth},height=${screen.availHeight},left=0,top=0`
 		);
+		// un bloqueur de fenêtres laisserait le joueur devant un bouton mort
+		if (!f || f.closed) {
+			fenetreBloquee = true;
+			return;
+		}
+		fenetreBloquee = false;
+		f.focus();
 	}
 
 	async function doPlay(i: number) {
@@ -363,10 +373,16 @@
 					</button>
 				{/each}
 			</div>
-			<button class="startbtn" onclick={start}>Entrer dans l'Arène</button>
-			<button class="terrainbtn" onclick={ouvrirTerrain}>
-				Ouvrir le terrain — plein écran ↗
-			</button>
+			<!-- Entrer dans l'Arène ouvre le vrai terrain, dans sa fenêtre. Jouer dans
+			     la page reste un repli : fenêtre bloquée, petit écran. -->
+			<button class="startbtn" onclick={ouvrirTerrain}>Entrer dans l'Arène ↗</button>
+			<button class="terrainbtn" onclick={start}>Jouer dans la page</button>
+			{#if fenetreBloquee}
+				<p class="bloquee" role="status">
+					Votre navigateur a bloqué la fenêtre du terrain. Autorisez-la pour ce site, ou jouez dans
+					la page.
+				</p>
+			{/if}
 			<p class="note"><a href="/arene/simulateur">Le simulateur IA contre IA</a> reste disponible.</p>
 		</section>
 	</div>
@@ -652,6 +668,16 @@
 		font-weight: 450;
 		font-size: 0.72rem;
 		color: rgba(238, 240, 245, 0.45);
+	}
+	.bloquee {
+		margin: 0.8rem 0 0;
+		padding: 0.55rem 1rem;
+		max-width: 34rem;
+		font-size: 0.84rem;
+		color: #f0cfcf;
+		background: rgba(200, 80, 80, 0.14);
+		border: 1px solid rgba(200, 80, 80, 0.35);
+		border-radius: 10px;
 	}
 	.terrainbtn {
 		margin-left: 0.6rem;
