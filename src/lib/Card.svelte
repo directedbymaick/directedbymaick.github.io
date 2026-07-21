@@ -553,10 +553,30 @@
 	}
 	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
 	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
-	.card[data-fullart='true'][data-tier='prism'] {
-		--m-dark: #7b828d;
-		--m-light: #cfd5dd;
-		--m-hi: #ffffff;
+	/* cristal — prismatiques : pas d'argent (trop sombre) mais du verre taillé.
+	   Facettes courtes et très claires, bleutées puis violacées, chaque arête
+	   revenant au blanc pur : c'est le passage brusque clair/froid qui fait lire
+	   « taillé » plutôt que « métal ». */
+	.card[data-fullart='true'][data-tier='prism'] .name {
+		background: linear-gradient(
+			96deg,
+			#eaf7ff 0%,
+			#ffffff 7%,
+			#bfe0f7 13%,
+			#ffffff 21%,
+			#d7e6ff 28%,
+			#a9d4f2 35%,
+			#ffffff 42%,
+			#e6dcff 50%,
+			#ffffff 57%,
+			#b6dcf5 64%,
+			#ffffff 72%,
+			#dbe9ff 80%,
+			#c3e6fb 88%,
+			#ffffff 100%
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
 	}
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
