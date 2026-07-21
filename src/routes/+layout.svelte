@@ -215,25 +215,11 @@
 		{@render children()}
 	</main>
 
-	<!-- Pied éditorial : surface plus profonde que la toile, une phrase en
-	     display, puis des colonnes de micro-libellés. Aucun panneau, aucune
-	     ombre — la structure vient de la typographie et des filets. -->
-	<!-- ============ DERNIER APPEL ============
-	     Même moule que les sections de l'accueil : titre centré en capitales,
-	     phrase, deux actions. Sur l'aplat d'or, les boutons s'inversent. -->
-	<aside class="bande">
-		<div class="bande-inner">
-			<p class="bande-kicker">Nés du silence · Set 01</p>
-			<h2 class="bande-titre">Soixante noms attendent</h2>
-			<p class="bande-txt">Il n'en faut qu'un pour commencer.</p>
-			<div class="bande-actions">
-				<a class="bande-cta" href="/packs">Ouvrir un booster</a>
-				<a class="bande-ghost" href="/registre">Parcourir le Registre</a>
-			</div>
-		</div>
-	</aside>
+	<!-- ============ PIED ============
+	     Surface plus profonde que la toile, marque en tête, colonnes de
+	     micro-libellés. Aucun panneau, aucune ombre : la structure vient de la
+	     typographie et des filets. -->
 
-	<!-- ============ PIED ============ -->
 	<footer>
 		<div class="foot-inner">
 			<div class="foot-marque">
@@ -1011,89 +997,6 @@
 		.uid {
 			display: none;
 		}
-	}
-
-	/* ============ DERNIER APPEL ============
-	   L'aplat d'or, seul ton saturé de la page, avec le même moule centré que
-	   les sections. Sa hauteur suit son contenu. */
-	.bande {
-		width: 100%;
-		background: var(--gold);
-		color: #14120c;
-		padding: clamp(3.5rem, 8vw, 6rem) var(--spacing-20);
-		box-sizing: border-box;
-		text-align: center;
-	}
-	.bande-inner {
-		max-width: 46rem;
-		margin: 0 auto;
-	}
-	.bande-kicker {
-		margin: 0 0 var(--spacing-20);
-		font-family: var(--display);
-		font-size: 0.74rem;
-		font-weight: 700;
-		letter-spacing: 0.28em;
-		text-transform: uppercase;
-		color: rgba(20, 18, 12, 0.62);
-	}
-	.bande-titre {
-		margin: 0;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 700;
-		font-size: clamp(1.8rem, 4.5vw, 3rem);
-		line-height: 1.05;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		color: #14120c;
-	}
-	.bande-txt {
-		margin: var(--spacing-15) 0 var(--spacing-35);
-		font-size: 1rem;
-		color: rgba(20, 18, 12, 0.72);
-	}
-	.bande-actions {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--spacing-15);
-	}
-	/* sur l'or, les rôles s'inversent : le plein devient l'encre noire */
-	.bande-cta,
-	.bande-ghost {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 14rem;
-		padding: 1.05rem 2.2rem;
-		font-family: var(--display);
-		font-size: 0.82rem;
-		font-weight: 700;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		text-decoration: none;
-		border-radius: 0;
-		transition:
-			background 0.18s ease,
-			color 0.18s ease;
-	}
-	.bande-cta {
-		color: var(--gold);
-		background: #14120c;
-		border: 2px solid #14120c;
-	}
-	.bande-cta:hover {
-		background: #000;
-		border-color: #000;
-	}
-	.bande-ghost {
-		color: #14120c;
-		background: none;
-		border: 2px solid #14120c;
-	}
-	.bande-ghost:hover {
-		color: var(--gold);
-		background: #14120c;
 	}
 
 	/* ============ PIED ============
