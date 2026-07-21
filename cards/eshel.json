@@ -20,5 +20,6 @@
 	"attack": 3,
 	"health": 4,
 	"flavor": "« J'étais de peu d'importance. C'est pour cela que j'ai survécu. »",
-	"cutout": "/art/eshel-cutout.webp"
+	"cutout": "/art/eshel-cutout.webp",
+	"cutoutY": "-3.9%"
 }
