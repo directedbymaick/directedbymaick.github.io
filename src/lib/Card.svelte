@@ -621,6 +621,23 @@
 		transform: translateY(var(--cutout-y, -4%));
 		pointer-events: none;
 	}
+	/* FULL ART + showcase : l'art couvre toute la carte → le détourage doit se
+	   caler EXACTEMENT sur lui (mêmes géométrie et cadrage que .art-base), sans
+	   les offsets par carte du mode normal. Et pas de voile : le dégradé du
+	   scrim suffit, sinon écran noir en bas. */
+	.card[data-fullart='true'] .body > .cutout {
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-position: var(--art-pos, center 12%);
+		transform: none;
+		-webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 88%);
+		mask-image: linear-gradient(to bottom, #000 64%, transparent 88%);
+	}
+	.card[data-fullart='true'] .body > .showcase-veil {
+		display: none;
+	}
 	/* voile sombre de la partie basse : DEVANT le sujet (z-index 2), DERRIÈRE le
 	   texte (contenu z-index 3) → la moitié inférieure du personnage disparaît sous
 	   la zone noire de la carte. Le dégradé raccorde la teinte du corps. */
