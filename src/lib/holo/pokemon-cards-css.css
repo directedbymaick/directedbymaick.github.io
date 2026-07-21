@@ -774,10 +774,12 @@
    pour que la frontière reste nette (cf. CREDITS.md / holo/LICENSE.txt).
 
    Radiant : les vagues de simey balaient tout le spectre (hsl 3 rouge, 29
-   orange, 160 vert…), ce qui fait ressortir du rouge sur nos illustrations.
-   On garde EXACTEMENT sa structure — même gradient, même --space, mêmes
-   filtres, mêmes blend modes — et on ne remplace que les teintes, resserrées
-   sur un arc bleu → violet clair.
+   orange, 160 vert…). Mais le rouge ne venait PAS que de là : sur les cartes
+   non masquées — les nôtres — il passe le :after en `background-blend-mode:
+   difference`, qui INVERSE la teinte contre le --foil. Un bleu y ressort donc
+   en rouge, et retoucher les seules couleurs ne pouvait rien changer.
+   On repasse donc en `hard-light` — la valeur de sa propre règle de base — et
+   on resserre les teintes sur un arc bleu → violet clair.
    ========================================================================== */
 .card[data-rarity='radiant rare'] .card__shine:after {
 	background-image: var(--foil),
@@ -791,4 +793,7 @@
 			hsl(192, 96%, 86%) calc(var(--space) * 6),
 			hsl(205, 95%, 86%) calc(var(--space) * 7)
 		);
+}
+.card:not(.masked)[data-rarity='radiant rare'] .card__shine:after {
+	background-blend-mode: hard-light;
 }
