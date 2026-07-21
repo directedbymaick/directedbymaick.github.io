@@ -13,7 +13,7 @@
 			"#292829",
 			"#fae9b8"
 		],
-		"foilPreset": "showcase",
+		"foilPreset": "mat",
 		"accent": "#f0a626",
 		"seed": 575362
 	},
@@ -23,5 +23,16 @@
 	"cutout": "/art/velna-cutout.webp",
 	"nameMaterial": "cristal",
 	"faCutoutY": "2.85%",
-	"cutoutY": "-3.9%"
+	"cutoutY": "-3.9%",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": false
+		},
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	],
+	"fullArtFoil": "cosmos"
 }

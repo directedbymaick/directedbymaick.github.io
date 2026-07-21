@@ -46,16 +46,21 @@ function estFoil(p: FoilPreset | undefined): p is FoilPreset {
 export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 	const rawView = { ...card, gene: { ...card.gene, foilPreset: 'mat' as FoilPreset } };
 
-	/* finitions validées, par forme : le foil officiel de la forme + les variantes
-	   déclarées pour elle. Une même finition ne compte qu'une fois. */
+	/* Finitions RÉELLEMENT validées depuis le Lab, par forme. Aucune valeur par
+	   défaut : une carte sans validation n'existe qu'en Raw. C'est l'auteur qui
+	   décide, pas le code. */
 	const finitions = (fullArt: boolean): FoilPreset[] => {
-		const base = fullArt ? (card.fullArtFoil ?? (card.cutout ? 'showcase' : 'galerie')) : card.gene.foilPreset;
+		const base = fullArt ? card.fullArtFoil : card.gene.foilPreset;
 		const list = [
 			...(estFoil(base) ? [base] : []),
 			...(card.variants ?? []).filter((v) => !!v.fullArt === fullArt).map((v) => v.foilPreset)
 		].filter(estFoil);
 		return [...new Set(list)];
 	};
+
+	/* l'Illustration spéciale est la finition la plus désirable : on lui donne
+	   moins de poids qu'aux autres dans la répartition des 15 % de foil */
+	const poids = (f: FoilPreset) => (f === 'showcase' ? 0.4 : 1);
 
 	const eligible = eligibleFullArt(card);
 	const pFA = eligible ? fullArtRate : 0;
@@ -66,7 +71,9 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		const pForme = fullArt ? pFA : 1 - pFA;
 		const foils = finitions(fullArt);
 		const suffixe = fullArt ? '--fullart' : '';
-		const vueForme = fullArt ? fullArtView(card) : rawView;
+		const vueForme = fullArt
+			? { ...fullArtView(card), gene: { ...card.gene, foilPreset: 'mat' as FoilPreset } }
+			: rawView;
 
 		// Raw de la forme : ce qui reste quand aucun foil ne sort
 		versions.push({
@@ -75,18 +82,17 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 			foil: null,
 			fullArt,
 			rate: pForme * (foils.length ? 1 - FOIL_RATE : 1),
-			view: fullArt
-				? { ...vueForme, gene: { ...vueForme.gene, foilPreset: 'mat' } }
-				: rawView
+			view: vueForme
 		});
 
+		const total = foils.reduce((a, f) => a + poids(f), 0);
 		for (const f of foils) {
 			versions.push({
 				key: `${card.id}${suffixe}--${f}`,
 				label: `${fullArt ? 'Full Art · ' : ''}${FOIL_LABEL[f]}`,
 				foil: f,
 				fullArt,
-				rate: (pForme * FOIL_RATE) / foils.length,
+				rate: (pForme * FOIL_RATE * poids(f)) / total,
 				view: { ...vueForme, gene: { ...vueForme.gene, foilPreset: f } }
 			});
 		}

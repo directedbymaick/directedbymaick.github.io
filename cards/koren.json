@@ -16,7 +16,7 @@
 			"#483328",
 			"#e8caa6"
 		],
-		"foilPreset": "cosmos",
+		"foilPreset": "mat",
 		"accent": "#ffffff",
 		"seed": 291137
 	},
@@ -26,6 +26,10 @@
 		{
 			"foilPreset": "showcase",
 			"fullArt": false
+		},
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
 		}
 	],
 	"fullArtFoil": "cosmos",

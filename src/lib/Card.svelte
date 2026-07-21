@@ -565,6 +565,15 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 	}
+	/* Full Art RAW : aucune matière. Le métal et le cristal signalent une finition
+	   foil — un Raw doit rester nu, donc nom en blanc pur. */
+	.card[data-fullart='true'][data-foil='mat'] .name {
+		background: none;
+		-webkit-background-clip: border-box;
+		background-clip: border-box;
+		color: #ffffff;
+	}
+
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
 	}

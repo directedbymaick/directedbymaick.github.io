@@ -13,9 +13,16 @@
 			"#1a161a",
 			"#f1937c"
 		],
-		"foilPreset": "galerie",
+		"foilPreset": "mat",
 		"accent": "#b3273a",
 		"seed": 7624
 	},
-	"flavor": "Bâti là où le monde ne se regarde pas."
+	"flavor": "Bâti là où le monde ne se regarde pas.",
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "galerie",
+			"fullArt": true
+		}
+	]
 }

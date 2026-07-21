@@ -13,13 +13,24 @@
 			"#111a20",
 			"#dae8fc"
 		],
-		"foilPreset": "showcase",
+		"foilPreset": "mat",
 		"accent": "#8d6cb8",
 		"seed": 516903
 	},
 	"attack": 3,
 	"health": 4,
-	"flavor": "« J'étais de peu d'importance. C'est pour cela que j'ai survécu. »",
+	"flavor": "« J'étais de peu d'importance. Grace à cela que j'ai survécu. »",
 	"cutout": "/art/eshel-cutout.webp",
-	"cutoutY": "-3.9%"
+	"cutoutY": "-3.9%",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": false
+		},
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	],
+	"fullArtFoil": "cosmos"
 }

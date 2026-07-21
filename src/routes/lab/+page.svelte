@@ -114,9 +114,10 @@
 			? [
 					{
 						role: 'Full Art',
-						foil: officiel?.fullArtFoil ?? (officiel?.cutout ? 'showcase' : 'galerie'),
+						// aucune valeur par défaut : tant que rien n'est validé, la Full
+						// Art n'existe qu'en Raw
+						foil: officiel?.fullArtFoil,
 						fullArt: true,
-						// pas encore validée explicitement : on affiche le défaut
 						defaut: !officiel?.fullArtFoil
 					}
 				]
@@ -153,17 +154,27 @@
 		}
 	}
 
+	/* Nom, texte et citation appartiennent à la CARTE, pas à une finition : ils sont
+	   donc écrits par toute validation, quel que soit le mode. Sans ça, éditer un
+	   texte en mode Full Art le perdait. */
+	function textes(b: CardData) {
+		return { name: b.name, text: b.text, flavor: b.flavor ?? '' };
+	}
+
 	async function valider() {
 		const b = $state.snapshot(base) as CardData;
 		if (showFullArt && hasFullArt) {
-			if (await envoyer({ fullArtFoil: b.gene.foilPreset }, `Full Art officialisée : ${foilLabels[b.gene.foilPreset]}`))
+			if (
+				await envoyer(
+					{ ...textes(b), fullArtFoil: b.gene.foilPreset },
+					`Full Art officialisée : ${foilLabels[b.gene.foilPreset]}`
+				)
+			)
 				marquerValide(b.id);
 			return;
 		}
 		const patch = {
-			name: b.name,
-			text: b.text,
-			flavor: b.flavor ?? '',
+			...textes(b),
 			rarity: b.rarity,
 			faction: b.faction,
 			gene: {
@@ -180,7 +191,7 @@
 	async function validerVariante() {
 		const b = $state.snapshot(base) as CardData;
 		await envoyer(
-			{ addVariant: { foilPreset: b.gene.foilPreset, fullArt: showFullArt && hasFullArt } },
+			{ ...textes(b), addVariant: { foilPreset: b.gene.foilPreset, fullArt: showFullArt && hasFullArt } },
 			`Variante ajoutée : ${foilLabels[b.gene.foilPreset]}${showFullArt && hasFullArt ? ' (Full Art)' : ''}`
 		);
 	}
@@ -355,8 +366,8 @@
 						<span class="role" class:fa={v.fullArt}
 						>{v.role}{v.fullArt && v.role !== 'Full Art' ? ' · Full Art' : ''}</span
 					>
-						<span class="quoi">{v.foil ? foilLabels[v.foil] : '—'}</span>
-						{#if v.defaut}<span class="dft">par défaut</span>{/if}
+						<span class="quoi">{v.foil ? foilLabels[v.foil] : 'Raw seulement'}</span>
+						{#if v.defaut}<span class="dft">non validée</span>{/if}
 					</li>
 				{/each}
 			</ul>

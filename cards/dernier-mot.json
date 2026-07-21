@@ -13,9 +13,16 @@
 			"#362b35",
 			"#ea9779"
 		],
-		"foilPreset": "amazing",
+		"foilPreset": "mat",
 		"accent": "#b3273a",
 		"seed": 680190
 	},
-	"flavor": "La dernière syllabe est la plus lourde."
+	"flavor": "La dernière syllabe est la plus lourde.",
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	]
 }

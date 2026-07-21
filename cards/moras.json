@@ -13,11 +13,18 @@
 			"#181a15",
 			"#c7a687"
 		],
-		"foilPreset": "galerie",
+		"foilPreset": "mat",
 		"accent": "#8fb4d9",
 		"seed": 642931
 	},
 	"attack": 3,
 	"health": 5,
-	"flavor": "« Parce que je tombais du bon côté. »"
+	"flavor": "« Parce que je tombais du bon côté. »",
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "galerie",
+			"fullArt": true
+		}
+	]
 }

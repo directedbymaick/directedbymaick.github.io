@@ -13,13 +13,24 @@
 	"cutout": "/art/doran-cutout.webp",
 	"gene": {
 		"palette": [
-			"#997358",
-			"#4b3529",
+			"#86644b",
+			"#865237",
 			"#c8a587"
 		],
-		"foilPreset": "showcase",
-		"accent": "#c9a445",
+		"foilPreset": "cosmos",
+		"accent": "#ffffff",
 		"seed": 152151
 	},
-	"cutoutY": "-3.8%"
+	"cutoutY": "-3.8%",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": false
+		},
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	],
+	"fullArtFoil": "cosmos"
 }
