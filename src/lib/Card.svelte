@@ -248,9 +248,9 @@
 
 					{#if card.kind === 'etre'}
 						<footer class="statbar">
-							<span class="stat"><span class="hex">{card.attack}</span><small>ATQ</small></span>
+							<span class="stat"><span class="hex"><span class="hex-n">{card.attack}</span></span><small>ATQ</small></span>
 							<span class="rarity-dot" title={rarityDef.name}></span>
-							<span class="stat"><small>INT</small><span class="hex">{card.health}</span></span>
+							<span class="stat"><small>INT</small><span class="hex"><span class="hex-n">{card.health}</span></span></span>
 						</footer>
 					{:else}
 						<footer class="statbar protocol-bar">
@@ -519,14 +519,18 @@
 		top: calc(-1 * var(--fa-art-lift, 0%));
 		height: calc(100% + var(--fa-art-lift, 0%));
 	}
+	/* Le voile du bas doit porter le texte, pas éteindre l'illustration : sur les
+	   artworks lumineux (Velsa, Bord du monde) un noir quasi opaque tranchait net.
+	   Opacités abaissées et transition démarrée plus bas, le dégradé reste assez
+	   dense sous le bloc de texte pour rester lisible. */
 	.card[data-fullart='true'] .scrim {
 		background: linear-gradient(
 			180deg,
 			rgba(10, 10, 14, 0.32) 0%,
 			transparent 20%,
-			transparent 44%,
-			rgba(8, 9, 13, 0.9) 72%,
-			rgba(6, 7, 10, 0.97) 100%
+			transparent 48%,
+			rgba(8, 9, 13, 0.68) 74%,
+			rgba(6, 7, 10, 0.86) 100%
 		);
 	}
 	/* pas de cadre : on aplatit la matière + le sertissage du corps */
@@ -1248,6 +1252,14 @@
 		box-shadow: 0 0.4cqw 0.7cqw rgba(0, 0, 0, 0.5);
 	}
 	/* sertissage d'or : anneau radial parfait (aucune bosse même agrandi) */
+	/* Les chiffres Cinzel n'ont pas de descendante : leur encre s'arrête à la ligne
+	   de base, alors que place-items centre la BOÎTE de ligne. Calcul sur les
+	   métriques de la police (ascendante 0.979em, descendante 0.367em, hauteur de
+	   capitale 0.734em) : l'encre tombe 0.061em au-dessus du centre du cercle. */
+	.hex-n {
+		display: block;
+		transform: translateY(0.061em);
+	}
 	.stat .hex::before {
 		content: '';
 		position: absolute;
