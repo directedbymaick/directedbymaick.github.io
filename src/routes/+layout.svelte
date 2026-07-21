@@ -258,9 +258,19 @@
 		</div>
 	</footer>
 
-	<!-- La bande d'accent ferme la page : un point final pleine largeur, qui ne
-	     contient que l'initiale, comme une signature en bas de colonne. -->
-	<div class="bande" aria-hidden="true"><span>E</span></div>
+	<!-- La bande d'accent ferme la page. Elle ne contenait qu'une initiale et ne
+	     disait rien : c'est maintenant le dernier appel à l'action du site, ce qui
+	     justifie qu'elle occupe toute la largeur. -->
+	<aside class="bande">
+		<div class="bande-inner">
+			<p class="bande-kicker">Nés du silence · Set 01</p>
+			<p class="bande-dit">Soixante noms attendent<br />qu'on les prononce.</p>
+			<div class="bande-actions">
+				<a class="bande-cta" href="/packs">Ouvrir un booster</a>
+				<a class="bande-lien" href="/registre">Parcourir le Registre</a>
+			</div>
+		</div>
+	</aside>
 
 	<span class="uid" aria-hidden="true">UID : KOR-701606888</span>
 
@@ -640,7 +650,7 @@
 	}
 	/* la nav et le pied restent sombres : c'est le contraste papier / encre qui
 	   structure la page, exactement comme la référence alterne bone et noir */
-	.app.papier nav {
+	.app.papier > nav {
 		background: rgba(250, 248, 242, 0.86);
 		border-bottom: 1px solid var(--panel-line);
 	}
@@ -1063,21 +1073,90 @@
 		}
 	}
 
+	/* La bande : pleine largeur, mais elle porte enfin quelque chose. Sa hauteur
+	   suit son contenu au lieu d'être un bloc de couleur arbitraire. */
 	.bande {
 		width: 100%;
-		height: clamp(220px, 34vw, 420px);
 		background: var(--gold);
-		display: flex;
-		align-items: flex-start;
-		padding: 50px;
+		color: #14120c;
+		padding: var(--spacing-120) var(--spacing-50);
 		box-sizing: border-box;
 	}
-	.bande span {
-		font-family: 'Cormorant Garamond', Georgia, serif;
-		font-size: clamp(4rem, 12vw, 11rem);
-		line-height: 0.8;
-		color: #0a0a0d;
-		letter-spacing: var(--tracking-display);
+	.bande-inner {
+		max-width: var(--page-max);
+		margin: 0 auto;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--spacing-40);
+	}
+	.bande-kicker {
+		width: 100%;
+		margin: 0 0 var(--spacing-25);
+		font-family: var(--font-grotesque);
+		font-size: var(--text-caption);
+		font-weight: var(--fw-550);
+		letter-spacing: var(--tracking-caption);
+		text-transform: uppercase;
+		color: rgba(20, 18, 12, 0.6);
+	}
+	.bande-dit {
+		margin: 0;
+		font-family: var(--font-editorial);
+		font-size: clamp(2.2rem, 5.5vw, var(--text-subheading));
+		line-height: var(--leading-subheading);
+		letter-spacing: var(--tracking-subheading);
+		color: #14120c;
+	}
+	.bande-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--spacing-30);
+	}
+	/* sur l'or, l'action s'inverse en encre noire pleine : c'est le seul aplat
+	   sombre de la bande, donc le point de fuite du regard */
+	.bande-cta {
+		padding: var(--spacing-20) var(--spacing-30);
+		font-family: var(--font-grotesque);
+		font-size: var(--text-caption);
+		font-weight: var(--fw-550);
+		letter-spacing: var(--tracking-caption);
+		text-transform: uppercase;
+		text-decoration: none;
+		color: var(--gold);
+		background: #14120c;
+		border-radius: var(--radius-action);
+		transition: background 0.18s ease;
+	}
+	.bande-cta:hover {
+		background: #000;
+	}
+	.bande-lien {
+		font-family: var(--font-grotesque);
+		font-size: var(--text-caption);
+		font-weight: var(--fw-550);
+		letter-spacing: var(--tracking-caption);
+		text-transform: uppercase;
+		text-decoration: none;
+		color: #14120c;
+		border-bottom: 1px solid #14120c;
+	}
+
+	/* Sur papier, le pied reste une île sombre : son encre doit donc s'inverser,
+	   sinon les liens héritent du noir de la page et disparaissent. */
+	.app.papier footer {
+		--ink: #faf8f2;
+		--ink-dim: rgba(250, 248, 242, 0.6);
+		--panel-line: rgba(250, 248, 242, 0.14);
+		/* Redéclarer `color` et pas seulement la variable : `.app.papier a` pose
+		   `color: inherit` avec une spécificité plus forte que `.foot-col a`, donc
+		   les liens remontaient jusqu'à la couleur de la PAGE — noir sur noir. */
+		color: var(--ink);
+	}
+	.app.papier footer :global(a) {
+		color: var(--ink);
 	}
 
 	/* ============ PIED ÉDITORIAL ============
@@ -1096,8 +1175,8 @@
 		max-width: var(--page-max);
 		margin: 0 auto;
 		display: grid;
-		grid-template-columns: 1.2fr 2fr;
-		gap: var(--spacing-60);
+		grid-template-columns: minmax(16rem, 1fr) minmax(0, 1.6fr);
+		gap: var(--spacing-60) var(--spacing-120);
 		align-items: start;
 	}
 	/* la phrase du set, traitée comme une citation de une */
@@ -1114,15 +1193,23 @@
 		font-style: italic;
 		color: var(--gold);
 	}
+	/* Trois colonnes régulières, alignées en haut, jamais de fond ni de cadre :
+	   ce sont des listes de liens, pas des panneaux. */
 	.foot-cols {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: var(--spacing-40);
+	}
+	.foot-col {
+		background: none;
+		border: none;
+		padding: 0;
 	}
 	.foot-col {
 		display: flex;
 		flex-direction: column;
 		gap: var(--spacing-15);
+		background: none;
 	}
 	/* l'en-tête de colonne : micro-libellé, pas un titre */
 	.foot-h {
