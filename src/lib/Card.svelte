@@ -525,7 +525,36 @@
 	/* nom en métal poli : or par défaut, argent sur les Prismatiques. Le métal
 	   remplit la lettre, l'irisation ne vit que sur l'ARÊTE — quatre ombres
 	   colorées décalées d'un demi-pixel qui débordent tout autour du glyphe. */
+	/* DEUX calques. Le parent porte le CONTOUR irisé (text-stroke transparent rempli
+	   par un dégradé arc-en-ciel clippé au texte). Le pseudo-élément, au-dessus,
+	   porte le métal et masque la moitié intérieure du trait — il ne reste qu'un
+	   filet à l'extérieur du glyphe.
+	   Cet ordre est obligatoire : un enfant en z-index négatif se peint AU-DESSUS du
+	   fond de son parent, donc l'inverse laissait le liseré recouvrir le métal. */
 	.card[data-fullart='true'] .name {
+		position: relative;
+		-webkit-text-stroke: 0.05em transparent;
+		background: linear-gradient(
+			92deg,
+			#ff6f9c 0%,
+			#ffd76f 16%,
+			#8dffb4 33%,
+			#6fe3ff 50%,
+			#8f9bff 67%,
+			#d98cff 84%,
+			#ff6f9c 100%
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+	.card[data-fullart='true'] .name::after {
+		content: attr(data-text);
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		pointer-events: none;
 		/* plusieurs bandes spéculaires serrées → métal poli qui accroche la lumière */
 		background: linear-gradient(
 			96deg,
@@ -545,35 +574,6 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
-		position: relative;
-		isolation: isolate;
-	}
-	/* le liseré : un calque dupliqué EN CONTOUR sous l'or. Le trait est tracé en
-	   -webkit-text-stroke transparent, et le dégradé arc-en-ciel — clippé au texte,
-	   donc au contour aussi — le remplit. L'or opaque du parent recouvre ensuite la
-	   moitié intérieure du trait : il n'en dépasse qu'un filet irisé. */
-	.card[data-fullart='true'] .name::before {
-		content: attr(data-text);
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		z-index: -1;
-		-webkit-text-stroke: 0.03em transparent;
-		background: linear-gradient(
-			92deg,
-			#ff6f9c 0%,
-			#ffd76f 16%,
-			#8dffb4 33%,
-			#6fe3ff 50%,
-			#8f9bff 67%,
-			#d98cff 84%,
-			#ff6f9c 100%
-		);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
-		pointer-events: none;
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
