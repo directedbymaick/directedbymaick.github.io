@@ -57,6 +57,15 @@
 						}
 					]
 				: []),
+			...(card.variants ?? []).map((v, i) => ({
+				key: `${card.id}--var${i}`,
+				card: v.fullArt
+					? { ...fullArtView(card), gene: { ...card.gene, foilPreset: v.foilPreset } }
+					: { ...card, gene: { ...card.gene, foilPreset: v.foilPreset } },
+				alt: 0,
+				fullArt: !!v.fullArt,
+				href: `/card/${card.id}`
+			})),
 			...(card.alts ?? []).map((art, i) => ({
 				key: `${card.id}--alt${i + 2}`,
 				card: altView(card, art, i),

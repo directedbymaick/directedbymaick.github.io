@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
 	import { cards } from '$lib/cards';
 	import { charter } from '$lib/charter';
@@ -72,8 +73,119 @@
 	const hasFullArt = $derived(eligibleFullArt(base));
 	// snapshot : fullArtView fait un structuredClone → il faut un objet simple, pas le proxy $state
 	const preview = $derived(
-		showFullArt && hasFullArt ? fullArtView($state.snapshot(base) as CardData) : base
+		showFullArt && hasFullArt
+			? {
+					...fullArtView($state.snapshot(base) as CardData),
+					// en full art on prévisualise le foil choisi dans le Lab, pas le défaut
+					gene: { ...$state.snapshot(base).gene }
+				}
+			: base
 	);
+
+	/* ---------- validation : le Lab écrit dans cards/<id>.json ----------
+	   Outil d'auteur, donc local uniquement (cf. src/routes/api/card/+server.ts).
+	   « Valider » fixe la composition OFFICIELLE : soit celle de la carte de base,
+	   soit — si le mode Full Art est actif — le foil de sa vue full art.
+	   « Valider comme variante » ajoute une finition SUPPLÉMENTAIRE, qui apparaîtra
+	   en plus au Registre. Elle n'est proposée qu'une fois la base validée. */
+	let statut = $state('');
+	let enCours = $state(false);
+	/* cartes dont la composition de base a déjà été validée : en session, ou déjà
+	   porteuses de variantes (donc validées lors d'un passage précédent) */
+	let valides = $state(new Set<string>(cards.filter((c) => c.variants?.length).map((c) => c.id)));
+
+	/** mémorise les cartes validées : l'écriture recharge la page (HMR), sans quoi
+	    le bouton « variante » redeviendrait inactif juste après une validation */
+	function marquerValide(id: string) {
+		valides = new Set(valides).add(id);
+		sessionStorage.setItem('lab-valides', JSON.stringify([...valides]));
+	}
+	const baseValidee = $derived(valides.has(base.id));
+	const variantesActuelles = $derived(cards.find((c) => c.id === base.id)?.variants ?? []);
+
+	async function envoyer(patch: Record<string, unknown>, message: string) {
+		enCours = true;
+		statut = '';
+		try {
+			const r = await fetch('/api/card', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ id: base.id, patch })
+			});
+			if (!r.ok) throw new Error((await r.text()) || `HTTP ${r.status}`);
+			statut = message;
+			/* écrire dans cards/*.json fait recharger la page (HMR) : on mémorise la
+			   carte en cours et le message pour les retrouver après le rechargement,
+			   sinon on repart sur la première carte sans savoir si ça a marché */
+			sessionStorage.setItem('lab-retour', JSON.stringify({ id: base.id, statut: message }));
+			return true;
+		} catch (e) {
+			statut = `Échec : ${e instanceof Error ? e.message : e}`;
+			return false;
+		} finally {
+			enCours = false;
+		}
+	}
+
+	async function valider() {
+		const b = $state.snapshot(base) as CardData;
+		if (showFullArt && hasFullArt) {
+			if (await envoyer({ fullArtFoil: b.gene.foilPreset }, `Full Art officialisée : ${foilLabels[b.gene.foilPreset]}`))
+				marquerValide(b.id);
+			return;
+		}
+		const patch = {
+			name: b.name,
+			text: b.text,
+			flavor: b.flavor ?? '',
+			rarity: b.rarity,
+			faction: b.faction,
+			gene: {
+				foilPreset: b.gene.foilPreset,
+				palette: b.gene.palette,
+				accent: b.gene.accent,
+				seed: b.gene.seed
+			}
+		};
+		if (await envoyer(patch, `Composition officialisée : ${foilLabels[b.gene.foilPreset]}`))
+			marquerValide(b.id);
+	}
+
+	async function validerVariante() {
+		const b = $state.snapshot(base) as CardData;
+		await envoyer(
+			{ addVariant: { foilPreset: b.gene.foilPreset, fullArt: showFullArt && hasFullArt } },
+			`Variante ajoutée : ${foilLabels[b.gene.foilPreset]}${showFullArt && hasFullArt ? ' (Full Art)' : ''}`
+		);
+	}
+
+	/* restauration après le rechargement provoqué par l'écriture.
+	   onMount et pas $effect : on modifie l'état (carte courante, statut), ce que
+	   Svelte refuse dans un effet — et c'est de toute façon un one-shot au montage. */
+	onMount(() => {
+		const memo = sessionStorage.getItem('lab-valides');
+		if (memo) {
+			try {
+				valides = new Set([...valides, ...(JSON.parse(memo) as string[])]);
+			} catch {
+				/* mémo illisible : on repart de la liste déduite des fiches */
+			}
+		}
+		const brut = sessionStorage.getItem('lab-retour');
+		if (!brut) return;
+		sessionStorage.removeItem('lab-retour');
+		try {
+			const { id, statut: msg } = JSON.parse(brut);
+			if (id) loadCard(id);
+			statut = msg ?? '';
+		} catch {
+			/* rien à restaurer */
+		}
+	});
+
+	async function viderVariantes() {
+		await envoyer({ clearVariants: true }, 'Variantes supprimées');
+	}
 </script>
 
 <svelte:head>
@@ -182,6 +294,39 @@
 			Texte
 			<textarea rows="2" bind:value={base.text}></textarea>
 		</label>
+
+		<label>
+			Citation (la ligne de lore, en italique sous l'effet)
+			<textarea rows="2" bind:value={base.flavor}></textarea>
+		</label>
+
+		<div class="valider">
+			<button type="button" class="primaire" disabled={enCours} onclick={valider}>
+				{showFullArt && hasFullArt ? 'Valider la Full Art' : 'Valider la composition'}
+			</button>
+			<button type="button" disabled={enCours || !baseValidee} onclick={validerVariante}>
+				Valider comme variante
+			</button>
+			{#if variantesActuelles.length}
+				<button type="button" class="discret" disabled={enCours} onclick={viderVariantes}>
+					Vider les variantes
+				</button>
+			{/if}
+			<p class="aide">
+				{#if !baseValidee}
+					Valide d'abord la composition de base : la variante s'ajoute par-dessus.
+				{:else if variantesActuelles.length}
+					Variantes officielles : {variantesActuelles
+						.map((v) => foilLabels[v.foilPreset] + (v.fullArt ? ' (Full Art)' : ''))
+						.join(' · ')}
+				{:else}
+					Une variante s'ajoute au Registre à côté de la version de base.
+				{/if}
+			</p>
+			{#if statut}
+				<p class="statut" class:erreur={statut.startsWith('Échec')}>{statut}</p>
+			{/if}
+		</div>
 
 		<details>
 			<summary>card.json</summary>
@@ -319,6 +464,45 @@
 		border: none;
 		background: none;
 		cursor: pointer;
+	}
+	.valider {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: center;
+		padding: 0.9rem;
+		border: 1px solid #2c2f3d;
+		border-radius: 10px;
+		background: #14161e;
+	}
+	.valider button {
+		align-self: auto;
+	}
+	.valider .primaire {
+		background: rgba(213, 178, 94, 0.14);
+		border-color: rgba(213, 178, 94, 0.55);
+		color: #f0e6cf;
+	}
+	.valider .discret {
+		background: transparent;
+		color: #8f8b80;
+	}
+	.valider button:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+	.aide,
+	.statut {
+		width: 100%;
+		margin: 0;
+		font-size: 0.78rem;
+		color: #8f8b80;
+	}
+	.statut {
+		color: #9ad5a0;
+	}
+	.statut.erreur {
+		color: #e08585;
 	}
 	pre {
 		background: #14151d;

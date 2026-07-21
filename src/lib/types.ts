@@ -39,6 +39,15 @@ export interface PrononcerDef {
 	text: string;
 }
 
+/** Une finition officielle supplémentaire d'une carte, validée depuis le Lab. */
+export interface CardVariant {
+	foilPreset: FoilPreset;
+	/** true = cette variante est la vue Full Art (cadre prismatique, layout Auréole). */
+	fullArt?: boolean;
+	/** Libellé affiché ; à défaut, on retombe sur le nom du foil. */
+	label?: string;
+}
+
 export interface CardData {
 	/** Slug unique, utilisé comme id d'URL (/card/[id]). */
 	id: string;
@@ -88,6 +97,13 @@ export interface CardData {
 	/** Matière du nom en Full Art. Par défaut l'or, le cristal sur les Prismatiques.
 	    Ce champ force l'un ou l'autre pour une carte donnée (exception d'auteur). */
 	nameMaterial?: 'or' | 'cristal';
+	/** Foil officiel de la vue Full Art, validé depuis le Lab. Sans lui, la vue
+	    full art retombe sur son défaut (showcase si détourage, sinon galerie). */
+	fullArtFoil?: FoilPreset;
+	/** Variantes officielles SUPPLÉMENTAIRES, validées depuis le Lab : une même
+	    carte peut exister en plusieurs finitions (ex. cosmique ET galerie).
+	    Elles s'ajoutent au Registre à côté de la version de base. */
+	variants?: CardVariant[];
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
 	alts?: string[];
 	/** Index de version alternative (1+) — posé par altView à l'affichage, jamais dans les JSON. */

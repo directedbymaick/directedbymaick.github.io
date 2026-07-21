@@ -63,7 +63,8 @@ export function fullArtView(c: CardData): CardData {
 	v.id = `${c.id}--fullart`;
 	v.sourceRarity = c.rarity;
 	v.rarity = 'prism';
-	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'galerie' };
+	// foil validé depuis le Lab s'il existe, sinon le défaut de la vue full art
+	v.gene = { ...v.gene, foilPreset: c.fullArtFoil ?? (c.cutout ? 'showcase' : 'galerie') };
 	return v;
 }
 
