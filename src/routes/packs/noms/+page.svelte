@@ -85,6 +85,19 @@
 		tous.filter((n) => (collection[n.key] ?? 0) === 0 && n.prix <= eco.syllabes).length
 	);
 
+	/* La loupe : on achète un objet, on doit pouvoir l'examiner avant. Le grisé
+	   n'est qu'un signal de solde DANS la galerie — l'aperçu, lui, montre toujours
+	   la carte telle qu'elle sera, en couleur et lisible. */
+	let apercu = $state<Nom | null>(null);
+
+	function fermer() {
+		apercu = null;
+	}
+
+	function auClavier(e: KeyboardEvent) {
+		if (e.key === 'Escape') fermer();
+	}
+
 	let message = $state('');
 	let messageTimer: ReturnType<typeof setTimeout> | null = null;
 	function dire(txt: string) {
@@ -183,9 +196,9 @@
 		{@const possede = (collection[n.key] ?? 0) > 0}
 		{@const abordable = eco.syllabes >= n.prix}
 		<article class="etal" class:hors-portee={!possede && !abordable}>
-			<a href="/card/{n.base.id}{n.key === n.base.id ? '' : `?v=${n.key}`}" class="vue">
+			<button class="vue" onclick={() => (apercu = n)} title="Voir « {n.base.name} » en grand">
 				<Card card={n.view} fullArt={n.fullArt} interactive={false} thumb />
-			</a>
+			</button>
 			<p class="nom">{n.base.name}</p>
 			<p class="finition">{n.label}</p>
 			<p class="frequence">{frequence(n.taux)}</p>
@@ -204,6 +217,74 @@
 {#if liste.length === 0}
 	<p class="vide">Aucun nom ne répond à ces filtres.</p>
 {/if}
+
+{#if apercu}
+	{@const possede = (collection[apercu.key] ?? 0) > 0}
+	{@const abordable = eco.syllabes >= apercu.prix}
+	<div class="loupe" role="dialog" aria-modal="true" aria-label={apercu.base.name}>
+		<button class="loupe-fond" aria-label="Fermer" onclick={fermer}></button>
+		<div class="loupe-boite">
+			<!-- jamais de grisé ici : c'est le produit, on le montre tel qu'il est -->
+			<div class="loupe-carte">
+				<Card card={apercu.view} fullArt={apercu.fullArt} />
+			</div>
+			<div class="loupe-fiche">
+				<p class="lf-peuple">
+					<span style="color: {charter.factions[apercu.base.faction].color}">
+						<FactionSigil faction={apercu.base.faction} flat />
+					</span>
+					{charter.factions[apercu.base.faction].name}
+					<span class="lf-sep">//</span>
+					{charter.rarities[apercu.rarity].name}
+				</p>
+				<h2>{apercu.base.name}</h2>
+				<p class="lf-finition">{apercu.label} · {frequence(apercu.taux)}</p>
+
+				<div class="lf-stats">
+					<span class="lf-chip">Volonté {apercu.base.cost}</span>
+					{#if apercu.base.kind === 'etre'}
+						<span class="lf-chip">{apercu.base.attack} ATQ</span>
+						<span class="lf-chip">{apercu.base.health} INT</span>
+					{/if}
+				</div>
+
+				{#if apercu.base.text}
+					<p class="lf-titre">Effet</p>
+					<p class="lf-texte">{apercu.base.text}</p>
+				{/if}
+				{#if apercu.base.prononcer}
+					<p class="lf-titre">Prononcer {apercu.base.prononcer.cost}</p>
+					<p class="lf-texte">{apercu.base.prononcer.text}</p>
+				{/if}
+				{#if apercu.base.flavor}
+					<p class="lf-flavor">« {apercu.base.flavor} »</p>
+				{/if}
+
+				{#if possede}
+					<span class="acquis">Déjà dit</span>
+				{:else}
+					<button class="acheter grand" disabled={!abordable} onclick={() => reconstituer(apercu!)}>
+						Reconstituer · {apercu.prix}
+						<span class="syl" aria-hidden="true"></span>
+					</button>
+					{#if !abordable}
+						<p class="lf-manque">
+							Il vous manque {apercu.prix - eco.syllabes} Syllabe{apercu.prix - eco.syllabes > 1
+								? 's'
+								: ''}.
+						</p>
+					{/if}
+				{/if}
+				<a class="lf-lien" href="/card/{apercu.base.id}{apercu.key === apercu.base.id ? '' : `?v=${apercu.key}`}">
+					Fiche complète →
+				</a>
+			</div>
+		</div>
+		<button class="loupe-x" aria-label="Fermer" onclick={fermer}>✕</button>
+	</div>
+{/if}
+
+<svelte:window onkeydown={auClavier} />
 
 <style>
 	.tete {
@@ -373,6 +454,144 @@
 	.vue {
 		display: block;
 		width: 100%;
+		padding: 0;
+		background: none;
+		border: none;
+		cursor: zoom-in;
+	}
+
+	/* ---------- la loupe ---------- */
+	.loupe {
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		display: grid;
+		place-items: center;
+		padding: 2rem 1.2rem;
+	}
+	.loupe-fond {
+		position: absolute;
+		inset: 0;
+		border: none;
+		cursor: zoom-out;
+		background: rgba(4, 5, 9, 0.86);
+		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(8px);
+	}
+	.loupe-boite {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 2rem;
+		max-height: 92vh;
+		overflow: auto;
+	}
+	.loupe-carte {
+		--card-w: min(340px, 78vw);
+		flex: none;
+	}
+	.loupe-fiche {
+		max-width: 24rem;
+		min-width: 15rem;
+	}
+	.lf-peuple {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0 0 0.5rem;
+		font-size: 0.76rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(242, 240, 234, 0.5);
+	}
+	.lf-sep {
+		opacity: 0.4;
+	}
+	.loupe-fiche h2 {
+		margin: 0 0 0.35rem;
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: 2.1rem;
+		font-weight: 400;
+		line-height: 1.05;
+	}
+	.lf-finition {
+		margin: 0 0 1rem;
+		font-size: 0.8rem;
+		font-variant-numeric: tabular-nums;
+		color: #d5b25e;
+	}
+	.lf-stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin-bottom: 1rem;
+	}
+	.lf-chip {
+		padding: 0.28rem 0.7rem;
+		font-size: 0.78rem;
+		color: rgba(242, 240, 234, 0.75);
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.09);
+		border-radius: 999px;
+	}
+	.lf-titre {
+		margin: 0 0 0.2rem;
+		font-size: 0.68rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(242, 240, 234, 0.35);
+	}
+	.lf-texte {
+		margin: 0 0 0.9rem;
+		font-size: 0.92rem;
+		line-height: 1.6;
+		color: rgba(242, 240, 234, 0.85);
+	}
+	.lf-flavor {
+		margin: 0 0 1.2rem;
+		font-style: italic;
+		font-size: 0.85rem;
+		line-height: 1.6;
+		color: rgba(242, 240, 234, 0.42);
+	}
+	.acheter.grand {
+		font-size: 0.95rem;
+		padding: 0.6rem 1.4rem;
+	}
+	.lf-manque {
+		margin: 0.5rem 0 0;
+		font-size: 0.78rem;
+		color: rgba(242, 240, 234, 0.45);
+	}
+	.lf-lien {
+		display: inline-block;
+		margin-top: 1rem;
+		font-size: 0.8rem;
+		color: rgba(242, 240, 234, 0.45);
+		text-decoration: none;
+	}
+	.lf-lien:hover {
+		color: #d5b25e;
+	}
+	.loupe-x {
+		position: absolute;
+		top: 1rem;
+		right: 1.2rem;
+		width: 2.4rem;
+		height: 2.4rem;
+		font-size: 1rem;
+		color: rgba(242, 240, 234, 0.6);
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 50%;
+		cursor: pointer;
+	}
+	.loupe-x:hover {
+		color: #f2f0ea;
 	}
 	.nom {
 		margin: 0.3rem 0 0;
