@@ -311,6 +311,34 @@
 		return snap.supports.filter((s) => s.targetUid === undefined && s.kind !== 'lieu');
 	}
 
+	/**
+	 * L'annonce de tour. Le bandeau « Tour 7 · À vous » du centre est trop
+	 * discret : on lève les yeux de sa main et on ne sait pas que la parole est
+	 * revenue. L'annonce traverse l'écran une seconde, puis s'efface.
+	 */
+	let annonce = $state<string | null>(null);
+	let annonceTimer: ReturnType<typeof setTimeout> | null = null;
+	let dernierTour = 0;
+
+	/*
+	 * On surveille le NUMÉRO de tour, pas le camp actif.
+	 *
+	 * endTurn() fait jouer l'IA de façon synchrone : quand la main revient à
+	 * l'interface, `active` est déjà repassé à 0. Il n'y a donc aucune bascule à
+	 * observer, et une annonce branchée dessus ne se déclenchait jamais — vérifié,
+	 * elle restait muette à l'ouverture comme aux changements de tour.
+	 */
+	$effect(() => {
+		const t = meta.turn;
+		if (meta.winner !== null || t === dernierTour) return;
+		const premier = dernierTour === 0;
+		dernierTour = t;
+		if (meta.active !== 0) return; // on n'annonce que la reprise de parole
+		annonce = premier ? 'À vous' : 'À vous de jouer';
+		if (annonceTimer) clearTimeout(annonceTimer);
+		annonceTimer = setTimeout(() => (annonce = null), 1500);
+	});
+
 	/* Le Korum qui tombe doit se voir : on marque le changement pour déclencher
 	   une pulsation, sinon un chiffre qui passe de 25 à 21 ne se remarque pas. */
 	let korumLui = $state(25);
@@ -544,6 +572,21 @@
 			</button>
 		{/each}
 	</div>
+
+	<!-- l'annonce de tour : elle traverse, elle ne bloque pas -->
+	{#if annonce}
+		<div
+			class="annonce"
+			class:mienne={true}
+			role="status"
+			aria-live="polite"
+			in:fly={{ x: -60, duration: duree(320), easing: cubicOut }}
+			out:fade={{ duration: duree(400) }}
+		>
+			<span class="an-txt">{annonce}</span>
+			<span class="an-tour">Tour {meta.turn}</span>
+		</div>
+	{/if}
 
 	<!-- la flèche d'attaque : de l'Être au curseur, tant qu'on tire -->
 	{#if traine}
@@ -1017,6 +1060,49 @@
 		--card-w: min(19rem, 26vw);
 		pointer-events: none;
 		filter: drop-shadow(0 1.2rem 2.4rem rgba(0, 0, 0, 0.75));
+	}
+
+	/* l'annonce : au centre, au-dessus du terrain, sans jamais capter le curseur */
+	.annonce {
+		position: fixed;
+		top: 50%;
+		left: 0;
+		right: 0;
+		z-index: 46;
+		display: grid;
+		place-items: center;
+		gap: 0.2rem;
+		padding: 1rem 0;
+		transform: translateY(-50%);
+		pointer-events: none;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			rgba(10, 12, 20, 0.82) 18%,
+			rgba(10, 12, 20, 0.82) 82%,
+			transparent
+		);
+	}
+	.an-txt {
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: clamp(2.4rem, 6vw, 4.2rem);
+		line-height: 1;
+		letter-spacing: 0.02em;
+		color: rgba(242, 240, 234, 0.75);
+	}
+	.annonce.mienne .an-txt {
+		color: #f0e6cf;
+		text-shadow: 0 0 30px rgba(213, 178, 94, 0.55);
+	}
+	.an-tour {
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
+		color: rgba(242, 240, 234, 0.4);
+	}
+	.annonce.mienne .an-tour {
+		color: rgba(213, 178, 94, 0.8);
 	}
 
 	.fleche {
