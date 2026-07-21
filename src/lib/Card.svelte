@@ -528,9 +528,11 @@
 	   mot : invisible, mais comptée dans la boîte. Sans compensation, l'écart
 	   OPTIQUE ÊTRE→filet vaut 8.2px contre 6.2px pour filet→VASAR. On l'annule
 	   après ÊTRE (écarts égaux autour du filet) et après VASAR (bloc centré). */
-	.card[data-fullart='true'] .kindlabel,
+	.card[data-fullart='true'] .kindlabel {
+		margin-right: -0.14em; /* letter-spacing de .cellline */
+	}
 	.card[data-fullart='true'] .fname {
-		margin-right: -0.14em;
+		margin-right: -0.22em; /* .fname a son propre letter-spacing, plus large */
 	}
 	.card[data-fullart='true'] .hairline {
 		flex: 0 0 auto;
