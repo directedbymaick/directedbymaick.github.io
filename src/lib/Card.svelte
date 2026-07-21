@@ -152,7 +152,7 @@
 					<div class="showcase-veil" aria-hidden="true"></div>
 				{/if}
 
-				<span class="cost" title="Coût en Volonté">{card.cost}</span>
+				<span class="cost" title="Coût en Volonté"><span class="cost-n">{card.cost}</span></span>
 				<span class="sigil" title={faction.name}><FactionSigil faction={card.faction} /></span>
 
 				<div class="content">
@@ -772,6 +772,13 @@
 
 	/* ---------- coût / sigil ---------- */
 
+	/* la grille centre la BOÎTE DE LIGNE, pas l'encre. Les chiffres Cinzel posent sur
+	   la ligne de base (descendante nulle) : leur encre est donc centrée un poil trop
+	   haut. Mesuré via les métriques de la police : 1px pour 22.8px, soit 0.044em. */
+	.cost-n {
+		display: block;
+		transform: translateY(0.044em);
+	}
 	.cost {
 		position: absolute;
 		top: 3.2cqw;
