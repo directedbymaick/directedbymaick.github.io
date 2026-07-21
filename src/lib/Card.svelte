@@ -558,15 +558,9 @@
 	   revenant au blanc pur : c'est le passage brusque clair/froid qui fait lire
 	   « taillé » plutôt que « métal ». */
 	.card[data-fullart='true'][data-tier='prism'] .name {
-		background:
-			linear-gradient(96deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0.5)),
-			url('/img/crystal.webp');
-		background-size:
-			auto,
-			34cqw auto;
-		background-position:
-			center,
-			center;
+		background: url('/img/crystal-texture.webp');
+		background-size: 46cqw auto;
+		background-position: center 40%;
 		-webkit-background-clip: text;
 		background-clip: text;
 	}
