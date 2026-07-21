@@ -626,11 +626,11 @@
 	   les offsets par carte du mode normal. Et pas de voile : le dégradé du
 	   scrim suffit, sinon écran noir en bas. */
 	.card[data-fullart='true'] .body > .cutout {
-		/* léger upscale (104%) centré, via width/height pour rester net */
-		top: -2%;
-		left: -2%;
-		width: 104%;
-		height: 104%;
+		/* léger upscale (104.5%) centré, via width/height pour rester net */
+		top: -2.25%;
+		left: -2.25%;
+		width: 104.5%;
+		height: 104.5%;
 		object-position: var(--art-pos, center 12%);
 		/* calage : le détourage était un poil trop haut par rapport au fond */
 		transform: translateY(2.2%);
