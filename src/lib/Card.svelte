@@ -524,9 +524,10 @@
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
 	}
-	/* écart symétrique autour du filet : on annule le letter-spacing résiduel
-	   après ÊTRE (et après VASAR) → même marge des deux côtés */
-	.card[data-fullart='true'] .kindlabel,
+	/* le letter-spacing laisse une chasse morte après la DERNIÈRE lettre : elle
+	   n'est visible qu'en fin de ligne (après VASAR), où elle décentre le bloc.
+	   On l'annule là seulement — la compenser aussi après ÊTRE resserrerait le
+	   filet d'un côté (écarts inégaux autour du trait). */
 	.card[data-fullart='true'] .fname {
 		margin-right: -0.14em;
 	}
