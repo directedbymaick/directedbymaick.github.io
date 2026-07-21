@@ -217,7 +217,7 @@
 				<span class="ff-serial"
 					>{faction.name} · {card.id.slice(0, 14).toUpperCase()}{#if card.alt}<span class="ff-alt"
 							>Alt {card.alt}</span
-						>{/if}{#if fullArt}<span class="fa-star" title="Full Art"></span>{/if}</span
+						>{/if}{#if isShowcase}<span class="ff-nobg" title="Illustration détourée">no bg</span>{/if}{#if fullArt}<span class="fa-star" title="Full Art"></span>{/if}</span
 				>
 				<span class="ff-rarity">◯ {rarityDef.name} · Nés du silence</span>
 			</footer>
@@ -728,6 +728,22 @@
 	}
 	/* le sceau ALT : pastille prismatique gravée dans le cadre — l'iridescence
 	   balaie lentement le dégradé argent-violet-or, discret mais indubitable */
+	/* marque les cartes dont le sujet est détouré (mode showcase) */
+	.ff-nobg {
+		display: inline-block;
+		margin-left: 1.2cqw;
+		padding: 0.3cqw 1.1cqw 0.2cqw;
+		font-size: 1.5cqw;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-indent: 0.08em;
+		text-transform: uppercase;
+		color: inherit;
+		text-shadow: none;
+		border: 1px solid currentColor;
+		border-radius: 999px;
+		opacity: 0.75;
+	}
 	.ff-alt {
 		display: inline-block;
 		margin-left: 1.2cqw;
