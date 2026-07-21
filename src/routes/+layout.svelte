@@ -301,39 +301,107 @@
 
 		/* ============================================================
 		   LANGAGE ÉDITORIAL — broadsheet imprimé, transposé en nuit et or.
-		   La référence est un journal clair à accent vert ; ici la toile
-		   reste la nuit d'Expelled et l'or joue le rôle du surligneur :
-		   un seul ton chromatique sur une page autrement monochrome.
+
+		   Système repris de la référence « New Form ». Deux transpositions
+		   assumées, tout le reste est conservé à l'identique :
+		     — la toile n'est pas le papier clair mais la nuit d'Expelled ;
+		     — l'accent n'est pas le vert surligneur mais l'or du set.
+		   Le principe, lui, est le même : UN seul ton chromatique posé
+		   comme un trait de marqueur sur une page autrement monochrome.
+
+		   Polices : les substituts documentés par la référence, déjà
+		   chargés par le projet. Inter Variable tient le rôle de TWK
+		   Lausanne (grotesque UI), Cormorant Garamond celui de PP Mondwest
+		   et d'Editorial New (serif de titraille). Les originaux sont sous
+		   licence commerciale et ne sont pas redistribuables.
 		   ============================================================ */
 
-		/* échelle typographique : l'écart entre 18px de texte et 96px+ de
-		   display est ce qui crée le rythme. Rien entre les deux. */
-		--text-caption: 0.6875rem; /* 11px — micro-libellés */
-		--text-body-sm: 0.875rem; /* 14px */
-		--text-body: 1.125rem; /* 18px — plafond du texte courant */
-		--text-subheading: 3.75rem; /* 60px */
-		--text-heading-sm: 4.5rem; /* 72px */
-		--text-heading: 6rem; /* 96px */
-		--text-heading-lg: 9.6875rem; /* 155px */
-		--text-display: 18.4375rem; /* 295px */
+		--font-grotesque: 'Inter Variable', Inter, system-ui, sans-serif;
+		--font-editorial: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+		--font-mono-serif: Georgia, 'Times New Roman', serif;
 
-		--tracking-caption: 0.01em;
-		--tracking-display: -0.04em;
-		--tracking-heading: -0.02em;
+		/* Échelle typographique — l'écart entre 18px de texte et 96px+ de
+		   display EST le rythme de la page. Rien ne vit entre les deux. */
+		--text-caption: 11px;
+		--leading-caption: 1.1;
+		--tracking-caption: 0.11px;
+		--text-body-sm: 14px;
+		--leading-body-sm: 1.1;
+		--tracking-body-sm: 0.14px;
+		--text-body: 18px; /* plafond absolu du texte courant */
+		--leading-body: 1;
+		--tracking-body: -0.36px;
+		--text-subheading: 60px;
+		--leading-subheading: 0.9;
+		--tracking-subheading: -1.2px;
+		--text-heading-sm: 72px;
+		--leading-heading-sm: 1;
+		--tracking-heading-sm: -1.44px;
+		--text-heading: 96px;
+		--leading-heading: 1;
+		--tracking-heading: -1.92px;
+		--text-heading-lg: 155px;
+		--leading-heading-lg: 1;
+		--tracking-heading-lg: -6.2px;
+		--text-display: 295px;
 		--leading-display: 0.9;
+		--tracking-display: -11.8px;
 
-		/* espacement : aéré, cadencé */
-		--section-gap: 80px;
-		--element-gap: 20px;
+		/* Graisses */
+		--fw-extralight: 200;
+		--fw-light: 300;
+		--fw-350: 350;
+		--fw-regular: 400;
+		--fw-550: 550;
+
+		/* Échelle d'espacement, reprise telle quelle */
+		--spacing-4: 4px;
+		--spacing-8: 8px;
+		--spacing-10: 10px;
+		--spacing-15: 15px;
+		--spacing-20: 20px;
+		--spacing-25: 25px;
+		--spacing-30: 30px;
+		--spacing-32: 32px;
+		--spacing-35: 35px;
+		--spacing-40: 40px;
+		--spacing-45: 45px;
+		--spacing-50: 50px;
+		--spacing-55: 55px;
+		--spacing-60: 60px;
+		--spacing-120: 120px;
+		--spacing-190: 190px;
+
+		/* Mise en page */
 		--page-max: 1400px;
+		--section-gap: 80px;
+		--card-padding: 0px;
+		--element-gap: 20px;
 
-		/* rayons : le bouton principal reste anguleux, jamais en pilule */
+		/* Rayons — l'action principale reste anguleuse, jamais en pilule */
 		--radius-action: 5px;
 		--radius-ghost: 10px;
 		--radius-image: 14px;
+		--radius-full: 9999px;
 
-		/* la seule élévation du site, teintée d'or — jamais de gris */
+		/* La seule élévation du site, teintée d'or comme l'accent —
+		   jamais une ombre grise générique. */
 		--shadow-action: rgba(120, 92, 20, 0.45) 1px 8px 20px 0;
+		--shadow-action-soft: rgba(160, 124, 32, 0.25) 1px 8px 20px 0;
+
+		/* Surfaces — l'inverse de la référence : la nuit est la toile,
+		   et le bloc de rupture est un noir plus profond encore. */
+		--surface-canvas: #070d1a;
+		--surface-deep: #04060c;
+		--surface-accent: #d5b25e;
+
+		/* Duotone éditorial. La référence pousse ses photos vers le vert
+		   par hue-rotate(80deg) après une inversion partielle ; ici le
+		   sépia amène déjà le chaud et la rotation ne fait que caler la
+		   teinte sur l'or du set. À poser via .ed-photo — JAMAIS
+		   globalement sur les <img>, ce qui dénaturerait les cartes. */
+		--filter-duotone: grayscale(1) sepia(0.62) saturate(2.4) hue-rotate(-8deg)
+			brightness(0.92) contrast(1.06);
 	}
 	:global(html) {
 		scroll-behavior: smooth;
@@ -475,6 +543,45 @@
 		margin: 0 auto;
 		padding-block: var(--section-gap);
 		border-top: 1px solid var(--panel-line);
+	}
+
+	/* L'insert photographique : petite tuile rectangulaire, rayon 14px, posée
+	   DANS le flux du texte et non dans une grille — c'est ce qui donne la
+	   mise en page de journal. Le duotone est opt-in : les illustrations de
+	   cartes ne doivent jamais le subir. */
+	:global(.ed-photo) {
+		border-radius: var(--radius-image);
+		filter: var(--filter-duotone);
+		display: block;
+	}
+
+	/* L'étiquette de rubrique : un mot teinté, sans fond ni cadre. */
+	:global(.ed-tag) {
+		font-family: var(--font-grotesque);
+		font-size: var(--text-body-sm);
+		font-weight: var(--fw-350);
+		letter-spacing: var(--tracking-body-sm);
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.55);
+	}
+
+	/* Le chiffre éditorial : grande taille, couleur sourde. C'est la
+	   couleur éteinte qui le fait lire comme une donnée de journal plutôt
+	   que comme un chiffre de vitrine. */
+	:global(.ed-stat) {
+		font-family: var(--font-grotesque);
+		font-size: clamp(2.5rem, 7vw, var(--text-heading-sm));
+		font-weight: var(--fw-550);
+		line-height: var(--leading-heading-sm);
+		letter-spacing: var(--tracking-heading-sm);
+		color: rgba(140, 170, 220, 0.55);
+	}
+
+	/* Le bloc de rupture : un noir plus profond que la toile, où les
+	   actions passent en contour. */
+	:global(.ed-deep) {
+		background: var(--surface-deep);
+		border-block: 1px solid var(--panel-line);
 	}
 
 	:global(::selection) {
