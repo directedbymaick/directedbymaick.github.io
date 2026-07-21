@@ -927,6 +927,12 @@
 		font-size: 0.8em;
 		opacity: 0.7;
 	}
+	/* sur les Êtres le libellé est un dégradé clippé au texte (color: transparent) :
+	   le ◯ ne se peint pas, mais occupait quand même sa chasse (16px) — un blanc
+	   fantôme entre ÊTRE et le filet. */
+	.card[data-kind='etre'] .kindlabel::after {
+		content: none;
+	}
 	.hairline {
 		flex: 1 1 0;
 		min-width: 0;
