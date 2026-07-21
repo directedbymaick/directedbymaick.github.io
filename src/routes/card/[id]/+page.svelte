@@ -4,7 +4,7 @@
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { altView } from '$lib/cards';
-	import { loadCollection } from '$lib/gacha';
+	import { loadCollection, fullArtView } from '$lib/gacha';
 	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
@@ -24,13 +24,6 @@
 		key: string;
 		label: string;
 		view: CardData;
-	}
-	function fullArtView(source: CardData): CardData {
-		const view = structuredClone(source);
-		view.id = `${source.id}--fullart`;
-		view.rarity = 'prism';
-		view.gene.foilPreset = 'secret';
-		return view;
 	}
 	const artOptions: ArtOption[] = $derived([
 		{ key: 'base', label: 'Standard', view: card },
