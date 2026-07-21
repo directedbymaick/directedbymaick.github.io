@@ -1,4 +1,4 @@
-# EXPELLED · Set 01 « Le Silence » — Les 60 prompts
+# EXPELLED · Set 01 « Nés du silence » — Les 60 prompts
 
 *Production du set, carte par carte. Système : voir [PROMPTS.md](PROMPTS.md) — ajoute tes refs
 (kit du peuple) directement côté Midjourney. Slug = nom de fichier à déposer dans `Expelled/drop/`.*

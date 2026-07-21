@@ -208,7 +208,7 @@
 				{#if fullArt}
 					<span class="fa-star" title="Full Art"></span>
 				{/if}
-				<span class="ff-rarity">◯ {rarityDef.name} · Le Silence</span>
+				<span class="ff-rarity">◯ {rarityDef.name} · Nés du silence</span>
 			</footer>
 			<div class="conduits" aria-hidden="true"></div>
 		</div>

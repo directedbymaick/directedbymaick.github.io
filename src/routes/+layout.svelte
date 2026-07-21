@@ -118,7 +118,7 @@
 				<img class="emblem" src={logo} alt="" aria-hidden="true" />
 				<span class="brand-txt">
 					<b>{charter.game.name}</b>
-					<i>Le Silence · Set 01</i>
+					<i>Nés du silence · Set 01</i>
 				</span>
 			</a>
 			<div class="links">
@@ -223,14 +223,14 @@
 			</nav>
 			<nav class="foot-col">
 				<h4>Univers</h4>
-				<a href="/">Le Silence · Set 01</a>
+				<a href="/">Nés du silence · Set 01</a>
 				<a href="/packs">Réquisition</a>
 				<a href="/arene">Arène</a>
 				<a href="/versus">Salons</a>
 			</nav>
 		</div>
 		<div class="foot-bar">
-			<span>© 2026 Expelled · Le Silence</span>
+			<span>© 2026 Expelled · Nés du silence</span>
 			<span>Set 01 · 1ʳᵉ Édition</span>
 		</div>
 	</footer>

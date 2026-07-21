@@ -1,6 +1,6 @@
-# EXPELLED — Set 01 : Le Silence
+# EXPELLED — Set 01 : Nés du silence
 
-**Le Silence** se déroule juste après la Fracture.  
+**Nés du silence** se déroule juste après la Fracture.  
 KOR vient de se taire. Le Vasis prononce les premières sentences. Les peuples deviennent ce qu'ils
 sont sous la pression de l'Expulsion.
 

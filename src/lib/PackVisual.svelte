@@ -345,11 +345,11 @@
 		<div class="logo-block">
 			<p class="logo-over">Trading Card Game</p>
 			<p class="wordmark">Expelled</p>
-			<p class="set-banner">Le Silence</p>
+			<p class="set-banner">Nés du silence</p>
 		</div>
 
 		<p class="count">5 cartes<br /><small>par sachet</small></p>
-		<p class="legal">© 2026 Expelled · Set 01 · Le Silence</p>
+		<p class="legal">© 2026 Expelled · Set 01 · Nés du silence</p>
 
 		<!-- le reflet qui suit le pointeur — clippé par le corps, jamais de voile fantôme -->
 		<div class="glare3d" aria-hidden="true"></div>

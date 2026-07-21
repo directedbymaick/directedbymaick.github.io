@@ -2,7 +2,7 @@
 
 Version de travail destinée aux premiers tests.  
 Objectif : obtenir un jeu lisible, rapide à prototyper, assez stable pour produire les premières
-cartes du set **Le Silence**.
+cartes du set **Nés du silence**.
 
 ---
 

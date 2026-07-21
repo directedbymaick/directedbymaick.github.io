@@ -187,7 +187,7 @@
 </script>
 
 <svelte:head>
-	<title>{charter.game.name} — Le Silence</title>
+	<title>{charter.game.name} — Nés du silence</title>
 	<meta name="description" content={charter.game.tagline} />
 </svelte:head>
 
@@ -199,7 +199,7 @@
 		{/if}
 		<div class="hero-inner">
 			<p class="quiet kicker">Premier cycle</p>
-			<h1><span class="line">Le Silence</span></h1>
+			<h1><span class="line">Nés du silence</span></h1>
 			<p class="tagline">
 				<span class="line">Le Créateur se tait.</span>
 				<span class="line em">Pas vous.</span>

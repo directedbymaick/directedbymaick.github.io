@@ -15,7 +15,7 @@ Ce dossier centralise le canon, la direction artistique, le set 01 et les décis
 | [KORUM.md](KORUM.md) | Texte mythologique source. Des fragments pourront servir de flavor text et d'indices de lore. |
 | [LORE.md](LORE.md) | Bible de l'univers : Langue Première, Fracture, peuples, lexique et mécanique `Prononcer`. |
 | [DA.md](DA.md) | Direction artistique : invariants visuels, style validé, kits par peuple et règles de génération. |
-| [SET01.md](SET01.md) | Structure du premier set, **Le Silence** : factions, raretés, gameplay et protocole de production. |
+| [SET01.md](SET01.md) | Structure du premier set, **Nés du silence** : factions, raretés, gameplay et protocole de production. |
 | [RULES.md](RULES.md) | Règles v1 jouables : tour, Volonté, combat, Prononcer, mots-clés et deckbuilding. |
 | [TECHNIQUE.md](TECHNIQUE.md) | Socle technique à conserver : display de carte interactif, holo/tilt, migration hors Travelers. |
 | [ASSETS.md](ASSETS.md) | Inventaire et structure cible des références, glyphes, halos, textures et assets de production. |
@@ -33,7 +33,7 @@ Ce dossier centralise le canon, la direction artistique, le set 01 et les décis
 - **KOR est l'Origine.** Son glyphe, le cercle, doit structurer le cadre de carte, les halos et la DA.
 - **EX est le mot impossible.** Il fonde l'Expulsion, les halos brisés et la mécanique signature.
 - **Prononcer** est la mécanique centrale : un effet puissant, payé en Volonté, puis la carte sort définitivement du duel.
-- **Le set 01 s'appelle Le Silence.** Il raconte les premières conséquences de la Fracture.
+- **Le set 01 s'appelle Nés du silence.** Il raconte les premières conséquences de la Fracture.
 
 ---
 

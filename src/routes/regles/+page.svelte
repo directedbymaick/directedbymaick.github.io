@@ -130,7 +130,7 @@
 		</tbody>
 	</table>
 	<p class="note">
-		Premier cycle, « Le Silence » : {cards.length}/60 noms inscrits. Cette grammaire évoluera
+		Premier cycle, « Nés du silence » : {cards.length}/60 noms inscrits. Cette grammaire évoluera
 		avec les prochains duels.
 	</p>
 </section>

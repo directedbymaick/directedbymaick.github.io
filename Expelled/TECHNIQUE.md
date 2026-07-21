@@ -67,7 +67,7 @@ Ces éléments peuvent exister dans l'historique, mais ils ne doivent pas guider
 | Protocole | Verbe |
 | Synchro | Prononcer |
 | Faction tech | Peuple conceptuel |
-| Set Zones Aveugles | Set Le Silence |
+| Set Zones Aveugles | Set Nés du silence |
 
 ---
 

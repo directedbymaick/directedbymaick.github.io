@@ -255,5 +255,5 @@ Koren, Doran, Thalen, Velna, Moras, Rasen, Eshel, Xeran, Noren, Velor, Morek, Th
 3. Les trois factions mineures sont **Eshar**, **Morar** et **Velar**.
 4. KOR reste un mystère. Aucun retour de KOR n'est prévu.
 5. Le mot d'interface de la mécanique est **Prononcer**.
-6. Le set 01 s'appelle **Le Silence**.
+6. Le set 01 s'appelle **Nés du silence**.
 7. Le set 01 raconte des premières fois : premier halo brisé, première sentence, premier sourire dans la chute.
