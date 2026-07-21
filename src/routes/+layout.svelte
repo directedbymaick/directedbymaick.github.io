@@ -217,9 +217,28 @@
 	<!-- Pied éditorial : surface plus profonde que la toile, une phrase en
 	     display, puis des colonnes de micro-libellés. Aucun panneau, aucune
 	     ombre — la structure vient de la typographie et des filets. -->
+	<!-- ============ DERNIER APPEL ============
+	     Même moule que les sections de l'accueil : titre centré en capitales,
+	     phrase, deux actions. Sur l'aplat d'or, les boutons s'inversent. -->
+	<aside class="bande">
+		<div class="bande-inner">
+			<p class="bande-kicker">Nés du silence · Set 01</p>
+			<h2 class="bande-titre">Soixante noms attendent</h2>
+			<p class="bande-txt">Il n'en faut qu'un pour commencer.</p>
+			<div class="bande-actions">
+				<a class="bande-cta" href="/packs">Ouvrir un booster</a>
+				<a class="bande-ghost" href="/registre">Parcourir le Registre</a>
+			</div>
+		</div>
+	</aside>
+
+	<!-- ============ PIED ============ -->
 	<footer>
 		<div class="foot-inner">
-			<p class="foot-said">Le Créateur se tait.<br /><em>Pas vous.</em></p>
+			<div class="foot-marque">
+				<img class="foot-emblem" src={logo} alt="" aria-hidden="true" />
+				<p class="foot-word">{charter.game.name}</p>
+			</div>
 
 			<div class="foot-cols">
 				<nav class="foot-col">
@@ -237,7 +256,7 @@
 				</nav>
 				<nav class="foot-col">
 					<p class="foot-h">Univers</p>
-					<a href="/">Nés du silence · Set 01</a>
+					<a href="/registre">Nés du silence · Set 01</a>
 					<a href="/packs">Réquisition</a>
 					<a href="/raretes">Raretés</a>
 					<a href="/arene">Arène</a>
@@ -248,24 +267,9 @@
 
 		<div class="foot-bar">
 			<span>© 2026 {charter.game.name}</span>
-			<span>Nés du silence</span>
 			<span>Set 01 · 1ʳᵉ Édition</span>
 		</div>
 	</footer>
-
-	<!-- La bande d'accent ferme la page. Elle ne contenait qu'une initiale et ne
-	     disait rien : c'est maintenant le dernier appel à l'action du site, ce qui
-	     justifie qu'elle occupe toute la largeur. -->
-	<aside class="bande">
-		<div class="bande-inner">
-			<p class="bande-kicker">Nés du silence · Set 01</p>
-			<p class="bande-dit">Soixante noms attendent<br />qu'on les prononce.</p>
-			<div class="bande-actions">
-				<a class="bande-cta" href="/packs">Ouvrir un booster</a>
-				<a class="bande-lien" href="/registre">Parcourir le Registre</a>
-			</div>
-		</div>
-	</aside>
 
 	<span class="uid" aria-hidden="true">UID : KOR-701606888</span>
 
@@ -616,7 +620,12 @@
 	}
 
 	/* ---------- nav : barre de jeu, verre bleuté ---------- */
-	nav {
+	/* La barre du haut UNIQUEMENT. Un sélecteur `nav` nu attrapait aussi les
+	   colonnes du pied et les barres d'onglets, qui sont elles aussi des <nav> :
+	   elles héritaient d'un fond de panneau et d'un flou d'arrière-plan. Le
+	   symptôme est réapparu deux fois — le combinateur enfant direct le règle
+	   pour de bon. */
+	.app > nav {
 		position: sticky;
 		top: 0;
 		z-index: 100;
@@ -1002,175 +1011,174 @@
 		}
 	}
 
-	/* La bande : pleine largeur, mais elle porte enfin quelque chose. Sa hauteur
-	   suit son contenu au lieu d'être un bloc de couleur arbitraire. */
+	/* ============ DERNIER APPEL ============
+	   L'aplat d'or, seul ton saturé de la page, avec le même moule centré que
+	   les sections. Sa hauteur suit son contenu. */
 	.bande {
 		width: 100%;
 		background: var(--gold);
 		color: #14120c;
-		padding: var(--spacing-120) var(--spacing-50);
+		padding: clamp(3.5rem, 8vw, 6rem) var(--spacing-20);
 		box-sizing: border-box;
+		text-align: center;
 	}
 	.bande-inner {
-		max-width: var(--page-max);
+		max-width: 46rem;
 		margin: 0 auto;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: var(--spacing-40);
 	}
 	.bande-kicker {
-		width: 100%;
-		margin: 0 0 var(--spacing-25);
-		font-family: var(--font-grotesque);
-		font-size: var(--text-caption);
-		font-weight: var(--fw-550);
-		letter-spacing: var(--tracking-caption);
+		margin: 0 0 var(--spacing-20);
+		font-family: var(--display);
+		font-size: 0.74rem;
+		font-weight: 700;
+		letter-spacing: 0.28em;
 		text-transform: uppercase;
-		color: rgba(20, 18, 12, 0.6);
+		color: rgba(20, 18, 12, 0.62);
 	}
-	.bande-dit {
+	.bande-titre {
 		margin: 0;
-		font-family: var(--font-editorial);
-		font-size: clamp(2.2rem, 5.5vw, var(--text-subheading));
-		line-height: var(--leading-subheading);
-		letter-spacing: var(--tracking-subheading);
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: clamp(1.8rem, 4.5vw, 3rem);
+		line-height: 1.05;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
 		color: #14120c;
+	}
+	.bande-txt {
+		margin: var(--spacing-15) 0 var(--spacing-35);
+		font-size: 1rem;
+		color: rgba(20, 18, 12, 0.72);
 	}
 	.bande-actions {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
-		gap: var(--spacing-30);
+		justify-content: center;
+		gap: var(--spacing-15);
 	}
-	/* sur l'or, l'action s'inverse en encre noire pleine : c'est le seul aplat
-	   sombre de la bande, donc le point de fuite du regard */
-	.bande-cta {
-		padding: var(--spacing-20) var(--spacing-30);
-		font-family: var(--font-grotesque);
-		font-size: var(--text-caption);
-		font-weight: var(--fw-550);
-		letter-spacing: var(--tracking-caption);
+	/* sur l'or, les rôles s'inversent : le plein devient l'encre noire */
+	.bande-cta,
+	.bande-ghost {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 14rem;
+		padding: 1.05rem 2.2rem;
+		font-family: var(--display);
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		text-decoration: none;
+		border-radius: 0;
+		transition:
+			background 0.18s ease,
+			color 0.18s ease;
+	}
+	.bande-cta {
 		color: var(--gold);
 		background: #14120c;
-		border-radius: var(--radius-action);
-		transition: background 0.18s ease;
+		border: 2px solid #14120c;
 	}
 	.bande-cta:hover {
 		background: #000;
+		border-color: #000;
 	}
-	.bande-lien {
-		font-family: var(--font-grotesque);
-		font-size: var(--text-caption);
-		font-weight: var(--fw-550);
-		letter-spacing: var(--tracking-caption);
-		text-transform: uppercase;
-		text-decoration: none;
+	.bande-ghost {
 		color: #14120c;
-		border-bottom: 1px solid #14120c;
+		background: none;
+		border: 2px solid #14120c;
+	}
+	.bande-ghost:hover {
+		color: var(--gold);
+		background: #14120c;
 	}
 
-	/* Sur papier, le pied reste une île sombre : son encre doit donc s'inverser,
-	   sinon les liens héritent du noir de la page et disparaissent. */
-	/* ============ PIED ÉDITORIAL ============
-	   Surface plus profonde que la toile, filet unique en haut, et rien
-	   d'autre : ni panneau, ni dégradé, ni ombre. La hiérarchie tient
-	   entièrement à l'écart entre la phrase en display et les colonnes
-	   de micro-libellés à 11px. */
+	/* ============ PIED ============
+	   Centré comme le reste, marque en tête, colonnes régulières dessous.
+	   Aucun fond de colonne, aucune ombre : des filets et de l'espace. */
 	footer {
 		position: relative;
-		margin-top: var(--spacing-120);
-		padding: var(--spacing-120) var(--spacing-50) var(--spacing-40);
-		background: var(--surface-deep);
+		padding: clamp(3rem, 7vw, 5rem) var(--spacing-20) var(--spacing-30);
+		background: rgba(3, 6, 12, 0.85);
 		border-top: 1px solid var(--panel-line);
 	}
 	.foot-inner {
-		max-width: var(--page-max);
+		max-width: 1240px;
 		margin: 0 auto;
-		display: grid;
-		grid-template-columns: minmax(16rem, 1fr) minmax(0, 1.6fr);
-		gap: var(--spacing-60) var(--spacing-120);
-		align-items: start;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-55);
 	}
-	/* la phrase du set, traitée comme une citation de une */
-	.foot-said {
+	.foot-marque {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-10);
+	}
+	.foot-emblem {
+		width: 2.6rem;
+		height: 2.6rem;
+		filter: drop-shadow(0 0 12px rgba(213, 178, 94, 0.45));
+	}
+	.foot-word {
 		margin: 0;
-		font-family: var(--font-editorial);
-		font-weight: var(--fw-regular);
-		font-size: clamp(2.6rem, 6vw, var(--text-subheading));
-		line-height: var(--leading-subheading);
-		letter-spacing: var(--tracking-subheading);
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: 1rem;
+		letter-spacing: 0.3em;
+		text-transform: uppercase;
 		color: var(--ink);
 	}
-	.foot-said em {
-		font-style: italic;
-		color: var(--gold);
-	}
-	/* Trois colonnes régulières, alignées en haut, jamais de fond ni de cadre :
-	   ce sont des listes de liens, pas des panneaux. */
 	.foot-cols {
+		width: 100%;
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: var(--spacing-40);
-	}
-	.foot-col {
-		background: none;
-		border: none;
-		padding: 0;
+		text-align: center;
 	}
 	.foot-col {
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		gap: var(--spacing-15);
-		background: none;
 	}
-	/* l'en-tête de colonne : micro-libellé, pas un titre */
 	.foot-h {
-		margin: 0 0 var(--spacing-10);
-		font-family: var(--font-grotesque);
-		font-size: var(--text-caption);
-		font-weight: var(--fw-550);
-		line-height: var(--leading-caption);
-		letter-spacing: var(--tracking-caption);
+		margin: 0 0 var(--spacing-8);
+		font-family: var(--display);
+		font-size: 0.74rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
 		text-transform: uppercase;
-		color: var(--ink-dim);
+		color: var(--gold);
 	}
-	/* les liens : soulignement à la ligne de base, rien d'autre. Ils ne
-	   changent ni de graisse ni de couleur — le filet EST le traitement. */
 	.foot-col a {
-		width: fit-content;
-		font-family: var(--font-grotesque);
-		font-size: var(--text-body);
-		font-weight: var(--fw-extralight);
-		line-height: 1.15;
-		letter-spacing: var(--tracking-body);
-		color: var(--ink);
+		font-size: 0.92rem;
+		color: rgba(238, 240, 245, 0.62);
 		text-decoration: none;
-		border-bottom: 1px solid transparent;
-		transition: border-color 0.18s ease;
+		transition: color 0.16s ease;
 	}
 	.foot-col a:hover {
-		border-bottom-color: var(--ink);
+		color: var(--ink);
 	}
 	.foot-bar {
-		max-width: var(--page-max);
-		margin: var(--spacing-120) auto 0;
+		max-width: 1240px;
+		margin: var(--spacing-55) auto 0;
 		padding-top: var(--spacing-20);
 		border-top: 1px solid var(--panel-line);
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--spacing-20);
+		gap: var(--spacing-15);
 		justify-content: space-between;
-		font-family: var(--font-grotesque);
-		font-size: var(--text-caption);
-		font-weight: var(--fw-550);
-		letter-spacing: var(--tracking-caption);
+		font-family: var(--display);
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		color: var(--ink-dim);
+		color: rgba(238, 240, 245, 0.4);
 	}
+
 	@media (max-width: 900px) {
 		.foot-inner {
 			grid-template-columns: 1fr;
