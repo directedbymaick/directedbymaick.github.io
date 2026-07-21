@@ -85,6 +85,9 @@ export interface CardData {
 	    `rarity: 'prism'` (cadre prismatique) mais le nom reste doré tant que la
 	    carte n'est pas VRAIMENT prismatique. Posé à l'affichage, jamais en JSON. */
 	sourceRarity?: Rarity;
+	/** Matière du nom en Full Art. Par défaut l'or, le cristal sur les Prismatiques.
+	    Ce champ force l'un ou l'autre pour une carte donnée (exception d'auteur). */
+	nameMaterial?: 'or' | 'cristal';
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
 	alts?: string[];
 	/** Index de version alternative (1+) — posé par altView à l'affichage, jamais dans les JSON. */

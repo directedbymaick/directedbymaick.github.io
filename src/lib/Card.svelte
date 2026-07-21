@@ -127,6 +127,8 @@
 		data-foil={foil.preset}
 		data-rarity={holoRarity}
 		data-tier={card.sourceRarity ?? card.rarity}
+		data-name-mat={card.nameMaterial ??
+			((card.sourceRarity ?? card.rarity) === 'prism' ? 'cristal' : 'or')}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
 		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
@@ -537,13 +539,11 @@
 		background-clip: text;
 		color: transparent;
 	}
-	/* prismatiques : cristal (data-tier = rareté d'origine — la vue full art force
-	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
-	/* cristal — prismatiques : pas d'argent (trop sombre) mais du verre taillé.
-	   Facettes courtes et très claires, bleutées puis violacées, chaque arête
-	   revenant au blanc pur : c'est le passage brusque clair/froid qui fait lire
-	   « taillé » plutôt que « métal ». */
-	.card[data-fullart='true'][data-tier='prism'] .name {
+	/* cristal — les Prismatiques par défaut, plus toute carte qui force
+	   nameMaterial: 'cristal'. On ne cible plus la rareté directement : la vue
+	   full art force data-rarity, et certaines cartes méritent le cristal sans
+	   être prismatiques. */
+	.card[data-fullart='true'][data-name-mat='cristal'] .name {
 		/* facettes volontairement GRANDES : à 30px de facette, chaque lettre moyennait
 		   plusieurs triangles et retombait sur un gris. À cette échelle une lettre
 		   tient dans une facette et garde son blanc ou sa couleur franche. */

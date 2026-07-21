@@ -13,11 +13,13 @@
 			"#292829",
 			"#fae9b8"
 		],
-		"foilPreset": "galaxy",
+		"foilPreset": "ultra",
 		"accent": "#f0a626",
 		"seed": 575362
 	},
 	"attack": 5,
 	"health": 4,
-	"flavor": "« Tu tiens la porte d’une maison vide. »"
+	"flavor": "« Tu tiens la porte d’une maison vide. »",
+	"cutout": "/art/velna-cutout.webp",
+	"nameMaterial": "cristal"
 }
