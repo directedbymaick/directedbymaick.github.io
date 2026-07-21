@@ -24,5 +24,6 @@
 		"foilPreset": "mat",
 		"accent": "#b3273a",
 		"seed": 866327
-	}
+	},
+	"cutoutX": "3%"
 }

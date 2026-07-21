@@ -129,7 +129,7 @@
 		data-rarity={holoRarity}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -617,8 +617,8 @@
 		object-fit: cover;
 		object-position: var(--art-pos, center 8%);
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
-		/* calage vertical surchargeable par carte (--cutout-y) */
-		transform: translateY(var(--cutout-y, -4%));
+		/* calage surchargeable par carte (--cutout-x / --cutout-y) */
+		transform: translate(var(--cutout-x, 0%), var(--cutout-y, -4%));
 		pointer-events: none;
 	}
 	/* FULL ART + showcase : l'art couvre toute la carte → le détourage doit se
