@@ -157,7 +157,7 @@
 
 				<div class="content">
 					<header class="plate">
-						<h2 class="name">{card.name}</h2>
+						<h2 class="name" data-text={card.name}>{card.name}</h2>
 						<p class="cellline">
 							<span class="kindlabel">{kindLabel}</span>
 							{#if card.cell}
@@ -522,41 +522,58 @@
 	.card[data-fullart='true'] .name {
 		text-align: center;
 	}
-	/* nom en métal poli à reflet prismatique : or par défaut, argent sur les
-	   Prismatiques. Dégradé fixe clippé au texte — le reflet irisé est glissé
-	   entre les tons du métal, sans animation. */
+	/* nom en métal poli : or par défaut, argent sur les Prismatiques. Le métal
+	   remplit la lettre, l'irisation ne vit que sur l'ARÊTE — quatre ombres
+	   colorées décalées d'un demi-pixel qui débordent tout autour du glyphe. */
 	.card[data-fullart='true'] .name {
 		background: linear-gradient(
 			100deg,
 			var(--m-dark) 0%,
-			var(--m-light) 18%,
-			#f6efe2 30%,
-			var(--m-iris-a) 38%,
-			var(--m-iris-b) 46%,
-			#fbf6ec 54%,
-			var(--m-light) 66%,
-			var(--m-dark) 82%,
+			var(--m-light) 20%,
+			var(--m-hi) 40%,
+			var(--m-light) 58%,
+			var(--m-dark) 76%,
 			var(--m-light) 100%
 		);
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
 		filter: drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
+		position: relative;
+		isolation: isolate;
+	}
+	/* le liseré irisé ne peut PAS être un text-shadow sur .name : un fond clippé au
+	   texte se peint SOUS les ombres, qui recouvriraient le métal. On duplique donc
+	   le titre sur un calque placé dessous, dont seules les arêtes dépassent. */
+	.card[data-fullart='true'] .name::before {
+		content: attr(data-text);
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		color: transparent;
+		text-shadow:
+			-0.07cqw -0.07cqw 0 var(--i-1),
+			0.07cqw -0.07cqw 0 var(--i-2),
+			0.07cqw 0.07cqw 0 var(--i-3),
+			-0.07cqw 0.07cqw 0 var(--i-4);
+		pointer-events: none;
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
 		--m-dark: #8a6a2c;
-		--m-light: #e9cd84;
-		--m-iris-a: #cfe0b4;
-		--m-iris-b: #b9cfe6;
+		--m-light: #e0bd6a;
+		--m-hi: #f7e3aa;
+		--i-1: rgba(226, 138, 162, 0.7);
+		--i-2: rgba(138, 226, 186, 0.7);
+		--i-3: rgba(138, 186, 226, 0.7);
+		--i-4: rgba(186, 138, 226, 0.7);
 	}
 	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
 	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
 	.card[data-fullart='true'][data-tier='prism'] {
 		--m-dark: #6f7681;
-		--m-light: #dfe4ea;
-		--m-iris-a: #e3c6d6;
-		--m-iris-b: #bcd8e0;
+		--m-light: #c8ced7;
+		--m-hi: #f2f5f8;
 	}
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
