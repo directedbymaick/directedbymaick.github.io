@@ -229,73 +229,64 @@
 		</div>
 	</header>
 
-	<!-- ============ LE REGISTRE : sidebar + chapitres ============ -->
-	<div class="registre">
-		<aside class="side">
-			<p class="side-title">Registre du Silence</p>
-			<button class="srow" class:active={sel === 'all'} onclick={() => (sel = 'all')}>
-				<span class="s-ico">✦</span>
-				<span class="s-label">Tous</span>
-				<span class="s-count">{cards.length}</span>
-			</button>
+	<!-- ============ LES PEUPLES ============
+	     Grille de rubriques : une étiquette teintée, un nom, un chiffre.
+	     Aucun fond, aucun cadre — la structure vient des filets. -->
+	<section class="ed-section peuples">
+		<div class="sec-tete">
+			<p class="ed-tag">Les cinq peuples</p>
+			<a class="ed-link" href="/registre">Voir le Registre</a>
+		</div>
+		<div class="peuples-grille">
 			{#each factions as f (f)}
 				{@const n = byFaction(f).length}
-				<button
-					class="srow"
-					class:active={sel === f}
-					disabled={n === 0}
-					style="--fc: {charter.factions[f].color}"
-					onclick={() => (sel = f)}
-				>
-					<span class="s-ico" style="color: {charter.factions[f].color}"
-						><FactionSigil faction={f} flat /></span
-					>
-					<span class="s-label">{charter.factions[f].name}</span>
-					<span class="s-count">{n}</span>
-				</button>
-			{/each}
-		</aside>
-
-		<div class="content">
-			{#each shown as f (f)}
-				{@const list = byFaction(f)}
-				{@const banner = bannerArt(f)}
-				<section class="chapter" style="--fc: {charter.factions[f].color}">
-					<header class="chapter-head">
-						<span class="index">0{factions.indexOf(f) + 1}</span>
-						<h2>{charter.factions[f].name}</h2>
-						<p class="ftag">{FACTION_TAG[f]}</p>
-						<span class="fcount"
-							><FactionSigil faction={f} flat /> {list.length} carte{list.length > 1 ? 's' : ''}</span
-						>
-					</header>
-
-					{#if banner}
-						<div class="bandeau" aria-hidden="true">
-							<img src={banner} alt="" />
-						</div>
-					{/if}
-
-					<div class="galerie">
-						{#each entriesFor(f) as e (e.key)}
-							<div class="cell">
-								<Card card={e.card} thumb />
-								<a class="band" href={e.href}>
-									<span class="bname">{e.card.name}</span>
-									<span class="stars" class:prism={e.card.rarity === 'prism'}
-										>{'★'.repeat(STARS[e.card.rarity])}</span
-									>
-									{#if nbVersions(e.card) > 1}
-										<span class="verchip">{nbVersions(e.card)} versions</span>
-									{/if}
-								</a>
-							</div>
-						{/each}
-					</div>
-				</section>
+				<a class="peuple" href="/registre" style="--fc: {charter.factions[f].color}">
+					<span class="p-sigil"><FactionSigil faction={f} flat /></span>
+					<span class="p-nom">{charter.factions[f].name}</span>
+					<span class="p-tag">{FACTION_TAG[f]}</span>
+					<span class="ed-stat">{n}</span>
+				</a>
 			{/each}
 		</div>
-	</div>
+	</section>
+
+	<!-- ============ BLOC DE RUPTURE ============ -->
+	<section class="rupture">
+		<div class="rupture-inner">
+			<p class="ed-tag">Le jeu</p>
+			<h2 class="ed-heading">Trente cartes.<br />Un nom qu'on prononce une fois.</h2>
+			<p class="rupture-txt">
+				Chaque Être porte un nom, et le prononcer l'exile définitivement. La Volonté monte d'un
+				point par tour. On ne gagne pas en accumulant : on gagne en choisissant ce qu'on accepte
+				de perdre.
+			</p>
+			<div class="rupture-actions">
+				<a class="ed-ghost" href="/regles">Les règles</a>
+				<a class="ed-ghost" href="/tuto">Initiation</a>
+				<a class="ed-ghost" href="/arene">Entrer dans l'Arène</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ CHIFFRES ============ -->
+	<section class="ed-section chiffres">
+		<div class="chiffre">
+			<span class="ed-stat">{cards.length}</span>
+			<p class="ed-tag">noms inscrits</p>
+		</div>
+		<div class="chiffre">
+			<span class="ed-stat">33</span>
+			<p class="ed-tag">paliers de rareté</p>
+		</div>
+		<div class="chiffre">
+			<span class="ed-stat">5</span>
+			<p class="ed-tag">peuples</p>
+		</div>
+		<div class="chiffre">
+			<span class="ed-stat">1 / 13 000</span>
+			<p class="ed-tag">le palier le plus rare</p>
+		</div>
+	</section>
 </div>
 
 <style>
@@ -397,272 +388,102 @@
 		gap: var(--element-gap);
 	}
 
-	/* ============ REGISTRE : sidebar + contenu ============ */
+	/* ============ SECTIONS ÉDITORIALES ============ */
 
-	.registre {
-		display: grid;
-		grid-template-columns: 220px 1fr;
-		gap: 2.6rem;
-		align-items: start;
-	}
-	@media (max-width: 900px) {
-		.registre {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	/* ---------- sidebar : filtres façon Banque de Données ---------- */
-	.side {
-		position: sticky;
-		top: 5.4rem;
+	.sec-tete {
 		display: flex;
-		flex-direction: column;
-		gap: 0.35rem;
-		padding: 1.1rem 0.9rem;
-		background: var(--panel);
-		border: 1px solid var(--panel-line);
-		border-radius: 18px;
-		backdrop-filter: blur(12px);
-	}
-	@media (max-width: 900px) {
-		.side {
-			position: static;
-			flex-direction: row;
-			flex-wrap: wrap;
-		}
-	}
-	.side-title {
-		margin: 0 0 0.6rem;
-		padding: 0 0.6rem;
-		font-size: 0.68rem;
-		font-weight: 600;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
-		color: rgba(238, 240, 245, 0.38);
-	}
-	@media (max-width: 900px) {
-		.side-title {
-			width: 100%;
-		}
-	}
-	.srow {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 0.6rem 0.8rem;
-		border: 1px solid transparent;
-		border-radius: 12px;
-		background: transparent;
-		font-family: inherit;
-		font-size: 0.88rem;
-		font-weight: 550;
-		color: rgba(238, 240, 245, 0.62);
-		cursor: pointer;
-		text-align: left;
-		transition:
-			background 0.16s ease,
-			color 0.16s ease,
-			border-color 0.16s ease;
-	}
-	.srow:hover:not(:disabled) {
-		background: rgba(140, 170, 220, 0.08);
-		color: var(--ink);
-	}
-	.srow.active {
-		background: rgba(213, 178, 94, 0.1);
-		border-color: rgba(213, 178, 94, 0.4);
-		color: var(--ink);
-	}
-	.srow:disabled {
-		opacity: 0.32;
-		cursor: default;
-	}
-	.s-ico {
-		display: grid;
-		place-items: center;
-		width: 2rem;
-		height: 2rem;
-		font-size: 1.75rem;
-		color: var(--gold);
-		filter: drop-shadow(0 0 6px color-mix(in srgb, currentColor 45%, transparent));
-	}
-	.srow.active .s-ico {
-		filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 70%, transparent));
-	}
-	.s-label {
-		flex: 1;
-	}
-	.s-count {
-		font-size: 0.76rem;
-		font-variant-numeric: tabular-nums;
-		color: rgba(238, 240, 245, 0.4);
-	}
-	.srow.active .s-count {
-		color: var(--gold);
-	}
-
-	/* ---------- chapitres ---------- */
-
-	.chapter {
-		position: relative;
-		padding: 4rem 0 6rem;
-	}
-	.chapter::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 50%;
-		transform: translateX(-50%);
-		width: min(900px, 120vw);
-		height: 420px;
-		background: radial-gradient(
-			50% 50% at 50% 50%,
-			color-mix(in srgb, var(--fc) 7%, transparent) 0%,
-			transparent 70%
-		);
-		pointer-events: none;
-	}
-
-	.chapter-head {
-		display: flex;
+		flex-wrap: wrap;
 		align-items: baseline;
-		gap: 1.4rem;
-		margin-bottom: 2.6rem;
-	}
-	.index {
-		font-size: 0.85rem;
-		font-weight: 600;
-		font-variant-numeric: tabular-nums;
-		letter-spacing: 0.2em;
-		color: rgba(238, 240, 245, 0.32);
-	}
-	.chapter-head h2 {
-		margin: 0;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 400;
-		font-size: clamp(1.9rem, 4vw, 2.9rem);
-		letter-spacing: 0.05em;
-		color: var(--ink);
-	}
-	.ftag {
-		margin: 0;
-		font-family: 'Cormorant Garamond', Georgia, serif;
-		font-style: italic;
-		font-size: 1.15rem;
-		color: rgba(238, 240, 245, 0.45);
-	}
-	.fcount {
-		margin-left: auto;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		font-size: 0.8rem;
-		font-variant-numeric: tabular-nums;
-		color: color-mix(in srgb, var(--fc) 70%, #fff);
-		opacity: 0.85;
-		white-space: nowrap;
-	}
-	.fcount :global(.sigil) {
-		font-size: 1.5rem;
-	}
-	@media (max-width: 700px) {
-		.chapter-head {
-			flex-wrap: wrap;
-		}
-		.ftag {
-			width: 100%;
-		}
+		justify-content: space-between;
+		gap: var(--spacing-20);
+		margin-bottom: var(--spacing-50);
 	}
 
-	/* ---------- bandeau : fondu sur les quatre bords ---------- */
-	.bandeau {
-		position: relative;
-		height: 36vh;
-		min-height: 230px;
-		margin: 0 0 4rem;
-		overflow: hidden;
-	}
-	.bandeau img {
-		width: 100%;
-		height: 130%;
-		margin-top: -8%;
-		object-fit: cover;
-		object-position: center 25%;
-		opacity: 0.6;
-		-webkit-mask-image: radial-gradient(100% 86% at 50% 50%, #000 32%, transparent 92%);
-		mask-image: radial-gradient(100% 86% at 50% 50%, #000 32%, transparent 92%);
-	}
-
-	/* ---------- galerie : grille propre, cartes à taille unique ---------- */
-
-	.galerie {
+	/* Les peuples : une grille de rubriques. Aucun fond, aucun cadre —
+	   seulement un filet en haut de chaque colonne. */
+	.peuples-grille {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
-		gap: 2.8rem 1.6rem;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: var(--element-gap);
 	}
-	.cell {
+	.peuple {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		gap: 0.8rem;
-		--card-w: min(285px, 100%);
+		gap: var(--spacing-10);
+		padding-top: var(--spacing-20);
+		border-top: 1px solid var(--panel-line);
+		text-decoration: none;
+		color: inherit;
+		transition: border-color 0.2s ease;
+	}
+	.peuple:hover {
+		border-top-color: var(--gold);
+	}
+	.p-sigil {
+		width: 1.6rem;
+		height: 1.6rem;
+		color: var(--fc);
+	}
+	.p-nom {
+		font-family: var(--font-grotesque);
+		font-size: var(--text-body);
+		font-weight: var(--fw-550);
+		letter-spacing: var(--tracking-body);
+	}
+	.p-tag {
+		font-family: var(--font-editorial);
+		font-style: italic;
+		font-size: 1rem;
+		color: var(--ink-dim);
 	}
 
-	/* le bandeau de nom : vignette HSR — nom, étoiles de rareté, chip Alt */
-	.band {
-		width: 100%;
-		max-width: 285px;
-		box-sizing: border-box;
+	/* Le bloc de rupture : une surface plus profonde, pleine largeur, où les
+	   actions passent en contour. C'est la respiration de la page. */
+	.rupture {
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		margin-block: var(--section-gap);
+		padding-block: var(--spacing-120);
+		background: var(--surface-deep);
+		border-block: 1px solid var(--panel-line);
+	}
+	.rupture-inner {
+		max-width: var(--page-max);
+		margin: 0 auto;
+		padding-inline: var(--spacing-20);
+	}
+	.rupture .ed-heading {
+		margin: var(--spacing-20) 0 var(--spacing-30);
+	}
+	.rupture-txt {
+		max-width: 52ch;
+		margin: 0 0 var(--spacing-50);
+		font-family: var(--font-grotesque);
+		font-size: var(--text-body);
+		font-weight: var(--fw-extralight);
+		line-height: 1.5;
+		letter-spacing: var(--tracking-body);
+		color: var(--ink-dim);
+	}
+	.rupture-actions {
 		display: flex;
-		align-items: center;
-		gap: 0.6rem;
-		padding: 0.55rem 0.9rem;
-		background: var(--panel);
-		border: 1px solid var(--panel-line);
-		border-radius: 12px;
-		text-decoration: none;
-		transition:
-			border-color 0.18s ease,
-			background 0.18s ease;
+		flex-wrap: wrap;
+		gap: var(--element-gap);
 	}
-	.band:hover {
-		border-color: rgba(213, 178, 94, 0.55);
-		background: rgba(213, 178, 94, 0.07);
+
+	/* Les chiffres : grande taille, couleur sourde. C'est la couleur éteinte
+	   qui les fait lire comme des données de journal. */
+	.chiffres {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: var(--spacing-40);
 	}
-	.bname {
-		flex: 1;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: 0.82rem;
-		font-weight: 550;
-		color: rgba(238, 240, 245, 0.85);
+	.chiffre {
+		display: flex;
+		flex-direction: column;
+		gap: var(--spacing-8);
+		padding-top: var(--spacing-20);
+		border-top: 1px solid var(--panel-line);
 	}
-	.stars {
-		font-size: 0.68rem;
-		letter-spacing: 0.08em;
-		color: var(--gold);
-		white-space: nowrap;
-	}
-	.stars.prism {
-		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
-	}
-	/* signale qu'il existe d'autres versions (foils, Full Art) sur la fiche */
-	.verchip {
-		flex: none;
-		padding: 0.12em 0.55em;
-		font-size: 0.66rem;
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		color: rgba(238, 240, 245, 0.55);
-		background: rgba(140, 170, 220, 0.1);
-		border: 1px solid rgba(140, 170, 220, 0.2);
-		border-radius: 999px;
-		white-space: nowrap;
-	}
-	/* nom de l'effet, sous la vignette : le foil ne vit qu'au survol */
+
 </style>

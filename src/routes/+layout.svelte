@@ -53,11 +53,10 @@
 	   `dev` est résolu au build, donc le lien disparaît ET la page n'est plus
 	   atteignable par le crawler de prerender (cf. src/routes/lab/+layout.ts). */
 	const links = [
-		{ href: '/', label: 'Registre' },
+		{ href: '/registre', label: 'Registre' },
 		{ href: '/packs', label: 'Réquisition' },
 		{ href: '/raretes', label: 'Raretés' },
 		{ href: '/arene', label: 'Arène' },
-		{ href: '/versus', label: 'Salons' },
 		{ href: '/decks', label: 'Decks' },
 		{ href: '/regles', label: 'Règles' },
 		{ href: '/tuto', label: 'Initiation' },
@@ -241,7 +240,7 @@
 					<a href="/packs">Réquisition</a>
 					<a href="/raretes">Raretés</a>
 					<a href="/arene">Arène</a>
-					<a href="/versus">Salons</a>
+					<a href="/arene/salons">Salons</a>
 				</nav>
 			</div>
 		</div>

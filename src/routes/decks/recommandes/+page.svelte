@@ -61,7 +61,7 @@
 	<p class="tagline">
 		Quatre écoles de jeu, prêtes à l'emploi : la liste, le plan, les combos. Importez-les dans
 		<a href="/profil">votre espace</a> pour les jouer en <a href="/arene">Arène</a> ou en
-		<a href="/versus">salon</a> — puis faites-les vôtres.
+		<a href="/arene/salons">salon</a> — puis faites-les vôtres.
 	</p>
 </header>
 
