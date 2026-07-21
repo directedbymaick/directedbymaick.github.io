@@ -560,19 +560,19 @@
 	.card[data-fullart='true'][data-tier='prism'] .name {
 		background: linear-gradient(
 			96deg,
-			#eaf7ff 0%,
-			#ffffff 7%,
-			#bfe0f7 13%,
-			#ffffff 21%,
-			#d7e6ff 28%,
-			#a9d4f2 35%,
-			#ffffff 42%,
-			#e6dcff 50%,
-			#ffffff 57%,
-			#b6dcf5 64%,
-			#ffffff 72%,
-			#dbe9ff 80%,
-			#c3e6fb 88%,
+			#ffffff 0%,
+			#ffffff 8%,
+			#e4f4ff 14%,
+			#ffffff 22%,
+			#f0f4ff 29%,
+			#daeeff 36%,
+			#ffffff 44%,
+			#f4efff 51%,
+			#ffffff 59%,
+			#e2f2ff 66%,
+			#ffffff 74%,
+			#f2f7ff 82%,
+			#e8f6ff 90%,
 			#ffffff 100%
 		);
 		-webkit-background-clip: text;
