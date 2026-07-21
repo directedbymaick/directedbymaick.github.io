@@ -64,6 +64,7 @@
 		if (!attaquantsPossibles.includes(uid)) return;
 		const c = centreDe(e.currentTarget as Element);
 		traine = { uid, x0: c.x, y0: c.y, x: e.clientX, y: e.clientY };
+		carteLue = null;
 		attaquant = uid;
 		(e.currentTarget as Element).releasePointerCapture?.(e.pointerId);
 	}
@@ -185,6 +186,13 @@
 	 * jouer — c'est comme ça qu'on prépare son tour.
 	 */
 	let carteLue = $state<CardData | null>(null);
+
+	/** Survoler une carte la rend lisible — en main comme sur le terrain. Pendant
+	    un glisser d'attaque on se tait : la flèche doit rester seule à l'écran. */
+	function lire(c: CardData | null | undefined) {
+		if (traine) return;
+		carteLue = c ?? null;
+	}
 
 	function jouer(i: number) {
 		// les cartes injouables ne sont plus `disabled` : un bouton désactivé ne
@@ -334,6 +342,10 @@
 						class:ciblable={attaquant !== null && ciblesLegales.units.includes(u.uid)}
 						data-cible={u.uid}
 						onclick={() => clicSonEtre(u.uid)}
+						onpointerenter={() => lire(c)}
+						onpointerleave={() => (carteLue = null)}
+						onfocus={() => lire(c)}
+						onblur={() => (carteLue = null)}
 					>
 						{#if att.length}<span class="attache" title="{att.length} attachement(s)">{att.length}</span>{/if}
 						{#if c}<div class="mini"><Card card={c} interactive={false} thumb /></div>{/if}
@@ -402,6 +414,10 @@
 						class:traine={traine?.uid === u.uid}
 						onpointerdown={(e) => debutTraine(e, u.uid)}
 						onclick={() => clicMonEtre(u.uid)}
+						onpointerenter={() => lire(c)}
+						onpointerleave={() => (carteLue = null)}
+						onfocus={() => lire(c)}
+						onblur={() => (carteLue = null)}
 					>
 						{#if att.length}<span class="attache" title="{att.length} attachement(s)">{att.length}</span>{/if}
 						{#if c}<div class="mini"><Card card={c} interactive={false} thumb /></div>{/if}
@@ -449,7 +465,7 @@
 
 	<!-- la carte qu'on survole, lisible en grand -->
 	{#if carteLue}
-		<div class="lecture" aria-hidden="true">
+		<div class="lecture" aria-hidden="true" in:fade={{ duration: duree(140) }}>
 			<Card card={carteLue} interactive={false} />
 		</div>
 	{/if}
@@ -464,9 +480,9 @@
 				class="carte-main"
 				class:jouable={h.playable}
 				onclick={() => jouer(i)}
-				onpointerenter={() => (carteLue = h.card)}
+				onpointerenter={() => lire(h.card)}
 				onpointerleave={() => (carteLue = null)}
-				onfocus={() => (carteLue = h.card)}
+				onfocus={() => lire(h.card)}
 				onblur={() => (carteLue = null)}
 				title={h.playable ? `Jouer ${h.card.name}` : `${h.card.name} — pas assez de Volonté`}
 			>
