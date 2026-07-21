@@ -13,11 +13,13 @@
 			"#373737",
 			"#c8b597"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "regular",
 		"accent": "#f0a626",
 		"seed": 135777
 	},
 	"attack": 3,
 	"health": 2,
-	"flavor": "On l'a entendu rire avant de le voir."
+	"flavor": "On l'a entendu rire avant de le voir.",
+	"cutout": "/art/velor-cutout.webp",
+	"fullArt": true
 }
