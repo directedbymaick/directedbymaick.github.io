@@ -130,6 +130,11 @@
 		</tbody>
 	</table>
 	<p class="note">
+		Une rareté ne dit plus tout : la finition et le détourage comptent autant.
+		<a href="/raretes">Voir l'échelle complète</a> — les 33 paliers réels, du plus courant au plus
+		rare, avec leur fréquence de sortie.
+	</p>
+	<p class="note">
 		Premier cycle, « Nés du silence » : {cards.length}/60 noms inscrits. Cette grammaire évoluera
 		avec les prochains duels.
 	</p>

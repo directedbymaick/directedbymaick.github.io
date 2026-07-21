@@ -76,6 +76,10 @@
 		return src.startsWith('/art/') ? src.replace('/art/', '/art/w640/') : src;
 	}
 	const artSrc = $derived(thumb ? petit(card.art) : card.art);
+	/* Le numéro de série est celui de la CARTE, pas de la version : fullArtView()
+	   suffixe l'id en `--fullart` pour distinguer l'entrée de collection, ce qui
+	   n'a rien à faire imprimé dans le pied de cadre. */
+	const serial = $derived(card.id.split('--')[0].slice(0, 14).toUpperCase());
 	const cutoutSrc = $derived(card.cutout ? (thumb ? petit(card.cutout) : card.cutout) : '');
 
 	const kindLabel = $derived(
@@ -259,7 +263,7 @@
 			</div>
 			<footer class="frame-footer" aria-hidden="true">
 				<span class="ff-serial"
-					>{faction.name} · {card.id.slice(0, 14).toUpperCase()}{#if card.alt}<span class="ff-alt"
+					>{faction.name} · {serial}{#if card.alt}<span class="ff-alt"
 							>Alt {card.alt}</span
 						>{/if}{#if isShowcase}<span class="ff-nobg" title="Illustration détourée">no bg</span>{/if}{#if fullArt}<span class="fa-star" title="Full Art"></span>{/if}</span
 				>
