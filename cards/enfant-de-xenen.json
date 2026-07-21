@@ -20,5 +20,6 @@
 	},
 	"attack": 2,
 	"health": 3,
-	"flavor": "Cinq peuples retiennent leur souffle."
+	"flavor": "Cinq peuples retiennent leur souffle.",
+	"faArtLift": "16%"
 }

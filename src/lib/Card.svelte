@@ -143,7 +143,7 @@
 			((card.sourceRarity ?? card.rarity) === 'prism' ? 'cristal' : 'or')}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -455,6 +455,15 @@
 		inset: 0;
 		height: 100%;
 		z-index: 0;
+	}
+	/* Remontée de l'illustration en Full Art (--fa-art-lift).
+	   Son ratio étant plus LARGE que la carte, `cover` l'ajuste en hauteur : il n'y
+	   a aucun débord vertical, donc object-position n'a pas de prise et un simple
+	   décalage laisserait un vide en bas. On agrandit donc l'image d'exactement ce
+	   qu'on la remonte — le bas continue de toucher le bord, seul le haut sort. */
+	.card[data-fullart='true'] .art-base {
+		top: calc(-1 * var(--fa-art-lift, 0%));
+		height: calc(100% + var(--fa-art-lift, 0%));
 	}
 	.card[data-fullart='true'] .scrim {
 		background: linear-gradient(

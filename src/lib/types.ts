@@ -84,6 +84,10 @@ export interface CardData {
 	    calage diffère du mode normal). Défauts : x 0%, y 3.05%. Optionnels. */
 	faCutoutX?: string;
 	faCutoutY?: string;
+	/** Remontée de l'ILLUSTRATION en mode full art (ex. '14%'). L'image est agrandie
+	    d'autant, donc aucun vide n'apparaît en bas — utile quand le bas de l'artwork
+	    est le sujet et se retrouve masqué par le bloc de texte. */
+	faArtLift?: string;
 	/** Échelle du détourage en mode full art (défaut 1.068). Optionnel, par carte. */
 	faCutoutScale?: number;
 	/** Échelle du détourage (ex. 0.98) pour matcher la taille du fond. Défaut 1. */
