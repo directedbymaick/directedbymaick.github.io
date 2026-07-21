@@ -37,18 +37,20 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Midrange · auras et murs',
 		difficulty: 1,
 		cards: {
-			dorin: 3,
-			vasna: 3,
-			norel: 3,
-			renna: 3,
-			doras: 3,
-			korven: 3,
-			dasen: 2,
-			talvas: 2,
-			koren: 1,
-			doran: 1,
+			'vasna': 1,
+			'norel': 3,
+			'renna': 3,
+			'doras': 3,
+			'korven': 3,
+			'dasen': 2,
+			'talvas': 2,
+			'koren': 1,
+			'doran': 1,
 			'chant-daube': 3,
-			recitation: 3
+			'recitation': 3,
+			'dorvel': 2,
+			'doublement-des-choeurs': 2,
+			'vasis-assemble': 1
 		},
 		guide: {
 			resume:
@@ -81,7 +83,7 @@ export const META_DECKS: MetaDeck[] = [
 					text: 'La syllabe de Renna sur Doras en fait un Serment 3/4 dès le tour 3 — un mur que les aggros détestent.'
 				}
 			],
-			garder: ['dorin', 'renna', 'norel', 'chant-daube']
+			garder: ['vasna', 'renna', 'norel', 'chant-daube']
 		}
 	},
 	{
@@ -92,21 +94,22 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Aggro-sacrifice · la mort comme ressource',
 		difficulty: 3,
 		cards: {
-			'renas': 3,
-			'morek': 3,
-			'exel': 3,
+			'exel': 2,
 			'exna': 3,
-			'thanor': 3,
-			'rompre': 3,
-			'morna': 2,
+			'thanor': 2,
+			'rompre': 2,
+			'morna': 3,
 			'sentence-retournee': 2,
 			'dernier-mot': 2,
 			'korsa': 1,
-			'exoran': 1,
-			'exva': 1,
+			'exoran': 2,
+			'exva': 2,
 			'rasen': 1,
-			'premiere-armee': 1,
-			'exen': 1
+			'premiere-armee': 2,
+			'exen': 1,
+			'porte-du-dehors': 1,
+			'couronne-dos': 2,
+			'clameur-dexen': 2
 		},
 		guide: {
 			resume:
@@ -140,7 +143,7 @@ export const META_DECKS: MetaDeck[] = [
 					text: 'Rasen Prononce (tout meurt, lui exilé) puis la Première Armée pose trois Bannis 2/1 sur un plateau vide. Peu de decks s’en relèvent.'
 				}
 			],
-			garder: ['renas', 'morek', 'exna', 'rompre']
+			garder: ['exel', 'exna', 'morna', 'rompre']
 		}
 	},
 	{
@@ -151,21 +154,22 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Contrôle-valeur · Vasar/Eshar',
 		difficulty: 2,
 		cards: {
-			'chant-daube': 3,
-			norel: 3,
-			doras: 3,
-			dorvel: 2,
-			thessa: 2,
-			talvas: 2,
-			thalen: 1,
-			koren: 1,
-			eshin: 3,
-			eshna: 3,
-			eskor: 2,
-			eshel: 1,
+			'doras': 2,
+			'dorvel': 2,
+			'thessa': 2,
+			'talvas': 2,
+			'thalen': 2,
+			'koren': 1,
+			'eshin': 3,
+			'eshna': 3,
+			'eskor': 2,
+			'eshel': 1,
 			'brume-memorielle': 2,
-			interstice: 1,
-			'vasis-assemble': 1
+			'interstice': 2,
+			'vasis-assemble': 1,
+			'doublement-des-choeurs': 2,
+			'dasen': 2,
+			'recitation': 1
 		},
 		guide: {
 			resume:
@@ -198,7 +202,7 @@ export const META_DECKS: MetaDeck[] = [
 					text: 'Vos Prononcer partent en exil… et Eskor (doublé par l’Interstice) les en sort. L’« irréversible » ne vous concerne pas.'
 				}
 			],
-			garder: ['chant-daube', 'norel', 'eshin', 'doras']
+			garder: ['eshin', 'eshna', 'doras', 'brume-memorielle']
 		}
 	},
 	{
@@ -209,9 +213,7 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Tempo-burn · Exar/Velar/Morar',
 		difficulty: 2,
 		cards: {
-			'renas': 2,
-			'velsa': 2,
-			'morna': 3,
+			'morna': 1,
 			'thanor': 3,
 			'exna': 2,
 			'korsa': 2,
@@ -219,13 +221,16 @@ export const META_DECKS: MetaDeck[] = [
 			'bruler-le-jour': 3,
 			'exoran': 2,
 			'dernier-mot': 2,
-			'couronne-dos': 1,
+			'couronne-dos': 2,
 			'morek': 1,
 			'velna': 1,
 			'bord-du-monde': 1,
 			'rasen': 1,
-			'premiere-armee': 1,
-			'exen': 1
+			'premiere-armee': 2,
+			'exen': 1,
+			'exva': 2,
+			'echo-du-dixieme-mot': 1,
+			'porte-du-dehors': 1
 		},
 		guide: {
 			resume:
@@ -255,11 +260,11 @@ export const META_DECKS: MetaDeck[] = [
 					text: 'La Couronne (+2/+1) sur Morna en fait une 6/3 dès le tour 4 — sa blessure d’attaque devient un détail.'
 				},
 				{
-					cards: ['clameur-dexen', 'velsa'],
-					text: 'Velsa arrive, Clameur (+2 ATQ) : 4 dégâts surprise dès le tour 3, avant toute défense.'
+					cards: ['clameur-dexen', 'thanor'],
+					text: 'Thanor arrive, Clameur (+2 ATQ) : 5 dégâts surprise avant que la défense se mette en place.'
 				}
 			],
-			garder: ['renas', 'velsa', 'morna', 'bruler-le-jour']
+			garder: ['morna', 'thanor', 'korsa', 'bruler-le-jour']
 		}
 	}
 ];
