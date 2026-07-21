@@ -1106,9 +1106,13 @@
 	.colcell {
 		/* la grille porte ~200 cartes : hors écran, le navigateur saute leur rendu
 		   entier. contain-intrinsic-size réserve leur place pour que la barre de
-		   défilement reste stable. */
+		   défilement reste stable.
+		   ATTENTION : content-visibility implique contain: paint, qui ROGNE tout ce
+		   qui déborde de la cellule. Le badge de version doit donc tenir DANS la
+		   boîte — d'où la réserve en haut, et son top: 0. */
 		content-visibility: auto;
-		contain-intrinsic-size: auto 230px auto 340px;
+		contain-intrinsic-size: auto 230px auto 348px;
+		padding-top: 0.5rem;
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -1125,8 +1129,9 @@
 	}
 	.fabadge {
 		position: absolute;
-		top: -0.5rem;
+		top: 0;
 		left: 0.4rem;
+		max-width: calc(100% - 0.8rem);
 		z-index: 5;
 		padding: 0.15rem 0.6rem;
 		font-size: 0.66rem;
