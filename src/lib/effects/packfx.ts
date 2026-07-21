@@ -20,6 +20,15 @@ export interface BurstSpec {
 	power?: number;
 	/** Impulsion de bloom au centre. */
 	bloom?: boolean;
+	/**
+	 * Vagues de bloom successives, décalées dans le temps. Réservé au palier le
+	 * plus haut : trois respirations de lumière au lieu d'une seule impulsion.
+	 * La matière reste la même — c'est la DURÉE qui distingue, pas le nombre de
+	 * particules, fidèle au parti pris « du bloom, pas des objets ».
+	 */
+	swells?: number;
+	/** Multiplicateur de durée de vie : la lumière s'attarde. */
+	linger?: number;
 }
 
 type Kind = 'orb' | 'streak' | 'bloom';
@@ -96,16 +105,29 @@ export function createPackFx(canvas: HTMLCanvasElement): PackFx {
 	}
 
 	function burst(x: number, y: number, spec: BurstSpec): void {
-		const { colors, orbs = 16, streaks = 6, power = 240, bloom = true } = spec;
+		const { colors, orbs = 16, streaks = 6, power = 240, bloom = true, swells = 0, linger = 1 } = spec;
 		const col = () => colors[(Math.random() * colors.length) | 0];
 		if (bloom) {
 			parts.push({
 				kind: 'bloom',
 				x, y, vx: 0, vy: 0,
-				age: 0, ttl: 1.1,
+				age: 0, ttl: 1.1 * linger,
 				size: 340,
 				color: col(),
 				delay: 0
+			});
+		}
+		/* les vagues : chacune plus large, plus lente et plus tardive que la
+		   précédente — la lumière respire au lieu d'exploser une fois. */
+		for (let i = 0; i < swells; i++) {
+			parts.push({
+				kind: 'bloom',
+				x, y, vx: 0, vy: 0,
+				age: 0,
+				ttl: (1.5 + i * 0.55) * linger,
+				size: 430 + i * 190,
+				color: col(),
+				delay: 0.26 + i * 0.34
 			});
 		}
 		for (let i = 0; i < orbs; i++) {
@@ -117,7 +139,7 @@ export function createPackFx(canvas: HTMLCanvasElement): PackFx {
 				vx: Math.cos(a) * sp,
 				vy: Math.sin(a) * sp - power * 0.18,
 				age: 0,
-				ttl: rnd(0.8, 1.7),
+				ttl: rnd(0.8, 1.7) * linger,
 				size: rnd(1.6, 5),
 				color: col(),
 				delay: rnd(0, 0.12)

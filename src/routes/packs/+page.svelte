@@ -38,7 +38,8 @@
 
 	type Stage = 'idle' | 'reveal' | 'recap';
 	/** Palier d'effets du reveal : la rareté, ou 'fullart' — le cran au-dessus de tout. */
-	type FxTier = Rarity | 'fullart';
+	/* `apex` = la Prismatique, sommet de l'échelle, quelle que soit sa forme. */
+	type FxTier = Rarity | 'fullart' | 'apex';
 
 	let stage: Stage = $state('idle');
 	let pulls: Pull[] = $state([]);
@@ -124,7 +125,11 @@
 	/* Le sachet est pré-tiré : la fuite de lumière et la déflagration prennent
 	   la couleur du meilleur tirage qui dort dedans. */
 	let pending: Pull[] = $state([]);
-	const TIER_RANK: Record<FxTier, number> = { common: 0, rare: 1, epic: 2, legendary: 3, prism: 4, fullart: 5 };
+	/* Le Full Art d'une Commune ne vaut pas une Prismatique : le rang suit la
+	   VRAIE rareté, et le sommet est reserve a l'apex. */
+	const TIER_RANK: Record<FxTier, number> = {
+		common: 0, rare: 1, epic: 2, legendary: 3, prism: 4, fullart: 4.5, apex: 5
+	};
 	/* la couleur de l'aura selon le meilleur tirage : argent → or → prismatique */
 	const TIER_GLOW: Record<FxTier, string> = {
 		common: '#d7dde7', // argent
@@ -132,12 +137,13 @@
 		epic: '#ecc878', // or
 		legendary: '#ffd977', // or riche
 		prism: '#cbb8ff', // prismatique
-		fullart: '#cbb8ff'
+		fullart: '#cbb8ff',
+		apex: '#e6d8ff'
 	};
 	const bestTier = $derived(
 		pending.reduce<FxTier>((best, p) => (TIER_RANK[fxOf(p)] > TIER_RANK[best] ? fxOf(p) : best), 'common')
 	);
-	const packPrisma = $derived(bestTier === 'prism' || bestTier === 'fullart');
+	const packPrisma = $derived(bestTier === 'prism' || bestTier === 'fullart' || bestTier === 'apex');
 
 	/* Retenue : peu de matière, lente, sans forme lisible. Le palier monte surtout
 	   par la lumière (bloom, vignette, rémanence), pas par le nombre de particules. */
@@ -158,10 +164,30 @@
 		fullart: {
 			fx: { colors: ['#fff6e2', '#ffe3a1', '#ffffff'], orbs: 26, streaks: 9, power: 280 },
 			shake: 9
+		},
+		/* APEX — la Prismatique. Volontairement d'une autre nature : trois vagues
+		   de lumière au lieu d'une, et une rémanence deux fois plus longue. Le
+		   palier ne monte pas d'un cran, il change de catégorie. */
+		apex: {
+			fx: {
+				colors: ['#ffffff', '#e6d8ff', '#bda6ff', '#ffe9c4'],
+				orbs: 34,
+				streaks: 12,
+				power: 300,
+				swells: 3,
+				linger: 2
+			},
+			shake: 12
 		}
 	};
 
-	const fxOf = (p: Pull): FxTier => (p.fullArt ? 'fullart' : p.card.rarity);
+	/* La forme Full Art force `rarity: 'prism'` : c'est `sourceRarity` qui porte la
+	   vraie rareté. Sans ça, une Commune Full Art passait pour une Prismatique. */
+	const fxOf = (p: Pull): FxTier => {
+		const vraie = p.card.sourceRarity ?? p.card.rarity;
+		if (vraie === 'prism') return 'apex';
+		return p.fullArt ? 'fullart' : vraie;
+	};
 
 
 	function centerOf(el: Element) {
@@ -231,6 +257,10 @@
 		const inner = btn.querySelector('.fc-inner');
 		const c = centerOf(btn);
 
+		// l'apex a sa propre mise en scène, et surtout son propre voile : le laisser
+		// traverser le .dim ci-dessous superposerait deux assombrissements.
+		if (tier === 'apex') return flipApex(btn, pop, inner, c, spec);
+
 		// les grosses pioches : le stage retient son souffle avant l'éclat
 		if (spec.shake) {
 			const d = document.createElement('div');
@@ -258,6 +288,64 @@
 				0.36
 			)
 			.to(pop, { y: 0, scale: 1, duration: 0.48, ease: 'back.out(1.15)' }, 0.58);
+	}
+
+	/**
+	 * L'APEX — la Prismatique.
+	 *
+	 * Les autres paliers montent par degrés : un peu plus de matière, un peu plus
+	 * de secousse. Celui-ci devait changer de NATURE, pas de réglage. Il ouvre donc
+	 * par ce que le jeu raconte : le silence. La scène s'éteint, tout s'arrête une
+	 * demi-seconde, et c'est ce vide qui rend l'éclat suivant spectaculaire — pas
+	 * le nombre de particules. Puis la carte tourne deux fois plus lentement, la
+	 * lumière respire en trois vagues, et la rémanence met deux secondes à mourir.
+	 */
+	function flipApex(
+		btn: HTMLElement,
+		pop: Element | null,
+		inner: Element | null,
+		c: { x: number; y: number },
+		spec: { fx: BurstSpec; shake?: number }
+	) {
+		const g = gsap!;
+		const voile = document.createElement('div');
+		voile.className = 'hush';
+		fxLayer!.insertBefore(voile, fxLayer!.firstChild);
+
+		const halo = document.createElement('div');
+		halo.className = 'apex-halo';
+		fxLayer!.appendChild(halo);
+		const r = btn.getBoundingClientRect();
+		const fr = fxLayer!.getBoundingClientRect();
+		halo.style.left = `${r.left + r.width / 2 - fr.left}px`;
+		halo.style.top = `${r.top + r.height / 2 - fr.top}px`;
+
+		const tl = g.timeline({ onComplete: () => voile.remove() });
+
+		// 1. le silence : la scène s'éteint et RETIENT
+		tl.to(voile, { opacity: 1, duration: 0.42, ease: 'power2.inOut' })
+			.to(pop, { y: -26, scale: 1.09, duration: 0.5, ease: 'power2.out' }, 0)
+			.to({}, { duration: 0.45 }) // le temps mort — c'est lui qui fait tout
+
+			// 2. la révélation : deux fois plus lente que les autres paliers
+			.fromTo(inner, { rotationY: 0 }, { rotationY: 180, duration: 1.15, ease: 'power4.inOut' })
+
+			// 3. la lumière, au point mort haut de la rotation
+			.call(
+				() => {
+					fx!.burst(c.x, c.y, spec.fx);
+					if (stageEl)
+						g.fromTo(stageEl, { x: 0 }, { x: spec.shake ?? 12, duration: 0.9, ease: 'packShake', clearProps: 'x' });
+				},
+				[],
+				'-=0.58'
+			)
+			.to(voile, { opacity: 0, duration: 1.1, ease: 'power2.out' }, '<')
+			.fromTo(halo, { opacity: 0, scale: 0.35 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' }, '<')
+
+			// 4. la retombée, et une rémanence qui met deux secondes à mourir
+			.to(pop, { y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.1)' }, '<0.1')
+			.to(halo, { opacity: 0, scale: 1.5, duration: 2, ease: 'power2.out', onComplete: () => halo.remove() }, '<0.3');
 	}
 
 	function revealAll() {
@@ -796,6 +884,33 @@
 		height: 100%;
 	}
 	/* la vignette qui retient son souffle avant une grosse pioche */
+	/* le silence de l'apex : plus dense que le .dim des autres paliers, et surtout
+	   il DURE — c'est le noir qui fait la valeur de l'éclat qui suit */
+	.fx :global(.hush) {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		background:
+			radial-gradient(85% 85% at 50% 45%, rgba(2, 2, 5, 0.55) 20%, rgba(2, 2, 5, 0.94) 100%),
+			rgba(2, 2, 5, 0.6);
+	}
+	/* la rémanence : une nappe prismatique qui s'attarde derrière la carte */
+	.fx :global(.apex-halo) {
+		position: absolute;
+		width: 460px;
+		height: 460px;
+		margin: -230px 0 0 -230px;
+		border-radius: 50%;
+		pointer-events: none;
+		mix-blend-mode: screen;
+		background: radial-gradient(
+			circle,
+			rgba(255, 255, 255, 0.5) 0%,
+			rgba(198, 168, 255, 0.38) 28%,
+			rgba(150, 120, 255, 0.16) 52%,
+			transparent 72%
+		);
+	}
 	.fx :global(.dim) {
 		position: absolute;
 		inset: 0;
