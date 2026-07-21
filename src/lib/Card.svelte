@@ -1096,14 +1096,12 @@
 		line-height: 1.32;
 		position: relative;
 	}
+	/* pas d'encadré : la pastille « Prononcer » suffit à signaler le bloc. Le texte
+	   coule comme le reste de la règle. */
 	.synchro {
 		margin: 1.4cqw 0 0;
-		padding: 1.2cqw 1.8cqw;
 		font-size: 3.5cqw;
 		line-height: 1.3;
-		border-left: 0.5cqw solid var(--sys);
-		background: color-mix(in srgb, var(--sys) 9%, transparent);
-		border-radius: 0 1cqw 1cqw 0;
 	}
 	/* le sceau du Prononcer : pill d'or — le geste signature est doré, pas faction */
 	.synchro-tag {
@@ -1138,9 +1136,12 @@
 		border-radius: 50%;
 	}
 	/* Cinzel : capitales sans jambages — les glyphes flottent haut dans leur em-box.
-	   La correction optique s'applique au texte SEUL, jamais à l'anneau. */
+	   La correction s'applique au texte SEUL, jamais à l'anneau. Mesuré : l'encre
+	   tombait 0.61px SOUS le centre, l'anneau 0.61px au-dessus — 1.22px d'écart. */
 	.ptag-label {
-		transform: translateY(0.055em);
+		/* aucune correction : mesuré à 0.0px de l'anneau ET du centre de la pastille
+		   une fois l'encadré retiré. L'ancienne translateY(0.055em) datait de la
+		   version encadrée et décalait le texte vers le bas. */
 	}
 	.flavor {
 		margin: 1.4cqw 0 0;
