@@ -526,13 +526,20 @@
 	   remplit la lettre, l'irisation ne vit que sur l'ARÊTE — quatre ombres
 	   colorées décalées d'un demi-pixel qui débordent tout autour du glyphe. */
 	.card[data-fullart='true'] .name {
+		/* plusieurs bandes spéculaires serrées → métal poli qui accroche la lumière */
 		background: linear-gradient(
-			100deg,
+			96deg,
 			var(--m-dark) 0%,
-			var(--m-light) 20%,
-			var(--m-hi) 40%,
-			var(--m-light) 58%,
-			var(--m-dark) 76%,
+			var(--m-light) 9%,
+			var(--m-hi) 16%,
+			var(--m-light) 24%,
+			var(--m-dark) 34%,
+			var(--m-light) 44%,
+			var(--m-hi) 50%,
+			var(--m-light) 57%,
+			var(--m-dark) 68%,
+			var(--m-light) 79%,
+			var(--m-hi) 87%,
 			var(--m-light) 100%
 		);
 		-webkit-background-clip: text;
@@ -552,28 +559,28 @@
 		z-index: -1;
 		color: transparent;
 		text-shadow:
-			-0.07cqw -0.07cqw 0 var(--i-1),
-			0.07cqw -0.07cqw 0 var(--i-2),
-			0.07cqw 0.07cqw 0 var(--i-3),
-			-0.07cqw 0.07cqw 0 var(--i-4);
+			-0.05cqw -0.05cqw 0 var(--i-1),
+			0.05cqw -0.05cqw 0 var(--i-2),
+			0.05cqw 0.05cqw 0 var(--i-3),
+			-0.05cqw 0.05cqw 0 var(--i-4);
 		pointer-events: none;
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
-		--m-dark: #8a6a2c;
-		--m-light: #e0bd6a;
-		--m-hi: #f7e3aa;
-		--i-1: rgba(226, 138, 162, 0.7);
-		--i-2: rgba(138, 226, 186, 0.7);
-		--i-3: rgba(138, 186, 226, 0.7);
-		--i-4: rgba(186, 138, 226, 0.7);
+		--m-dark: #9a7526;
+		--m-light: #e8c766;
+		--m-hi: #fff6d2;
+		--i-1: rgba(226, 138, 162, 0.55);
+		--i-2: rgba(138, 226, 186, 0.55);
+		--i-3: rgba(138, 186, 226, 0.55);
+		--i-4: rgba(186, 138, 226, 0.55);
 	}
 	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
 	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
 	.card[data-fullart='true'][data-tier='prism'] {
-		--m-dark: #6f7681;
-		--m-light: #c8ced7;
-		--m-hi: #f2f5f8;
+		--m-dark: #7b828d;
+		--m-light: #cfd5dd;
+		--m-hi: #ffffff;
 	}
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
