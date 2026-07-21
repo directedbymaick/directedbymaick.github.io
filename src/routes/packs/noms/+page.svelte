@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
+	import LazyCard from '$lib/LazyCard.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
@@ -199,7 +200,7 @@
 		{@const abordable = eco.syllabes >= n.prix}
 		<article class="etal" class:hors-portee={!possede && !abordable}>
 			<button class="vue" onclick={() => (apercu = n)} title="Voir « {n.base.name} » en grand">
-				<Card card={n.view} fullArt={n.fullArt} interactive={false} thumb />
+				<LazyCard card={n.view} fullArt={n.fullArt} interactive={false} thumb />
 			</button>
 			<p class="nom">{n.base.name}</p>
 			<p class="finition">{n.label}</p>

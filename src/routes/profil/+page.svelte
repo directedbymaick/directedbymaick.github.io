@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
+	import LazyCard from '$lib/LazyCard.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import logo from '$lib/assets/logo.svg';
 	import { cards, getCard } from '$lib/cards';
@@ -412,7 +413,7 @@
 					href="/card/{e.base.id}{e.key === e.base.id ? '' : `?v=${e.key}`}"
 					aria-label="{e.base.name}{e.fullArt ? ' — Full Art' : ''}"
 				>
-					<Card card={e.view} fullArt={e.fullArt} interactive={owned > 0} thumb />
+					<LazyCard card={e.view} fullArt={e.fullArt} interactive={owned > 0} thumb />
 				</a>
 				{#if e.label !== 'Raw'}
 					<span
