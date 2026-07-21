@@ -19,5 +19,6 @@
 		"foilPreset": "cosmos",
 		"accent": "#c9a445",
 		"seed": 603514
-	}
+	},
+	"cutout": "/art/koren-cutout.webp"
 }
