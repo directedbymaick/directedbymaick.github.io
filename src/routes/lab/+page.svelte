@@ -101,7 +101,33 @@
 		sessionStorage.setItem('lab-valides', JSON.stringify([...valides]));
 	}
 	const baseValidee = $derived(valides.has(base.id));
-	const variantesActuelles = $derived(cards.find((c) => c.id === base.id)?.variants ?? []);
+	/* la fiche telle qu'elle est SUR LE DISQUE (pas le brouillon en cours d'édition) :
+	   c'est elle qui fait foi pour l'historique de validation. `cards` est relu à
+	   chaque rechargement, donc la liste se met à jour après chaque validation. */
+	const officiel = $derived(cards.find((c) => c.id === base.id));
+	const variantesActuelles = $derived(officiel?.variants ?? []);
+
+	/** Toutes les versions officielles de la carte, full art comprises. */
+	const versionsOfficielles = $derived([
+		{ role: 'Base', foil: officiel?.gene.foilPreset, fullArt: false, defaut: false },
+		...(eligibleFullArt(base)
+			? [
+					{
+						role: 'Full Art',
+						foil: officiel?.fullArtFoil ?? (officiel?.cutout ? 'showcase' : 'galerie'),
+						fullArt: true,
+						// pas encore validée explicitement : on affiche le défaut
+						defaut: !officiel?.fullArtFoil
+					}
+				]
+			: []),
+		...variantesActuelles.map((v) => ({
+			role: 'Variante',
+			foil: v.foilPreset,
+			fullArt: !!v.fullArt,
+			defaut: false
+		}))
+	]);
 
 	async function envoyer(patch: Record<string, unknown>, message: string) {
 		enCours = true;
@@ -315,14 +341,25 @@
 			<p class="aide">
 				{#if !baseValidee}
 					Valide d'abord la composition de base : la variante s'ajoute par-dessus.
-				{:else if variantesActuelles.length}
-					Variantes officielles : {variantesActuelles
-						.map((v) => foilLabels[v.foilPreset] + (v.fullArt ? ' (Full Art)' : ''))
-						.join(' · ')}
 				{:else}
 					Une variante s'ajoute au Registre à côté de la version de base.
 				{/if}
 			</p>
+
+			<!-- historique : ce qui est réellement écrit dans la fiche, quel que soit
+			     le mode dans lequel on se trouve -->
+			<ul class="officiel">
+				<li class="titre">Versions officielles — {officiel?.name ?? base.name}</li>
+				{#each versionsOfficielles as v, i (i)}
+					<li>
+						<span class="role" class:fa={v.fullArt}
+						>{v.role}{v.fullArt && v.role !== 'Full Art' ? ' · Full Art' : ''}</span
+					>
+						<span class="quoi">{v.foil ? foilLabels[v.foil] : '—'}</span>
+						{#if v.defaut}<span class="dft">par défaut</span>{/if}
+					</li>
+				{/each}
+			</ul>
 			{#if statut}
 				<p class="statut" class:erreur={statut.startsWith('Échec')}>{statut}</p>
 			{/if}
@@ -490,6 +527,42 @@
 	.valider button:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
+	}
+	.officiel {
+		width: 100%;
+		margin: 0.2rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.78rem;
+		border-top: 1px solid #2c2f3d;
+	}
+	.officiel .titre {
+		padding: 0.55rem 0 0.35rem;
+		font-size: 0.7rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: #6f6b62;
+	}
+	.officiel li:not(.titre) {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.22rem 0;
+	}
+	.officiel .role {
+		flex: none;
+		min-width: 8.5rem;
+		color: #8f8b80;
+	}
+	.officiel .role.fa {
+		color: #c9a6e0;
+	}
+	.officiel .quoi {
+		color: #e8e6df;
+	}
+	.officiel .dft {
+		font-size: 0.68rem;
+		color: #6f6b62;
 	}
 	.aide,
 	.statut {
