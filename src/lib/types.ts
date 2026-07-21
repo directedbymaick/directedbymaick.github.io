@@ -10,7 +10,7 @@
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'prism';
 
 // Foils = recettes verbatim de simeydotme (pokemon-cards-css)
-export type FoilPreset = 'mat' | 'regular' | 'amazing' | 'cosmos' | 'secret' | 'radiant' | 'showcase';
+export type FoilPreset = 'mat' | 'regular' | 'amazing' | 'cosmos' | 'radiant' | 'showcase';
 
 /** Matériau du cadre — la rareté EST un matériau. */
 export type FrameMaterial = 'carbone' | 'nacre' | 'argent' | 'or' | 'prisme';

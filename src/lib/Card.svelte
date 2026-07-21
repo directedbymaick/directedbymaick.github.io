@@ -94,7 +94,7 @@
 	/* notre preset → la rareté simeydotme dont on emprunte la recette exacte */
 	/* notre preset → la rareté simeydotme dont on emprunte la recette EXACTE.
 	   mat = pas de foil (comme un common) · regular = holo · amazing · cosmos ·
-	   secret (rainbow alt) · radiant. Recettes verbatim, cf. src/lib/holo/. */
+	   radiant. Recettes verbatim, cf. src/lib/holo/. */
 	/* showcase = holo DERRIÈRE le personnage détouré ; le holo de fond varie par
 	   rareté (recettes simeydotme distinctes, dont reverse-holo & secret-rare). */
 	const showcaseHolo: Record<string, string> = {
@@ -112,7 +112,6 @@
 					regular: 'rare holo',
 					amazing: 'amazing rare',
 					cosmos: 'rare holo cosmos',
-					secret: 'rare rainbow alt',
 					radiant: 'radiant rare'
 				}[foil.preset] ?? '')
 	);

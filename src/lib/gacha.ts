@@ -62,7 +62,7 @@ export function fullArtView(c: CardData): CardData {
 	const v = structuredClone(c);
 	v.id = `${c.id}--fullart`;
 	v.rarity = 'prism';
-	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'secret' };
+	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'radiant' };
 	return v;
 }
 

@@ -14,7 +14,6 @@
 		regular: 'Holographique',
 		amazing: 'Cristallin',
 		cosmos: 'Cosmique',
-		secret: 'Prismatique',
 		radiant: 'Radiant',
 		showcase: 'Illustration spéciale'
 	};
@@ -24,7 +23,6 @@
 		'regular',
 		'amazing',
 		'cosmos',
-		'secret',
 		'radiant',
 		'showcase'
 	];
@@ -35,7 +33,7 @@
 		rare: ['regular', 'showcase'],
 		epic: ['cosmos', 'amazing', 'showcase'],
 		legendary: ['radiant', 'cosmos', 'showcase'],
-		prism: ['secret', 'radiant', 'showcase']
+		prism: ['radiant', 'cosmos', 'showcase']
 	};
 
 	const rarities = Object.keys(charter.rarities) as Rarity[];

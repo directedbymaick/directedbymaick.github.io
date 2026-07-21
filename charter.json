@@ -8,7 +8,7 @@
 			"name": "Commune",
 			"material": "carbone",
 			"foilPreset": "mat",
-			"statBudgetPerCost": 2.0,
+			"statBudgetPerCost": 2,
 			"maxCopies": 3
 		},
 		"rare": {
@@ -35,7 +35,7 @@
 		"prism": {
 			"name": "Prismatique",
 			"material": "prisme",
-			"foilPreset": "secret",
+			"foilPreset": "radiant",
 			"statBudgetPerCost": 2.8,
 			"maxCopies": 1
 		}
