@@ -55,6 +55,7 @@
 	const links = [
 		{ href: '/', label: 'Registre' },
 		{ href: '/packs', label: 'Réquisition' },
+		{ href: '/raretes', label: 'Raretés' },
 		{ href: '/arene', label: 'Arène' },
 		{ href: '/versus', label: 'Salons' },
 		{ href: '/decks', label: 'Decks' },
@@ -229,6 +230,7 @@
 				<h4>Univers</h4>
 				<a href="/">Nés du silence · Set 01</a>
 				<a href="/packs">Réquisition</a>
+				<a href="/raretes">Raretés</a>
 				<a href="/arene">Arène</a>
 				<a href="/versus">Salons</a>
 			</nav>

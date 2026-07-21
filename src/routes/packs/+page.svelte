@@ -19,6 +19,7 @@
 		type Pull
 	} from '$lib/gacha';
 	import type { Rarity } from '$lib/types';
+	import { paliers, frequence } from '$lib/paliers';
 	import {
 		eco,
 		initEconomy,
@@ -49,6 +50,10 @@
 	const stats = $derived(collectionStats(collection));
 	const flippedCount = $derived(flipped.filter(Boolean).length);
 	const allFlipped = $derived(flipped.length > 0 && flipped.every(Boolean));
+
+	/* L'échelle complète : mêmes paliers et mêmes taux que /raretes, dérivés du
+	   tirage lui-même. La publier ici, c'est publier les vraies probabilités. */
+	const ECHELLE = paliers();
 
 	const RARITY_TINT: Record<Rarity, string> = {
 		common: '#8b95a5',
@@ -456,6 +461,31 @@
 			</div>
 		{/each}
 	</div>
+	<h3 class="paliers-titre">
+		Par palier — finition et détourage compris
+		<a class="paliers-lien" href="/raretes">voir l'échelle en cartes →</a>
+	</h3>
+	<div class="paliers-tab">
+		<table>
+			<thead>
+				<tr><th>Palier</th><th>Par booster</th><th>Fréquence</th></tr>
+			</thead>
+			<tbody>
+				{#each ECHELLE as p (p.key)}
+					<tr>
+						<td>{p.label}</td>
+						<td class="num">
+							{p.taux >= 1
+								? `×${p.taux.toFixed(1).replace('.', ',')}`
+								: `${(p.taux * 100).toFixed(p.taux < 0.01 ? 3 : 2).replace('.', ',')} %`}
+						</td>
+						<td class="freq">{frequence(p.taux)}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
 	<p class="odds-note">
 		Si une rareté tirée n'a aucune carte forgée, le tirage se replie sur la rareté la plus proche.
 		Pas de doublon à l'intérieur d'un même booster tant que le pool le permet. Chaque carte épique
@@ -1236,6 +1266,65 @@
 	.odds-p {
 		font-variant-numeric: tabular-nums;
 		color: rgba(242, 240, 234, 0.65);
+	}
+	/* ---------- l'échelle des paliers ---------- */
+	.paliers-titre {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.4rem 1rem;
+		margin: 2.2rem 0 0.9rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+	.paliers-lien {
+		font-size: 0.8rem;
+		font-weight: 500;
+		color: #d5b25e;
+		text-decoration: none;
+	}
+	.paliers-lien:hover {
+		text-decoration: underline;
+	}
+	/* 33 lignes : on borne la hauteur et on laisse défiler dans le bloc */
+	.paliers-tab {
+		max-height: 26rem;
+		overflow: auto;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 16px;
+	}
+	.paliers-tab table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.85rem;
+	}
+	.paliers-tab th {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		padding: 0.7rem 1.1rem;
+		text-align: left;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: rgba(242, 240, 234, 0.45);
+		background: #12131a;
+	}
+	.paliers-tab td {
+		padding: 0.6rem 1.1rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+	.paliers-tab .num,
+	.paliers-tab .freq {
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+	.paliers-tab .num {
+		color: #d5b25e;
+	}
+	.paliers-tab .freq {
+		color: rgba(242, 240, 234, 0.45);
 	}
 	.odds-note {
 		margin: 1.2rem 0 0;
