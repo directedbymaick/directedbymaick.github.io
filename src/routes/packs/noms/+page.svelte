@@ -203,7 +203,7 @@
 			<p class="finition">{n.label}</p>
 			<p class="frequence">{frequence(n.taux)}</p>
 			{#if possede}
-				<span class="acquis">Déjà dit</span>
+				<span class="acquis">Possédé</span>
 			{:else}
 				<button class="acheter" disabled={!abordable} onclick={() => reconstituer(n)}>
 					{n.prix}
@@ -261,7 +261,7 @@
 				{/if}
 
 				{#if possede}
-					<span class="acquis">Déjà dit</span>
+					<span class="acquis">Possédé</span>
 				{:else}
 					<button class="acheter grand" disabled={!abordable} onclick={() => reconstituer(apercu!)}>
 						Reconstituer · {apercu.prix}
@@ -468,9 +468,14 @@
 		display: grid;
 		place-items: center;
 		padding: 2rem 1.2rem;
+		/* si le contenu dépasse, c'est TOUTE la loupe qui défile — jamais la boîte
+		   autour de la carte, qui la rognerait dès qu'elle s'incline */
+		overflow-y: auto;
+		overscroll-behavior: contain;
 	}
 	.loupe-fond {
-		position: absolute;
+		/* fixed, sinon le fond défilerait avec le contenu */
+		position: fixed;
 		inset: 0;
 		border: none;
 		cursor: zoom-out;
@@ -485,12 +490,16 @@
 		align-items: center;
 		justify-content: center;
 		gap: 2rem;
-		max-height: 92vh;
-		overflow: auto;
+		margin: auto;
+		/* aucun rognage : la carte bascule en 3D et doit pouvoir déborder */
+		overflow: visible;
 	}
 	.loupe-carte {
-		--card-w: min(340px, 78vw);
+		--card-w: min(320px, 74vw);
 		flex: none;
+		/* de l'air autour, pour que l'inclinaison ne touche jamais un bord */
+		padding: 1.2rem;
+		margin: -1.2rem;
 	}
 	.loupe-fiche {
 		max-width: 24rem;
