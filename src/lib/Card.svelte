@@ -157,7 +157,7 @@
 
 				<div class="content">
 					<header class="plate">
-						<h2 class="name">{card.name}</h2>
+						<h2 class="name" data-text={card.name}>{card.name}</h2>
 						<p class="cellline">
 							<span class="kindlabel">{kindLabel}</span>
 							{#if card.cell}
@@ -545,10 +545,35 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
-		/* aucune ombre colorée : décalée d'un demi-pixel sous un titre serif fin, elle
-		   se lisait comme un doublon rouge du nom. Seule l'ombre portée sombre reste,
-		   pour détacher le titre de l'illustration. */
-		filter: drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
+		position: relative;
+		isolation: isolate;
+	}
+	/* le liseré : un calque dupliqué EN CONTOUR sous l'or. Le trait est tracé en
+	   -webkit-text-stroke transparent, et le dégradé arc-en-ciel — clippé au texte,
+	   donc au contour aussi — le remplit. L'or opaque du parent recouvre ensuite la
+	   moitié intérieure du trait : il n'en dépasse qu'un filet irisé. */
+	.card[data-fullart='true'] .name::before {
+		content: attr(data-text);
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		z-index: -1;
+		-webkit-text-stroke: 0.03em transparent;
+		background: linear-gradient(
+			92deg,
+			#ff6f9c 0%,
+			#ffd76f 16%,
+			#8dffb4 33%,
+			#6fe3ff 50%,
+			#8f9bff 67%,
+			#d98cff 84%,
+			#ff6f9c 100%
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		pointer-events: none;
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
