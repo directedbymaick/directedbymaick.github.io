@@ -249,6 +249,10 @@
 		</div>
 	</footer>
 
+	<!-- La bande d'accent ferme la page : un point final pleine largeur, qui ne
+	     contient que l'initiale, comme une signature en bas de colonne. -->
+	<div class="bande" aria-hidden="true"><span>E</span></div>
+
 	<span class="uid" aria-hidden="true">UID : KOR-701606888</span>
 
 	<!-- toast de gain -->
@@ -294,6 +298,42 @@
 		--display: 'Barlow Semi Condensed', 'Arial Narrow', system-ui, sans-serif;
 		--accent-red: #d3202a;
 		--accent-red-deep: #a5151d;
+
+		/* ============================================================
+		   LANGAGE ÉDITORIAL — broadsheet imprimé, transposé en nuit et or.
+		   La référence est un journal clair à accent vert ; ici la toile
+		   reste la nuit d'Expelled et l'or joue le rôle du surligneur :
+		   un seul ton chromatique sur une page autrement monochrome.
+		   ============================================================ */
+
+		/* échelle typographique : l'écart entre 18px de texte et 96px+ de
+		   display est ce qui crée le rythme. Rien entre les deux. */
+		--text-caption: 0.6875rem; /* 11px — micro-libellés */
+		--text-body-sm: 0.875rem; /* 14px */
+		--text-body: 1.125rem; /* 18px — plafond du texte courant */
+		--text-subheading: 3.75rem; /* 60px */
+		--text-heading-sm: 4.5rem; /* 72px */
+		--text-heading: 6rem; /* 96px */
+		--text-heading-lg: 9.6875rem; /* 155px */
+		--text-display: 18.4375rem; /* 295px */
+
+		--tracking-caption: 0.01em;
+		--tracking-display: -0.04em;
+		--tracking-heading: -0.02em;
+		--leading-display: 0.9;
+
+		/* espacement : aéré, cadencé */
+		--section-gap: 80px;
+		--element-gap: 20px;
+		--page-max: 1400px;
+
+		/* rayons : le bouton principal reste anguleux, jamais en pilule */
+		--radius-action: 5px;
+		--radius-ghost: 10px;
+		--radius-image: 14px;
+
+		/* la seule élévation du site, teintée d'or — jamais de gris */
+		--shadow-action: rgba(120, 92, 20, 0.45) 1px 8px 20px 0;
 	}
 	:global(html) {
 		scroll-behavior: smooth;
@@ -318,6 +358,125 @@
 			linear-gradient(180deg, #050a14 0%, var(--bg) 40%, #081020 100%);
 		background-attachment: fixed;
 	}
+	/* ============================================================
+	   COMPOSANTS ÉDITORIAUX — utilisables depuis n'importe quelle page.
+	   ============================================================ */
+
+	/* Le micro-libellé : capitales 11px. Remplace tout habillage de bouton,
+	   d'onglet ou d'étiquette. La typographie EST le chrome. */
+	:global(.ed-label) {
+		font-family: var(--display);
+		font-size: var(--text-caption);
+		font-weight: 550;
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caption);
+		color: var(--ink-dim);
+	}
+
+	/* L'action principale : le seul aplat saturé du site, et la seule élévation.
+	   Rayon 5px — jamais une pilule, l'angle vif est ce qui garde le ton
+	   imprimé. L'ombre est teintée d'or pour appartenir à l'accent, pas au gris. */
+	:global(.ed-action) {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 20px 30px;
+		font-family: var(--display);
+		font-size: var(--text-caption);
+		font-weight: 550;
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caption);
+		color: #0a0a0d;
+		background: var(--gold);
+		border: none;
+		border-radius: var(--radius-action);
+		box-shadow: var(--shadow-action);
+		cursor: pointer;
+		text-decoration: none;
+		transition:
+			background 0.18s ease,
+			transform 0.18s var(--ease-out-cubic);
+	}
+	:global(.ed-action:hover) {
+		background: var(--cream);
+		transform: translateY(-2px);
+	}
+	:global(.ed-action:disabled) {
+		color: var(--ink-dim);
+		background: rgba(255, 255, 255, 0.06);
+		box-shadow: none;
+		cursor: default;
+		transform: none;
+	}
+
+	/* L'action secondaire : contour d'un filet, aucun fond, aucune ombre.
+	   Le rembourrage vertical généreux la fait lire comme une entrée de menu
+	   plutôt que comme un bouton compact. */
+	:global(.ed-ghost) {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 26px 20px;
+		font-family: var(--display);
+		font-size: var(--text-caption);
+		font-weight: 550;
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caption);
+		color: var(--ink);
+		background: none;
+		border: 1px solid var(--ink);
+		border-radius: var(--radius-ghost);
+		cursor: pointer;
+		text-decoration: none;
+		transition:
+			border-color 0.18s ease,
+			color 0.18s ease;
+	}
+	:global(.ed-ghost:hover) {
+		border-color: var(--gold);
+		color: var(--gold);
+	}
+
+	/* Le lien courant : un filet sous la ligne de base, rien d'autre. Il ne
+	   change ni de graisse ni de couleur — le soulignement est tout le traitement. */
+	:global(.ed-link) {
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: 1rem;
+		text-decoration: none;
+		border-bottom: 1px solid currentColor;
+		transition: opacity 0.18s ease;
+	}
+	:global(.ed-link:hover) {
+		opacity: 0.6;
+	}
+
+	/* Le titre monumental : c'est l'écart entre 18px de texte et 96px+ de
+	   display qui donne le rythme. Rien ne vit entre les deux. */
+	:global(.ed-display) {
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-weight: 400;
+		font-size: clamp(3.5rem, 11vw, var(--text-heading-lg));
+		line-height: var(--leading-display);
+		letter-spacing: var(--tracking-display);
+		margin: 0;
+	}
+	:global(.ed-heading) {
+		font-family: var(--display);
+		font-weight: 550;
+		font-size: clamp(2.2rem, 6vw, var(--text-heading));
+		line-height: 1;
+		letter-spacing: var(--tracking-heading);
+		margin: 0;
+	}
+
+	/* Une section éditoriale : respiration large, filet en haut, jamais d'ombre. */
+	:global(.ed-section) {
+		max-width: var(--page-max);
+		margin: 0 auto;
+		padding-block: var(--section-gap);
+		border-top: 1px solid var(--panel-line);
+	}
+
 	:global(::selection) {
 		background: rgba(213, 178, 94, 0.9);
 		color: #081020;
@@ -385,15 +544,17 @@
 		gap: 0.4rem;
 		margin-left: 1rem;
 	}
+	/* Micro-libellé éditorial : 11px, capitales, +0.01em. C'est cette
+	   micro-typographie qui fait office de chrome — pas de fond, pas de cadre. */
 	.links a {
 		position: relative;
 		text-decoration: none;
 		font-family: var(--display);
-		font-size: 0.98rem;
-		font-weight: 600;
+		font-size: var(--text-caption);
+		font-weight: 550;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		padding: 0.42rem 0.7rem;
+		letter-spacing: var(--tracking-caption);
+		padding: 0.42rem 0.8rem;
 		color: rgba(238, 240, 245, 0.62);
 		transition: color 0.18s ease;
 	}
@@ -715,6 +876,23 @@
 		.uid {
 			display: none;
 		}
+	}
+
+	.bande {
+		width: 100%;
+		height: clamp(220px, 34vw, 420px);
+		background: var(--gold);
+		display: flex;
+		align-items: flex-start;
+		padding: 50px;
+		box-sizing: border-box;
+	}
+	.bande span {
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: clamp(4rem, 12vw, 11rem);
+		line-height: 0.8;
+		color: #0a0a0d;
+		letter-spacing: var(--tracking-display);
 	}
 
 	footer {
