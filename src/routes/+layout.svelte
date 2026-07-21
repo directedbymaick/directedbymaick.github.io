@@ -214,37 +214,41 @@
 		{@render children()}
 	</main>
 
+	<!-- Pied éditorial : surface plus profonde que la toile, une phrase en
+	     display, puis des colonnes de micro-libellés. Aucun panneau, aucune
+	     ombre — la structure vient de la typographie et des filets. -->
 	<footer>
 		<div class="foot-inner">
-			<div class="foot-brand">
-				<img class="foot-emblem" src={logo} alt="" aria-hidden="true" />
-				<p class="foot-word">{charter.game.name}</p>
-				<p class="foot-tag">{charter.game.tagline}</p>
+			<p class="foot-said">Le Créateur se tait.<br /><em>Pas vous.</em></p>
+
+			<div class="foot-cols">
+				<nav class="foot-col">
+					<p class="foot-h">Le jeu</p>
+					{#each links as l (l.href)}
+						<a href={l.href}>{l.label}</a>
+					{/each}
+				</nav>
+				<nav class="foot-col">
+					<p class="foot-h">Apprendre</p>
+					<a href="/regles">Règles</a>
+					<a href="/tuto">Initiation</a>
+					<a href="/decks">Voies conseillées</a>
+					<a href="/profil">Mon espace</a>
+				</nav>
+				<nav class="foot-col">
+					<p class="foot-h">Univers</p>
+					<a href="/">Nés du silence · Set 01</a>
+					<a href="/packs">Réquisition</a>
+					<a href="/raretes">Raretés</a>
+					<a href="/arene">Arène</a>
+					<a href="/versus">Salons</a>
+				</nav>
 			</div>
-			<nav class="foot-col">
-				<h4>Le jeu</h4>
-				{#each links as l (l.href)}
-					<a href={l.href}>{l.label}</a>
-				{/each}
-			</nav>
-			<nav class="foot-col">
-				<h4>Apprendre</h4>
-				<a href="/regles">Règles</a>
-				<a href="/tuto">Initiation</a>
-				<a href="/decks">Voies conseillées</a>
-				<a href="/profil">Mon espace</a>
-			</nav>
-			<nav class="foot-col">
-				<h4>Univers</h4>
-				<a href="/">Nés du silence · Set 01</a>
-				<a href="/packs">Réquisition</a>
-				<a href="/raretes">Raretés</a>
-				<a href="/arene">Arène</a>
-				<a href="/versus">Salons</a>
-			</nav>
 		</div>
+
 		<div class="foot-bar">
-			<span>© 2026 Expelled · Nés du silence</span>
+			<span>© 2026 {charter.game.name}</span>
+			<span>Nés du silence</span>
 			<span>Set 01 · 1ʳᵉ Édition</span>
 		</div>
 	</footer>
@@ -1002,85 +1006,100 @@
 		letter-spacing: var(--tracking-display);
 	}
 
+	/* ============ PIED ÉDITORIAL ============
+	   Surface plus profonde que la toile, filet unique en haut, et rien
+	   d'autre : ni panneau, ni dégradé, ni ombre. La hiérarchie tient
+	   entièrement à l'écart entre la phrase en display et les colonnes
+	   de micro-libellés à 11px. */
 	footer {
 		position: relative;
-		margin-top: 4rem;
-		padding: 3.6rem 2rem 2rem;
-		background: linear-gradient(180deg, transparent, rgba(4, 8, 16, 0.6));
-		border-top: 1px solid rgba(140, 170, 220, 0.12);
+		margin-top: var(--spacing-120);
+		padding: var(--spacing-120) var(--spacing-50) var(--spacing-40);
+		background: var(--surface-deep);
+		border-top: 1px solid var(--panel-line);
 	}
 	.foot-inner {
-		max-width: 1280px;
+		max-width: var(--page-max);
 		margin: 0 auto;
 		display: grid;
-		grid-template-columns: 1.7fr 1fr 1fr 1fr;
-		gap: 2.5rem;
+		grid-template-columns: 1.2fr 2fr;
+		gap: var(--spacing-60);
+		align-items: start;
 	}
-	.foot-brand {
-		max-width: 22rem;
-	}
-	.foot-emblem {
-		width: 2.4rem;
-		height: 2.4rem;
-		filter: drop-shadow(0 0 10px rgba(213, 178, 94, 0.4));
-	}
-	.foot-word {
-		margin: 0.6rem 0 0.35rem;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 700;
-		letter-spacing: 0.26em;
-		font-size: 0.95rem;
+	/* la phrase du set, traitée comme une citation de une */
+	.foot-said {
+		margin: 0;
+		font-family: var(--font-editorial);
+		font-weight: var(--fw-regular);
+		font-size: clamp(2.6rem, 6vw, var(--text-subheading));
+		line-height: var(--leading-subheading);
+		letter-spacing: var(--tracking-subheading);
 		color: var(--ink);
 	}
-	.foot-tag {
-		margin: 0;
-		font-family: 'Cormorant Garamond', Georgia, serif;
+	.foot-said em {
 		font-style: italic;
-		font-size: 1.02rem;
-		color: rgba(238, 240, 245, 0.45);
+		color: var(--gold);
+	}
+	.foot-cols {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--spacing-40);
 	}
 	.foot-col {
 		display: flex;
 		flex-direction: column;
-		gap: 0.55rem;
+		gap: var(--spacing-15);
 	}
-	.foot-col h4 {
-		margin: 0 0 0.4rem;
-		font-family: var(--display);
-		font-weight: 700;
+	/* l'en-tête de colonne : micro-libellé, pas un titre */
+	.foot-h {
+		margin: 0 0 var(--spacing-10);
+		font-family: var(--font-grotesque);
+		font-size: var(--text-caption);
+		font-weight: var(--fw-550);
+		line-height: var(--leading-caption);
+		letter-spacing: var(--tracking-caption);
 		text-transform: uppercase;
-		letter-spacing: 0.12em;
-		font-size: 0.82rem;
-		color: var(--gold);
+		color: var(--ink-dim);
 	}
+	/* les liens : soulignement à la ligne de base, rien d'autre. Ils ne
+	   changent ni de graisse ni de couleur — le filet EST le traitement. */
 	.foot-col a {
+		width: fit-content;
+		font-family: var(--font-grotesque);
+		font-size: var(--text-body);
+		font-weight: var(--fw-extralight);
+		line-height: 1.15;
+		letter-spacing: var(--tracking-body);
+		color: var(--ink);
 		text-decoration: none;
-		font-size: 0.86rem;
-		color: rgba(238, 240, 245, 0.55);
-		transition: color 0.15s ease;
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.18s ease;
 	}
 	.foot-col a:hover {
-		color: var(--ink);
+		border-bottom-color: var(--ink);
 	}
 	.foot-bar {
-		max-width: 1280px;
-		margin: 2.6rem auto 0;
-		padding-top: 1.4rem;
-		border-top: 1px solid rgba(140, 170, 220, 0.1);
+		max-width: var(--page-max);
+		margin: var(--spacing-120) auto 0;
+		padding-top: var(--spacing-20);
+		border-top: 1px solid var(--panel-line);
 		display: flex;
+		flex-wrap: wrap;
+		gap: var(--spacing-20);
 		justify-content: space-between;
-		font-family: var(--display);
+		font-family: var(--font-grotesque);
+		font-size: var(--text-caption);
+		font-weight: var(--fw-550);
+		letter-spacing: var(--tracking-caption);
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		font-size: 0.74rem;
-		color: rgba(238, 240, 245, 0.4);
+		color: var(--ink-dim);
 	}
-	@media (max-width: 760px) {
+	@media (max-width: 900px) {
 		.foot-inner {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 1fr;
 		}
-		.foot-brand {
-			grid-column: 1 / -1;
+		.foot-cols {
+			grid-template-columns: 1fr 1fr;
 		}
 		.foot-bar {
 			flex-direction: column;
