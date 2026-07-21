@@ -18,7 +18,8 @@ export const FOIL_LABEL: Record<FoilPreset, string> = {
 	amazing: 'Cristallin',
 	cosmos: 'Cosmique',
 	galerie: 'Galerie',
-	showcase: 'Illustration spéciale'
+	// « SP » : le nom court de la finition détourée, celui qui figure sur la carte
+	showcase: 'SP'
 };
 
 /**
@@ -48,7 +49,7 @@ export function foilLabel(
 	fullArt = false
 ): string {
 	if (foil !== 'showcase') return FOIL_LABEL[foil];
-	if (card.cutout) return FOIL_LABEL.showcase; // illustration détourée : nom propre
+	if (card.cutout) return FOIL_LABEL.showcase; // détourée : la SP, nom propre
 	// en Full Art, le holo derrière est toujours la Galerie (cf. Card.svelte)
 	return fullArt ? FOIL_LABEL.galerie : SHOWCASE_MATIERE[card.rarity];
 }

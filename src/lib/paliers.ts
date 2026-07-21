@@ -8,7 +8,7 @@ import { versionsOf, foilLabel } from '$lib/variants';
  * L'échelle réelle du jeu.
  *
  * Une rareté seule ne dit plus ce qu'on tient en main : deux Prismatiques n'ont
- * pas la même valeur selon qu'elles sortent en Raw ou en Illustration spéciale
+ * pas la même valeur selon qu'elles sortent en Raw ou en SP
  * détourée. Le palier est donc le quadruplet rareté × forme × finition × détourage,
  * et sa probabilité se calcule sur le tirage réel — jamais posée à la main.
  */

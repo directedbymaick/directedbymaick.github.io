@@ -16,8 +16,8 @@
 		amazing: 'Cristallin',
 		cosmos: 'Cosmique',
 		galerie: 'Galerie',
-		// « Reflet » sans détourage, « Illustration spéciale » avec (cf. variants.ts)
-		showcase: 'Illustration spéciale / Reflet'
+		// SP si la carte est détourée, sinon la matière de sa rareté (cf. variants.ts)
+		showcase: 'SP (détourée) / matière de la rareté'
 	};
 	// Tous les foils (mode labo).
 	const allFoils: FoilPreset[] = [

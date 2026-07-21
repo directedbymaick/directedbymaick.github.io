@@ -373,7 +373,12 @@
 					<Card card={e.view} fullArt={e.fullArt} interactive={owned > 0} thumb />
 				</a>
 				{#if e.label !== 'Raw'}
-					<span class="fabadge">{e.label}</span>
+					<span
+						class="fabadge"
+						class:sp={e.view.gene.foilPreset === 'showcase' && !!e.view.cutout}
+					>
+						{e.label}
+					</span>
 				{/if}
 				{#if owned > 0}
 					<span class="owncount">×{owned}</span>
@@ -1139,6 +1144,12 @@
 		letter-spacing: 0.05em;
 		color: #171b10;
 		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
+	}
+	/* La SP a son étiquette à elle : un prisme CHAUD, rouge vers l'or, qui ne se
+	   confond pas avec l'arc-en-ciel froid des autres finitions. */
+	.fabadge.sp {
+		color: #2a1206;
+		background: linear-gradient(90deg, #d6483c, #e8703f, #f0a63f, #f5d363, #e8b04a, #d6533c);
 		border-radius: 999px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 	}

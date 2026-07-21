@@ -804,7 +804,7 @@
 	}
 	/* le sceau ALT : pastille prismatique gravée dans le cadre — l'iridescence
 	   balaie lentement le dégradé argent-violet-or, discret mais indubitable */
-	/* marque les cartes dont le sujet est détouré : l'Illustration spéciale */
+	/* marque les cartes dont le sujet est détouré : la finition SP */
 	.ff-sp {
 		display: inline-block;
 		margin-left: 1.2cqw;
