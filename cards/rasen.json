@@ -24,5 +24,6 @@
 		"cost": 4,
 		"text": "Détruit tous les autres Êtres."
 	},
-	"flavor": "Il ne pose plus qu’une seule question."
+	"flavor": "Il ne pose plus qu’une seule question.",
+	"cutoutY": "-3.8%"
 }
