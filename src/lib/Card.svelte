@@ -1105,6 +1105,9 @@
 	}
 	/* le sceau du Prononcer : pill d'or — le geste signature est doré, pas faction */
 	.synchro-tag {
+		/* descendue de ~1.5px : elle flottait trop haut par rapport au texte */
+		position: relative;
+		top: 0.4cqw;
 		display: inline-flex;
 		align-items: center;
 		gap: 0.9cqw;
