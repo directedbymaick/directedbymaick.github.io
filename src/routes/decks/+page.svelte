@@ -147,7 +147,7 @@
 
 	function peutAjouter(c: CardData): boolean {
 		if (!deck) return false;
-		return taille < DECK_SIZE && exemplaires(c.id) < maxCopiesOf(c);
+		return possedees(c.id) > 0 && taille < DECK_SIZE && exemplaires(c.id) < maxCopiesOf(c);
 	}
 
 	/** Dernier refus d'ajout, affiché brièvement pour dire POURQUOI ça n'a pas marché. */
@@ -162,6 +162,10 @@
 
 	function ajouter(c: CardData) {
 		if (!deck) return;
+		if (possedees(c.id) === 0) {
+			signaler(`« ${c.name} » n'est pas dans ta collection — ouvre des boosters pour l'obtenir.`);
+			return;
+		}
 		if (taille >= DECK_SIZE) {
 			signaler(`Deck complet : ${DECK_SIZE} cartes maximum.`);
 			return;
@@ -432,14 +436,17 @@
 				{@const owned = possedees(c.id)}
 				<button
 					class="tuile"
-					class:saturee={n >= max}
-					class:bloquee={!peutAjouter(c) && n < max}
+					class:verrou={!owned}
+					class:saturee={owned && n >= max}
+					class:bloquee={owned && !peutAjouter(c) && n < max}
 					style="--fc: {charter.factions[c.faction]?.color ?? '#8892a6'}"
-					draggable="true"
+					draggable={owned > 0}
 					ondragstart={(e) => debutGlisser(e, c)}
 					onclick={() => clicTuile(c)}
 					ondblclick={() => doubleClicTuile(c)}
-					title="Clic : lire la carte · Double-clic ou glisser vers le deck : ajouter"
+					title={owned
+						? 'Clic : lire la carte · Double-clic ou glisser vers le deck : ajouter'
+						: 'Carte non possédée — lisible, mais pas jouable tant que tu ne l’as pas tirée'}
 				>
 					<span class="art"><img src={c.art} alt="" loading="lazy" /></span>
 					<span class="tcout">{c.cost}</span>
@@ -697,6 +704,16 @@
 		font-size: 0.76rem;
 		border-top: 1px solid var(--panel-line);
 		padding-top: 0.6rem;
+	}
+	.tuile.verrou {
+		filter: grayscale(1) brightness(0.62);
+		opacity: 0.55;
+		cursor: default;
+	}
+	.tuile.verrou:hover {
+		filter: grayscale(1) brightness(0.78);
+		opacity: 0.72;
+		transform: none;
 	}
 	.contraintes h3 {
 		margin: 0;
