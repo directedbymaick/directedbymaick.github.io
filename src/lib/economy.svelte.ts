@@ -22,6 +22,36 @@ export const SELL_VALUE: Record<string, number> = {
 	prism: 80
 };
 
+/* ---------------- les Syllabes ----------------
+ *
+ * Le lore la décrivait avant nous (KORUM.md, « Les Eshar ») :
+ *
+ *   « Nous collectionnons les syllabes perdues. Certains d'entre nous en ont
+ *     rassemblé assez pour reconstituer des noms entiers. »
+ *
+ * Une carte EST un nom — le Registre compte des « noms inscrits ». La Syllabe
+ * est donc la seule monnaie qui puisse acheter une carte directement : on ne
+ * l'achète pas, on la RECONSTITUE. Les Éclats, eux, restent la monnaie
+ * matérielle des boosters : on paie un sceau, on ne paie pas un nom.
+ *
+ * Elle ne vient que des Prismatiques, les noms restés entiers : les tirer en
+ * libère quelques-unes, en défaire une en rend beaucoup plus.
+ */
+
+/** Syllabes libérées par une Prismatique tirée dans un booster. */
+export const SYLLABES_PULL = 25;
+/** Syllabes rendues en défaisant une Prismatique excédentaire. */
+export const SYLLABES_DEFAIRE = 50;
+
+/** Coût, en Syllabes, pour reconstituer un nom — par rareté. */
+export const NOM_PRIX: Record<string, number> = {
+	common: 20,
+	rare: 40,
+	epic: 80,
+	legendary: 160,
+	prism: 320
+};
+
 export type TrackEvent =
 	| 'win'
 	| 'loss'
@@ -144,6 +174,8 @@ interface QuestState {
 interface EcoState {
 	ready: boolean;
 	balance: number;
+	/** Syllabes — la monnaie des noms, gagnée sur les seules Prismatiques. */
+	syllabes: number;
 	stats: Stats;
 	day: string;
 	week: string;
@@ -152,8 +184,8 @@ interface EcoState {
 	ach: Record<string, { claimed: boolean }>;
 	/** revente automatique du surplus (au-delà de 3 copies) à l'ouverture des boosters */
 	autoSell: boolean;
-	/** dernier gain affichable (toast) */
-	lastGain: { amount: number; reason: string; at: number } | null;
+	/** dernier gain affichable (toast) ; `syllabes` distingue la monnaie */
+	lastGain: { amount: number; reason: string; at: number; syllabes?: boolean } | null;
 }
 
 const KEY = 'expelled-eco';
@@ -171,6 +203,7 @@ const blankStats = (): Stats => ({
 export const eco = $state<EcoState>({
 	ready: false,
 	balance: 0,
+	syllabes: 0,
 	stats: blankStats(),
 	day: '',
 	week: '',
@@ -206,6 +239,7 @@ export function initEconomy(): void {
 		if (raw) {
 			const d = JSON.parse(raw);
 			eco.balance = d.balance ?? 0;
+			eco.syllabes = d.syllabes ?? 0;
 			eco.stats = { ...blankStats(), ...(d.stats ?? {}) };
 			eco.day = d.day ?? '';
 			eco.week = d.week ?? '';
@@ -253,6 +287,22 @@ export function earn(amount: number, reason: string): void {
 export function spend(amount: number): boolean {
 	if (eco.balance < amount) return false;
 	eco.balance -= amount;
+	persist();
+	return true;
+}
+
+/** Libère des Syllabes. `raison` alimente le bandeau de gain. */
+export function gagnerSyllabes(n: number, raison: string): void {
+	if (n <= 0) return;
+	eco.syllabes = Math.min(MAX_BALANCE, eco.syllabes + n);
+	eco.lastGain = { amount: n, reason: raison, at: Date.now(), syllabes: true };
+	persist();
+}
+
+/** Dépense des Syllabes pour reconstituer un nom. */
+export function depenserSyllabes(n: number): boolean {
+	if (eco.syllabes < n) return false;
+	eco.syllabes -= n;
 	persist();
 	return true;
 }

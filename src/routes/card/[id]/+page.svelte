@@ -4,7 +4,13 @@
 	import { charter } from '$lib/charter';
 	import { altView } from '$lib/cards';
 	import { onMount } from 'svelte';
-	import { FULLART_RATE, loadCollection } from '$lib/gacha';
+	import { FULLART_RATE, loadCollection, saveCollection } from '$lib/gacha';
+	import {
+		eco,
+		initEconomy,
+		depenserSyllabes,
+		NOM_PRIX
+	} from '$lib/economy.svelte';
 	import { versionsOf, formatRate } from '$lib/variants';
 	import type { CardData } from '$lib/types';
 
@@ -48,8 +54,33 @@
 	   d'une finition qu'on n'a pas. */
 	let collection = $state<Record<string, number>>({});
 	onMount(() => {
+		initEconomy();
 		collection = loadCollection();
 	});
+
+	/* Reconstituer un nom — l'unique usage des Syllabes.
+	   « Certains d'entre nous en ont rassemblé assez pour reconstituer des noms
+	   entiers. » (KORUM.md, Les Eshar) Le prix suit la VRAIE rareté : la vue Full
+	   Art force 'prism', une Commune Full Art coûterait sinon le prix fort. */
+	const versionCourante = $derived(versions.find((v) => v.key === artSel) ?? null);
+	const prixNom = $derived(
+		versionCourante ? (NOM_PRIX[versionCourante.view.sourceRarity ?? card.rarity] ?? 0) : 0
+	);
+	let messageForge = $state('');
+
+	function reconstituer() {
+		if (!versionCourante || shownPossedee > 0) return;
+		if (!depenserSyllabes(prixNom)) {
+			messageForge = `Il vous manque ${prixNom - eco.syllabes} Syllabe${prixNom - eco.syllabes > 1 ? 's' : ''}.`;
+			setTimeout(() => (messageForge = ''), 3000);
+			return;
+		}
+		collection[versionCourante.key] = (collection[versionCourante.key] ?? 0) + 1;
+		collection = { ...collection };
+		saveCollection($state.snapshot(collection));
+		messageForge = 'Le nom est dit.';
+		setTimeout(() => (messageForge = ''), 3000);
+	}
 	function possedee(key: string): number {
 		return collection[key] ?? 0;
 	}
@@ -108,6 +139,21 @@
 			{/each}
 		</div>
 		<p class="vhint">Taux de sortie par tirage de cette carte.</p>
+
+		{#if versionCourante && shownPossedee === 0}
+			<div class="forge">
+				<button class="forge-btn" disabled={eco.syllabes < prixNom} onclick={reconstituer}>
+					Reconstituer ce nom · {prixNom}
+					<span class="syl" aria-hidden="true"></span>
+				</button>
+				<p class="forge-solde">
+					Vous avez <b>{eco.syllabes}</b> Syllabe{eco.syllabes > 1 ? 's' : ''}
+				</p>
+			</div>
+		{/if}
+		{#if messageForge}
+			<p class="forge-msg" role="status">{messageForge}</p>
+		{/if}
 	</div>
 
 	<aside class="meta" style="--fc: {faction?.color ?? '#8892a6'}">
@@ -203,6 +249,63 @@
 			background 0.18s ease,
 			color 0.18s ease;
 	}
+	/* reconstituer un nom : l'achat direct, payé en Syllabes */
+	.forge {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: center;
+		gap: 0.5rem 0.9rem;
+		margin: 1rem 0 0;
+	}
+	.forge-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.5rem 1.2rem;
+		font-family: inherit;
+		font-size: 0.86rem;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		color: #0a0a0d;
+		background: linear-gradient(180deg, #f0d68a, #c9a445);
+		border: none;
+		border-radius: 999px;
+		cursor: pointer;
+		transition: filter 0.16s ease;
+	}
+	.forge-btn:hover:not(:disabled) {
+		filter: brightness(1.08);
+	}
+	.forge-btn:disabled {
+		color: rgba(242, 240, 234, 0.35);
+		background: rgba(255, 255, 255, 0.06);
+		cursor: default;
+	}
+	/* la Syllabe : un éclat vertical, comme un trait de voix */
+	.syl {
+		width: 0.42rem;
+		height: 0.72rem;
+		border-radius: 40% 40% 45% 45%;
+		background: linear-gradient(180deg, #fff6dc, #a97f2c);
+		box-shadow: 0 0 6px rgba(213, 178, 94, 0.65);
+	}
+	.forge-solde {
+		margin: 0;
+		font-size: 0.78rem;
+		color: rgba(242, 240, 234, 0.4);
+	}
+	.forge-solde b {
+		color: #d5b25e;
+		font-variant-numeric: tabular-nums;
+	}
+	.forge-msg {
+		margin: 0.5rem 0 0;
+		text-align: center;
+		font-size: 0.8rem;
+		color: #d5b25e;
+	}
+
 	/* version jamais tirée : lisible, mais visiblement pas à nous */
 	.vbtn.manquante {
 		color: rgba(242, 240, 234, 0.28);

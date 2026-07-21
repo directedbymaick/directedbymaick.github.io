@@ -33,7 +33,9 @@
 		track,
 		PACK_PRICE,
 		SELL_KEEP,
-		SELL_VALUE
+		SELL_VALUE,
+		gagnerSyllabes,
+		SYLLABES_PULL
 	} from '$lib/economy.svelte';
 
 	type Stage = 'idle' | 'reveal' | 'recap';
@@ -189,6 +191,20 @@
 	 * La forme Full Art force `rarity: 'prism'` : c'est `sourceRarity` qui porte la
 	 * vraie rareté. Sans ça, une Commune Full Art passait pour une Prismatique.
 	 */
+	/**
+	 * Les Syllabes ne tombent que des Prismatiques — les noms restés entiers.
+	 * On compte la VRAIE rareté : la vue Full Art force `rarity: 'prism'`, ce qui
+	 * ferait passer n'importe quelle Commune Full Art pour une Prismatique.
+	 */
+	function moissonnerSyllabes(lot: Pull[]) {
+		const n = lot.filter((p) => (p.card.sourceRarity ?? p.card.rarity) === 'prism').length;
+		if (!n) return;
+		gagnerSyllabes(
+			n * SYLLABES_PULL,
+			n > 1 ? `${n} noms entiers ont résonné` : 'Un nom entier a résonné'
+		);
+	}
+
 	const fxOf = (p: Pull): FxTier => {
 		if (p.card.gene.foilPreset === 'showcase' && p.card.cutout) return 'apex';
 		const vraie = p.card.sourceRarity ?? p.card.rarity;
@@ -223,6 +239,7 @@
 		}
 		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
+		moissonnerSyllabes(pulls);
 		// revente automatique du surplus (option de l'espace utilisateur)
 		if (eco.autoSell) {
 			let total = 0;
@@ -386,6 +403,7 @@
 		}
 		track('pull', all.length);
 		freshIds = addToCollection(collection, all);
+		moissonnerSyllabes(all);
 		if (eco.autoSell) {
 			let total = 0;
 			let count = 0;

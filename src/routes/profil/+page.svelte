@@ -24,6 +24,8 @@
 		setAutoSell,
 		SELL_KEEP,
 		SELL_VALUE,
+		gagnerSyllabes,
+		SYLLABES_DEFAIRE,
 		type AchContext
 	} from '$lib/economy.svelte';
 	import {
@@ -104,7 +106,10 @@
 			versionsOf(c, FULLART_RATE).map((v) => ({
 				key: v.key,
 				name: v.label === 'Raw' ? c.name : `${c.name} — ${v.label}`,
-				rarity: v.view.rarity
+				rarity: v.view.rarity,
+				/* la VRAIE rareté : la vue Full Art force 'prism', ce qui ferait rendre
+				   des Syllabes à n'importe quelle Commune Full Art */
+				vraie: v.view.sourceRarity ?? v.view.rarity
 			}))
 		)
 	);
@@ -170,6 +175,8 @@
 	const surplusValue = $derived(
 		sellables.reduce((s, v) => s + surplusOf(v.key) * (SELL_VALUE[v.rarity] ?? 5), 0)
 	);
+	/* Défaire une Prismatique ne rend pas des Éclats : un nom entier se défait en
+	   Syllabes, c'est le seul endroit d'où elles viennent avec le tirage. */
 	function sellSurplus(key: string) {
 		const v = sellables.find((x) => x.key === key);
 		const n = surplusOf(key);
@@ -177,18 +184,22 @@
 		collection[key] = SELL_KEEP;
 		collection = { ...collection };
 		saveCollection($state.snapshot(collection));
-		earn(n * (SELL_VALUE[v.rarity] ?? 5), `Revente : ${v.name} ×${n}`);
+		if (v.vraie === 'prism') gagnerSyllabes(n * SYLLABES_DEFAIRE, `${v.name} défait ×${n}`);
+		else earn(n * (SELL_VALUE[v.rarity] ?? 5), `Revente : ${v.name} ×${n}`);
 	}
 	function sellAllSurplus() {
 		let total = 0;
 		let count = 0;
+		let syll = 0;
 		for (const v of sellables) {
 			const n = surplusOf(v.key);
 			if (n <= 0) continue;
 			collection[v.key] = SELL_KEEP;
-			total += n * (SELL_VALUE[v.rarity] ?? 5);
+			if (v.vraie === 'prism') syll += n * SYLLABES_DEFAIRE;
+			else total += n * (SELL_VALUE[v.rarity] ?? 5);
 			count += n;
 		}
+		if (syll > 0) gagnerSyllabes(syll, 'Noms entiers défaits');
 		if (count === 0) return;
 		collection = { ...collection };
 		saveCollection($state.snapshot(collection));
