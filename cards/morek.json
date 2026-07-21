@@ -21,12 +21,13 @@
 			"#201119",
 			"#e4b6a0"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "showcase",
 		"accent": "#b3273a",
 		"seed": 866327
 	},
 	"cutoutX": "1.7%",
 	"faCutoutY": "8.25%",
 	"faCutoutScale": 0.948,
-	"faCutoutX": "1.6%"
+	"faCutoutX": "1.6%",
+	"fullArtFoil": "showcase"
 }

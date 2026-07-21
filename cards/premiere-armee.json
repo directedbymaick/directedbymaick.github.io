@@ -14,9 +14,10 @@
 			"#121820",
 			"#c8a888"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "cosmos",
 		"accent": "#b3273a",
 		"seed": 236803
 	},
-	"flavor": "Levée par son propre juge."
+	"flavor": "Levée par son propre juge.",
+	"fullArtFoil": "cosmos"
 }

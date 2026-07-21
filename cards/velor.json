@@ -21,5 +21,16 @@
 	"health": 2,
 	"flavor": "On l'a entendu rire avant de le voir.",
 	"cutout": "/art/velor-cutout.webp",
-	"fullArt": true
+	"fullArt": true,
+	"fullArtFoil": "regular",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": false
+		},
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	]
 }

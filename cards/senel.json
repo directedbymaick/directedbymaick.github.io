@@ -18,9 +18,10 @@
 			"#141a1b",
 			"#c7a9a6"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "showcase",
 		"accent": "#c9a445",
 		"seed": 596256
 	},
-	"cutoutY": "-3.8%"
+	"cutoutY": "-3.8%",
+	"fullArtFoil": "showcase"
 }

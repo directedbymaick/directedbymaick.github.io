@@ -13,7 +13,7 @@
 			"#1a161a",
 			"#f1937c"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "galerie",
 		"accent": "#b3273a",
 		"seed": 7624
 	},
@@ -23,6 +23,10 @@
 		{
 			"foilPreset": "galerie",
 			"fullArt": true
+		},
+		{
+			"foilPreset": "cosmos",
+			"fullArt": false
 		}
 	]
 }

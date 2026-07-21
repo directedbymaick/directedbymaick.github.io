@@ -13,10 +13,16 @@
 			"#181619",
 			"#a1bdeb"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "cosmos",
 		"accent": "#b3273a",
 		"seed": 506112
 	},
 	"flavor": "Elle ne s'ouvre que dans un sens.",
-	"fullArtFoil": "cosmos"
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "galerie",
+			"fullArt": true
+		}
+	]
 }

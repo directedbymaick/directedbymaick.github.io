@@ -13,7 +13,7 @@
 			"#181826",
 			"#a7a6e2"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "cosmos",
 		"accent": "#b3273a",
 		"seed": 407041
 	},
@@ -23,5 +23,12 @@
 		"cost": 3,
 		"text": "Inflige 5 dégâts, répartis comme vous voulez."
 	},
-	"flavor": "Elle prononce pour ceux qui n'osent pas."
+	"flavor": "Elle prononce pour ceux qui n'osent pas.",
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	]
 }

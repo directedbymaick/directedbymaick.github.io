@@ -17,8 +17,9 @@
 			"#462a27",
 			"#fae8c8"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "regular",
 		"accent": "#c9a445",
 		"seed": 185356
-	}
+	},
+	"fullArtFoil": "regular"
 }

@@ -18,5 +18,6 @@
 		"seed": 660927
 	},
 	"flavor": "L'envers a aussi ses chœurs.",
-	"fullArt": true
+	"fullArt": true,
+	"fullArtFoil": "regular"
 }
