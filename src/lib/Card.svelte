@@ -74,6 +74,11 @@
 	const bgx = $derived(37 + px * 26);
 	const bgy = $derived(33 + py * 34);
 
+	/* plafond d'intensité par preset — 0.5 par défaut (rendu retenu). */
+	const foilIntensity = $derived(
+		({ galerie: 0.85, showcase: 0.62 } as Record<string, number>)[foil.preset] ?? 0.5
+	);
+
 	const pointerVars = $derived(
 		`--px: ${(px * 100).toFixed(2)}%; --py: ${(py * 100).toFixed(2)}%; ` +
 			`--pxn: ${px.toFixed(3)}; --pyn: ${py.toFixed(3)}; ` +
@@ -87,8 +92,10 @@
 			`--pointer-from-top: ${py.toFixed(3)}; --pointer-from-left: ${px.toFixed(3)}; ` +
 			`--background-x: ${bgx.toFixed(2)}%; --background-y: ${bgy.toFixed(2)}%; ` +
 			/* intensité du foil : toutes les couches de simey sont × --card-opacity.
-			   On plafonne à 0.5 pour un rendu plus discret, sans toucher ses recettes. */
-			`--card-opacity: ${hover ? 0.5 : 0}`
+			   Sa valeur au survol est 1 ; on plafonne plus bas pour rester discret.
+			   Le seuil est par preset (cf. foilIntensity) : la Galerie, plus douce
+			   par construction, encaisse davantage sans devenir criarde. */
+			`--card-opacity: ${hover ? foilIntensity : 0}`
 	);
 
 	/* notre preset → la rareté simeydotme dont on emprunte la recette exacte */
