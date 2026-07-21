@@ -17,9 +17,17 @@
 			"#e8caa6"
 		],
 		"foilPreset": "cosmos",
-		"accent": "#c9a445",
-		"seed": 603514
+		"accent": "#ffffff",
+		"seed": 291137
 	},
 	"cutout": "/art/koren-cutout.webp",
-	"cutoutY": "-10.7%"
+	"cutoutY": "-10.7%",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": false
+		}
+	],
+	"fullArtFoil": "cosmos",
+	"faCutoutY": "-2.95%"
 }
