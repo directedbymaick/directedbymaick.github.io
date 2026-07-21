@@ -101,6 +101,9 @@
 		gainTimer = setTimeout(() => (gainShown = null), 3200);
 	});
 
+	/* Le terrain de duel s'affiche nu : plein écran, sans chrome du site. */
+	const plateau = $derived(page.url.pathname.startsWith('/duel'));
+
 	function acctClick() {
 		if (account) menuOpen = !menuOpen;
 		else loginOpen = true;
@@ -116,6 +119,11 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+{#if plateau}
+	<!-- Le terrain occupe l'écran entier : ni barre, ni pied, ni marges. Le duel
+	     doit pouvoir se jouer sans qu'aucun élément du site ne vole de la place. -->
+	{@render children()}
+{:else}
 <div class="app">
 	<nav>
 		<div class="nav-inner">
@@ -255,6 +263,7 @@
 	<!-- grain de pellicule : unifie toutes les surfaces, très discret -->
 	<div class="grain" aria-hidden="true"></div>
 </div>
+{/if}
 
 <style>
 	:global(:root) {

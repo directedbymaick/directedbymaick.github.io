@@ -5,7 +5,7 @@
  * snapshots d'état — l'UI ne fait que rejouer, le moteur reste pur.
  * Les 60 effets du set sont implémentés carte par carte (registre par id).
  */
-import type { CardData, FactionId } from '$lib/types';
+import type { CardData, CardKind, FactionId } from '$lib/types';
 
 export type Side = 0 | 1;
 
@@ -107,7 +107,9 @@ export interface PlayerSnap {
 	discard: number;
 	exile: number;
 	board: UnitSnap[];
-	supports: { cardId: string; name: string }[];
+	/** Reliques, Verbes attachés et Lieux posés. `targetUid` dit DERRIÈRE quel Être
+	    l'attachement se range ; `kind` distingue le Lieu, qui a sa case dédiée. */
+	supports: { cardId: string; name: string; kind: CardKind; targetUid?: number }[];
 }
 
 export type EvType =
@@ -299,7 +301,12 @@ function snapPlayer(g: G, side: Side): PlayerSnap {
 			locked: isLocked(g, u),
 			token: u.token
 		})),
-		supports: p.supports.map((s) => ({ cardId: s.card.id, name: s.card.name }))
+		supports: p.supports.map((s) => ({
+			cardId: s.card.id,
+			name: s.card.name,
+			kind: s.card.kind,
+			targetUid: s.targetUid
+		}))
 	};
 }
 

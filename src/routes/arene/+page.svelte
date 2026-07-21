@@ -147,6 +147,27 @@
 		pump(true).then(() => (replaying = false));
 	}
 
+	/**
+	 * Le terrain s'ouvre dans SA fenêtre : plein écran, sans rien du site autour.
+	 * Le deck et les peuples voyagent par l'URL, la graine aussi — sans elle, un
+	 * rechargement re-tirerait une partie différente.
+	 */
+	function ouvrirTerrain() {
+		// 'auto-<peuple>' choisit un deck genere ; sinon deckChoice est un id de deck
+		const auto = deckChoice.startsWith('auto-');
+		const q = new URLSearchParams({
+			seed: String(Math.floor(Math.random() * 1e9)),
+			moi: auto ? deckChoice.slice(5) : dominantFaction(expandDeck(myDecks.find((d) => d.id === deckChoice)!)),
+			lui: aiFaction
+		});
+		if (!auto) q.set('deck', deckChoice);
+		window.open(
+			`/duel?${q}`,
+			'expelled-terrain',
+			`popup=yes,width=${screen.availWidth},height=${screen.availHeight},left=0,top=0`
+		);
+	}
+
 	async function doPlay(i: number) {
 		if (!duel || !myTurn) return;
 		if (!duel.play(i)) return;
@@ -343,6 +364,9 @@
 				{/each}
 			</div>
 			<button class="startbtn" onclick={start}>Entrer dans l'Arène</button>
+			<button class="terrainbtn" onclick={ouvrirTerrain}>
+				Ouvrir le terrain — plein écran ↗
+			</button>
 			<p class="note"><a href="/arene/simulateur">Le simulateur IA contre IA</a> reste disponible.</p>
 		</section>
 	</div>
@@ -628,6 +652,22 @@
 		font-weight: 450;
 		font-size: 0.72rem;
 		color: rgba(238, 240, 245, 0.45);
+	}
+	.terrainbtn {
+		margin-left: 0.6rem;
+		padding: 0.7rem 1.4rem;
+		font-family: inherit;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: rgba(242, 240, 234, 0.8);
+		background: rgba(140, 170, 220, 0.1);
+		border: 1px solid var(--panel-line);
+		border-radius: 999px;
+		cursor: pointer;
+	}
+	.terrainbtn:hover {
+		color: var(--ink);
+		border-color: rgba(213, 178, 94, 0.5);
 	}
 	.startbtn {
 		margin-top: 1.2rem;
