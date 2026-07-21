@@ -187,9 +187,39 @@
 		lignes.filter((r) => r.n > maxCopiesOf(r.card)).map((r) => r.card.name)
 	);
 
-	/* ---------------- aperçu ---------------- */
+	/* ---------------- interactions ----------------
+	   Clic simple = lire la carte en grand. Double-clic ou glisser-déposer = ajouter.
+	   L'aperçu est différé de 200 ms puis annulé si un double-clic suit, sinon le
+	   premier clic ouvrirait la loupe et le second atterrirait dessus. */
 
 	let apercu = $state<CardData | null>(null);
+	let survolDepot = $state(false);
+	let minuterie: ReturnType<typeof setTimeout> | null = null;
+
+	function clicTuile(c: CardData) {
+		if (minuterie) clearTimeout(minuterie);
+		minuterie = setTimeout(() => (apercu = c), 200);
+	}
+
+	function doubleClicTuile(c: CardData) {
+		if (minuterie) clearTimeout(minuterie);
+		minuterie = null;
+		ajouter(c);
+	}
+
+	function debutGlisser(e: DragEvent, c: CardData) {
+		if (minuterie) clearTimeout(minuterie);
+		e.dataTransfer?.setData('text/plain', c.id);
+		if (e.dataTransfer) e.dataTransfer.effectAllowed = 'copy';
+	}
+
+	function deposer(e: DragEvent) {
+		e.preventDefault();
+		survolDepot = false;
+		const id = e.dataTransfer?.getData('text/plain');
+		const c = id ? getCard(id) : undefined;
+		if (c) ajouter(c);
+	}
 </script>
 
 <svelte:head>
@@ -201,7 +231,16 @@
 
 <div class="atelier">
 	<!-- ========== PANNEAU DECK ========== -->
-	<aside class="panneau">
+	<aside
+		class="panneau"
+		class:depot={survolDepot}
+		ondragover={(e) => {
+			e.preventDefault();
+			survolDepot = true;
+		}}
+		ondragleave={() => (survolDepot = false)}
+		ondrop={deposer}
+	>
 		<div class="entete">
 			{#if deck}
 				<input
@@ -248,11 +287,7 @@
 						class="ligne"
 						style="--fc: {charter.factions[r.card.faction]?.color ?? '#8892a6'}"
 						onclick={() => retirer(r.card)}
-						oncontextmenu={(e) => {
-							e.preventDefault();
-							apercu = r.card;
-						}}
-						title="Clic : retirer une copie · Clic droit : aperçu"
+						title="Clic : retirer une copie"
 					>
 						<span class="cout">{r.card.cost}</span>
 						<img class="vignette" src={r.card.art} alt="" loading="lazy" />
@@ -263,7 +298,7 @@
 			{:else}
 				<li class="vide">
 					<p>Le deck est vide.</p>
-					<p class="sub">Cliquez une carte du catalogue pour l'ajouter.</p>
+					<p class="sub">Double-cliquez une carte, ou glissez-la jusqu'ici.</p>
 				</li>
 			{/each}
 		</ol>
@@ -346,7 +381,10 @@
 			{/if}
 		</div>
 
-		<p class="compteur">{catalogue.length} carte{catalogue.length > 1 ? 's' : ''}</p>
+		<p class="compteur">
+			{catalogue.length} carte{catalogue.length > 1 ? 's' : ''}
+			<span class="aide-interaction">— clic pour lire, double-clic ou glisser vers le deck pour ajouter</span>
+		</p>
 
 		<div class="grille">
 			{#each catalogue as c (c.id)}
@@ -358,12 +396,11 @@
 					class:saturee={n >= max}
 					class:bloquee={!peutAjouter(c) && n < max}
 					style="--fc: {charter.factions[c.faction]?.color ?? '#8892a6'}"
-					onclick={() => ajouter(c)}
-					oncontextmenu={(e) => {
-						e.preventDefault();
-						apercu = c;
-					}}
-					title="Clic : ajouter · Clic droit : aperçu"
+					draggable="true"
+					ondragstart={(e) => debutGlisser(e, c)}
+					onclick={() => clicTuile(c)}
+					ondblclick={() => doubleClicTuile(c)}
+					title="Clic : lire la carte · Double-clic ou glisser vers le deck : ajouter"
 				>
 					<span class="art"><img src={c.art} alt="" loading="lazy" /></span>
 					<span class="tcout">{c.cost}</span>
@@ -735,6 +772,13 @@
 		font-size: 0.74rem;
 		color: rgba(238, 240, 245, 0.35);
 	}
+	.aide-interaction {
+		color: rgba(238, 240, 245, 0.28);
+	}
+	.panneau.depot {
+		border-color: rgba(213, 178, 94, 0.7);
+		box-shadow: 0 0 0 3px rgba(213, 178, 94, 0.16);
+	}
 
 	.grille {
 		display: grid;
@@ -761,6 +805,9 @@
 	.tuile:hover {
 		border-color: color-mix(in srgb, var(--fc) 60%, transparent);
 		transform: translateY(-2px);
+	}
+	.tuile:active {
+		cursor: grabbing;
 	}
 	.tuile.saturee {
 		border-color: rgba(213, 178, 94, 0.55);
