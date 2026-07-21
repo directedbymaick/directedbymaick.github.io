@@ -103,11 +103,6 @@
 	/* Le terrain de duel s'affiche nu : plein écran, sans chrome du site. */
 	const plateau = $derived(page.url.pathname.startsWith('/duel'));
 
-	/* L'accueil bascule en surface CLAIRE. La référence est un journal imprimé :
-	   toile blanc os, encre presque noire, un seul accent saturé. C'est cette
-	   inversion — pas l'échelle typographique — qui fait 80 % de sa gueule. Le
-	   reste du site garde la nuit pour l'instant. */
-	const papier = $derived(page.url.pathname === '/');
 
 	function acctClick() {
 		if (account) menuOpen = !menuOpen;
@@ -129,7 +124,7 @@
 	     doit pouvoir se jouer sans qu'aucun élément du site ne vole de la place. -->
 	{@render children()}
 {:else}
-<div class="app" class:papier>
+<div class="app">
 	<nav>
 		<div class="nav-inner">
 			<a class="brand" href="/">
@@ -606,72 +601,6 @@
 		border-block: 1px solid var(--panel-line);
 	}
 
-	/* ============ SURFACE PAPIER ============
-	   Le champ d'étoiles et les nébuleuses sont neutralisés : rien ne doit
-	   rappeler l'écran quand la page prétend être imprimée. */
-	.app.papier {
-		--ink: #14120c;
-		--ink-dim: rgba(20, 18, 12, 0.55);
-		--panel-line: rgba(20, 18, 12, 0.16);
-		--surface-deep: #14120c;
-		background: var(--paper);
-		color: var(--ink);
-	}
-	.app.papier :global(a) {
-		color: inherit;
-	}
-	/* l'accent reste l'or, mais sur papier il porte une encre noire */
-	.app.papier :global(.ed-action) {
-		color: #14120c;
-		background: var(--gold-deep);
-		box-shadow: var(--shadow-action);
-	}
-	.app.papier :global(.ed-action:hover) {
-		background: var(--gold);
-	}
-	.app.papier :global(.ed-ghost) {
-		color: #14120c;
-		border-color: #14120c;
-	}
-	.app.papier :global(.ed-ghost:hover) {
-		color: var(--gold-deep);
-		border-color: var(--gold-deep);
-	}
-	.app.papier :global(.ed-tag) {
-		color: rgba(20, 18, 12, 0.5);
-	}
-	.app.papier :global(.ed-stat) {
-		color: rgba(20, 18, 12, 0.42);
-	}
-	/* duotone : sur papier, les noirs virent au brun doré et les blancs au bone */
-	.app.papier :global(.ed-photo) {
-		filter: grayscale(1) sepia(0.72) saturate(2.1) hue-rotate(-10deg) brightness(1.02)
-			contrast(0.94);
-	}
-	/* la nav et le pied restent sombres : c'est le contraste papier / encre qui
-	   structure la page, exactement comme la référence alterne bone et noir */
-	.app.papier > nav {
-		background: rgba(250, 248, 242, 0.86);
-		border-bottom: 1px solid var(--panel-line);
-	}
-	.app.papier .links a {
-		color: rgba(20, 18, 12, 0.6);
-	}
-	.app.papier .links a:hover {
-		color: #14120c;
-	}
-	.app.papier .links a.active {
-		color: var(--gold-deep);
-	}
-	.app.papier .links a.active::after {
-		background: var(--gold-deep);
-		box-shadow: none;
-	}
-	.app.papier .brand-txt b,
-	.app.papier .setcount {
-		color: #14120c;
-	}
-
 	:global(::selection) {
 		background: rgba(213, 178, 94, 0.9);
 		color: #081020;
@@ -1146,19 +1075,6 @@
 
 	/* Sur papier, le pied reste une île sombre : son encre doit donc s'inverser,
 	   sinon les liens héritent du noir de la page et disparaissent. */
-	.app.papier footer {
-		--ink: #faf8f2;
-		--ink-dim: rgba(250, 248, 242, 0.6);
-		--panel-line: rgba(250, 248, 242, 0.14);
-		/* Redéclarer `color` et pas seulement la variable : `.app.papier a` pose
-		   `color: inherit` avec une spécificité plus forte que `.foot-col a`, donc
-		   les liens remontaient jusqu'à la couleur de la PAGE — noir sur noir. */
-		color: var(--ink);
-	}
-	.app.papier footer :global(a) {
-		color: var(--ink);
-	}
-
 	/* ============ PIED ÉDITORIAL ============
 	   Surface plus profonde que la toile, filet unique en haut, et rien
 	   d'autre : ni panneau, ni dégradé, ni ombre. La hiérarchie tient

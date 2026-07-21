@@ -88,38 +88,22 @@
 			gsap.registerPlugin(ScrollTrigger);
 			refreshST = () => ScrollTrigger.refresh();
 			ctx = gsap.context(() => {
-				/* ---- hero : le mur se lève ligne à ligne depuis son masque.
-				   Chaque mot est enfermé dans un bloc à `overflow: hidden` : il
-				   monte de sous la ligne plutôt que d'apparaître en fondu. C'est
-				   ce mouvement, et non l'opacité, qui donne l'impression du texte
-				   qu'on imprime. */
+				/* ---- hero : l'illustration sort du noir, le titre s'installe.
+				   Mouvement retenu — sur un hero plein cadre, une entree trop
+				   demonstrative fatigue des la deuxieme visite. */
 				gsap.fromTo(
-					'.hero .mot',
-					{ yPercent: 108 },
-					{ yPercent: 0, duration: 1.25, ease: 'expo.out', stagger: 0.11 }
-				);
-				// les tuiles suivent, décalées : l'image arrive APRÈS le mot
-				gsap.fromTo(
-					'.hero .tuile',
-					{ autoAlpha: 0, scale: 0.86, y: 26 },
-					{
-						autoAlpha: 1,
-						scale: 1,
-						y: 0,
-						duration: 1.1,
-						ease: 'expo.out',
-						stagger: 0.14,
-						delay: 0.42
-					}
+					'.hero-fond img',
+					{ autoAlpha: 0, scale: 1.08 },
+					{ autoAlpha: 1, scale: 1, duration: 2.4, ease: 'quart.out' }
 				);
 				gsap.fromTo(
-					'.hero-kicker, .hero-dit, .hero-actions',
-					{ autoAlpha: 0, y: 18 },
-					{ autoAlpha: 1, y: 0, duration: 1.1, ease: 'quart.out', stagger: 0.1, delay: 0.65 }
+					'.hero-kicker, .hero-titre, .hero-accroche, .hero-actions, .hero-chiffres',
+					{ autoAlpha: 0, y: 24 },
+					{ autoAlpha: 1, y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.12, delay: 0.25 }
 				);
-				// parallax : les tuiles dérivent plus vite que le texte au défilement
-				gsap.to('.hero .tuile', {
-					yPercent: -18,
+				// parallax : le fond derive plus lentement que le contenu
+				gsap.to('.hero-fond img', {
+					yPercent: 10,
 					ease: 'none',
 					scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
 				});
@@ -197,35 +181,31 @@
 </svelte:head>
 
 <div bind:this={container}>
-	<!-- ============ HERO : un mur typographique ============
-	     Le titre occupe la page comme un bloc d'encre. Les tuiles
-	     photographiques s'intercalent ENTRE les lignes plutôt que de flotter
-	     par-dessus : c'est ce qui donne la mise en page de journal plutôt que
-	     celle d'une bannière. -->
+	<!-- ============ HERO ============
+	     Grammaire de site de jeu : une illustration plein cadre assombrie, le
+	     titre centré en capitales lourdes, une accroche d'une phrase, et deux
+	     actions à angle vif — l'une pleine, l'autre en contour. -->
 	<header class="hero">
-		<div class="hero-top">
-			<p class="hero-kicker">Set 01 — Registre du Silence</p>
-			<p class="hero-kicker">{cards.length} / {SET_SIZE} noms inscrits</p>
+		<div class="hero-fond" aria-hidden="true">
+			<img src={tuiles[0]} alt="" />
 		</div>
 
-		<h1 class="mur">
-			<span class="ligne"><span class="mot">Nés</span></span>
-			<span class="ligne">
-				<img class="tuile ed-photo" src={tuiles[0]} alt="" aria-hidden="true" />
-				<span class="mot">du</span>
-			</span>
-			<span class="ligne">
-				<span class="mot">silence</span>
-				<img class="tuile ed-photo" src={tuiles[1]} alt="" aria-hidden="true" />
-			</span>
-		</h1>
-
-		<div class="hero-bas">
-			<p class="hero-dit">Le Créateur se tait.<br /><em>Pas vous.</em></p>
+		<div class="hero-inner">
+			<p class="hero-kicker">Set 01 · Nés du silence</p>
+			<h1 class="hero-titre">Expelled</h1>
+			<p class="hero-accroche">
+				Un jeu de cartes où chaque Être porte un nom — et où le prononcer l'efface à jamais.
+			</p>
 			<div class="hero-actions">
-				<a class="ed-action" href="/packs">Ouvrir un booster</a>
-				<a class="ed-ghost" href="/regles">Apprendre les règles</a>
+				<a class="btn-plein" href="/packs">Ouvrir un booster</a>
+				<a class="btn-contour" href="/regles">Comment jouer</a>
 			</div>
+		</div>
+
+		<div class="hero-chiffres">
+			<span><b>{cards.length}</b> cartes</span>
+			<span><b>5</b> peuples</span>
+			<span><b>33</b> paliers de rareté</span>
 		</div>
 	</header>
 
@@ -290,102 +270,150 @@
 </div>
 
 <style>
-	/* ============ HERO : LE MUR TYPOGRAPHIQUE ============
-	   Pas d'image de fond, pas de voile, pas d'ombre portée. Le titre EST la
-	   page ; les tuiles s'insèrent dans le flux du texte comme les clichés d'un
-	   journal, et la structure ne tient qu'aux filets et à la respiration. */
+	/* ============ HERO ============
+	   Grammaire de site de jeu : illustration plein cadre assombrie, titre centré
+	   en capitales lourdes, deux actions à angle vif. L'or d'Expelled tient le
+	   rôle de l'accent saturé — un seul aplat sur toute la page. */
 
 	.hero {
 		position: relative;
-		max-width: var(--page-max);
-		margin: 0 auto;
-		padding: var(--spacing-60) var(--spacing-20) var(--spacing-120);
-	}
-	.hero-top {
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		min-height: 78vh;
 		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-between;
-		gap: var(--spacing-20);
-		padding-bottom: var(--spacing-25);
-		border-bottom: 1px solid var(--panel-line);
-	}
-	.hero-kicker {
-		margin: 0;
-		font-family: var(--font-grotesque);
-		font-size: var(--text-caption);
-		font-weight: var(--fw-550);
-		line-height: var(--leading-caption);
-		letter-spacing: var(--tracking-caption);
-		text-transform: uppercase;
-		color: var(--ink-dim);
-	}
-
-	/* Le mur. L'approche très serrée (-0.04em) est ce qui fait lire le titre
-	   comme un bloc d'encre plutôt que comme une suite de lettres. */
-	.mur {
-		margin: var(--spacing-50) 0 0;
-		font-family: var(--font-editorial);
-		font-weight: var(--fw-regular);
-		font-size: clamp(4rem, 15vw, var(--text-heading-lg));
-		line-height: var(--leading-display);
-		letter-spacing: var(--tracking-display);
-		color: var(--ink);
-		text-transform: uppercase;
-	}
-	/* chaque ligne masque son mot : il monte de dessous plutôt que d'apparaître */
-	.ligne {
-		display: flex;
+		flex-direction: column;
 		align-items: center;
-		gap: clamp(0.8rem, 2.5vw, var(--spacing-40));
+		justify-content: center;
+		text-align: center;
+		padding: var(--spacing-120) var(--spacing-20) var(--spacing-60);
 		overflow: hidden;
 	}
-	.ligne:nth-child(2) {
-		justify-content: flex-start;
-		padding-left: clamp(0rem, 6vw, var(--spacing-120));
+	.hero-fond {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
 	}
-	.ligne:nth-child(3) {
-		justify-content: flex-end;
-	}
-	.mot {
-		display: block;
-	}
-
-	/* L'insert : une petite tuile rectangulaire posée DANS la ligne. Elle ne
-	   flotte pas au-dessus du texte, elle en fait partie. */
-	.tuile {
-		flex: none;
-		width: clamp(90px, 15vw, 200px);
-		height: clamp(62px, 10.5vw, 140px);
+	.hero-fond img {
+		width: 100%;
+		height: 100%;
 		object-fit: cover;
+		object-position: center 28%;
 	}
-
-	.hero-bas {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: flex-end;
-		justify-content: space-between;
-		gap: var(--spacing-40);
-		margin-top: var(--spacing-60);
-		padding-top: var(--spacing-30);
-		border-top: 1px solid var(--panel-line);
+	/* le voile : l'illustration doit rester lisible SOUS le texte, jamais avec */
+	.hero-fond::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(180deg, rgba(5, 9, 18, 0.72) 0%, rgba(5, 9, 18, 0.55) 45%, var(--bg) 100%),
+			radial-gradient(70% 55% at 50% 45%, rgba(5, 9, 18, 0.35), transparent 75%);
 	}
-	.hero-dit {
-		margin: 0;
-		max-width: 22ch;
-		font-family: var(--font-editorial);
-		font-size: clamp(1.8rem, 4vw, 3rem);
-		line-height: var(--leading-subheading);
-		letter-spacing: var(--tracking-subheading);
-		color: var(--ink);
+	.hero-inner {
+		position: relative;
+		z-index: 2;
+		max-width: 52rem;
 	}
-	.hero-dit em {
-		font-style: italic;
+	.hero-kicker {
+		margin: 0 0 var(--spacing-25);
+		font-family: var(--display);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.28em;
+		text-transform: uppercase;
 		color: var(--gold);
+	}
+	/* le titre : capitales lourdes, serrées — la signature des sites de TCG */
+	.hero-titre {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: clamp(3.2rem, 11vw, 8rem);
+		line-height: 0.95;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #f5f3ec;
+		text-shadow: 0 4px 40px rgba(0, 0, 0, 0.75);
+	}
+	.hero-accroche {
+		max-width: 40ch;
+		margin: var(--spacing-25) auto var(--spacing-45);
+		font-family: var(--display);
+		font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+		font-weight: 600;
+		line-height: 1.45;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.82);
 	}
 	.hero-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--element-gap);
+		justify-content: center;
+		gap: var(--spacing-15);
+	}
+
+	/* Les deux boutons : angle VIF, capitales, jamais de pilule. Le plein porte
+	   l'accent, le contour ne porte qu'un filet — c'est toute la hiérarchie. */
+	.btn-plein,
+	.btn-contour {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 15rem;
+		padding: 1.15rem 2.4rem;
+		font-family: var(--display);
+		font-size: 0.86rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		text-decoration: none;
+		border-radius: 0;
+		transition:
+			background 0.18s ease,
+			color 0.18s ease,
+			border-color 0.18s ease;
+	}
+	.btn-plein {
+		color: #14120c;
+		background: var(--gold);
+		border: 2px solid var(--gold);
+	}
+	.btn-plein:hover {
+		background: var(--cream);
+		border-color: var(--cream);
+	}
+	.btn-contour {
+		color: #f5f3ec;
+		background: rgba(5, 9, 18, 0.35);
+		border: 2px solid #f5f3ec;
+	}
+	.btn-contour:hover {
+		color: #14120c;
+		background: #f5f3ec;
+	}
+
+	/* la barre de chiffres, collée au bas du hero */
+	.hero-chiffres {
+		position: relative;
+		z-index: 2;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--spacing-45);
+		margin-top: var(--spacing-60);
+		padding-top: var(--spacing-25);
+		border-top: 1px solid var(--panel-line);
+		font-family: var(--display);
+		font-size: 0.76rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.hero-chiffres b {
+		color: var(--gold);
+		font-size: 1.05rem;
+		font-variant-numeric: tabular-nums;
 	}
 
 	/* ============ SECTIONS ÉDITORIALES ============ */
