@@ -197,7 +197,6 @@
 </svelte:head>
 
 <div bind:this={container}>
-	<!-- ============ HERO : l'émergence ============ -->
 	<!-- ============ HERO : un mur typographique ============
 	     Le titre occupe la page comme un bloc d'encre. Les tuiles
 	     photographiques s'intercalent ENTRE les lignes plutôt que de flotter
@@ -224,7 +223,7 @@
 		<div class="hero-bas">
 			<p class="hero-dit">Le Créateur se tait.<br /><em>Pas vous.</em></p>
 			<div class="hero-actions">
-				<a class="ed-action" href="/packs">Ouvrir un sceau</a>
+				<a class="ed-action" href="/packs">Ouvrir un booster</a>
 				<a class="ed-ghost" href="/regles">Apprendre les règles</a>
 			</div>
 		</div>

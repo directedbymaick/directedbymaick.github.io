@@ -3,11 +3,11 @@
 
 	let { children } = $props();
 
-	/* Les deux façons d'obtenir une carte, sous le même toit : le sceau qu'on
+	/* Les deux façons d'obtenir une carte, sous le même toit : le booster qu'on
 	   ouvre au hasard, et le nom qu'on choisit de reconstituer. La nav principale
 	   déborde déjà — un onglet ici plutôt qu'une entrée de plus en haut. */
 	const onglets = [
-		{ href: '/packs', label: 'Sceaux' },
+		{ href: '/packs', label: 'Boosters' },
 		{ href: '/packs/noms', label: 'Le Glanage' }
 	];
 </script>

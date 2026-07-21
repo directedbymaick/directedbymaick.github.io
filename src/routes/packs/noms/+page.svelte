@@ -134,7 +134,7 @@
 	<h1>Le Glanage</h1>
 	<p class="chapo">
 		Un nom qu'on ne dit plus s'efface, syllabe après syllabe. Les Eshar les ramassent. Rassemblez-en
-		assez et vous reconstituerez un nom entier — sans passer par le hasard d'un sceau.
+		assez et vous reconstituerez un nom entier — sans passer par le hasard d'un booster.
 	</p>
 	<p class="chapo source">
 		Les Syllabes tombent des noms restés entiers : <b>+25</b> par Prismatique tirée,

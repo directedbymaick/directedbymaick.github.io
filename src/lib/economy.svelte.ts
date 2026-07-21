@@ -32,7 +32,7 @@ export const SELL_VALUE: Record<string, number> = {
  * Une carte EST un nom — le Registre compte des « noms inscrits ». La Syllabe
  * est donc la seule monnaie qui puisse acheter une carte directement : on ne
  * l'achète pas, on la RECONSTITUE. Les Éclats, eux, restent la monnaie
- * matérielle des boosters : on paie un sceau, on ne paie pas un nom.
+ * matérielle des boosters : on paie un booster, on ne paie pas un nom.
  *
  * Elle ne vient que des Prismatiques, les noms restés entiers : les tirer en
  * libère quelques-unes, en défaire une en rend beaucoup plus.

@@ -493,7 +493,7 @@
 	<p class="kicker"><span class="k-diamond">◆</span> Archives scellées</p>
 	<h1>Réquisition</h1>
 	<p class="tagline">
-		Chaque sceau contient {PACK_SIZE} cartes. Les probabilités sont publiques ; chaque tirage
+		Chaque booster contient {PACK_SIZE} cartes. Les probabilités sont publiques ; chaque tirage
 		rejoint votre Registre.
 	</p>
 	<p class="colstat">
