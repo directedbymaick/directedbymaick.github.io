@@ -748,7 +748,7 @@
 		vertical-align: 0.06em;
 		/* relèvement demandé : 0.2 % de la largeur de carte, sans toucher au flux */
 		position: relative;
-		top: -0.2cqw;
+		top: -0.32cqw;
 		font-size: 1.5cqw;
 		font-weight: 700;
 		letter-spacing: 0.16em;
