@@ -198,7 +198,7 @@
 			<div class="hero-art" aria-hidden="true"><img src={heroArt} alt="" /></div>
 		{/if}
 		<div class="hero-inner">
-			<p class="quiet kicker">Premier cycle</p>
+			<p class="quiet kicker">Set 01</p>
 			<h1><span class="line">Nés du silence</span></h1>
 			<p class="tagline">
 				<span class="line">Le Créateur se tait.</span>
