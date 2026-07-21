@@ -157,7 +157,7 @@
 
 				<div class="content">
 					<header class="plate">
-						<h2 class="name" data-text={card.name}>{card.name}</h2>
+						<h2 class="name">{card.name}</h2>
 						<p class="cellline">
 							<span class="kindlabel">{kindLabel}</span>
 							{#if card.cell}
@@ -522,39 +522,9 @@
 	.card[data-fullart='true'] .name {
 		text-align: center;
 	}
-	/* nom en métal poli : or par défaut, argent sur les Prismatiques. Le métal
-	   remplit la lettre, l'irisation ne vit que sur l'ARÊTE — quatre ombres
-	   colorées décalées d'un demi-pixel qui débordent tout autour du glyphe. */
-	/* DEUX calques. Le parent porte le CONTOUR irisé (text-stroke transparent rempli
-	   par un dégradé arc-en-ciel clippé au texte). Le pseudo-élément, au-dessus,
-	   porte le métal et masque la moitié intérieure du trait — il ne reste qu'un
-	   filet à l'extérieur du glyphe.
-	   Cet ordre est obligatoire : un enfant en z-index négatif se peint AU-DESSUS du
-	   fond de son parent, donc l'inverse laissait le liseré recouvrir le métal. */
+	/* nom en métal poli : or par défaut, argent sur les Prismatiques. Ni contour ni
+	   ombre — juste le métal. */
 	.card[data-fullart='true'] .name {
-		position: relative;
-		-webkit-text-stroke: 0.05em transparent;
-		background: linear-gradient(
-			92deg,
-			#ff6f9c 0%,
-			#ffd76f 16%,
-			#8dffb4 33%,
-			#6fe3ff 50%,
-			#8f9bff 67%,
-			#d98cff 84%,
-			#ff6f9c 100%
-		);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
-	}
-	.card[data-fullart='true'] .name::after {
-		content: attr(data-text);
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		pointer-events: none;
 		/* plusieurs bandes spéculaires serrées → métal poli qui accroche la lumière */
 		background: linear-gradient(
 			96deg,
