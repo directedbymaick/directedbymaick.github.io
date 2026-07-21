@@ -1141,9 +1141,10 @@
 	/* .ptag-label n'a PLUS de correction optique : l'ancienne translateY(0.055em)
 	   datait de la version encadrée et poussait le texte sous le centre. Sans elle,
 	   anneau et texte tombent tous deux à 0.00px du centre de la pastille.
-	   Hors full art, le libellé paraît malgré tout haut par rapport à l'anneau :
-	   on le descend de la même valeur que la pastille (0.4cqw). */
-	.card:not([data-fullart='true']) .ptag-label {
+	   Le libellé paraît malgré tout haut par rapport à l'anneau : on le descend de
+	   la même valeur que la pastille (0.4cqw), sur TOUTES les cartes à Prononcer,
+	   full art comprise. */
+	.ptag-label {
 		position: relative;
 		top: 0.4cqw;
 	}
