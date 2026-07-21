@@ -5,7 +5,7 @@
 	"cost": 4,
 	"attack": 2,
 	"health": 2,
-	"text": "Vos autres Êtres Vasar ont +1 ATQ.",
+	"text": "À l'arrivée : vos autres Êtres Vasar gagnent +1 ATQ.",
 	"flavor": "La mesure avant la beauté.",
 	"rarity": "rare",
 	"faction": "vasar",

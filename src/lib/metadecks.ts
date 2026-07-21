@@ -92,19 +92,21 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Aggro-sacrifice · la mort comme ressource',
 		difficulty: 3,
 		cards: {
-			renas: 3,
-			morek: 3,
-			exel: 3,
-			exna: 3,
-			thanor: 3,
-			'echo-du-dixieme-mot': 3,
-			'seconde-sentence': 3,
-			rompre: 3,
-			'clameur-dexen': 2,
-			exen: 1,
-			exva: 1,
-			rasen: 1,
-			'premiere-armee': 1
+			'renas': 3,
+			'morek': 3,
+			'exel': 3,
+			'exna': 3,
+			'thanor': 3,
+			'rompre': 3,
+			'morna': 2,
+			'sentence-retournee': 2,
+			'dernier-mot': 2,
+			'korsa': 1,
+			'exoran': 1,
+			'exva': 1,
+			'rasen': 1,
+			'premiere-armee': 1,
+			'exen': 1
 		},
 		guide: {
 			resume:
@@ -126,19 +128,19 @@ export const META_DECKS: MetaDeck[] = [
 			],
 			combos: [
 				{
-					cards: ['echo-du-dixieme-mot', 'exel', 'exna', 'exen'],
-					text: "L'Écho sacrifie un Renas usé : Exel gagne +2 ATQ ce tour, Exna +1/+1 définitif, Exen pioche — une carte devient quatre effets."
+					cards: ['rompre', 'exel', 'exna', 'exen'],
+					text: 'Rompre achève un Être adverse déjà entamé — et si l’échange coûte un allié, Exel gagne +2 ATQ, Exna +1/+1 définitif, Exen pioche. La mort vous rapporte.'
 				},
 				{
-					cards: ['seconde-sentence', 'echo-du-dixieme-mot'],
-					text: 'Un allié vient de mourir (même au combat) : Seconde sentence donne +2/+2. Fenêtre de deux tours — l’Écho la déclenche à volonté.'
+					cards: ['dernier-mot', 'exna', 'exen'],
+					text: 'Dernier Mot balaie le terrain adverse pour 5. Vos petits corps meurent aussi : Exna grossit, Exen pioche. Vous sortez du massacre en avance.'
 				},
 				{
 					cards: ['rasen', 'premiere-armee'],
 					text: 'Rasen Prononce (tout meurt, lui exilé) puis la Première Armée pose trois Bannis 2/1 sur un plateau vide. Peu de decks s’en relèvent.'
 				}
 			],
-			garder: ['renas', 'morek', 'exna', 'echo-du-dixieme-mot']
+			garder: ['renas', 'morek', 'exna', 'rompre']
 		}
 	},
 	{
@@ -207,19 +209,23 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Tempo-burn · Exar/Velar/Morar',
 		difficulty: 2,
 		cards: {
-			renas: 3,
-			velsa: 3,
-			tala: 2,
-			morek: 3,
-			velor: 2,
-			morna: 3,
-			thanor: 3,
+			'renas': 2,
+			'velsa': 2,
+			'morna': 3,
+			'thanor': 3,
+			'exna': 2,
+			'korsa': 2,
 			'clameur-dexen': 2,
-			'couronne-dos': 2,
 			'bruler-le-jour': 3,
+			'exoran': 2,
+			'dernier-mot': 2,
+			'couronne-dos': 1,
+			'morek': 1,
+			'velna': 1,
 			'bord-du-monde': 1,
-			exoran: 2,
-			velna: 1
+			'rasen': 1,
+			'premiere-armee': 1,
+			'exen': 1
 		},
 		guide: {
 			resume:
@@ -253,7 +259,7 @@ export const META_DECKS: MetaDeck[] = [
 					text: 'Velsa arrive, Clameur (+2 ATQ) : 4 dégâts surprise dès le tour 3, avant toute défense.'
 				}
 			],
-			garder: ['renas', 'velsa', 'morek', 'tala']
+			garder: ['renas', 'velsa', 'morna', 'bruler-le-jour']
 		}
 	}
 ];

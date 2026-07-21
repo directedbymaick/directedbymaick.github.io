@@ -236,11 +236,11 @@ function hasElan(g: G, side: Side, u: Unit): boolean {
 function unitAtk(g: G, side: Side, u: Unit): number {
 	let a = u.baseAtk + u.permAtk + u.tempAtk;
 	const p = g.players[side];
-	for (const o of p.board) {
-		if (o === u) continue;
-		if (o.card.id === 'dasen' && u.card.faction === 'vasar') a += 1;
-		if (o.card.id === 'koren') a += 1;
-	}
+	/* Koren et Dasen n'octroient plus d'aura permanente. Quatre auras cumulatives
+	   sur un terrain de cinq corps faisaient croitre la puissance au carre du
+	   nombre d'Etres : La Chorale d'Or gagnait 77 % contre un deck vasar auto, et
+	   21 % seulement lui revenaient. Leur bonus est desormais ponctuel, applique a
+	   l'arrivee (cf. onSummon) — il reste acquis, il ne se multiplie plus. */
 	if (u.card.id === 'velna')
 		a += p.board.filter((o) => o !== u && hasElan(g, side, o)).length;
 	if (u.card.id === 'exel' && p.sacrificedThisTurn) a += 2;
@@ -252,7 +252,7 @@ function unitAtk(g: G, side: Side, u: Unit): number {
 function unitMaxHp(g: G, side: Side, u: Unit): number {
 	let h = u.baseHp + u.permHp;
 	const p = g.players[side];
-	for (const o of p.board) if (o !== u && o.card.id === 'koren') h += 1;
+	/* aura de Koren supprimee : son bonus est ponctuel, pose a l'arrivee */
 	for (const s of p.supports)
 		if (s.card.id === 'couronne-dos' && s.targetUid === u.uid) h += 1;
 	return h;
@@ -687,6 +687,27 @@ function onSummon(g: G, side: Side, u: Unit): void {
 				target.permHp += 1;
 				ev(g, { t: 'effect', side, uid: target.uid, msg: `Renna livre une syllabe à ${target.card.name} (+1/+1)` });
 			}
+			break;
+		}
+		/* Koren : un seul souffle, au moment ou il entre. Le bonus est inscrit
+		   dans permAtk/permHp — il survit a la mort de Koren, contrairement a une
+		   aura, mais il ne s'empile plus avec les autres. */
+		case 'koren': {
+			const beneficiaires = p.board.filter((o) => o !== u);
+			for (const o of beneficiaires) {
+				o.permAtk += 1;
+				o.permHp += 1;
+			}
+			if (beneficiaires.length)
+				ev(g, { t: 'effect', side, uid: u.uid, msg: `Koren fait rendre gorge : ${beneficiaires.length} Être(s) gagnent +1/+1` });
+			break;
+		}
+		/* Dasen : meme principe, borne aux Vasar comme avant. */
+		case 'dasen': {
+			const beneficiaires = p.board.filter((o) => o !== u && o.card.faction === 'vasar');
+			for (const o of beneficiaires) o.permAtk += 1;
+			if (beneficiaires.length)
+				ev(g, { t: 'effect', side, uid: u.uid, msg: `Dasen donne la mesure : ${beneficiaires.length} Vasar gagnent +1 ATQ` });
 			break;
 		}
 		case 'korven': {
