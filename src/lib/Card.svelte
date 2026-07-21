@@ -203,11 +203,8 @@
 				<span class="ff-serial"
 					>{faction.name} · {card.id.slice(0, 14).toUpperCase()}{#if card.alt}<span class="ff-alt"
 							>Alt {card.alt}</span
-						>{/if}</span
+						>{/if}{#if fullArt}<span class="fa-star" title="Full Art"></span>{/if}</span
 				>
-				{#if fullArt}
-					<span class="fa-star" title="Full Art"></span>
-				{/if}
 				<span class="ff-rarity">◯ {rarityDef.name} · Nés du silence</span>
 			</footer>
 			<div class="conduits" aria-hidden="true"></div>
@@ -597,20 +594,17 @@
 		   sur-padding du panneau full-art (horizontal) et on redescend au bas. */
 		margin: 0 -2.6cqw -3cqw;
 	}
-	/* étoile prismatique : le signal « Full Art » */
+	/* étoile « Full Art » : collée au numéro de série, à gauche. Pas de couleur
+	   propre — elle prend l'encre du cadre (--frame-ink), donc claire sur les
+	   cartes sombres et sombre sur les cartes claires. */
 	.fa-star {
+		display: inline-block;
+		vertical-align: -0.12em;
 		flex: none;
-		width: 3.2cqw;
-		height: 3.2cqw;
-		background: conic-gradient(
-			from 210deg,
-			#c87a8c,
-			#d2b46e,
-			#78c8a0,
-			#6ea0d2,
-			#aa78d2,
-			#c87a8c
-		);
+		margin-left: 0.9cqw;
+		width: 2.4cqw;
+		height: 2.4cqw;
+		background: currentColor;
 		clip-path: polygon(
 			50% 0%,
 			61% 35%,
@@ -623,7 +617,6 @@
 			2% 35%,
 			39% 35%
 		);
-		filter: drop-shadow(0 0 1.2cqw rgba(200, 160, 220, 0.7));
 	}
 
 
