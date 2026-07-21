@@ -21,5 +21,6 @@
 	"health": 4,
 	"flavor": "« Tu tiens la porte d’une maison vide. »",
 	"cutout": "/art/velna-cutout.webp",
-	"nameMaterial": "cristal"
+	"nameMaterial": "cristal",
+	"faCutoutY": "2.75%"
 }
