@@ -68,9 +68,10 @@
 </ol>
 
 <p class="note">
-	Chaque taux est calculé sur le tirage réel : probabilité que le booster donne la rareté, puis que
-	ce soit cette carte, puis cette version. La somme des {echelle.length} paliers vaut exactement 5 —
-	la taille d'un booster.
+	Ces taux ne sont pas calculés : ils sont mesurés. Trois millions de boosters sont ouverts avec le
+	moteur de tirage du jeu, god packs et garanties compris, et chaque version est comptée telle
+	qu'elle sort. La somme des {echelle.length} paliers vaut donc exactement 5 — la taille d'un
+	booster — et le tableau reste vrai quoi qu'on ajoute plus tard au booster.
 </p>
 
 <style>

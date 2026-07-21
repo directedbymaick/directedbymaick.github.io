@@ -42,7 +42,7 @@
 	const tous: Nom[] = cards.flatMap((c) =>
 		versionsOf(c, FULLART_RATE).map((v) => {
 			const rarity = (v.view.sourceRarity ?? c.rarity) as Rarity;
-			const taux = tauxVersion(c, v.rate);
+			const taux = tauxVersion(c, v);
 			return {
 				key: v.key,
 				base: c,

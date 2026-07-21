@@ -3,6 +3,7 @@ import { cards } from '$lib/cards';
 import { charter } from '$lib/charter';
 import { FULLART_RATE, SLOT_ODDS } from '$lib/gacha';
 import { versionsOf, foilLabel } from '$lib/variants';
+import mesures from '$lib/taux-mesures.json';
 
 /**
  * L'échelle réelle du jeu.
@@ -51,13 +52,37 @@ function chancesParRarete(): Record<string, number> {
 }
 
 /**
- * Taux par booster d'UNE version précise — la même mesure que celle des paliers,
- * exposée carte par carte pour pouvoir en tirer un prix.
+ * Le modèle analytique : P(la rareté sort) × P(cette carte) × P(cette version).
+ *
+ * Il ne sert plus que de filet. Il ignore les god packs et les deux pity, donc
+ * il sous-estime lourdement tout ce qui est Full Art — c'est précisément le
+ * défaut qui a fait publier « 1 booster sur 13 000 » là où le tirage réel donne
+ * 1 sur 730.
  */
-export function tauxVersion(card: CardData, rateVersion: number): number {
+function tauxModele(card: CardData, rateVersion: number): number {
 	const n = effectifs();
 	const p = chancesParRarete();
 	return ((p[card.rarity] ?? 0) / (n[card.rarity] ?? 1)) * rateVersion;
+}
+
+/**
+ * Taux par booster d'UNE version précise, MESURÉ sur le tirage réel.
+ *
+ * `src/lib/taux-mesures.json` est produit par `node scripts/taux.mjs`, qui ouvre
+ * trois millions de boosters avec le vrai `openPack`. On ne calcule donc plus
+ * ce que le tirage devrait faire : on regarde ce qu'il fait, god packs et pity
+ * compris. Toute mécanique ajoutée plus tard au booster sera prise en compte
+ * dès la prochaine régénération, sans une ligne à changer ici.
+ */
+const COMPTES = mesures.versions as Record<string, number>;
+
+export function tauxVersion(card: CardData, v: { key: string; rate: number }): number {
+	const vus = COMPTES[v.key];
+	// Les 193 versions du set sont toutes apparues à la dernière mesure. Si une
+	// nouveauté n'y est pas encore, le modèle évite un taux nul — qui vaudrait un
+	// prix plancher sur la carte la plus rare du jeu.
+	if (vus === undefined) return tauxModele(card, v.rate);
+	return vus / mesures.boosters;
 }
 
 /** Prix plancher : celui du nom le plus facile à tirer du set. */
@@ -75,7 +100,7 @@ let refCache = 0;
 function tauxReference(): number {
 	if (refCache) return refCache;
 	for (const c of cards)
-		for (const v of versionsOf(c, FULLART_RATE)) refCache = Math.max(refCache, tauxVersion(c, v.rate));
+		for (const v of versionsOf(c, FULLART_RATE)) refCache = Math.max(refCache, tauxVersion(c, v));
 	return refCache;
 }
 
@@ -96,8 +121,6 @@ export function prixNom(taux: number): number {
 }
 
 export function paliers(): Palier[] {
-	const n = effectifs();
-	const pRarete = chancesParRarete();
 	const map = new Map<string, Palier>();
 
 	for (const c of cards) {
@@ -106,9 +129,9 @@ export function paliers(): Palier[] {
 			const nobg = v.foil === 'showcase' && !!c.cutout;
 			const key = `${rarity}|${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}`;
 
-			/* P(ce palier, sur un booster) = P(la rareté sort) × P(cette carte parmi
-			   les cartes de sa rareté) × P(cette version de la carte). */
-			const taux = ((pRarete[c.rarity] ?? 0) / (n[c.rarity] ?? 1)) * v.rate;
+			/* Mesuré, pas déduit : le nombre de fois que cette version exacte est
+			   sortie de `openPack`, rapporté au nombre de boosters ouverts. */
+			const taux = tauxVersion(c, v);
 
 			const dejaVu = map.get(key);
 			if (dejaVu) {

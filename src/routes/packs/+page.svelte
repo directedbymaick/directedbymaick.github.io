@@ -638,6 +638,14 @@
 			</div>
 		{/each}
 	</div>
+	<!-- Ce tableau decrit le tirage de base, avant garanties. Les taux par palier,
+	     eux, sont mesures sur le tirage complet : ils sont donc plus genereux, et
+	     il faut le dire ici pour qu'un joueur ne croie pas a une contradiction. -->
+	<p class="odds-note">
+		Ce tableau décrit le tirage de base d'un slot. Les garanties ci-dessous et les god packs le
+		rendent plus généreux en pratique : les taux réellement observés, version par version, sont
+		mesurés sur le tirage complet et publiés dans <a href="/raretes">l'échelle des raretés</a>.
+	</p>
 	<div class="pitie">
 		<h3>Garanties</h3>
 		<p class="pitie-txt">
@@ -1506,6 +1514,17 @@
 		color: rgba(242, 240, 234, 0.65);
 	}
 	/* ---------- les garanties ---------- */
+	.odds-note {
+		max-width: 46rem;
+		margin: 1.4rem 0 0;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: rgba(238, 240, 245, 0.6);
+	}
+	.odds-note a {
+		color: var(--gold);
+	}
+
 	.pitie {
 		margin: 2rem 0 0;
 		padding: 1.3rem 1.5rem;

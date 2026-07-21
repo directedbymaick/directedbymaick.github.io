@@ -63,7 +63,7 @@
 	   valent pas pareil. */
 	const versionCourante = $derived(versions.find((v) => v.key === artSel) ?? null);
 	const prix = $derived(
-		versionCourante ? prixNom(tauxVersion(card, versionCourante.rate)) : 0
+		versionCourante ? prixNom(tauxVersion(card, versionCourante)) : 0
 	);
 	let messageForge = $state('');
 
