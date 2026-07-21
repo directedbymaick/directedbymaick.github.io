@@ -4,6 +4,7 @@
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
+	import { eligibleFullArt, fullArtView } from '$lib/gacha';
 	import type { FactionId, Rarity } from '$lib/types';
 
 	const SET_SIZE = 60;
@@ -28,14 +29,28 @@
 			.sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
 	}
 
-	/** Grille d'affichage : chaque carte, suivie de ses versions alternatives (toujours foil). */
+	/** Grille d'affichage : chaque carte, sa version Full Art quand elle en a une,
+	    puis ses versions alternatives (toujours foil). Le Registre est un catalogue :
+	    il montre tout ce qui existe dans le set, possédé ou non. */
 	function entriesFor(f: FactionId) {
 		return byFaction(f).flatMap((card) => [
-			{ key: card.id, card, alt: 0, href: `/card/${card.id}` },
+			{ key: card.id, card, alt: 0, fullArt: false, href: `/card/${card.id}` },
+			...(eligibleFullArt(card)
+				? [
+						{
+							key: `${card.id}--fullart`,
+							card: fullArtView(card),
+							alt: 0,
+							fullArt: true,
+							href: `/card/${card.id}?v=fullart`
+						}
+					]
+				: []),
 			...(card.alts ?? []).map((art, i) => ({
 				key: `${card.id}--alt${i + 2}`,
 				card: altView(card, art, i),
 				alt: i + 1,
+				fullArt: false,
 				href: `/card/${card.id}?v=alt${i + 2}`
 			}))
 		]);
@@ -247,12 +262,13 @@
 					<div class="galerie">
 						{#each entriesFor(f) as e (e.key)}
 							<div class="cell">
-								<Card card={e.card} />
+								<Card card={e.card} fullArt={e.fullArt} />
 								<a class="band" href={e.href}>
 									<span class="bname">{e.card.name}</span>
 									<span class="stars" class:prism={e.card.rarity === 'prism'}
 										>{'★'.repeat(STARS[e.card.rarity])}</span
 									>
+									{#if e.fullArt}<span class="fachip">Full Art</span>{/if}
 									{#if e.alt}<span class="altchip">Alt {e.alt}</span>{/if}
 								</a>
 							</div>
@@ -657,6 +673,16 @@
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
+	}
+	.fachip {
+		flex: none;
+		padding: 0.12em 0.55em;
+		font-size: 0.66rem;
+		font-weight: 650;
+		letter-spacing: 0.06em;
+		color: #12121a;
+		background: linear-gradient(90deg, #e8a7b8, #e8d3a7, #a7e8c6, #a7c6e8, #c9a7e8);
+		border-radius: 999px;
 	}
 	.altchip {
 		flex: none;

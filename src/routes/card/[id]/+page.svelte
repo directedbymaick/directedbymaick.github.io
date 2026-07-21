@@ -12,12 +12,16 @@
 	const rarityDef = $derived(charter.rarities[card.rarity]);
 	const faction = $derived(charter.factions[card.faction]);
 
-	/* la Full Art n'est proposée que si le joueur l'a tirée */
+	/* la Full Art n'est proposée que si le joueur l'a tirée — sauf si l'URL la
+	   demande explicitement (?v=fullart), pour que les liens du Registre, qui est
+	   un catalogue de tout le set, ne retombent pas sur la version normale */
 	let collection = $state<Record<string, number>>({});
+	let askedFullArt = $state(false);
 	onMount(() => {
 		collection = loadCollection();
+		askedFullArt = new URLSearchParams(location.search).get('v') === 'fullart';
 	});
-	const ownsFullArt = $derived((collection[`${card.id}--fullart`] ?? 0) > 0);
+	const ownsFullArt = $derived(askedFullArt || (collection[`${card.id}--fullart`] ?? 0) > 0);
 
 	/** Choix de l'artwork : base ou versions alternatives (toujours foil). */
 	interface ArtOption {
