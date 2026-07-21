@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fly, scale, fade } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
+	import { cubicOut, backOut } from 'svelte/easing';
 	import Card from '$lib/Card.svelte';
 	import CardBack from '$lib/CardBack.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
@@ -31,6 +34,9 @@
 	/** Le Verbe qu'on vient de prononcer, montré au centre avant la défausse. */
 	let verbeMontre = $state<CardData | null>(null);
 	let verbeTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/** N'importe quelle carte, lue en grand : le Lieu, une carte de la défausse… */
+	let carteZoom = $state<CardData | null>(null);
 
 	/** Consultations : défausse, Être et ses attachements. */
 	let defausseOuverte = $state<0 | 1 | null>(null);
@@ -91,6 +97,14 @@
 		rafraichir();
 	}
 
+	/**
+	 * Les animations donnent vie au terrain, mais elles ne doivent jamais imposer
+	 * du mouvement à qui n'en veut pas. `duree()` renvoie 0 quand le système
+	 * demande à les réduire : la transition existe toujours, elle est instantanée.
+	 */
+	let sobre = $state(false);
+	const duree = (ms: number) => (sobre ? 0 : ms);
+
 	/** Chrono du tour, purement informatif. */
 	let secondes = $state(0);
 	let horloge: ReturnType<typeof setInterval> | null = null;
@@ -146,6 +160,7 @@
 			(params.get('lui') as FactionId) || 'exar',
 			graine
 		);
+		sobre = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		rafraichir();
 		horloge = setInterval(() => secondes++, 1000);
 		return () => {
@@ -237,6 +252,30 @@
 		return snap.supports.filter((s) => s.targetUid === undefined && s.kind !== 'lieu');
 	}
 
+	/* Le Korum qui tombe doit se voir : on marque le changement pour déclencher
+	   une pulsation, sinon un chiffre qui passe de 25 à 21 ne se remarque pas. */
+	let korumLui = $state(25);
+	let korumMoi = $state(25);
+	let coupLui = $state(false);
+	let coupMoi = $state(false);
+
+	$effect(() => {
+		const k = lui?.korum ?? 25;
+		if (k !== korumLui) {
+			korumLui = k;
+			coupLui = true;
+			setTimeout(() => (coupLui = false), 420);
+		}
+	});
+	$effect(() => {
+		const k = moi?.korum ?? 25;
+		if (k !== korumMoi) {
+			korumMoi = k;
+			coupMoi = true;
+			setTimeout(() => (coupMoi = false), 420);
+		}
+	});
+
 	const mm = $derived(String(Math.floor(secondes / 60)).padStart(2, '0'));
 	const ss = $derived(String(secondes % 60).padStart(2, '0'));
 </script>
@@ -253,7 +292,7 @@
 			<span class="sigil"><FactionSigil faction={lui?.faction ?? 'exar'} flat /></span>
 			{lui?.name ?? 'Adversaire'}
 		</span>
-		<span class="korum" class:vise={ciblesLegales.korum && attaquant !== null} data-cible="korum">
+		<span class="korum" class:vise={ciblesLegales.korum && attaquant !== null} class:coup={coupLui} data-cible="korum">
 			<button class="korum-btn" disabled={!ciblesLegales.korum || attaquant === null} onclick={frapperKorum}>
 				Korum <b>{lui?.korum ?? 0}</b>
 			</button>
@@ -271,14 +310,16 @@
 
 	<!-- rangée adverse -->
 	<section class="rangee adverse">
-		<div class="pile lieu" title="Lieu">
-			{#if lieuDe(lui)}
-				{@const c = getCard(lieuDe(lui)!.cardId)}
-				{#if c}<div class="mini"><Card card={c} interactive={false} thumb /></div>{/if}
-			{:else}
-				<span class="vide">Lieu</span>
-			{/if}
-		</div>
+		{#if lieuDe(lui)}
+			{@const c = getCard(lieuDe(lui)!.cardId)}
+			<button class="pile lieu occupe" title="Lire {c?.name}" onclick={() => (carteZoom = c ?? null)}>
+				{#if c}<div class="mini" in:scale={{ duration: duree(260), start: 0.9, easing: backOut }}>
+					<Card card={c} interactive={false} thumb />
+				</div>{/if}
+			</button>
+		{:else}
+			<div class="pile lieu"><span class="vide">Lieu</span></div>
+		{/if}
 
 		<div class="slots">
 			{#each Array(BOARD_SLOTS) as _, i (i)}
@@ -287,6 +328,8 @@
 					{@const c = getCard(u.cardId)}
 					{@const att = attachements(lui, u.uid)}
 					<button
+						in:scale={{ duration: duree(300), start: 0.82, easing: backOut }}
+						out:scale={{ duration: duree(200), start: 0.7 }}
 						class="slot occupe"
 						class:ciblable={attaquant !== null && ciblesLegales.units.includes(u.uid)}
 						data-cible={u.uid}
@@ -319,7 +362,12 @@
 		<span class="tour">Tour {meta.turn} · {monTour ? 'À vous' : 'Adversaire'}</span>
 		<span class="chrono">{mm}:{ss}</span>
 		{#if verbeMontre}
-			<div class="verbe-joue" role="status">
+			<div
+				class="verbe-joue"
+				role="status"
+				in:scale={{ duration: duree(320), start: 0.7, easing: backOut }}
+				out:fade={{ duration: duree(400) }}
+			>
 				<div class="vj-carte"><Card card={verbeMontre} interactive={false} /></div>
 				<p class="vj-nom">{verbeMontre.name}</p>
 			</div>
@@ -328,14 +376,16 @@
 
 	<!-- ================= NOUS ================= -->
 	<section class="rangee mienne">
-		<div class="pile lieu" title="Lieu">
-			{#if lieuDe(moi)}
-				{@const c = getCard(lieuDe(moi)!.cardId)}
-				{#if c}<div class="mini"><Card card={c} interactive={false} thumb /></div>{/if}
-			{:else}
-				<span class="vide">Lieu</span>
-			{/if}
-		</div>
+		{#if lieuDe(moi)}
+			{@const c = getCard(lieuDe(moi)!.cardId)}
+			<button class="pile lieu occupe" title="Lire {c?.name}" onclick={() => (carteZoom = c ?? null)}>
+				{#if c}<div class="mini" in:scale={{ duration: duree(260), start: 0.9, easing: backOut }}>
+					<Card card={c} interactive={false} thumb />
+				</div>{/if}
+			</button>
+		{:else}
+			<div class="pile lieu"><span class="vide">Lieu</span></div>
+		{/if}
 
 		<div class="slots">
 			{#each Array(BOARD_SLOTS) as _, i (i)}
@@ -344,6 +394,8 @@
 					{@const c = getCard(u.cardId)}
 					{@const att = attachements(moi, u.uid)}
 					<button
+						in:scale={{ duration: duree(300), start: 0.82, easing: backOut }}
+						out:scale={{ duration: duree(200), start: 0.7 }}
 						class="slot occupe"
 						class:pret={attaquantsPossibles.includes(u.uid)}
 						class:choisi={attaquant === u.uid}
@@ -390,7 +442,7 @@
 			<span class="sigil"><FactionSigil faction={moi?.faction ?? 'vasar'} flat /></span>
 			{moi?.name ?? 'Vous'}
 		</span>
-		<span class="korum mien">Korum <b>{moi?.korum ?? 0}</b></span>
+		<span class="korum mien" class:coup={coupMoi}>Korum <b>{moi?.korum ?? 0}</b></span>
 		<span class="ressource volonte">Volonté <b>{meta.will}</b>/{meta.maxWill}</span>
 		<button class="finir" disabled={!monTour} onclick={finirTour}>Finir le tour</button>
 	</footer>
@@ -404,8 +456,11 @@
 
 	<!-- notre main -->
 	<div class="ma-main">
-		{#each main as h, i (i)}
+		{#each main as h, i (`${h.card.id}-${i}`)}
 			<button
+				in:fly={{ y: 40, duration: duree(280), easing: cubicOut }}
+				out:fly={{ y: -30, duration: duree(200) }}
+				animate:flip={{ duration: duree(240), easing: cubicOut }}
 				class="carte-main"
 				class:jouable={h.playable}
 				onclick={() => jouer(i)}
@@ -423,7 +478,7 @@
 
 	<!-- la flèche d'attaque : de l'Être au curseur, tant qu'on tire -->
 	{#if traine}
-		<svg class="fleche" aria-hidden="true">
+		<svg class="fleche" aria-hidden="true" in:fade={{ duration: duree(120) }}>
 			<defs>
 				<marker id="pointe" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
 					<path d="M0 0 L10 5 L0 10 z" fill="#e8703f" />
@@ -440,7 +495,7 @@
 	{/if}
 
 	{#if meta.winner !== null}
-		<div class="fin" role="dialog" aria-modal="true">
+		<div class="fin" role="dialog" aria-modal="true" in:fade={{ duration: duree(500) }}>
 			<p class="fin-txt">
 				{meta.winner === 0 ? 'Victoire' : meta.winner === 1 ? 'Défaite' : 'Nulle'}
 			</p>
@@ -459,6 +514,16 @@
 			<h2>Défausse — {defausseOuverte === 0 ? 'vous' : 'adversaire'}</h2>
 			<p class="voile-vide">La défausse se consulte librement, des deux côtés.</p>
 			<button class="voile-x" onclick={() => (defausseOuverte = null)}>Fermer</button>
+		</div>
+	</div>
+{/if}
+
+<!-- ============ une carte, lue en grand ============ -->
+{#if carteZoom}
+	<div class="voile" role="dialog" aria-modal="true" aria-label={carteZoom.name} transition:fade={{ duration: duree(180) }}>
+		<button class="voile-fond" aria-label="Fermer" onclick={() => (carteZoom = null)}></button>
+		<div class="zoom-carte" in:scale={{ duration: duree(260), start: 0.88, easing: backOut }}>
+			<Card card={carteZoom} />
 		</div>
 	</div>
 {/if}
@@ -541,6 +606,24 @@
 		color: #d5b25e;
 		font-variant-numeric: tabular-nums;
 	}
+	/* le coup encaissé : une pulsation brève, jamais un clignotement */
+	.korum {
+		display: inline-block;
+		transition: transform 0.2s ease;
+	}
+	.korum.coup {
+		animation: encaisse 0.42s ease;
+	}
+	@keyframes encaisse {
+		0% { transform: scale(1); }
+		30% { transform: scale(1.22); color: #ff9e7a; }
+		100% { transform: scale(1); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.korum.coup {
+			animation: none;
+		}
+	}
 	.korum-btn {
 		font: inherit;
 		color: inherit;
@@ -607,6 +690,15 @@
 		border-radius: 8px;
 		background: rgba(255, 255, 255, 0.02);
 		padding: 0;
+	}
+	.slot {
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease,
+			transform 0.16s ease;
+	}
+	.slot.occupe:hover {
+		transform: translateY(-0.25rem);
 	}
 	.slot.occupe {
 		border-style: solid;
@@ -698,6 +790,19 @@
 	.pile.lieu {
 		width: 6rem;
 		cursor: default;
+		transition:
+			border-color 0.2s ease,
+			transform 0.16s ease;
+	}
+	.pile.lieu.occupe {
+		cursor: zoom-in;
+	}
+	.pile.lieu.occupe:hover {
+		transform: translateY(-0.25rem);
+		border-color: rgba(213, 178, 94, 0.55);
+	}
+	.pile:not(.pioche):hover {
+		border-color: rgba(213, 178, 94, 0.45);
 	}
 	.pile-n {
 		font-size: 1.2rem;
@@ -841,6 +946,12 @@
 		stroke-width: 4;
 		stroke-linecap: round;
 		filter: drop-shadow(0 0 6px rgba(232, 112, 63, 0.7));
+	}
+
+	.zoom-carte {
+		position: relative;
+		margin: auto;
+		--card-w: min(24rem, 80vw);
 	}
 
 	.fin {
