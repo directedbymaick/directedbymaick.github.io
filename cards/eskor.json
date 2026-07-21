@@ -13,11 +13,12 @@
 			"#131a2f",
 			"#97c6db"
 		],
-		"foilPreset": "mat",
+		"foilPreset": "regular",
 		"accent": "#8d6cb8",
 		"seed": 465729
 	},
 	"attack": 3,
 	"health": 3,
-	"flavor": "Il sait ce qu'on peut faire d'un nom entier."
+	"flavor": "Il sait ce qu'on peut faire d'un nom entier.",
+	"artPosition": "center 0%"
 }
