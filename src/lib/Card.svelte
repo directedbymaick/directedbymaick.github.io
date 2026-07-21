@@ -113,7 +113,12 @@
 	};
 	const holoRarity = $derived(
 		foil.preset === 'showcase'
-			? (showcaseHolo[card.rarity] ?? 'rare rainbow alt')
+			? /* en Full Art, le holo derrière le détourage est TOUJOURS la Galerie :
+			     la vue full art force la rareté prismatique, le fond suivrait sinon
+			     une recette (rare secret) qui n'est plus une variante proposée. */
+				fullArt
+				? 'trainer gallery rare holo'
+				: (showcaseHolo[card.rarity] ?? 'rare rainbow alt')
 			: ({
 					mat: '',
 					regular: 'rare holo',
