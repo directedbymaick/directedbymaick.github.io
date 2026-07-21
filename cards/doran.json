@@ -20,5 +20,6 @@
 		"foilPreset": "radiant",
 		"accent": "#c9a445",
 		"seed": 152151
-	}
+	},
+	"cutoutY": "-3.8%"
 }
