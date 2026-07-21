@@ -80,7 +80,7 @@ export function paliers(): Palier[] {
 				label: [
 					charter.rarities[rarity].name,
 					v.fullArt ? 'Full Art' : null,
-					v.foil ? foilLabel(v.foil, c) : 'Raw'
+					v.foil ? foilLabel(v.foil, c, v.fullArt) : 'Raw'
 				]
 					.filter(Boolean)
 					.join(' · '),

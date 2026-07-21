@@ -1,4 +1,4 @@
-import type { CardData, FoilPreset } from '$lib/types';
+import type { CardData, FoilPreset, Rarity } from '$lib/types';
 import { eligibleFullArt, fullArtView } from '$lib/gacha';
 
 /**
@@ -22,16 +22,35 @@ export const FOIL_LABEL: Record<FoilPreset, string> = {
 };
 
 /**
- * Le foil « showcase » recouvre deux objets très différents :
- *  — avec détourage, le personnage flotte au-dessus du holo : c'est bien une
- *    illustration spéciale, et la carte porte le tag « no bg » ;
- *  — sans détourage, il ne fait qu'appliquer le holo de la rareté sous l'art
- *    normal. Rien n'est « spécial » là-dedans, et les nommer pareil rendait les
- *    vraies illisibles. Ces 28 cartes s'appellent donc « Reflet ».
+ * Le preset « showcase » n'a PAS de matière à lui : il emprunte le holo de la
+ * rareté de la carte (et la Galerie en Full Art). Le nommer d'après le preset
+ * mentait donc — une Épique en showcase est peinte avec la recette du Cristallin,
+ * une Full Art en showcase avec celle de la Galerie.
+ *
+ * Règle : le nom suit la MATIÈRE réellement peinte. Seul le détourage échappe à
+ * cette règle, parce qu'il change la composition elle-même (le personnage flotte
+ * au-dessus du holo) et mérite son propre nom.
+ *
+ * Le mapping ci-dessous double celui de Card.svelte (showcaseHolo) : les deux
+ * doivent rester alignés.
  */
-export function foilLabel(foil: FoilPreset, card: Pick<CardData, 'cutout'>): string {
-	if (foil === 'showcase' && !card.cutout) return 'Reflet';
-	return FOIL_LABEL[foil];
+const SHOWCASE_MATIERE: Record<Rarity, string> = {
+	common: 'Reflet', // reverse holo — la seule matière propre au showcase
+	rare: 'Holographique', // rare holo
+	epic: 'Cristallin', // amazing rare
+	legendary: 'Radiant', // radiant rare — aucune carte aujourd'hui
+	prism: 'Secret' // rare secret — aucune carte aujourd'hui
+};
+
+export function foilLabel(
+	foil: FoilPreset,
+	card: Pick<CardData, 'cutout' | 'rarity'>,
+	fullArt = false
+): string {
+	if (foil !== 'showcase') return FOIL_LABEL[foil];
+	if (card.cutout) return FOIL_LABEL.showcase; // illustration détourée : nom propre
+	// en Full Art, le holo derrière est toujours la Galerie (cf. Card.svelte)
+	return fullArt ? FOIL_LABEL.galerie : SHOWCASE_MATIERE[card.rarity];
 }
 
 export interface CardVersion {
@@ -104,7 +123,7 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		for (const f of foils) {
 			versions.push({
 				key: `${card.id}${suffixe}--${f}`,
-				label: `${fullArt ? 'Full Art · ' : ''}${foilLabel(f, card)}`,
+				label: `${fullArt ? 'Full Art · ' : ''}${foilLabel(f, card, fullArt)}`,
 				foil: f,
 				fullArt,
 				rate: (pForme * FOIL_RATE * poids(f)) / total,
