@@ -56,6 +56,7 @@
 		{ href: '/registre', label: 'Registre' },
 		{ href: '/packs', label: 'Réquisition' },
 		{ href: '/raretes', label: 'Raretés' },
+		{ href: '/lore', label: 'Récit' },
 		{ href: '/arene', label: 'Arène' },
 		{ href: '/decks', label: 'Decks' },
 		{ href: '/regles', label: 'Règles' },
@@ -256,6 +257,7 @@
 				</nav>
 				<nav class="foot-col">
 					<p class="foot-h">Univers</p>
+					<a href="/lore">Le Korum · le récit</a>
 					<a href="/registre">Nés du silence · Set 01</a>
 					<a href="/packs">Réquisition</a>
 					<a href="/raretes">Raretés</a>

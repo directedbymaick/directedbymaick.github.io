@@ -60,6 +60,12 @@
 	/* Les deux inserts du mur : des illustrations du set, servies en 640px et
 	   passées au duotone doré par .ed-photo. Deux peuples différents, pour que
 	   le hero annonce l'étendue du set et pas une seule carte. */
+	/** L'illustration d'une carte, servie en 640px — assez pour un bandeau. */
+	function artDe(id: string) {
+		const c = cards.find((x) => x.id === id);
+		return c ? c.art.replace('/art/', '/art/w640/') : '';
+	}
+
 	const tuiles = ['doran', 'exen']
 		.map((id) => cards.find((c) => c.id === id)?.art ?? heroArt ?? '')
 		.map((src) => (src.startsWith('/art/') ? src.replace('/art/', '/art/w640/') : src));
@@ -237,6 +243,60 @@
 						<span class="bloc-n">{n} cartes</span>
 					</a>
 				{/each}
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ LE RÉCIT ============
+	     Trois moments du Korum, chacun porté par l'illustration du personnage
+	     qui le vit. C'est le lore qui donne un poids aux cartes du Registre. -->
+	<section class="sec sombre">
+		<div class="sec-inner">
+			<p class="sec-kick">Le Korum · recueil d'Eshel</p>
+			<h2 class="sec-titre">Un créateur s’est taché</h2>
+			<p class="sec-intro">
+				KOR dit les noms, et tant qu'on les répétait, ceux qui les portaient existaient. Puis un
+				mot que nul n'avait dit est entré dans l'Origine.
+			</p>
+
+			<div class="grille-lore">
+				<a class="lore-bloc" href="/lore">
+					<span class="bloc-img">
+						<img src={artDe('thalen')} alt="" loading="lazy" />
+					</span>
+					<span class="lore-n">Livre II</span>
+					<span class="bloc-nom">Le mot que nul n’avait dit</span>
+					<span class="bloc-txt">
+						Thalen entend sous les chœurs une fêlure : EX. Hors. Si un dehors existe, alors la
+						Création a une limite — donc une fin.
+					</span>
+				</a>
+				<a class="lore-bloc" href="/lore">
+					<span class="bloc-img">
+						<img src={artDe('exen')} alt="" loading="lazy" />
+					</span>
+					<span class="lore-n">Livre III</span>
+					<span class="bloc-nom">La Fracture</span>
+					<span class="bloc-txt">
+						L'Origine n'est pas détruite : elle est fêlée. Tous les noms en descendaient, la
+						fêlure court dans les noms. Puis KOR se tait.
+					</span>
+				</a>
+				<a class="lore-bloc" href="/lore">
+					<span class="bloc-img">
+						<img src={artDe('rasen')} alt="" loading="lazy" />
+					</span>
+					<span class="lore-n">Livre V</span>
+					<span class="bloc-nom">La question sans réponse</span>
+					<span class="bloc-txt">
+						Rasen demande : et dans celui qui juge, le mot n'est pas ? On ne répond pas. On le
+						condamne.
+					</span>
+				</a>
+			</div>
+
+			<div class="sec-actions bas">
+				<a class="btn-plein" href="/lore">Lire le Korum</a>
 			</div>
 		</div>
 	</section>
@@ -594,6 +654,46 @@
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--gold);
+	}
+
+	/* ---- le récit ---- */
+	.sec-kick {
+		margin: 0 0 var(--spacing-15);
+		font-family: var(--display);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.26em;
+		text-transform: uppercase;
+		color: var(--gold);
+	}
+	.grille-lore {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+		gap: var(--spacing-35);
+		margin-top: var(--spacing-55);
+	}
+	.lore-bloc {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--spacing-10);
+		text-decoration: none;
+		color: inherit;
+	}
+	.lore-bloc .bloc-img {
+		aspect-ratio: 3 / 2;
+	}
+	.lore-n {
+		margin-top: var(--spacing-8);
+		font-family: var(--display);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: var(--gold);
+	}
+	.sec-actions.bas {
+		margin-top: var(--spacing-55);
 	}
 
 	/* ---- les trois étapes ---- */
