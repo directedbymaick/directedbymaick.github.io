@@ -928,3 +928,15 @@
 .card:not(.masked)[data-rarity="rare ultra"] .card__shine:after {
   filter: brightness(calc((var(--pointer-from-center)*.5) + .8)) contrast(1.6) saturate(1.4);
 }
+
+/* ── AJOUT EXPELLED (config, pas une recette) : ultra ──────────────────────
+   Pour ses cartes non masquées, simey tuile illusion.png à --imgsize: 33%.
+   Sur nos illustrations pleine carte, ces petits motifs circulaires répétés
+   saturent le rendu et écrasent les fines lignes diagonales, qui sont
+   pourtant le cœur de l'effet. On repasse la texture en `cover` — la valeur
+   qu'il emploie lui-même pour sa variante masquée. Aucune déclaration de sa
+   recette n'est touchée, seule cette variable change. ── */
+.card:not(.masked)[data-rarity='rare ultra'] .card__shine,
+.card:not(.masked)[data-rarity='rare ultra'] .card__shine:after {
+	--imgsize: cover;
+}
