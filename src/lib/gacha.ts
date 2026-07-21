@@ -1,5 +1,5 @@
 import type { CardData, Rarity } from '$lib/types';
-import { cards } from '$lib/cards';
+import { cards, getCard } from '$lib/cards';
 import { nsKey, scheduleCloudSync } from '$lib/store';
 import { rollVersion, versionsOf } from '$lib/variants';
 
@@ -116,9 +116,83 @@ function openGodPack(): Pull[] {
 	return pulls;
 }
 
-/** Tire un booster : 5 cartes, sans doublon dans le pack si le pool le permet. */
-export function openPack(): Pull[] {
-	if (Math.random() < GOD_PACK_RATE) return openGodPack();
+/* ---------- pitié ---------- */
+
+/**
+ * Rareté et Full Art sont deux jets INDÉPENDANTS : une garantie sur l'un ne dit
+ * rien de l'autre. Sans Full Art, une Prismatique garantie reste une Prismatique
+ * Raw, et le palier convoité n'arrive jamais. D'où deux compteurs séparés.
+ */
+export const PITY_PRISM = 40;
+export const PITY_FULLART = 25;
+
+export interface Pity {
+	/** boosters ouverts depuis la dernière Prismatique */
+	sansPrism: number;
+	/** boosters ouverts depuis le dernier Full Art */
+	sansFullArt: number;
+}
+
+const PITY_KEY = 'travelers-pity-v1';
+
+export function loadPity(): Pity {
+	if (typeof localStorage === 'undefined') return { sansPrism: 0, sansFullArt: 0 };
+	try {
+		const p = JSON.parse(localStorage.getItem(nsKey(PITY_KEY)) ?? '{}');
+		return { sansPrism: p.sansPrism ?? 0, sansFullArt: p.sansFullArt ?? 0 };
+	} catch {
+		return { sansPrism: 0, sansFullArt: 0 };
+	}
+}
+
+export function savePity(p: Pity): void {
+	if (typeof localStorage === 'undefined') return;
+	localStorage.setItem(nsKey(PITY_KEY), JSON.stringify(p));
+	scheduleCloudSync();
+}
+
+/** La version Full Art d'une carte, tirée parmi ses finitions Full Art validées. */
+function versionFullArt(card: CardData) {
+	const fa = versionsOf(card, 1).filter((v) => v.fullArt);
+	if (!fa.length) return null;
+	const total = fa.reduce((s, v) => s + v.rate, 0);
+	let r = Math.random() * total;
+	for (const v of fa) {
+		if (r < v.rate) return v;
+		r -= v.rate;
+	}
+	return fa[0];
+}
+
+function versEnPull(v: ReturnType<typeof rollVersion>, baseId: string): Pull {
+	return {
+		card: { ...v.view, id: v.key },
+		baseId,
+		fullArt: v.fullArt,
+		version: v.label,
+		foil: v.foil !== null
+	};
+}
+
+/**
+ * Tire un booster : 5 cartes, sans doublon dans le pack si le pool le permet.
+ * `pity` est MUTÉ : ses compteurs montent d'un cran ou retombent à zéro.
+ */
+export function openPack(pity?: Pity): Pull[] {
+	if (Math.random() < GOD_PACK_RATE) {
+		const p = openGodPack();
+		if (pity) {
+			pity.sansFullArt = 0;
+			if (p.some((x) => (x.card.sourceRarity ?? x.card.rarity) === 'prism')) pity.sansPrism = 0;
+			else pity.sansPrism++;
+		}
+		return p;
+	}
+
+	// le compteur est à son dernier cran : ce booster DOIT tenir la promesse
+	const duPrism = !!pity && pity.sansPrism + 1 >= PITY_PRISM;
+	const duFullArt = !!pity && pity.sansFullArt + 1 >= PITY_FULLART;
+
 	const pulls: Pull[] = [];
 	const seen = new Set<string>();
 	const slots: Rarity[] = [
@@ -126,21 +200,49 @@ export function openPack(): Pull[] {
 		rollRarity(SLOT_ODDS[0].odds),
 		rollRarity(SLOT_ODDS[0].odds),
 		rollRarity(SLOT_ODDS[1].odds),
-		rollRarity(SLOT_ODDS[2].odds)
+		duPrism ? 'prism' : rollRarity(SLOT_ODDS[2].odds)
 	];
 	for (const rarity of slots) {
 		const card = pickCard(rarity, seen);
 		seen.add(card.id);
 		/* le Raw est l'état de base : la version foil est un bonus rare, tiré selon
 		   les finitions réellement validées pour cette carte (cf. variants.ts) */
-		const v = rollVersion(card, FULLART_RATE);
-		pulls.push({
-			card: { ...v.view, id: v.key },
-			baseId: card.id,
-			fullArt: v.fullArt,
-			version: v.label,
-			foil: v.foil !== null
+		pulls.push(versEnPull(rollVersion(card, FULLART_RATE), card.id));
+	}
+
+	if (duFullArt && !pulls.some((p) => p.fullArt)) {
+		/* on promeut la carte la plus rare éligible du booster ; si aucune ne l'est,
+		   on remplace le dernier slot par une carte qui l'est. */
+		const rang: Record<Rarity, number> = { common: 0, rare: 1, epic: 2, legendary: 3, prism: 4 };
+		let i = -1;
+		let meilleur = -1;
+		pulls.forEach((p, k) => {
+			const c = getCard(p.baseId);
+			if (!c || !eligibleFullArt(c)) return;
+			if (rang[c.rarity] > meilleur) {
+				meilleur = rang[c.rarity];
+				i = k;
+			}
 		});
+		if (i < 0) {
+			const pool = cards.filter((c) => eligibleFullArt(c) && !seen.has(c.id));
+			const src = pool.length ? pool : cards.filter(eligibleFullArt);
+			if (src.length) {
+				const c = src[Math.floor(Math.random() * src.length)];
+				pulls[pulls.length - 1] = versEnPull(rollVersion(c, 1), c.id);
+				i = pulls.length - 1;
+			}
+		} else {
+			const c = getCard(pulls[i].baseId)!;
+			const v = versionFullArt(c);
+			if (v) pulls[i] = versEnPull(v, c.id);
+		}
+	}
+
+	if (pity) {
+		const prism = pulls.some((p) => (p.card.sourceRarity ?? p.card.rarity) === 'prism');
+		pity.sansPrism = prism ? 0 : pity.sansPrism + 1;
+		pity.sansFullArt = pulls.some((p) => p.fullArt) ? 0 : pity.sansFullArt + 1;
 	}
 	return pulls;
 }

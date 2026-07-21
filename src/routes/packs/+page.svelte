@@ -16,6 +16,11 @@
 		SLOT_ODDS,
 		PACK_SIZE,
 		FULLART_RATE,
+		loadPity,
+		savePity,
+		PITY_PRISM,
+		PITY_FULLART,
+		type Pity,
 		type Pull
 	} from '$lib/gacha';
 	import type { Rarity } from '$lib/types';
@@ -55,6 +60,28 @@
 	   tirage lui-même. La publier ici, c'est publier les vraies probabilités. */
 	const ECHELLE = paliers();
 
+	/* ---- pitié ----
+	   Le booster suivant est pré-tiré pour que le sachet soit prêt à l'écran. Ses
+	   compteurs ne doivent pourtant avancer QUE s'il est réellement ouvert : on
+	   tire donc sur une copie, et on ne la valide qu'au paiement. Sans ça, quitter
+	   la page brûlerait de la pitié pour rien. */
+	let pity = $state<Pity>({ sansPrism: 0, sansFullArt: 0 });
+	let pityEnAttente: Pity | null = null;
+
+	function preparer() {
+		const copie = { ...pity };
+		pending = openPack(copie);
+		pityEnAttente = copie;
+	}
+
+	function validerPity() {
+		if (pityEnAttente) {
+			pity = pityEnAttente;
+			pityEnAttente = null;
+			savePity($state.snapshot(pity));
+		}
+	}
+
 	const RARITY_TINT: Record<Rarity, string> = {
 		common: '#8b95a5',
 		rare: '#e8e4da',
@@ -70,7 +97,8 @@
 	let reduced = false;
 	onMount(() => {
 		initEconomy();
-		pending = openPack();
+		pity = loadPity();
+		preparer();
 		reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (!reduced) {
 			(async () => {
@@ -154,7 +182,13 @@
 		// le booster se paye en Éclats — dernier garde-fou si l'UI a laissé passer
 		if (!spend(PACK_PRICE)) return;
 		track('packOpened');
-		pulls = pending.length ? pending : openPack();
+		if (pending.length) {
+			pulls = pending;
+			validerPity();
+		} else {
+			pulls = openPack(pity);
+			savePity($state.snapshot(pity));
+		}
 		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
 		// revente automatique du surplus (option de l'espace utilisateur)
@@ -235,7 +269,7 @@
 		pulls = [];
 		flipped = [];
 		godHit = false;
-		pending = openPack();
+		preparer();
 	}
 
 	/* ---- ouverture groupée : 5 boosters d'un coup, récap direct ---- */
@@ -250,8 +284,9 @@
 		track('packOpened', BULK_N);
 		const all: Pull[] = [];
 		let god = false;
+		pityEnAttente = null; // l'ouverture groupée ignore le sachet pré-tiré
 		for (let k = 0; k < BULK_N; k++) {
-			const pk = openPack();
+			const pk = openPack(pity);
 			if (isGodPack(pk)) god = true;
 			all.push(...pk);
 		}
@@ -278,7 +313,8 @@
 		pulls = all;
 		godHit = god;
 		bulk = true;
-		pending = openPack();
+		savePity($state.snapshot(pity));
+		preparer();
 		stage = 'recap';
 		await tick();
 		// une seule note de lumière au point du sachet — le reste est en CSS
@@ -461,6 +497,36 @@
 			</div>
 		{/each}
 	</div>
+	<div class="pitie">
+		<h3>Garanties</h3>
+		<p class="pitie-txt">
+			Deux compteurs indépendants, parce que la rareté et le Full Art sont deux tirages séparés :
+			une Prismatique garantie sans Full Art resterait une Prismatique Raw.
+		</p>
+		<div class="jauges">
+			<div class="jauge">
+				<p class="j-nom">Prismatique garantie</p>
+				<div class="j-barre">
+					<i style="width: {Math.min(100, (pity.sansPrism / PITY_PRISM) * 100)}%"></i>
+				</div>
+				<p class="j-cpt">
+					{pity.sansPrism} / {PITY_PRISM}
+					<span>— dans {Math.max(1, PITY_PRISM - pity.sansPrism)} booster{PITY_PRISM - pity.sansPrism > 1 ? 's' : ''} au plus tard</span>
+				</p>
+			</div>
+			<div class="jauge">
+				<p class="j-nom">Full Art garanti</p>
+				<div class="j-barre">
+					<i style="width: {Math.min(100, (pity.sansFullArt / PITY_FULLART) * 100)}%"></i>
+				</div>
+				<p class="j-cpt">
+					{pity.sansFullArt} / {PITY_FULLART}
+					<span>— dans {Math.max(1, PITY_FULLART - pity.sansFullArt)} booster{PITY_FULLART - pity.sansFullArt > 1 ? 's' : ''} au plus tard</span>
+				</p>
+			</div>
+		</div>
+	</div>
+
 	<h3 class="paliers-titre">
 		Par palier — finition et détourage compris
 		<a class="paliers-lien" href="/raretes">voir l'échelle en cartes →</a>
@@ -487,6 +553,10 @@
 	</div>
 
 	<p class="odds-note">
+		Les taux ci-dessus sont ceux du tirage seul, <strong>avant</strong> les garanties : à l'usage,
+		les compteurs les relèvent à 4,5&nbsp;% de boosters avec Prismatique (contre 3,4&nbsp;%) et
+		10&nbsp;% avec Full Art (contre 9&nbsp;%), et bornent la pire disette à
+		{PITY_PRISM} et {PITY_FULLART} boosters au lieu de 245 et 99.
 		Si une rareté tirée n'a aucune carte forgée, le tirage se replie sur la rareté la plus proche.
 		Pas de doublon à l'intérieur d'un même booster tant que le pool le permet. Chaque carte épique
 		ou au-delà a {Math.round(FULLART_RATE * 100)}&nbsp;% de chance de sortir en version
@@ -1267,6 +1337,59 @@
 		font-variant-numeric: tabular-nums;
 		color: rgba(242, 240, 234, 0.65);
 	}
+	/* ---------- les garanties ---------- */
+	.pitie {
+		margin: 2rem 0 0;
+		padding: 1.3rem 1.5rem;
+		background: rgba(213, 178, 94, 0.05);
+		border: 1px solid rgba(213, 178, 94, 0.18);
+		border-radius: 16px;
+	}
+	.pitie h3 {
+		margin: 0 0 0.5rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+	}
+	.pitie-txt {
+		margin: 0 0 1.1rem;
+		max-width: 70ch;
+		font-size: 0.84rem;
+		line-height: 1.6;
+		color: rgba(242, 240, 234, 0.5);
+	}
+	.jauges {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 1.2rem;
+	}
+	.j-nom {
+		margin: 0 0 0.45rem;
+		font-size: 0.84rem;
+		font-weight: 550;
+	}
+	.j-barre {
+		height: 5px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.08);
+		overflow: hidden;
+	}
+	.j-barre i {
+		display: block;
+		height: 100%;
+		border-radius: 999px;
+		background: linear-gradient(90deg, rgba(213, 178, 94, 0.5), #d5b25e);
+		transition: width 0.3s ease;
+	}
+	.j-cpt {
+		margin: 0.45rem 0 0;
+		font-size: 0.78rem;
+		font-variant-numeric: tabular-nums;
+		color: #d5b25e;
+	}
+	.j-cpt span {
+		color: rgba(242, 240, 234, 0.38);
+	}
+
 	/* ---------- l'échelle des paliers ---------- */
 	.paliers-titre {
 		display: flex;
