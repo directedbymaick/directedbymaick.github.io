@@ -1135,14 +1135,9 @@
 		border: 0.4cqw solid currentColor;
 		border-radius: 50%;
 	}
-	/* Cinzel : capitales sans jambages — les glyphes flottent haut dans leur em-box.
-	   La correction s'applique au texte SEUL, jamais à l'anneau. Mesuré : l'encre
-	   tombait 0.61px SOUS le centre, l'anneau 0.61px au-dessus — 1.22px d'écart. */
-	.ptag-label {
-		/* aucune correction : mesuré à 0.0px de l'anneau ET du centre de la pastille
-		   une fois l'encadré retiré. L'ancienne translateY(0.055em) datait de la
-		   version encadrée et décalait le texte vers le bas. */
-	}
+	/* .ptag-label n'a PLUS de correction optique : l'ancienne translateY(0.055em)
+	   datait de la version encadrée et poussait le texte sous le centre. Sans elle,
+	   anneau et texte tombent tous deux à 0.00px du centre de la pastille. */
 	.flavor {
 		margin: 1.4cqw 0 0;
 		font-family: 'Cormorant Garamond', Georgia, serif;
