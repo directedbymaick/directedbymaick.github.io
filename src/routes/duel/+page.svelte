@@ -96,8 +96,20 @@
 	);
 	const prononcables = $derived(duel && monTour ? duel.pronounceable() : []);
 
+	/**
+	 * La carte survolée en main, montrée en grand au-dessus. Une carte de main
+	 * fait 6,4rem : son texte d'effet y est illisible. On doit pouvoir lire ce
+	 * qu'on tient AVANT de le poser, y compris ce qu'on n'a pas les moyens de
+	 * jouer — c'est comme ça qu'on prépare son tour.
+	 */
+	let carteLue = $state<CardData | null>(null);
+
 	function jouer(i: number) {
+		// les cartes injouables ne sont plus `disabled` : un bouton désactivé ne
+		// reçoit aucun survol, et c'est justement celles-là qu'on veut lire.
+		if (!main[i]?.playable) return;
 		if (!duel?.play(i)) return;
+		carteLue = null;
 		rafraichir();
 	}
 
@@ -313,10 +325,26 @@
 		<button class="finir" disabled={!monTour} onclick={finirTour}>Finir le tour</button>
 	</footer>
 
+	<!-- la carte qu'on survole, lisible en grand -->
+	{#if carteLue}
+		<div class="lecture" aria-hidden="true">
+			<Card card={carteLue} interactive={false} />
+		</div>
+	{/if}
+
 	<!-- notre main -->
 	<div class="ma-main">
 		{#each main as h, i (i)}
-			<button class="carte-main" class:jouable={h.playable} disabled={!h.playable} onclick={() => jouer(i)}>
+			<button
+				class="carte-main"
+				class:jouable={h.playable}
+				onclick={() => jouer(i)}
+				onpointerenter={() => (carteLue = h.card)}
+				onpointerleave={() => (carteLue = null)}
+				onfocus={() => (carteLue = h.card)}
+				onblur={() => (carteLue = null)}
+				title={h.playable ? `Jouer ${h.card.name}` : `${h.card.name} — pas assez de Volonté`}
+			>
 				<Card card={h.card} interactive={false} thumb />
 				<span class="cout">{h.cost}</span>
 			</button>
@@ -674,6 +702,10 @@
 		opacity: 1;
 		cursor: pointer;
 	}
+	.carte-main:hover {
+		transform: translateY(-0.7rem);
+		opacity: 1;
+	}
 	.carte-main.jouable:hover {
 		transform: translateY(-1.1rem);
 	}
@@ -690,6 +722,17 @@
 		color: #0a0a0d;
 		background: linear-gradient(180deg, #f0d68a, #c9a445);
 		border-radius: 50%;
+	}
+
+	/* la lecture : posée au-dessus de la main, jamais sous le curseur */
+	.lecture {
+		position: fixed;
+		right: 1.6rem;
+		bottom: 10rem;
+		z-index: 40;
+		--card-w: min(19rem, 26vw);
+		pointer-events: none;
+		filter: drop-shadow(0 1.2rem 2.4rem rgba(0, 0, 0, 0.75));
 	}
 
 	.fin {
