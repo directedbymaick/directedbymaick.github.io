@@ -530,33 +530,17 @@
 	.card[data-fullart='true'] .name {
 		text-shadow: none;
 		filter: drop-shadow(0 0.22cqw 0.55cqw rgba(0, 0, 0, 0.9));
-		/* plusieurs bandes spéculaires serrées → métal poli qui accroche la lumière */
-		background: linear-gradient(
-			96deg,
-			var(--m-dark) 0%,
-			var(--m-light) 9%,
-			var(--m-hi) 16%,
-			var(--m-light) 24%,
-			var(--m-dark) 34%,
-			var(--m-light) 44%,
-			var(--m-hi) 50%,
-			var(--m-light) 57%,
-			var(--m-dark) 68%,
-			var(--m-light) 79%,
-			var(--m-hi) 87%,
-			var(--m-light) 100%
-		);
+		/* feuille d'or martelée — communes, rares, épiques, légendaires. Facettes
+		   larges pour la même raison que le cristal : une lettre doit tomber dans une
+		   plage franche plutôt que moyenner le grain. */
+		background: url('/img/gold-texture.webp');
+		background-size: 115cqw auto;
+		background-position: center 45%;
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
 	}
-	/* or — communes, rares, épiques, légendaires */
-	.card[data-fullart='true'] {
-		--m-dark: #9a7526;
-		--m-light: #e8c766;
-		--m-hi: #fff6d2;
-	}
-	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
+	/* prismatiques : cristal (data-tier = rareté d'origine — la vue full art force
 	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
 	/* cristal — prismatiques : pas d'argent (trop sombre) mais du verre taillé.
 	   Facettes courtes et très claires, bleutées puis violacées, chaque arête
