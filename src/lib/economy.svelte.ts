@@ -44,7 +44,8 @@ export const SELL_VALUE: Record<string, number> = {
 
 /** Syllabes libérées par une Prismatique tirée pour la PREMIÈRE fois. */
 export const SYLLABES_PULL = 25;
-/** Prime du doublon : une Prismatique déjà possédée se défait d'elle-même. */
+/** Prime du doublon : une Prismatique déjà possédée résonne plus fort. La carte
+    N'EST PAS consommée — rien n'est jamais vendu dans le dos du joueur. */
 export const SYLLABES_DOUBLON = 50;
 /** Syllabes rendues en défaisant une Prismatique excédentaire, à la main. */
 export const SYLLABES_DEFAIRE = 50;

@@ -137,8 +137,9 @@
 	</p>
 	<p class="chapo source">
 		Les Syllabes tombent des noms restés entiers : <b>+25</b> par Prismatique tirée,
-		<b>+75</b> si vous la possédiez déjà — elle se défait d'elle-même —, <b>+15</b> par SP et
-		<b>+8</b> par Full Art. Jamais cumulé : une Prismatique compte pour une Prismatique.
+		<b>+75</b> si vous la possédiez déjà — le doublon résonne plus fort, mais la carte reste
+		dans votre Registre —, <b>+15</b> par SP et <b>+8</b> par Full Art. Jamais cumulé : une
+		Prismatique compte pour une Prismatique.
 	</p>
 
 	<div class="bourse">

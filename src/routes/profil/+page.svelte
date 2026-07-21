@@ -175,6 +175,37 @@
 	const surplusValue = $derived(
 		sellables.reduce((s, v) => s + surplusOf(v.key) * (SELL_VALUE[v.rarity] ?? 5), 0)
 	);
+	/** Ce que rend UN exemplaire : Syllabes pour une Prismatique, Éclats sinon. */
+	function valeurUnitaire(vraie: string, rarity: string) {
+		return vraie === 'prism'
+			? { syllabes: SYLLABES_DEFAIRE, eclats: 0 }
+			: { syllabes: 0, eclats: SELL_VALUE[rarity] ?? 5 };
+	}
+
+	/**
+	 * Vente à l'unité — la liberté du joueur, sans seuil.
+	 *
+	 * La revente AUTOMATIQUE, elle, ne touche que le surplus au-delà de 3 copies :
+	 * on ne dissout jamais dans son dos une version qu'on ne possède qu'en un
+	 * exemplaire. Ici c'est un geste délibéré, donc tout est vendable — mais la
+	 * dernière copie demande confirmation, elle sort de la collection.
+	 */
+	function vendreUne(key: string) {
+		const v = sellables.find((x) => x.key === key);
+		const n = collection[key] ?? 0;
+		if (!v || n <= 0) return;
+		if (n === 1 && !confirm(`Vendre votre dernier exemplaire de ${v.name} ?`)) return;
+
+		if (n <= 1) delete collection[key];
+		else collection[key] = n - 1;
+		collection = { ...collection };
+		saveCollection($state.snapshot(collection));
+
+		const { syllabes, eclats } = valeurUnitaire(v.vraie, v.rarity);
+		if (syllabes) gagnerSyllabes(syllabes, `${v.name} défait`);
+		else earn(eclats, `Revente : ${v.name}`);
+	}
+
 	/* Défaire une Prismatique ne rend pas des Éclats : un nom entier se défait en
 	   Syllabes, c'est le seul endroit d'où elles viennent avec le tirage. */
 	function sellSurplus(key: string) {
@@ -395,6 +426,21 @@
 					<span class="owncount">×{owned}</span>
 				{:else}
 					<span class="lock">Non possédée</span>
+				{/if}
+				{#if owned > 0}
+					{@const v = valeurUnitaire(e.view.sourceRarity ?? e.view.rarity, e.view.rarity)}
+					<button
+						class="vendre1"
+						title="Vendre un exemplaire"
+						onclick={() => vendreUne(e.key)}
+					>
+						Vendre 1 · +{v.syllabes || v.eclats}
+						{#if v.syllabes}
+							<span class="syl" aria-hidden="true"></span>
+						{:else}
+							<i class="shard" aria-hidden="true"></i>
+						{/if}
+					</button>
 				{/if}
 				{#if surplusOf(e.key) > 0}
 					<button
@@ -1159,6 +1205,38 @@
 		background: linear-gradient(90deg, #d6483c, #e8703f, #f0a63f, #f5d363, #e8b04a, #d6533c);
 		border-radius: 999px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+	}
+	.vendre1 {
+		margin-top: 0.55rem;
+		padding: 0.32rem 0.85rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-family: inherit;
+		font-size: 0.74rem;
+		font-weight: 650;
+		font-variant-numeric: tabular-nums;
+		color: rgba(238, 240, 245, 0.7);
+		background: rgba(140, 170, 220, 0.08);
+		border: 1px solid var(--panel-line);
+		border-radius: 999px;
+		cursor: pointer;
+		transition:
+			color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	.vendre1:hover {
+		color: var(--ink);
+		border-color: rgba(213, 178, 94, 0.5);
+	}
+	/* la Syllabe : un éclat vertical, comme un trait de voix */
+	.syl {
+		width: 0.38rem;
+		height: 0.64rem;
+		border-radius: 40% 40% 45% 45%;
+		background: linear-gradient(180deg, #fff6dc, #a97f2c);
+		box-shadow: 0 0 6px rgba(213, 178, 94, 0.6);
+		flex: none;
 	}
 	.owncount {
 		position: absolute;
