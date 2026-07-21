@@ -21,5 +21,6 @@
 		"accent": "#b3273a",
 		"seed": 540272
 	},
-	"cutoutScale": 0.998
+	"cutoutScale": 0.998,
+	"cutoutY": "-3.7%"
 }
