@@ -76,7 +76,7 @@
 
 	/* plafond d'intensité par preset — 0.5 par défaut (rendu retenu). */
 	const foilIntensity = $derived(
-		({ galerie: 0.85, showcase: 0.62 } as Record<string, number>)[foil.preset] ?? 0.5
+		({ galerie: 0.75, showcase: 0.62 } as Record<string, number>)[foil.preset] ?? 0.5
 	);
 
 	const pointerVars = $derived(
