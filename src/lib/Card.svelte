@@ -523,8 +523,8 @@
 		text-align: center;
 	}
 	/* nom en métal poli à reflet prismatique : or par défaut, argent sur les
-	   Prismatiques. Même principe que le libellé Être (dégradé clippé au texte,
-	   balayage lent) — le reflet irisé est glissé entre les tons du métal. */
+	   Prismatiques. Dégradé fixe clippé au texte — le reflet irisé est glissé
+	   entre les tons du métal, sans animation. */
 	.card[data-fullart='true'] .name {
 		background: linear-gradient(
 			100deg,
@@ -538,12 +538,10 @@
 			var(--m-dark) 82%,
 			var(--m-light) 100%
 		);
-		background-size: 260% 100%;
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
 		filter: drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
-		animation: namesheen 9s linear infinite;
 	}
 	/* or — communes, rares, épiques, légendaires */
 	.card[data-fullart='true'] {
@@ -559,16 +557,6 @@
 		--m-light: #dfe4ea;
 		--m-iris-a: #e3c6d6;
 		--m-iris-b: #bcd8e0;
-	}
-	@keyframes namesheen {
-		to {
-			background-position: 260% 0;
-		}
-	}
-	@media (prefers-reduced-motion: reduce) {
-		.card[data-fullart='true'] .name {
-			animation: none;
-		}
 	}
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;
