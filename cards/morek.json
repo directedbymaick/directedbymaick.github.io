@@ -12,7 +12,7 @@
 	"art": "/art/morek.webp",
 	"cutout": "/art/morek-cutout.webp",
 	"cutoutY": "11%",
-	"cutoutScale": 0.94,
+	"cutoutScale": 0.89,
 	"artPosition": "center 4%",
 	"fullArt": true,
 	"gene": {
