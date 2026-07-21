@@ -150,8 +150,29 @@
 		return taille < DECK_SIZE && exemplaires(c.id) < maxCopiesOf(c);
 	}
 
+	/** Dernier refus d'ajout, affiché brièvement pour dire POURQUOI ça n'a pas marché. */
+	let refus = $state('');
+	let refusTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function signaler(msg: string) {
+		refus = msg;
+		if (refusTimer) clearTimeout(refusTimer);
+		refusTimer = setTimeout(() => (refus = ''), 2600);
+	}
+
 	function ajouter(c: CardData) {
-		if (!deck || !peutAjouter(c)) return;
+		if (!deck) return;
+		if (taille >= DECK_SIZE) {
+			signaler(`Deck complet : ${DECK_SIZE} cartes maximum.`);
+			return;
+		}
+		const max = maxCopiesOf(c);
+		if (exemplaires(c.id) >= max) {
+			signaler(
+				`${max} copie${max > 1 ? 's' : ''} maximum pour une ${charter.rarities[c.rarity].name.toLowerCase()}.`
+			);
+			return;
+		}
 		deck.cards[c.id] = exemplaires(c.id) + 1;
 		persister();
 	}
@@ -312,6 +333,24 @@
 				</span>
 			{/each}
 		</div>
+
+		<section class="contraintes">
+			<h3>Règles de construction</h3>
+			<ul>
+				<li><b>{DECK_SIZE}</b> cartes exactement.</li>
+				{#each RARITIES as r (r)}
+					<li>
+						<span class="cr-nom">{charter.rarities[r].name}</span>
+						<b>{charter.rarities[r].maxCopies}</b>
+						copie{charter.rarities[r].maxCopies > 1 ? 's' : ''} max par carte
+					</li>
+				{/each}
+			</ul>
+		</section>
+
+		{#if refus}
+			<p class="refus" role="status">{refus}</p>
+		{/if}
 
 		<footer class="bilan" class:ok={complet && !invalides.length}>
 			<span class="compte">{taille} / {DECK_SIZE}</span>
@@ -654,6 +693,49 @@
 		font-style: normal;
 	}
 
+	.contraintes {
+		font-size: 0.76rem;
+		border-top: 1px solid var(--panel-line);
+		padding-top: 0.6rem;
+	}
+	.contraintes h3 {
+		margin: 0;
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: rgba(238, 240, 245, 0.4);
+	}
+	.contraintes ul {
+		list-style: none;
+		margin: 0.5rem 0 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.22rem;
+		color: rgba(238, 240, 245, 0.5);
+	}
+	.contraintes li {
+		display: flex;
+		align-items: baseline;
+		gap: 0.35rem;
+	}
+	.contraintes .cr-nom {
+		flex: 1;
+	}
+	.contraintes b {
+		color: var(--gold);
+		font-variant-numeric: tabular-nums;
+	}
+	.refus {
+		margin: 0;
+		padding: 0.4rem 0.6rem;
+		font-size: 0.76rem;
+		color: #f0cfcf;
+		background: rgba(200, 80, 80, 0.14);
+		border: 1px solid rgba(200, 80, 80, 0.35);
+		border-radius: 8px;
+	}
 	.bilan {
 		display: flex;
 		align-items: baseline;
