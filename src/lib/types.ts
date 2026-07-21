@@ -75,6 +75,8 @@ export interface CardData {
 	    calage diffère du mode normal). Défauts : x 0%, y 3.05%. Optionnels. */
 	faCutoutX?: string;
 	faCutoutY?: string;
+	/** Échelle du détourage en mode full art (défaut 1.068). Optionnel, par carte. */
+	faCutoutScale?: number;
 	/** Échelle du détourage (ex. 0.98) pour matcher la taille du fond. Défaut 1. */
 	cutoutScale?: number;
 	/** Obsolète : toutes les cartes sont rendues en full art (le champ est ignoré par Card.svelte). */

@@ -129,7 +129,7 @@
 		data-rarity={holoRarity}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -626,11 +626,13 @@
 	   les offsets par carte du mode normal. Et pas de voile : le dégradé du
 	   scrim suffit, sinon écran noir en bas. */
 	.card[data-fullart='true'] .body > .cutout {
-		/* léger upscale (106.8%) centré, via width/height pour rester net */
-		top: -3.4%;
-		left: -3.4%;
-		width: 106.8%;
-		height: 106.8%;
+		/* léger upscale (106.8% par défaut) centré, via width/height pour rester net.
+		   Surchargeable par carte : --fa-cutout-scale. */
+		--fa-scale: var(--fa-cutout-scale, 1.068);
+		top: calc(50% * (1 - var(--fa-scale)));
+		left: calc(50% * (1 - var(--fa-scale)));
+		width: calc(100% * var(--fa-scale));
+		height: calc(100% * var(--fa-scale));
 		object-position: var(--art-pos, center 12%);
 		/* calage : le détourage était un poil trop haut par rapport au fond */
 		transform: translate(var(--fa-cutout-x, 0%), var(--fa-cutout-y, 3.05%));

@@ -26,5 +26,6 @@
 		"seed": 866327
 	},
 	"cutoutX": "1.5%",
-	"faCutoutY": "23.05%"
+	"faCutoutY": "8.05%",
+	"faCutoutScale": 1.028
 }
