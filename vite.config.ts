@@ -11,10 +11,17 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
-			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-			adapter: adapter()
+			// Site 100 % statique (GitHub Pages).
+			// NB : c'est CETTE config qui fait foi — les options kit passées via Vite
+			// rendent svelte.config.js inopérant (d'où l'avertissement au build).
+			adapter: adapter({
+				// les URLs non prérendues retombent sur le routeur client
+				fallback: '404.html',
+				// `strict` fait échouer le build dès qu'une route n'est pas prérendue.
+				// C'est le cas de /lab, volontairement exclu du site publié
+				// (cf. src/routes/lab/+layout.ts) : on assume son absence.
+				strict: false
+			})
 		})
 	]
 });

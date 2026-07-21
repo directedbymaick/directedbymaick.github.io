@@ -5,6 +5,7 @@
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
+	import { dev } from '$app/environment';
 	import { session, initSession, signOut } from '$lib/account.svelte';
 	import { pushCloudNow } from '$lib/store';
 	import AuthPanel from '$lib/AuthPanel.svelte';
@@ -48,6 +49,9 @@
 		return () => cleanup();
 	});
 
+	/* Le Lab est un outil d'auteur : présent en local, absent du site publié.
+	   `dev` est résolu au build, donc le lien disparaît ET la page n'est plus
+	   atteignable par le crawler de prerender (cf. src/routes/lab/+layout.ts). */
 	const links = [
 		{ href: '/', label: 'Registre' },
 		{ href: '/packs', label: 'Réquisition' },
@@ -56,7 +60,7 @@
 		{ href: '/decks', label: 'Decks' },
 		{ href: '/regles', label: 'Règles' },
 		{ href: '/tuto', label: 'Initiation' },
-		{ href: '/lab', label: 'Lab' }
+		...(dev ? [{ href: '/lab', label: 'Lab' }] : [])
 	];
 
 	/* ---- le compte : icône, menu, modale de connexion ---- */
