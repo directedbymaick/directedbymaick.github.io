@@ -126,6 +126,7 @@
 		data-material={rarityDef.material}
 		data-foil={foil.preset}
 		data-rarity={holoRarity}
+		data-tier={card.sourceRarity ?? card.rarity}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
 		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
@@ -520,6 +521,54 @@
 	}
 	.card[data-fullart='true'] .name {
 		text-align: center;
+	}
+	/* nom en métal poli à reflet prismatique : or par défaut, argent sur les
+	   Prismatiques. Même principe que le libellé Être (dégradé clippé au texte,
+	   balayage lent) — le reflet irisé est glissé entre les tons du métal. */
+	.card[data-fullart='true'] .name {
+		background: linear-gradient(
+			100deg,
+			var(--m-dark) 0%,
+			var(--m-light) 18%,
+			#f6efe2 30%,
+			var(--m-iris-a) 38%,
+			var(--m-iris-b) 46%,
+			#fbf6ec 54%,
+			var(--m-light) 66%,
+			var(--m-dark) 82%,
+			var(--m-light) 100%
+		);
+		background-size: 260% 100%;
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		filter: drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
+		animation: namesheen 9s linear infinite;
+	}
+	/* or — communes, rares, épiques, légendaires */
+	.card[data-fullart='true'] {
+		--m-dark: #8a6a2c;
+		--m-light: #e9cd84;
+		--m-iris-a: #cfe0b4;
+		--m-iris-b: #b9cfe6;
+	}
+	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
+	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
+	.card[data-fullart='true'][data-tier='prism'] {
+		--m-dark: #6f7681;
+		--m-light: #dfe4ea;
+		--m-iris-a: #e3c6d6;
+		--m-iris-b: #bcd8e0;
+	}
+	@keyframes namesheen {
+		to {
+			background-position: 260% 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.card[data-fullart='true'] .name {
+			animation: none;
+		}
 	}
 	.card[data-fullart='true'] .cellline {
 		justify-content: center;

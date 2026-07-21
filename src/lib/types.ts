@@ -81,6 +81,10 @@ export interface CardData {
 	cutoutScale?: number;
 	/** Obsolète : toutes les cartes sont rendues en full art (le champ est ignoré par Card.svelte). */
 	fullArt?: boolean;
+	/** Rareté d'origine, conservée par fullArtView() : la vue full art force
+	    `rarity: 'prism'` (cadre prismatique) mais le nom reste doré tant que la
+	    carte n'est pas VRAIMENT prismatique. Posé à l'affichage, jamais en JSON. */
+	sourceRarity?: Rarity;
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
 	alts?: string[];
 	/** Index de version alternative (1+) — posé par altView à l'affichage, jamais dans les JSON. */

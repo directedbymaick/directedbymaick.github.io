@@ -61,6 +61,7 @@ export function eligibleFullArt(c: CardData): boolean {
 export function fullArtView(c: CardData): CardData {
 	const v = structuredClone(c);
 	v.id = `${c.id}--fullart`;
+	v.sourceRarity = c.rarity;
 	v.rarity = 'prism';
 	v.gene = { ...v.gene, foilPreset: c.cutout ? 'showcase' : 'radiant' };
 	return v;
