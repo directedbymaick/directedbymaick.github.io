@@ -631,7 +631,8 @@
 		width: 100%;
 		height: 100%;
 		object-position: var(--art-pos, center 12%);
-		transform: none;
+		/* calage : le détourage était un poil trop haut par rapport au fond */
+		transform: translateY(1.2%);
 		-webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 88%);
 		mask-image: linear-gradient(to bottom, #000 64%, transparent 88%);
 	}
