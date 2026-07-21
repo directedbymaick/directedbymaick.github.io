@@ -1104,6 +1104,11 @@
 		gap: 2rem 1.4rem;
 	}
 	.colcell {
+		/* la grille porte ~200 cartes : hors écran, le navigateur saute leur rendu
+		   entier. contain-intrinsic-size réserve leur place pour que la barre de
+		   défilement reste stable. */
+		content-visibility: auto;
+		contain-intrinsic-size: auto 230px auto 340px;
 		position: relative;
 		display: flex;
 		flex-direction: column;

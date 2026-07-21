@@ -34,18 +34,35 @@
 	const pointer = new Spring({ x: 0.5, y: 0.5 }, { stiffness: 0.16, damping: 0.78 });
 	let hover = $state(false);
 
+	/* La géométrie de la carte est mesurée UNE fois par survol. getBoundingClientRect()
+	   force un calcul de layout synchrone ; l'appeler à chaque pointermove alors que la
+	   page porte deux cents cartes fait ramer le survol. On la réinvalide au scroll et
+	   au redimensionnement, les deux seuls cas où elle bouge pendant un survol. */
+	let rect: DOMRect | null = null;
+
+	function invalider() {
+		rect = null;
+	}
+
 	function onMove(e: PointerEvent) {
 		if (!interactive) return;
-		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+		rect ??= (e.currentTarget as HTMLElement).getBoundingClientRect();
 		pointer.target = {
 			x: Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)),
 			y: Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height))
 		};
-		hover = true;
+		if (!hover) {
+			hover = true;
+			addEventListener('scroll', invalider, { passive: true });
+			addEventListener('resize', invalider, { passive: true });
+		}
 	}
 
 	function onLeave() {
 		hover = false;
+		rect = null;
+		removeEventListener('scroll', invalider);
+		removeEventListener('resize', invalider);
 		pointer.target = { x: 0.5, y: 0.5 };
 	}
 
@@ -241,11 +258,17 @@
 		--sys: #c9a445;
 		transform: translate3d(0, 0, 0.01px) rotateX(var(--rx)) rotateY(var(--ry));
 		transform-style: preserve-3d;
-		will-change: transform;
 		touch-action: none;
 		user-select: none;
 		-webkit-user-select: none;
 		font-family: 'Inter Variable', Inter, 'Segoe UI', system-ui, sans-serif;
+	}
+
+	/* will-change promeut la carte sur sa propre couche GPU. Sur une grille de
+	   deux cents cartes, deux cents couches permanentes saturent le compositeur :
+	   on ne promeut que la carte réellement survolée. */
+	.card.hover {
+		will-change: transform;
 	}
 
 	/* ============ LE CADRE : la rareté est un matériau ============ */
