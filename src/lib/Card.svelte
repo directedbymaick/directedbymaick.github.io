@@ -522,9 +522,14 @@
 	.card[data-fullart='true'] .name {
 		text-align: center;
 	}
-	/* nom en métal poli : or par défaut, argent sur les Prismatiques. Ni contour ni
-	   ombre — juste le métal. */
+	/* nom en métal poli : or par défaut, cristal sur les Prismatiques.
+	   IMPORTANT : le text-shadow de .name doit sauter. Un fond clippé au texte se
+	   peint SOUS les ombres, donc l'ombre noire floue se composait PAR-DESSUS le
+	   métal et le tirait au gris — même un remplissage blanc pur ressortait terne.
+	   Le détachement passe par un drop-shadow, qui lui reste derrière. */
 	.card[data-fullart='true'] .name {
+		text-shadow: none;
+		filter: drop-shadow(0 0.22cqw 0.55cqw rgba(0, 0, 0, 0.9));
 		/* plusieurs bandes spéculaires serrées → métal poli qui accroche la lumière */
 		background: linear-gradient(
 			96deg,
@@ -558,9 +563,12 @@
 	   revenant au blanc pur : c'est le passage brusque clair/froid qui fait lire
 	   « taillé » plutôt que « métal ». */
 	.card[data-fullart='true'][data-tier='prism'] .name {
+		/* facettes volontairement GRANDES : à 30px de facette, chaque lettre moyennait
+		   plusieurs triangles et retombait sur un gris. À cette échelle une lettre
+		   tient dans une facette et garde son blanc ou sa couleur franche. */
 		background: url('/img/crystal-texture.webp');
-		background-size: 46cqw auto;
-		background-position: center 40%;
+		background-size: 115cqw auto;
+		background-position: center 42%;
 		-webkit-background-clip: text;
 		background-clip: text;
 	}
