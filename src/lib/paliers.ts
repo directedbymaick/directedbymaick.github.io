@@ -50,6 +50,51 @@ function chancesParRarete(): Record<string, number> {
 	return p;
 }
 
+/**
+ * Taux par booster d'UNE version précise — la même mesure que celle des paliers,
+ * exposée carte par carte pour pouvoir en tirer un prix.
+ */
+export function tauxVersion(card: CardData, rateVersion: number): number {
+	const n = effectifs();
+	const p = chancesParRarete();
+	return ((p[card.rarity] ?? 0) / (n[card.rarity] ?? 1)) * rateVersion;
+}
+
+/** Prix plancher : celui du nom le plus facile à tirer du set. */
+export const PRIX_PLANCHER = 20;
+/* Compression : à cru, l'écart de rareté entre le nom le plus banal et le plus
+   rare dépasse 1 à 2 500, ce qui donnerait des prix absurdes. L'exposant ramène
+   l'écart à un facteur ~100 : le sommet reste hors de portée sans être une
+   plaisanterie. */
+const COMPRESSION = 0.6;
+
+/* La référence n'est pas posée à la main : c'est le taux du nom RÉELLEMENT le
+   plus courant du set. Ainsi le plancher reste le plancher quoi qu'on ajoute au
+   set, et aucun prix ne peut passer sous PRIX_PLANCHER par accident. */
+let refCache = 0;
+function tauxReference(): number {
+	if (refCache) return refCache;
+	for (const c of cards)
+		for (const v of versionsOf(c, FULLART_RATE)) refCache = Math.max(refCache, tauxVersion(c, v.rate));
+	return refCache;
+}
+
+/**
+ * Le prix d'un nom découle de sa rareté RÉELLE — celle du palier, qui tient
+ * compte de la rareté de la carte, de sa forme et de sa finition. Une Commune
+ * Raw et une Commune Full Art SP ne peuvent pas valoir pareil : la seconde sort
+ * mille fois moins souvent.
+ *
+ * Rien n'est saisi à la main : valider une variante au Lab déplace son taux, et
+ * son prix suit.
+ */
+export function prixNom(taux: number): number {
+	if (taux <= 0) return PRIX_PLANCHER;
+	const brut = PRIX_PLANCHER * Math.pow(tauxReference() / taux, COMPRESSION);
+	const arrondi = brut < 100 ? 5 : brut < 500 ? 10 : 50;
+	return Math.max(PRIX_PLANCHER, Math.round(brut / arrondi) * arrondi);
+}
+
 export function paliers(): Palier[] {
 	const n = effectifs();
 	const pRarete = chancesParRarete();

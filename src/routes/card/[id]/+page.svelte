@@ -5,13 +5,9 @@
 	import { altView } from '$lib/cards';
 	import { onMount } from 'svelte';
 	import { FULLART_RATE, loadCollection, saveCollection } from '$lib/gacha';
-	import {
-		eco,
-		initEconomy,
-		depenserSyllabes,
-		NOM_PRIX
-	} from '$lib/economy.svelte';
+	import { eco, initEconomy, depenserSyllabes } from '$lib/economy.svelte';
 	import { versionsOf, formatRate } from '$lib/variants';
+	import { tauxVersion, prixNom } from '$lib/paliers';
 	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
@@ -60,18 +56,21 @@
 
 	/* Reconstituer un nom — l'unique usage des Syllabes.
 	   « Certains d'entre nous en ont rassemblé assez pour reconstituer des noms
-	   entiers. » (KORUM.md, Les Eshar) Le prix suit la VRAIE rareté : la vue Full
-	   Art force 'prism', une Commune Full Art coûterait sinon le prix fort. */
+	   entiers. » (KORUM.md, Les Eshar)
+
+	   Le prix découle de la rareté RÉELLE de la version — son taux de sortie par
+	   booster — et non de la rareté de la carte : le Raw et sa Full Art SP ne
+	   valent pas pareil. */
 	const versionCourante = $derived(versions.find((v) => v.key === artSel) ?? null);
-	const prixNom = $derived(
-		versionCourante ? (NOM_PRIX[versionCourante.view.sourceRarity ?? card.rarity] ?? 0) : 0
+	const prix = $derived(
+		versionCourante ? prixNom(tauxVersion(card, versionCourante.rate)) : 0
 	);
 	let messageForge = $state('');
 
 	function reconstituer() {
 		if (!versionCourante || shownPossedee > 0) return;
-		if (!depenserSyllabes(prixNom)) {
-			messageForge = `Il vous manque ${prixNom - eco.syllabes} Syllabe${prixNom - eco.syllabes > 1 ? 's' : ''}.`;
+		if (!depenserSyllabes(prix)) {
+			messageForge = `Il vous manque ${prix - eco.syllabes} Syllabe${prix - eco.syllabes > 1 ? 's' : ''}.`;
 			setTimeout(() => (messageForge = ''), 3000);
 			return;
 		}
@@ -142,8 +141,8 @@
 
 		{#if versionCourante && shownPossedee === 0}
 			<div class="forge">
-				<button class="forge-btn" disabled={eco.syllabes < prixNom} onclick={reconstituer}>
-					Reconstituer ce nom · {prixNom}
+				<button class="forge-btn" disabled={eco.syllabes < prix} onclick={reconstituer}>
+					Reconstituer ce nom · {prix}
 					<span class="syl" aria-hidden="true"></span>
 				</button>
 				<p class="forge-solde">

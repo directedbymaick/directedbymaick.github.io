@@ -43,14 +43,9 @@ export const SYLLABES_PULL = 25;
 /** Syllabes rendues en défaisant une Prismatique excédentaire. */
 export const SYLLABES_DEFAIRE = 50;
 
-/** Coût, en Syllabes, pour reconstituer un nom — par rareté. */
-export const NOM_PRIX: Record<string, number> = {
-	common: 20,
-	rare: 40,
-	epic: 80,
-	legendary: 160,
-	prism: 320
-};
+/* Le prix d'un nom ne vit PAS ici : il découle de la rareté réelle du palier
+   (rareté × forme × finition), calculée dans paliers.ts — `prixNom(taux)`. Une
+   Commune Raw et une Commune Full Art SP ne peuvent pas valoir pareil. */
 
 export type TrackEvent =
 	| 'win'

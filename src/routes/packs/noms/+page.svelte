@@ -6,7 +6,8 @@
 	import { cards } from '$lib/cards';
 	import { FULLART_RATE, loadCollection, saveCollection } from '$lib/gacha';
 	import { versionsOf } from '$lib/variants';
-	import { eco, initEconomy, depenserSyllabes, NOM_PRIX } from '$lib/economy.svelte';
+	import { eco, initEconomy, depenserSyllabes } from '$lib/economy.svelte';
+	import { tauxVersion, prixNom, frequence } from '$lib/paliers';
 	import type { CardData, FactionId, Rarity } from '$lib/types';
 
 	/**
@@ -16,9 +17,12 @@
 	 *     rassemblé assez pour reconstituer des noms entiers. »  (KORUM.md)
 	 *
 	 * Chaque VERSION est un nom distinct : le Raw et sa finition ne sont pas le
-	 * même exemplaire, et le tirage les distingue déjà. Le prix suit la vraie
-	 * rareté — la vue Full Art force `rarity: 'prism'`, une Commune Full Art
-	 * coûterait sinon le prix fort.
+	 * même exemplaire, et le tirage les distingue déjà.
+	 *
+	 * Le prix découle de la rareté RÉELLE de la version — son taux de sortie par
+	 * booster, qui tient compte de la rareté, de la forme et de la finition. Une
+	 * Commune Raw sort 2,5 fois par booster, une Commune Full Art SP une fois sur
+	 * 480 : elles ne peuvent pas valoir pareil.
 	 */
 	interface Nom {
 		key: string;
@@ -28,6 +32,7 @@
 		fullArt: boolean;
 		rarity: Rarity;
 		prix: number;
+		taux: number;
 	}
 
 	const FACTIONS = Object.keys(charter.factions) as FactionId[];
@@ -36,6 +41,7 @@
 	const tous: Nom[] = cards.flatMap((c) =>
 		versionsOf(c, FULLART_RATE).map((v) => {
 			const rarity = (v.view.sourceRarity ?? c.rarity) as Rarity;
+			const taux = tauxVersion(c, v.rate);
 			return {
 				key: v.key,
 				base: c,
@@ -43,7 +49,8 @@
 				view: v.view,
 				fullArt: v.fullArt,
 				rarity,
-				prix: NOM_PRIX[rarity] ?? 0
+				taux,
+				prix: prixNom(taux)
 			};
 		})
 	);
@@ -153,7 +160,7 @@
 	</button>
 	{#each RARETES as r (r)}
 		<button class="jeton texte" class:on={rarete === r} onclick={() => (rarete = r)}>
-			{charter.rarities[r].name} <small>{NOM_PRIX[r]}</small>
+			{charter.rarities[r].name}
 		</button>
 	{/each}
 
@@ -181,6 +188,7 @@
 			</a>
 			<p class="nom">{n.base.name}</p>
 			<p class="finition">{n.label}</p>
+			<p class="frequence">{frequence(n.taux)}</p>
 			{#if possede}
 				<span class="acquis">Déjà dit</span>
 			{:else}
@@ -310,11 +318,6 @@
 		background: #f2f0ea;
 		border-color: transparent;
 	}
-	.jeton small {
-		font-size: 0.68rem;
-		font-variant-numeric: tabular-nums;
-		opacity: 0.6;
-	}
 	.sep {
 		width: 1px;
 		height: 1.4rem;
@@ -382,6 +385,13 @@
 		margin: 0;
 		font-size: 0.72rem;
 		color: rgba(242, 240, 234, 0.42);
+	}
+	/* la fréquence justifie le prix : on voit ce qu'on paie */
+	.frequence {
+		margin: 0 0 0.15rem;
+		font-size: 0.66rem;
+		font-variant-numeric: tabular-nums;
+		color: rgba(242, 240, 234, 0.28);
 	}
 	.acheter {
 		display: inline-flex;
