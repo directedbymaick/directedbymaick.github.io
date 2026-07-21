@@ -549,8 +549,7 @@
 		   dupliqué. drop-shadow travaille sur l'alpha du glyphe DÉJÀ peint, donc le
 		   liseré épouse exactement la lettre et reste dessous — un ::before absolu se
 		   décalait et noyait l'or sous un aplat pastel. */
-		filter: drop-shadow(-0.4px -0.4px 0 var(--i-1)) drop-shadow(0.4px -0.4px 0 var(--i-2))
-			drop-shadow(0.4px 0.4px 0 var(--i-3)) drop-shadow(-0.4px 0.4px 0 var(--i-4))
+		filter: drop-shadow(-0.3px -0.3px 0 var(--i-1)) drop-shadow(0.3px 0.3px 0 var(--i-3))
 			drop-shadow(0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.85));
 	}
 	/* or — communes, rares, épiques, légendaires */
@@ -558,10 +557,8 @@
 		--m-dark: #9a7526;
 		--m-light: #e8c766;
 		--m-hi: #fff6d2;
-		--i-1: rgba(226, 138, 162, 0.55);
-		--i-2: rgba(138, 226, 186, 0.55);
-		--i-3: rgba(138, 186, 226, 0.55);
-		--i-4: rgba(186, 138, 226, 0.55);
+		--i-1: rgba(232, 120, 158, 0.75);
+		--i-3: rgba(110, 190, 235, 0.75);
 	}
 	/* argent — prismatiques (data-tier = rareté d'origine : la vue full art force
 	   data-rarity, elle ne peut pas servir à distinguer les tiers) */
