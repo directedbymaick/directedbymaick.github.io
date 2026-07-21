@@ -1108,16 +1108,12 @@
 		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 		gap: 2rem 1.4rem;
 	}
+	/* Pas de content-visibility ici : il implique contain: paint, qui rogne tout
+	   ce qui déborde de la cellule — le badge de version comme le compteur ×n, tous
+	   deux volontairement posés à cheval sur le bord. Le gain n'avait de toute façon
+	   jamais été mesuré sur cette page ; ce qui rend la galerie fluide, c'est le
+	   will-change conditionnel, la géométrie mise en cache et les vignettes 640 px. */
 	.colcell {
-		/* la grille porte ~200 cartes : hors écran, le navigateur saute leur rendu
-		   entier. contain-intrinsic-size réserve leur place pour que la barre de
-		   défilement reste stable.
-		   ATTENTION : content-visibility implique contain: paint, qui ROGNE tout ce
-		   qui déborde de la cellule. Le badge de version doit donc tenir DANS la
-		   boîte — d'où la réserve en haut, et son top: 0. */
-		content-visibility: auto;
-		contain-intrinsic-size: auto 230px auto 348px;
-		padding-top: 0.5rem;
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -1134,7 +1130,7 @@
 	}
 	.fabadge {
 		position: absolute;
-		top: 0;
+		top: -0.5rem;
 		left: 0.4rem;
 		max-width: calc(100% - 0.8rem);
 		z-index: 5;
