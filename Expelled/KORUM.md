@@ -87,13 +87,14 @@ les Neuf, jour et nuit, afin que le monde entende encore son propre nom. Koren a
 d'un amour entier. C'était sa grandeur, et sa faille. Il aimait parfois les mots plus que ce
 qu'ils faisaient vivre.
 
-**Doran** reçut la syllabe de l'Ordre. Il gardait les lignes, les places et les limites. Il était
-juste, patient, sans cruauté. Il avait pourtant une peur : que le monde se défasse par négligence.
+**Doran** reçut la syllabe de l'Ordre. Elle gardait les lignes, les places et les limites. Elle
+était juste, patiente, sans cruauté. Elle avait pourtant une peur : que le monde se défasse par
+négligence.
 Chez les êtres d'ordre, la peur se déguise volontiers en devoir.
 
-**Thalen** portait la syllabe du Conflit. On en fit une sentinelle. Il se tenait aux lisières de
-Vasen et écoutait ce que les choeurs couvraient. C'est lui qui entendit le dixième mot le premier.
-Il ne s'en remit jamais.
+**Thalen** portait la syllabe du Conflit. On en fit une sentinelle. Elle se tenait aux lisières
+de Vasen et écoutait ce que les choeurs couvraient. C'est elle qui entendit le dixième mot le
+premier. Elle ne s'en remit jamais.
 
 **Velna** était la voix la plus vive des choeurs de Koren. La Puissance brûlait en elle. Elle
 demandait souvent : pourquoi répéter, si nous avons la force de dire du neuf ? Koren répondait :
@@ -120,15 +121,15 @@ Thalen entendit un jour, sous les choeurs, un mot que les choeurs ne chantaient 
 
 Hors.
 
-Il l'entendit comme une fêlure dans une cloche : non pas un autre son, mais le même son devenu
-faux. Il fit son office et rapporta la chose à Doran.
+Elle l'entendit comme une fêlure dans une cloche : non pas un autre son, mais le même son devenu
+faux. Elle fit son office et rapporta la chose à Doran.
 
 Le mot était impossible. La Création contient tout ce qui est. Un mot qui signifie *hors* affirme
 qu'il existe un dehors. Donc une limite. Donc une fin.
 
 Doran comprit cela d'un seul coup. Sa peur cessa d'être une prudence. Elle devint une fondation.
 
-Il ordonna le silence.
+Elle ordonna le silence.
 
 Mais un ordre de silence s'entend. Rasen l'entendit. Et Rasen fit ce qu'il faisait toujours :
 devant les Vasar assemblés, il posa la question.
@@ -194,7 +195,7 @@ Dans le silence de KOR, Doran parla.
 Tant que l'Origine parlait, nul n'aurait osé juger à sa place. Mais le silence est une place vide,
 et la peur de Doran s'y assit.
 
-Il convoqua le **Vasis**, ordre-tribunal fondé aux premiers jours, lorsqu'il n'existait encore ni
+Elle convoqua le **Vasis**, ordre-tribunal fondé aux premiers jours, lorsqu'il n'existait encore ni
 faute ni fautif. On avait ri alors d'un juge sans accusés. Nul ne riait plus.
 
 Le premier jugé fut Rasen.
@@ -208,7 +209,7 @@ Rasen ne se défendit pas. Il posa seulement une question.
 
 Doran ne répondit pas.
 
-Il prononça la sentence. Dans la Langue Première, une sentence ne reste pas abstraite. Elle prend
+Elle prononça la sentence. Dans la Langue Première, une sentence ne reste pas abstraite. Elle prend
 corps. Celle-ci devint une chaîne d'or, chaque maillon portant un mot du verdict.
 
 On la posa sur les épaules de Rasen. Le poids des mots l'arracha à Vasen. Son halo se brisa dans
@@ -356,11 +357,11 @@ En haut, Koren dirige les choeurs. Ils chantent plus fort que jamais. Il est de 
 qu'un doute se noie sous le volume. La nuit, il mesure l'élan des mots déjà dits. Ce qu'il y lit,
 il ne l'a confié à personne. Mais il a doublé les choeurs.
 
-Doran juge encore. Ses sentences se forgent plus vite et pèsent plus lourd. On dit qu'il garde la
-première chaîne, celle de Rasen, revenue d'Exen par une route que nul ne connaît. On dit qu'il la
-regarde longtemps.
+Doran juge encore. Ses sentences se forgent plus vite et pèsent plus lourd. On dit qu'elle garde
+la première chaîne, celle de Rasen, revenue d'Exen par une route que nul ne connaît. On dit qu'elle
+la regarde longtemps.
 
-Peut-être y cherche-t-il encore la question :
+Peut-être y cherche-t-elle encore la question :
 
 > Et dans celui qui juge, le mot n'est pas ?
 
