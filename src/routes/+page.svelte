@@ -446,6 +446,27 @@
 		padding-block: var(--spacing-120);
 		background: var(--surface-deep);
 		border-block: 1px solid var(--panel-line);
+		/* Le bloc s'INVERSE : sur une page de papier c'est le seul endroit sombre,
+		   donc l'encre y redevient claire. Sans ce basculement, le texte héritait
+		   du noir de la page et disparaissait sur le noir du bloc. */
+		--ink: #faf8f2;
+		--ink-dim: rgba(250, 248, 242, 0.6);
+		--panel-line: rgba(250, 248, 242, 0.16);
+		color: #faf8f2;
+	}
+	/* Et les actions y passent en contour clair, comme le veut la référence.
+	   Un sélecteur de plus que celui du layout (.app.papier .ed-ghost) : à
+	   spécificité égale, l'ordre des feuilles décidait, et il ne se contrôle pas. */
+	.rupture .rupture-actions :global(.ed-ghost) {
+		color: #faf8f2;
+		border-color: #faf8f2;
+	}
+	.rupture .rupture-actions :global(.ed-ghost:hover) {
+		color: var(--gold);
+		border-color: var(--gold);
+	}
+	.rupture .rupture-inner :global(.ed-tag) {
+		color: rgba(250, 248, 242, 0.55);
 	}
 	.rupture-inner {
 		max-width: var(--page-max);
