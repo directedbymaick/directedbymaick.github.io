@@ -19,5 +19,6 @@
 	},
 	"attack": 1,
 	"health": 3,
-	"flavor": "Il te ressemble un peu trop."
+	"flavor": "Il te ressemble un peu trop.",
+	"cutout": "/art/eshin-cutout.webp"
 }
