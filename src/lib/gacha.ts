@@ -103,8 +103,13 @@ function openGodPack(): Pull[] {
 		let guard = 0;
 		while (seen.has(card.id) && guard++ < 40) card = src[Math.floor(Math.random() * src.length)];
 		seen.add(card.id);
+		/* `find` renvoyait la PREMIÈRE finition de la liste, donc toujours la même :
+		   les 18 cartes du pool sortaient en Full Art Cosmique, et le pack le plus
+		   rare du jeu ne pouvait produire ni SP, ni Galerie, ni Cristallin. On tire
+		   maintenant parmi les finitions Full Art validées, au prorata de leurs
+		   taux — le Raw reste exclu, un god pack ne rend pas de cartes nues. */
 		const versions = versionsOf(card, 1).filter((v) => v.fullArt);
-		const v = versions.find((x) => x.foil) ?? versions[0];
+		const v = tirerParmi(versions.filter((x) => x.foil)) ?? versions[0];
 		pulls.push({
 			card: { ...v.view, id: v.key },
 			baseId: card.id,
@@ -151,17 +156,22 @@ export function savePity(p: Pity): void {
 	scheduleCloudSync();
 }
 
-/** La version Full Art d'une carte, tirée parmi ses finitions Full Art validées. */
-function versionFullArt(card: CardData) {
-	const fa = versionsOf(card, 1).filter((v) => v.fullArt);
-	if (!fa.length) return null;
-	const total = fa.reduce((s, v) => s + v.rate, 0);
+/** Tire une version au hasard dans une liste, au prorata des taux. */
+function tirerParmi<T extends { rate: number }>(liste: T[]): T | null {
+	if (!liste.length) return null;
+	const total = liste.reduce((s, v) => s + v.rate, 0);
+	if (total <= 0) return liste[Math.floor(Math.random() * liste.length)];
 	let r = Math.random() * total;
-	for (const v of fa) {
+	for (const v of liste) {
 		if (r < v.rate) return v;
 		r -= v.rate;
 	}
-	return fa[0];
+	return liste[liste.length - 1];
+}
+
+/** La version Full Art d'une carte, tirée parmi ses finitions Full Art validées. */
+function versionFullArt(card: CardData) {
+	return tirerParmi(versionsOf(card, 1).filter((v) => v.fullArt));
 }
 
 function versEnPull(v: ReturnType<typeof rollVersion>, baseId: string): Pull {
