@@ -768,33 +768,163 @@
   filter: brightness( calc( ( var( --pointer-from-center ) * 0.3 ) + 0.2 ) ) contrast(2) saturate(0.75);
 }
 
-/* ==========================================================================
-   ÉCART EXPELLED — surcharge assumée d'une recette simeydotme
-   Tout ce qui précède est verbatim. Ce bloc ne l'est pas : il est isolé ici
-   pour que la frontière reste nette (cf. CREDITS.md / holo/LICENSE.txt).
+/* ===== V FULL ART / RARE ULTRA (v-full-art.css) — VERBATIM simeydotme =====
+   Seule adaptation Expelled : ses sélecteurs qualifient la carte par
+   [data-supertype="pokémon"] / [data-subtypes*="supporter"] / trainer-gallery,
+   attributs que notre moteur n'expose pas. Ils sont retirés, la recette cible
+   donc simplement [data-rarity="rare ultra"]. Déclarations inchangées.
+   Texture /img/illusion.png © simeydotme, déjà dans static/img/. */
+/*
 
-   Radiant. Sur les cartes non masquées — les nôtres — simey compose le :after
-   en `background-blend-mode: difference`. C'est ce mode qui détache les croix
-   du motif trainerbg : il faut le GARDER. Mais il inverse aussi la teinte, donc
-   les couleurs écrites ici ne sont pas celles qu'on voit à l'écran.
-   D'où le décalage volontaire de 180° : chaque teinte source est la
-   complémentaire de la teinte voulue, pour ressortir bleu → violet APRÈS
-   inversion. (Écrire du bleu ici donnerait du rouge à l'écran — c'était
-   exactement le bug.) Lightness et structure inchangées.
-       source  12 →  192 cyan        source  52 →  232 bleu
-       source  25 →  205 bleu clair  source  68 →  248 indigo
-       source  42 →  222 bleu        source  88 →  268 violet
-   ========================================================================== */
-.card[data-rarity='radiant rare'] .card__shine:after {
-	background-image: var(--foil),
-		repeating-linear-gradient(
-			55deg,
-			hsl(25, 95%, 85%) calc(var(--space) * 1),
-			hsl(42, 100%, 84%) calc(var(--space) * 2),
-			hsl(68, 96%, 85%) calc(var(--space) * 3),
-			hsl(88, 92%, 86%) calc(var(--space) * 4),
-			hsl(52, 100%, 85%) calc(var(--space) * 5),
-			hsl(12, 96%, 85%) calc(var(--space) * 6),
-			hsl(25, 95%, 85%) calc(var(--space) * 7)
-		);
+  V FULL ART (ULTRA RARE)
+
+*/
+
+/*
+
+  SHINE LAYERS
+
+*/
+
+.card[data-rarity="rare ultra"] .card__shine,
+.card[data-rarity="rare ultra"] .card__shine:after {
+
+  --space: 5%;
+  --angle: 133deg;
+  --imgsize: cover;
+
+  background-image:
+    var(--foil),
+    repeating-linear-gradient( 0deg, 
+      var(--sunpillar-clr-1) calc(var(--space)*1), 
+      var(--sunpillar-clr-2) calc(var(--space)*2), 
+      var(--sunpillar-clr-3) calc(var(--space)*3), 
+      var(--sunpillar-clr-4) calc(var(--space)*4), 
+      var(--sunpillar-clr-5) calc(var(--space)*5), 
+      var(--sunpillar-clr-6) calc(var(--space)*6), 
+      var(--sunpillar-clr-1) calc(var(--space)*7)
+    ),
+    repeating-linear-gradient( 
+      var(--angle), 
+      #0e152e 0%, 
+      hsl(180, 10%, 60%) 3.8%, 
+      hsl(180, 29%, 66%) 4.5%, 
+      hsl(180, 10%, 60%) 5.2%, 
+      #0e152e 10% , 
+      #0e152e 12% 
+      ),
+    radial-gradient(
+      farthest-corner circle 
+      at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 0%, 0.1) 12%, 
+      hsla(0, 0%, 0%, 0.15) 20%, 
+      hsla(0, 0%, 0%, 0.25) 120%
+    );
+
+  background-position: 
+    center center, 
+    0% var(--background-y), 
+    calc( var(--background-x) + (var(--background-y)*0.2) ) var(--background-y), 
+    var(--background-x) var(--background-y);
+
+  background-blend-mode: soft-light, hue, hard-light;
+  background-size: var(--imgsize), 200% 700%, 300% 100%, 200% 100%;
+
+  filter: brightness(calc((var(--pointer-from-center)*0.4) + .4)) contrast(1.4) saturate(2.25);
+
+}
+
+.card[data-rarity="rare ultra"] .card__shine:after {
+
+  content: "";
+
+  background-position: 
+    center center, 
+    0% var(--background-y), 
+    calc( (var(--background-x) + (var(--background-y)*0.2)) * -1) calc( var(--background-y) * -1), 
+    var(--background-x) var(--background-y);
+
+  background-size: var(--imgsize), 200% 400%, 195% 100%, 200% 100%;
+
+  filter: brightness(calc((var(--pointer-from-center)*.4) + .8)) contrast(1.5) saturate(1.25);
+  mix-blend-mode: exclusion;
+
+}
+
+.card[data-rarity="rare ultra"] .card__shine:before {
+
+  content: "";
+  -webkit-mask-image: none;
+  mask-image: none;
+  
+  background-image: 
+    radial-gradient( farthest-corner circle at var(--pointer-x) var(--pointer-y), 
+      hsl(0, 0%, 100%) 0%, 
+      hsla(0, 0%, 0%, 0) 40% 
+    );
+  background-position: center;
+  background-size: cover;
+  mix-blend-mode: overlay;
+  
+  opacity: 0.75;
+  z-index: 1;
+
+}
+
+/*
+
+  GLARE LAYERS
+
+*/
+
+.card[data-rarity="rare ultra"] .card__glare {
+
+  background-image: 
+    radial-gradient( 
+      farthest-corner circle at var(--pointer-x) var(--pointer-y), 
+      hsl(0, 0%, 75%) 5%, 
+      hsl(200, 5%, 35%) 60%, 
+      hsl(320, 40%, 10%) 150% 
+    );
+
+  background-size: 120% 150%;
+  background-position: center center;
+
+  mix-blend-mode: hard-light;
+  filter: brightness(1) contrast(1.2) saturate(1);
+  
+  opacity: calc(var(--card-opacity) * .75 );
+
+}
+
+/*
+
+  NO MASK
+
+*/
+
+.card:not(.masked)[data-rarity="rare ultra"] .card__shine,
+.card:not(.masked)[data-rarity="rare ultra"] .card__shine:after {
+
+  --mask: none;
+  --foil: url("/img/illusion.png"); 
+  --imgsize: 33%;
+
+  -webkit-mask-image: var(--mask);
+  mask-image: var(--mask);
+	-webkit-mask-size: var(--imgsize);
+  mask-size: var(--imgsize);
+
+  background-blend-mode: exclusion, hue, hard-light;
+  filter: brightness(calc((var(--pointer-from-center)*.3) + .35)) contrast(2) saturate(1.5);
+
+}
+
+.card:not(.masked)[data-rarity="rare ultra"] .card__shine:before {
+  content: none;
+  display: none;
+}
+
+.card:not(.masked)[data-rarity="rare ultra"] .card__shine:after {
+  filter: brightness(calc((var(--pointer-from-center)*.5) + .8)) contrast(1.6) saturate(1.4);
 }
