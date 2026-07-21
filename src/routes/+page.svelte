@@ -57,6 +57,13 @@
 
 	const heroArt = bannerArt('vasar');
 
+	/* Les deux inserts du mur : des illustrations du set, servies en 640px et
+	   passées au duotone doré par .ed-photo. Deux peuples différents, pour que
+	   le hero annonce l'étendue du set et pas une seule carte. */
+	const tuiles = ['doran', 'exen']
+		.map((id) => cards.find((c) => c.id === id)?.art ?? heroArt ?? '')
+		.map((src) => (src.startsWith('/art/') ? src.replace('/art/', '/art/w640/') : src));
+
 	/* filtre par peuple, façon Banque de Données */
 	let sel = $state<'all' | FactionId>('all');
 	const shown = $derived(
@@ -81,33 +88,40 @@
 			gsap.registerPlugin(ScrollTrigger);
 			refreshST = () => ScrollTrigger.refresh();
 			ctx = gsap.context(() => {
-				// ---- hero : l'émergence (l'image sort du noir, le titre se dit ligne à ligne)
+				/* ---- hero : le mur se lève ligne à ligne depuis son masque.
+				   Chaque mot est enfermé dans un bloc à `overflow: hidden` : il
+				   monte de sous la ligne plutôt que d'apparaître en fondu. C'est
+				   ce mouvement, et non l'opacité, qui donne l'impression du texte
+				   qu'on imprime. */
 				gsap.fromTo(
-					'.hero-art img',
-					{ autoAlpha: 0, scale: 1.07 },
-					{ autoAlpha: 1, scale: 1, duration: 3, ease: 'quart.out' }
+					'.hero .mot',
+					{ yPercent: 108 },
+					{ yPercent: 0, duration: 1.25, ease: 'expo.out', stagger: 0.11 }
+				);
+				// les tuiles suivent, décalées : l'image arrive APRÈS le mot
+				gsap.fromTo(
+					'.hero .tuile',
+					{ autoAlpha: 0, scale: 0.86, y: 26 },
+					{
+						autoAlpha: 1,
+						scale: 1,
+						y: 0,
+						duration: 1.1,
+						ease: 'expo.out',
+						stagger: 0.14,
+						delay: 0.42
+					}
 				);
 				gsap.fromTo(
-					'.hero .line',
-					{ autoAlpha: 0, y: 34 },
-					{ autoAlpha: 1, y: 0, duration: 1.4, ease: 'expo.out', stagger: 0.14, delay: 0.5 }
+					'.hero-kicker, .hero-dit, .hero-actions',
+					{ autoAlpha: 0, y: 18 },
+					{ autoAlpha: 1, y: 0, duration: 1.1, ease: 'quart.out', stagger: 0.1, delay: 0.65 }
 				);
-				gsap.fromTo(
-					'.hero .quiet',
-					{ autoAlpha: 0 },
-					{ autoAlpha: 1, duration: 1.4, ease: 'quart.out', delay: 1.5, stagger: 0.12 }
-				);
-				// parallax en couches : l'image, puis le texte qui s'élève et s'efface
-				gsap.to('.hero-art img', {
-					yPercent: 12,
+				// parallax : les tuiles dérivent plus vite que le texte au défilement
+				gsap.to('.hero .tuile', {
+					yPercent: -18,
 					ease: 'none',
 					scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 }
-				});
-				gsap.to('.hero-inner', {
-					yPercent: -18,
-					autoAlpha: 0,
-					ease: 'none',
-					scrollTrigger: { trigger: '.hero', start: '25% top', end: 'bottom top', scrub: 1 }
 				});
 
 				// ---- bandeaux : l'image émerge du noir en fondu (jamais de bord, jamais de rideau)
@@ -184,23 +198,36 @@
 
 <div bind:this={container}>
 	<!-- ============ HERO : l'émergence ============ -->
+	<!-- ============ HERO : un mur typographique ============
+	     Le titre occupe la page comme un bloc d'encre. Les tuiles
+	     photographiques s'intercalent ENTRE les lignes plutôt que de flotter
+	     par-dessus : c'est ce qui donne la mise en page de journal plutôt que
+	     celle d'une bannière. -->
 	<header class="hero">
-		{#if heroArt}
-			<div class="hero-art" aria-hidden="true"><img src={heroArt} alt="" /></div>
-		{/if}
-		<div class="hero-inner">
-			<p class="quiet kicker">Set 01</p>
-			<h1><span class="line">Nés du silence</span></h1>
-			<p class="tagline">
-				<span class="line">Le Créateur se tait.</span>
-				<span class="line em">Pas vous.</span>
-			</p>
-			<div class="quiet meter" role="img" aria-label="Progression du set : {cards.length} cartes sur {SET_SIZE}">
-				<span class="meter-fill" style="width: {pct}%"></span>
-			</div>
-			<p class="quiet meter-label">{cards.length} / {SET_SIZE} noms inscrits</p>
+		<div class="hero-top">
+			<p class="hero-kicker">Set 01 — Registre du Silence</p>
+			<p class="hero-kicker">{cards.length} / {SET_SIZE} noms inscrits</p>
 		</div>
-		<p class="quiet scrollhint">Défiler</p>
+
+		<h1 class="mur">
+			<span class="ligne"><span class="mot">Nés</span></span>
+			<span class="ligne">
+				<img class="tuile ed-photo" src={tuiles[0]} alt="" aria-hidden="true" />
+				<span class="mot">du</span>
+			</span>
+			<span class="ligne">
+				<span class="mot">silence</span>
+				<img class="tuile ed-photo" src={tuiles[1]} alt="" aria-hidden="true" />
+			</span>
+		</h1>
+
+		<div class="hero-bas">
+			<p class="hero-dit">Le Créateur se tait.<br /><em>Pas vous.</em></p>
+			<div class="hero-actions">
+				<a class="ed-action" href="/packs">Ouvrir un sceau</a>
+				<a class="ed-ghost" href="/regles">Apprendre les règles</a>
+			</div>
+		</div>
 	</header>
 
 	<!-- ============ LE REGISTRE : sidebar + chapitres ============ -->
@@ -273,143 +300,102 @@
 </div>
 
 <style>
-	/* ============ HERO ============ */
+	/* ============ HERO : LE MUR TYPOGRAPHIQUE ============
+	   Pas d'image de fond, pas de voile, pas d'ombre portée. Le titre EST la
+	   page ; les tuiles s'insèrent dans le flux du texte comme les clichés d'un
+	   journal, et la structure ne tient qu'aux filets et à la respiration. */
 
 	.hero {
 		position: relative;
-		min-height: 92vh;
+		max-width: var(--page-max);
+		margin: 0 auto;
+		padding: var(--spacing-60) var(--spacing-20) var(--spacing-120);
+	}
+	.hero-top {
 		display: flex;
-		flex-direction: column;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: var(--spacing-20);
+		padding-bottom: var(--spacing-25);
+		border-bottom: 1px solid var(--panel-line);
+	}
+	.hero-kicker {
+		margin: 0;
+		font-family: var(--font-grotesque);
+		font-size: var(--text-caption);
+		font-weight: var(--fw-550);
+		line-height: var(--leading-caption);
+		letter-spacing: var(--tracking-caption);
+		text-transform: uppercase;
+		color: var(--ink-dim);
+	}
+
+	/* Le mur. L'approche très serrée (-0.04em) est ce qui fait lire le titre
+	   comme un bloc d'encre plutôt que comme une suite de lettres. */
+	.mur {
+		margin: var(--spacing-50) 0 0;
+		font-family: var(--font-editorial);
+		font-weight: var(--fw-regular);
+		font-size: clamp(4rem, 15vw, var(--text-heading-lg));
+		line-height: var(--leading-display);
+		letter-spacing: var(--tracking-display);
+		color: var(--ink);
+		text-transform: uppercase;
+	}
+	/* chaque ligne masque son mot : il monte de dessous plutôt que d'apparaître */
+	.ligne {
+		display: flex;
 		align-items: center;
-		justify-content: center;
-		text-align: center;
-		/* pleine largeur d'écran, en sortant du conteneur centré */
-		width: 100vw;
-		margin-left: calc(50% - 50vw);
+		gap: clamp(0.8rem, 2.5vw, var(--spacing-40));
 		overflow: hidden;
 	}
-	.hero-art {
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
+	.ligne:nth-child(2) {
+		justify-content: flex-start;
+		padding-left: clamp(0rem, 6vw, var(--spacing-120));
 	}
-	.hero-art img {
-		width: 100%;
-		height: 112%;
+	.ligne:nth-child(3) {
+		justify-content: flex-end;
+	}
+	.mot {
+		display: block;
+	}
+
+	/* L'insert : une petite tuile rectangulaire posée DANS la ligne. Elle ne
+	   flotte pas au-dessus du texte, elle en fait partie. */
+	.tuile {
+		flex: none;
+		width: clamp(90px, 15vw, 200px);
+		height: clamp(62px, 10.5vw, 140px);
 		object-fit: cover;
-		object-position: center 20%;
-		opacity: 0.55;
-		-webkit-mask-image: radial-gradient(95% 78% at 50% 36%, #000 26%, transparent 76%);
-		mask-image: radial-gradient(95% 78% at 50% 36%, #000 26%, transparent 76%);
 	}
-	/* le hero se fond dans la suite — jamais de bord */
-	.hero::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		height: 34%;
-		background: linear-gradient(180deg, transparent 0%, rgba(7, 13, 26, 0.6) 55%, var(--bg) 100%);
-		pointer-events: none;
+
+	.hero-bas {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--spacing-40);
+		margin-top: var(--spacing-60);
+		padding-top: var(--spacing-30);
+		border-top: 1px solid var(--panel-line);
 	}
-	.hero-inner {
-		position: relative;
-		z-index: 2;
-		padding: 0 2rem;
-	}
-	.hero-inner::before {
-		content: '';
-		position: absolute;
-		inset: -22% -30%;
-		z-index: -1;
-		background: radial-gradient(
-			55% 60% at 50% 48%,
-			rgba(5, 8, 16, 0.62) 0%,
-			rgba(5, 8, 16, 0.34) 55%,
-			transparent 80%
-		);
-		pointer-events: none;
-	}
-	.kicker {
-		margin: 0 0 3.4rem;
-		font-size: 0.78rem;
-		font-weight: 600;
-		letter-spacing: 0.34em;
-		text-transform: uppercase;
-		color: rgba(238, 240, 245, 0.5);
-	}
-	h1 {
+	.hero-dit {
 		margin: 0;
-		font-family: Cinzel, Georgia, serif;
-		font-weight: 400;
-		font-size: clamp(3.4rem, 8.5vw, 6.6rem);
-		letter-spacing: 0.04em;
-		line-height: 1.05;
-		color: #f5f3ec;
-		text-shadow:
-			0 2px 26px rgba(0, 0, 0, 0.75),
-			0 0 60px rgba(201, 164, 69, 0.25);
+		max-width: 22ch;
+		font-family: var(--font-editorial);
+		font-size: clamp(1.8rem, 4vw, 3rem);
+		line-height: var(--leading-subheading);
+		letter-spacing: var(--tracking-subheading);
+		color: var(--ink);
 	}
-	.line {
-		display: block;
-	}
-	.tagline {
-		margin: 2.2rem 0 0;
-		font-family: 'Cormorant Garamond', Georgia, serif;
-		font-size: clamp(1.3rem, 2.6vw, 1.8rem);
-		line-height: 1.35;
-		color: rgba(238, 240, 245, 0.85);
-		text-shadow: 0 1px 14px rgba(0, 0, 0, 0.7);
-	}
-	.tagline .line {
-		transform: translateX(-2.5ch);
-	}
-	.tagline .line.em {
-		transform: translateX(3.5ch);
+	.hero-dit em {
 		font-style: italic;
-		color: #e2c069;
+		color: var(--gold);
 	}
-	.meter {
-		width: min(240px, 60vw);
-		height: 2px;
-		margin: 3rem auto 0;
-		border-radius: 2px;
-		background: rgba(238, 240, 245, 0.14);
-		overflow: hidden;
-	}
-	.meter-fill {
-		display: block;
-		height: 100%;
-		background: var(--gold);
-	}
-	.meter-label {
-		margin: 0.7rem 0 0;
-		font-size: 0.78rem;
-		font-variant-numeric: tabular-nums;
-		color: rgba(238, 240, 245, 0.4);
-	}
-	.scrollhint {
-		position: absolute;
-		bottom: 2rem;
-		left: 50%;
-		transform: translateX(-50%);
-		margin: 0;
-		font-size: 0.68rem;
-		font-weight: 600;
-		letter-spacing: 0.4em;
-		text-transform: uppercase;
-		color: rgba(238, 240, 245, 0.35);
-		animation: breathe 3.2s ease-in-out infinite;
-	}
-	@keyframes breathe {
-		0%,
-		100% {
-			opacity: 0.35;
-		}
-		50% {
-			opacity: 0.85;
-		}
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--element-gap);
 	}
 
 	/* ============ REGISTRE : sidebar + contenu ============ */
