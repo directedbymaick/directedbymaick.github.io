@@ -38,7 +38,8 @@
 
 	type Stage = 'idle' | 'reveal' | 'recap';
 	/** Palier d'effets du reveal : la rareté, ou 'fullart' — le cran au-dessus de tout. */
-	/* `apex` = la Prismatique, sommet de l'échelle, quelle que soit sa forme. */
+	/* `apex` = la SP, l'illustration détourée : le sommet de l'échelle, quelle que
+	   soit la rareté de la carte. C'est la finition qui fait l'evenement, pas le cadre. */
 	type FxTier = Rarity | 'fullart' | 'apex';
 
 	let stage: Stage = $state('idle');
@@ -126,9 +127,9 @@
 	   la couleur du meilleur tirage qui dort dedans. */
 	let pending: Pull[] = $state([]);
 	/* Le Full Art d'une Commune ne vaut pas une Prismatique : le rang suit la
-	   VRAIE rareté, et le sommet est reserve a l'apex. */
+	   VRAIE rareté, et le sommet est réservé à l'apex. */
 	const TIER_RANK: Record<FxTier, number> = {
-		common: 0, rare: 1, epic: 2, legendary: 3, prism: 4, fullart: 4.5, apex: 5
+		common: 0, rare: 1, epic: 2, legendary: 3, fullart: 3.5, prism: 4, apex: 5
 	};
 	/* la couleur de l'aura selon le meilleur tirage : argent → or → prismatique */
 	const TIER_GLOW: Record<FxTier, string> = {
@@ -165,9 +166,9 @@
 			fx: { colors: ['#fff6e2', '#ffe3a1', '#ffffff'], orbs: 26, streaks: 9, power: 280 },
 			shake: 9
 		},
-		/* APEX — la Prismatique. Volontairement d'une autre nature : trois vagues
-		   de lumière au lieu d'une, et une rémanence deux fois plus longue. Le
-		   palier ne monte pas d'un cran, il change de catégorie. */
+		/* APEX — la SP, l'illustration détourée. Volontairement d'une autre nature :
+		   trois vagues de lumière au lieu d'une, et une rémanence deux fois plus
+		   longue. Le palier ne monte pas d'un cran, il change de catégorie. */
 		apex: {
 			fx: {
 				colors: ['#ffffff', '#e6d8ff', '#bda6ff', '#ffe9c4'],
@@ -181,11 +182,16 @@
 		}
 	};
 
-	/* La forme Full Art force `rarity: 'prism'` : c'est `sourceRarity` qui porte la
-	   vraie rareté. Sans ça, une Commune Full Art passait pour une Prismatique. */
+	/**
+	 * L'apex est la SP — illustration détourée, le sommet de l'échelle. Toute autre
+	 * carte garde son effet habituel, Prismatique comprise.
+	 *
+	 * La forme Full Art force `rarity: 'prism'` : c'est `sourceRarity` qui porte la
+	 * vraie rareté. Sans ça, une Commune Full Art passait pour une Prismatique.
+	 */
 	const fxOf = (p: Pull): FxTier => {
+		if (p.card.gene.foilPreset === 'showcase' && p.card.cutout) return 'apex';
 		const vraie = p.card.sourceRarity ?? p.card.rarity;
-		if (vraie === 'prism') return 'apex';
 		return p.fullArt ? 'fullart' : vraie;
 	};
 
