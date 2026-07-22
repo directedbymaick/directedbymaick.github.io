@@ -11,6 +11,7 @@
 	import { loadDecks } from '$lib/decks';
 	import {
 		Duel,
+		simulate,
 		BOARD_SLOTS,
 		type PlayerSnap,
 		type HandEntry,
@@ -33,6 +34,78 @@
 	 */
 
 	let duel = $state<Duel | null>(null);
+
+	/* ---------------- Mode spectateur : IA contre IA sur CE terrain ----------------
+	   `?mode=ia` — le simulateur envoie ses parties ici, sur le vrai plateau,
+	   au lieu de la table miniature qu'il affichait en page. La partie est
+	   simulée d'un bloc puis REJOUÉE à un rythme suivable : chaque événement
+	   porte son instantané d'état, l'UI ne fait que les appliquer. */
+	let spectateur = $state(false);
+	let lecture = $state(true);
+	let vitesseIA = $state(1); // multiplicateur : 0.5 lent · 1 normal · 2 rapide
+	let evtsIA: Ev[] = [];
+	let curseurIA = -1;
+	let timerIA: ReturnType<typeof setTimeout> | null = null;
+
+	/** le rythme du replay — les moments forts respirent, la pioche file */
+	function delaiIA(e: Ev | undefined): number {
+		const base = 900 / vitesseIA;
+		if (!e) return base;
+		if (e.t === 'attack' || e.t === 'prononcer' || e.t === 'win') return base * 1.8;
+		if (e.t === 'turn') return base * 1.6;
+		if (e.t === 'draw' || e.t === 'heal') return base * 0.5;
+		return base;
+	}
+
+	function appliquerIA(e: Ev, muet = false) {
+		version++;
+		if (e.state) {
+			if (!muet) marquerBlesses(e.state);
+			moi = e.state[0];
+			lui = e.state[1];
+		}
+		journal = [...journal, e].slice(-60);
+		if (e.t === 'turn') {
+			const m = e.msg?.match(/Tour (\d+)/);
+			meta = { ...meta, turn: m ? Number(m[1]) : meta.turn, active: e.side };
+		}
+		if (e.t === 'win') meta = { ...meta, winner: /nul/i.test(e.msg ?? '') ? -1 : e.side };
+		if (muet) return;
+		if (e.t === 'verb') montrerVerbe(e.cardId);
+		if (e.t === 'death') { son('hit'); etincelles('death'); }
+		else if (e.t === 'effect' || e.t === 'prononcer') { son('effect'); etincelles('effect'); }
+		else if (e.t === 'play' || e.t === 'summon') { son('card'); etincelles('play'); }
+	}
+
+	function pasIA() {
+		if (timerIA) clearTimeout(timerIA);
+		if (!lecture || curseurIA >= evtsIA.length - 1) return;
+		timerIA = setTimeout(() => {
+			curseurIA++;
+			appliquerIA(evtsIA[curseurIA]);
+			pasIA();
+		}, delaiIA(evtsIA[curseurIA + 1]));
+	}
+
+	function basculeLecture() {
+		lecture = !lecture;
+		if (lecture) pasIA();
+	}
+
+	function cyclerVitesse() {
+		vitesseIA = vitesseIA === 1 ? 2 : vitesseIA === 2 ? 0.5 : 1;
+		if (lecture) pasIA();
+	}
+
+	/** saute au dénouement : applique le reste sans sons ni secousses */
+	function sauterFin() {
+		lecture = false;
+		if (timerIA) clearTimeout(timerIA);
+		while (curseurIA < evtsIA.length - 1) {
+			curseurIA++;
+			appliquerIA(evtsIA[curseurIA], true);
+		}
+	}
 	let moi = $state<PlayerSnap | null>(null);
 	let lui = $state<PlayerSnap | null>(null);
 	let meta = $state({ turn: 1, active: 0 as 0 | 1, winner: null as 0 | 1 | -1 | null, will: 0, maxWill: 0 });
@@ -240,6 +313,32 @@
 					Array.from({ length: n }, () => getCard(id)!).filter(Boolean)
 				)
 			: null;
+
+		if (params.get('mode') === 'ia') {
+			spectateur = true;
+			const fa = (params.get('moi') as FactionId) || 'vasar';
+			const fb = (params.get('lui') as FactionId) || 'exar';
+			/* une liste imposée voyage en ids ; un deck auto se reconstruit avec la
+			   même graine — la partie est identique à celle du simulateur */
+			const lireListe = (k: string): CardData[] | null => {
+				const v = params.get(k);
+				if (!v) return null;
+				const l = v.split(',').map((id) => getCard(id)).filter((c): c is CardData => !!c);
+				return l.length === 30 ? l : null;
+			};
+			const sim = simulate(cards, fa, fb, graine, [lireListe('da'), lireListe('db')]);
+			evtsIA = sim.events;
+			curseurIA = 0;
+			appliquerIA(evtsIA[0]);
+			pasIA();
+			sobre = matchMedia('(prefers-reduced-motion: reduce)').matches;
+			horloge = setInterval(() => secondes++, 1000);
+			return () => {
+				if (horloge) clearInterval(horloge);
+				if (timerIA) clearTimeout(timerIA);
+				if (verbeTimer) clearTimeout(verbeTimer);
+			};
+		}
 
 		duel = new Duel(
 			cards,
@@ -723,10 +822,21 @@
 		<span class="will-display" title="Volonté : {meta.will} sur {meta.maxWill}">
 			<small>Volonté</small><span class="will-pips">{#each Array(meta.maxWill) as _, i (i)}<i class:on={i < meta.will}></i>{/each}</span>
 		</span>
-		<button class="finir" disabled={!monTour} onclick={finirTour}>Finir le tour</button>
+		{#if spectateur}
+			<span class="spec-badge" title="Partie IA contre IA — vous regardez">Spectateur</span>
+			<button class="finir" onclick={basculeLecture}>{lecture ? 'Pause' : 'Reprendre'}</button>
+			<button class="finir ghost" onclick={cyclerVitesse} title="Rythme du replay">
+				×{vitesseIA === 0.5 ? '½' : vitesseIA}
+			</button>
+			{#if meta.winner === null}
+				<button class="finir ghost" onclick={sauterFin}>Dénouement</button>
+			{/if}
+		{:else}
+			<button class="finir" disabled={!monTour} onclick={finirTour}>Finir le tour</button>
+		{/if}
 	</footer>
 
-	{#if monTour && meta.winner === null}
+	{#if monTour && meta.winner === null && !spectateur}
 		<p class="action-hint" aria-live="polite">
 			{attaquant !== null ? 'Choisissez une cible' : 'Jouez une carte ou sélectionnez un combattant'}
 		</p>
@@ -739,8 +849,13 @@
 		</div>
 	{/if}
 
-	<!-- notre main -->
+	<!-- notre main — en spectateur, celle du camp du bas, faces cachées -->
 	<div class="ma-main">
+		{#if spectateur}
+			{#each Array(moi?.hand ?? 0) as _, i (i)}
+				<div class="carte-main dos"><CardBack /></div>
+			{/each}
+		{/if}
 		{#each main as h, i (`${h.card.id}-${i}`)}
 			<button
 				in:fly={{ y: 40, duration: duree(280), easing: cubicOut }}
@@ -798,9 +913,19 @@
 		<div class="fin" role="dialog" aria-modal="true" in:fade={{ duration: duree(500) }}>
 			<div class="fin-emblem" aria-hidden="true"><span>EX</span></div>
 			<p class="fin-txt">
-				{meta.winner === 0 ? 'Victoire' : meta.winner === 1 ? 'Défaite' : 'Match nul'}
+				{#if spectateur}
+					{meta.winner === -1 ? 'Match nul' : `${(meta.winner === 0 ? moi : lui)?.name ?? 'L’IA'} l’emporte`}
+				{:else}
+					{meta.winner === 0 ? 'Victoire' : meta.winner === 1 ? 'Défaite' : 'Match nul'}
+				{/if}
 			</p>
-			<p class="fin-sub">{meta.winner === 0 ? 'Votre parole résonne encore dans l’Arène.' : meta.winner === 1 ? 'Le Silence a repris le terrain.' : 'Aucun Korum ne demeure.'}</p>
+			<p class="fin-sub">
+				{#if spectateur}
+					{meta.winner === -1 ? 'Aucun Korum ne demeure.' : 'Le duel des IA est terminé.'}
+				{:else}
+					{meta.winner === 0 ? 'Votre parole résonne encore dans l’Arène.' : meta.winner === 1 ? 'Le Silence a repris le terrain.' : 'Aucun Korum ne demeure.'}
+				{/if}
+			</p>
 			<a class="fin-sortie" href="/arene">Quitter le terrain</a>
 		</div>
 	{/if}
@@ -1014,6 +1139,25 @@
 	}
 	.ressource {
 		color: rgba(242, 240, 234, 0.55);
+	}
+	.spec-badge {
+		padding: 0.45rem 0.9rem;
+		border: 1px solid rgba(213, 178, 94, 0.5);
+		border-radius: 999px;
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: #d5b25e;
+	}
+	.finir.ghost {
+		background: none;
+		border: 1px solid rgba(238, 240, 245, 0.28);
+		color: rgba(238, 240, 245, 0.75);
+	}
+	.carte-main.dos {
+		pointer-events: none;
+		--card-w: 6.4rem;
 	}
 	.finir {
 		margin-left: auto;
