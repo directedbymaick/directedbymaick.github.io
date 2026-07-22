@@ -47,7 +47,7 @@
 
 	/* ============ état ============ */
 
-	type Mode = 'gate' | 'menu' | 'hosting' | 'joining' | 'play' | 'left';
+	type Mode = 'gate' | 'menu' | 'hosting' | 'queue' | 'joining' | 'play' | 'left';
 	let mode = $state<Mode>('menu');
 	let role = $state<'host' | 'guest'>('host');
 	const mySide = $derived<Side>(role === 'host' ? 0 : 1);
@@ -103,6 +103,7 @@
 	});
 
 	onDestroy(() => {
+		annulerFile?.();
 		peer?.destroy();
 	});
 
@@ -131,6 +132,14 @@
 
 	/* ============ hôte ============ */
 
+	function ecouterInvite() {
+		peer?.on('connection', (c) => {
+			conn = c as DataConnection;
+			conn.on('data', (raw) => onHostData(raw as Msg));
+			conn.on('close', onPeerLeft);
+		});
+	}
+
 	async function host() {
 		err = '';
 		try {
@@ -138,19 +147,51 @@
 			code = net.salonCode();
 			peer = await net.createHost(code);
 			mode = 'hosting';
-			peer.on('connection', (c) => {
-				conn = c as DataConnection;
-				conn.on('data', (raw) => onHostData(raw as Msg));
-				conn.on('close', onPeerLeft);
-			});
+			ecouterInvite();
 		} catch (e) {
 			err = 'Impossible de créer le salon — réessayez.';
 			console.error(e);
 		}
 	}
 
+	/* ============ partie rapide (matchmaking) ============ */
+
+	let annulerFile: (() => void) | null = null;
+
+	function quitterFile() {
+		annulerFile?.();
+		annulerFile = null;
+	}
+
+	async function partieRapide() {
+		err = '';
+		try {
+			const net = await import('$lib/net');
+			const { entrerFile } = await import('$lib/matchmaking');
+			code = net.salonCode();
+			peer = await net.createHost(code);
+			role = 'host';
+			ecouterInvite();
+			mode = 'queue';
+			annulerFile = entrerFile(code, (a) => {
+				annulerFile = null;
+				if (a.hote) return; // on reste hôte : l'adversaire nous rejoint
+				// devenir invité : fermer notre salon et rejoindre le sien
+				peer?.destroy();
+				peer = null;
+				joinCode = a.code;
+				void join();
+			});
+		} catch (e) {
+			err = 'Matchmaking indisponible — réessayez ou passez par un salon.';
+			console.error(e);
+			backToMenu();
+		}
+	}
+
 	function onHostData(msg: Msg) {
 		if (msg.t === 'hello') {
+			quitterFile();
 			const mine = chosen();
 			const guestDeckData = msg.deck
 				? { id: 'remote', name: 'Deck distant', updatedAt: 0, cards: msg.deck.reduce<Record<string, number>>((counts, id) => ({ ...counts, [id]: (counts[id] ?? 0) + 1 }), {}) }
@@ -339,6 +380,7 @@
 	}
 
 	function backToMenu() {
+		quitterFile();
 		peer?.destroy();
 		peer = null;
 		conn = null;
@@ -462,7 +504,9 @@
 			</div>
 		</section>
 		<section class="spanel">
-			<h2>Le salon</h2>
+			<h2>Trouver un adversaire</h2>
+			<button class="startbtn rapide" onclick={partieRapide}>⚡ Partie rapide</button>
+			<p class="ou">— ou par salon privé —</p>
 			<button class="startbtn" onclick={host}>Créer un salon</button>
 			<div class="joinrow">
 				<input
@@ -485,6 +529,14 @@
 		<p>Partagez ce code avec votre adversaire. Le duel commencera dès qu’il vous aura rejoint.</p>
 		<p class="salon-code">{code}</p>
 		<p class="waiting">En attente d'un adversaire…</p>
+		<button class="ghostbtn" onclick={backToMenu}>Annuler</button>
+	</section>
+{:else if mode === 'queue'}
+	<section class="panelbox">
+		<img src={logo} alt="" aria-hidden="true" />
+		<h1>Recherche d'un adversaire…</h1>
+		<p>Vous serez apparié au premier joueur disponible et le duel commencera aussitôt.</p>
+		<p class="waiting">File d'attente en cours…</p>
 		<button class="ghostbtn" onclick={backToMenu}>Annuler</button>
 	</section>
 {:else if mode === 'joining'}
@@ -827,6 +879,18 @@
 	}
 	.startbtn:hover {
 		background: #f7edd6;
+	}
+	.startbtn.rapide {
+		background: linear-gradient(120deg, #e8c877, var(--cream) 45%, #e8c877);
+		box-shadow: 0 0 30px rgba(213, 178, 94, 0.45);
+	}
+	.ou {
+		margin: 0.9rem 0 0.9rem;
+		text-align: center;
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.35);
 	}
 	.joinrow {
 		display: flex;
