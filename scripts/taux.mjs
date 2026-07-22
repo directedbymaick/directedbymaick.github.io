@@ -88,16 +88,40 @@ try {
 	let cartes = 0;
 	const t0 = Date.now();
 
+	/* Statistiques au BOOSTER et non à la carte : c'est ce qu'un joueur ressent, et
+	   c'est ce que la page Réquisition annonce en toutes lettres. Les mesurer ici
+	   empêche ce paragraphe de se périmer à son tour. */
+	const compteur = () => ({ prism: 0, fullArt: 0, dPrism: 0, dFA: 0, pirePrism: 0, pireFA: 0 });
+	const avec = compteur();
+
+	function releverBooster(pulls, st) {
+		const aPrism = pulls.some((p) => (p.card.sourceRarity ?? p.card.rarity) === 'prism');
+		const aFA = pulls.some((p) => p.fullArt);
+		if (aPrism) { st.prism++; st.dPrism = 0; }
+		else { st.dPrism++; st.pirePrism = Math.max(st.pirePrism, st.dPrism); }
+		if (aFA) { st.fullArt++; st.dFA = 0; }
+		else { st.dFA++; st.pireFA = Math.max(st.pireFA, st.dFA); }
+	}
+
 	for (let i = 0; i < BOOSTERS; i++) {
-		for (const pull of gacha.openPack(pity)) {
+		const pulls = gacha.openPack(pity);
+		releverBooster(pulls, avec);
+		for (const pull of pulls) {
 			// versEnPull pose card.id = clé de version : c'est notre identifiant
 			versions.set(pull.card.id, (versions.get(pull.card.id) ?? 0) + 1);
 			cartes++;
 		}
 		if (i > 0 && i % 500_000 === 0) {
-			process.stdout.write(`  ${(i / 1000).toFixed(0)}k boosters…\n`);
+			process.stdout.write(`  ${(i / 1000).toFixed(0)}k boosters…
+`);
 		}
 	}
+
+	/* Deuxième passe SANS garanties : la référence « avant pity » que la page
+	   compare au tirage réel. Plus courte, elle n'a qu'à donner l'ordre de grandeur. */
+	const REF = Math.min(BOOSTERS, 400_000);
+	const sans = compteur();
+	for (let i = 0; i < REF; i++) releverBooster(gacha.openPack(undefined), sans);
 
 	Math.random = vrai;
 
@@ -113,6 +137,21 @@ try {
 				boosters: BOOSTERS,
 				graine: GRAINE,
 				cartes,
+				/* part de boosters contenant au moins un exemplaire, et pire disette
+				   observée — avec les garanties, puis sans, pour la comparaison */
+				boostersAvec: {
+					prism: avec.prism / BOOSTERS,
+					fullArt: avec.fullArt / BOOSTERS,
+					pireDisettePrism: avec.pirePrism,
+					pireDisetteFullArt: avec.pireFA
+				},
+				boostersSansGarantie: {
+					reference: REF,
+					prism: sans.prism / REF,
+					fullArt: sans.fullArt / REF,
+					pireDisettePrism: sans.pirePrism,
+					pireDisetteFullArt: sans.pireFA
+				},
 				versions: trie
 			},
 			null,

@@ -90,11 +90,13 @@ export function tauxVersion(card: CardData, v: { key: string; rate: number }): n
 
 /** Prix plancher : celui du nom le plus facile à tirer du set. */
 export const PRIX_PLANCHER = 20;
-/* Compression : à cru, l'écart de rareté entre le nom le plus banal et le plus
-   rare dépasse 1 à 2 500, ce qui donnerait des prix absurdes. L'exposant ramène
-   l'écart à un facteur ~100 : le sommet reste hors de portée sans être une
-   plaisanterie. */
-const COMPRESSION = 0.6;
+/* Compression : l'exposant qui traduit un écart de rareté en écart de prix.
+   Il valait 0.6 quand la rareté s'étalait sur un facteur 2 500 — il fallait
+   écraser. Depuis le recalibrage sur les standards, l'écart n'est plus que de
+   53, et le même exposant ramenait le sommet à 220 Syllabes : la boutique
+   rendait la pièce de tête triviale. À 0.9, l'échelle va de 20 à 700, soit
+   environ cinq boosters de glanage pour le sommet. */
+const COMPRESSION = 0.9;
 
 /* La référence n'est pas posée à la main : c'est le taux du nom RÉELLEMENT le
    plus courant du set. Ainsi le plancher reste le plancher quoi qu'on ajoute au

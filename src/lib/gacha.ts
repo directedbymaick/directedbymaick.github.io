@@ -2,14 +2,24 @@ import type { CardData, Rarity } from '$lib/types';
 import { cards, getCard } from '$lib/cards';
 import { nsKey, scheduleCloudSync } from '$lib/store';
 import { rollVersion, versionsOf } from '$lib/variants';
+import {
+	PACK_SIZE,
+	FULLART_RATE,
+	GOD_PACK_RATE,
+	PITY_PRISM,
+	PITY_FULLART
+} from '$lib/tirage.config';
+
+/* Les molettes vivent dans tirage.config.ts — un seul endroit où lire l'équilibre
+   du tirage. On les ré-exporte pour ne pas casser les pages qui les importent
+   d'ici depuis toujours. */
+export { PACK_SIZE, FULLART_RATE, GOD_PACK_RATE, PITY_PRISM, PITY_FULLART };
 
 /**
  * Le gacha : ouverture de boosters ZONES AVEUGLES, 100% local.
  * Inspiré de packs.com (odds publiées, ouverture par peel, reveal en pile)
  * — mais sans monnaie ni backend : ouverture libre, collection en localStorage.
  */
-
-export const PACK_SIZE = 5;
 
 /** Odds par slot du booster — publiées sur la page (esprit « fair odds »). */
 export const SLOT_ODDS: { label: string; odds: Partial<Record<Rarity, number>> }[] = [
@@ -50,7 +60,7 @@ function pickCard(rarity: Rarity, avoid: Set<string>): CardData {
 /* ---------- full art : le chase du set ---------- */
 
 /** Chance qu'une carte éligible sorte en version Full Art. Publiée sur la page. */
-export const FULLART_RATE = 0.06;
+
 
 export function eligibleFullArt(c: CardData): boolean {
 	return !!c.fullArt || c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism';
@@ -84,7 +94,7 @@ export interface Pull {
 
 /** Chance, très rare, d'un booster « EXPELLED » : 5 cartes toutes en Full Art
  *  prismatique — épiques, légendaires et prismatiques uniquement. */
-export const GOD_PACK_RATE = 0.008;
+
 
 /** Le pack est-il un « EXPELLED » (les 5 cartes en Full Art) ? */
 export function isGodPack(pulls: Pull[]): boolean {
@@ -128,8 +138,8 @@ function openGodPack(): Pull[] {
  * rien de l'autre. Sans Full Art, une Prismatique garantie reste une Prismatique
  * Raw, et le palier convoité n'arrive jamais. D'où deux compteurs séparés.
  */
-export const PITY_PRISM = 40;
-export const PITY_FULLART = 25;
+
+
 
 export interface Pity {
 	/** boosters ouverts depuis la dernière Prismatique */
@@ -189,7 +199,16 @@ function versEnPull(v: ReturnType<typeof rollVersion>, baseId: string): Pull {
  * `pity` est MUTÉ : ses compteurs montent d'un cran ou retombent à zéro.
  */
 export function openPack(pity?: Pity): Pull[] {
-	if (Math.random() < GOD_PACK_RATE) {
+	// le compteur est à son dernier cran : ce booster DOIT tenir la promesse
+	const duPrism = !!pity && pity.sansPrism + 1 >= PITY_PRISM;
+	const duFullArt = !!pity && pity.sansFullArt + 1 >= PITY_FULLART;
+
+	/* Le god pack cède le passage à une garantie due. Sans ça, un god pack tombant
+	   au dernier cran ne contenait pas forcément de Prismatique, incrémentait le
+	   compteur et repoussait la promesse d'un booster : la pire disette mesurée
+	   était de 41 pour une garantie annoncée à 40. Le report coûte 0,8 % des god
+	   packs sur les seuls boosters concernés, et rend l'annonce exacte. */
+	if (!duPrism && Math.random() < GOD_PACK_RATE) {
 		const p = openGodPack();
 		if (pity) {
 			pity.sansFullArt = 0;
@@ -198,10 +217,6 @@ export function openPack(pity?: Pity): Pull[] {
 		}
 		return p;
 	}
-
-	// le compteur est à son dernier cran : ce booster DOIT tenir la promesse
-	const duPrism = !!pity && pity.sansPrism + 1 >= PITY_PRISM;
-	const duFullArt = !!pity && pity.sansFullArt + 1 >= PITY_FULLART;
 
 	const pulls: Pull[] = [];
 	const seen = new Set<string>();

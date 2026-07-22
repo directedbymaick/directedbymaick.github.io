@@ -1,6 +1,11 @@
 import type { CardData, FoilPreset, Rarity } from '$lib/types';
 import { eligibleFullArt, fullArtView } from '$lib/gacha';
 import { altView } from '$lib/cards';
+import { FOIL_RATE, ALT_RATE, ALT_FULLART_PART, POIDS_SP } from '$lib/tirage.config';
+
+/* Molettes centralisées dans tirage.config.ts, ré-exportées ici pour les pages
+   qui les importaient déjà de ce module. */
+export { FOIL_RATE, ALT_RATE, ALT_FULLART_PART, POIDS_SP };
 
 /**
  * Les versions réellement existantes d'une carte, et leur probabilité de sortie.
@@ -10,8 +15,6 @@ import { altView } from '$lib/cards';
  * des bonus rares qui se substituent au Raw lors d'un tirage.
  */
 
-/** Chance qu'un tirage soit foil plutôt que Raw. */
-export const FOIL_RATE = 0.15;
 
 /**
  * Chance qu'un tirage donne UN art alternatif donné, plutôt que l'illustration
@@ -25,7 +28,6 @@ export const FOIL_RATE = 0.15;
  * 1 sur 14 700 pour la simple. Retirer une version d'un alt ne doit pas rendre
  * les autres plus courantes par ricochet.
  */
-export const ALT_RATE = 0.0027;
 
 /**
  * Répartition À L'INTÉRIEUR d'un art alternatif.
@@ -42,7 +44,6 @@ export const ALT_RATE = 0.0027;
  * produit distinct de la Full Art ; depuis que les deux sont détourées, cet ordre
  * n'avait plus de sens.
  */
-export const ALT_FULLART_PART = 0.222;
 
 export const FOIL_LABEL: Record<FoilPreset, string> = {
 	mat: 'Raw',
@@ -131,7 +132,7 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 	   le tag « no bg ». Sans détourage, ce foil ne fait qu'appliquer le holo de fond
 	   de la rareté — c'est donc une finition ordinaire, au même poids que les autres. */
 	const poidsDe = (f: FoilPreset, c: Pick<CardData, 'cutout'>) =>
-		f === 'showcase' && c.cutout ? 0.4 : 1;
+		f === 'showcase' && c.cutout ? POIDS_SP : 1;
 	const poids = (f: FoilPreset) => poidsDe(f, card);
 
 	const eligible = eligibleFullArt(card);

@@ -6,6 +6,12 @@
 	import { createPackFx, type PackFx, type BurstSpec } from '$lib/effects/packfx';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
+	import mesures from '$lib/taux-mesures.json';
+
+	/** une fraction mesurée, en pourcentage lisible : 0.04523 → « 4,5 » */
+	function pct(x: number) {
+		return (x * 100).toFixed(1).replace('.', ',');
+	}
 	import {
 		openPack,
 		isGodPack,
@@ -485,16 +491,16 @@
 />
 
 <svelte:head>
-	<title>Réquisition — {charter.game.name}</title>
-	<meta name="description" content="Ouvrez des sachets du Silence : cinq cartes, probabilités publiques et collection persistante." />
+	<title>Boosters — {charter.game.name}</title>
+	<meta name="description" content="Ouvrez des boosters de cinq cartes, découvrez les probabilités et complétez votre collection Expelled." />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◆</span> Archives scellées</p>
-	<h1>Réquisition</h1>
+	<p class="kicker"><span class="k-diamond">◆</span> Nés du silence · Set 01</p>
+	<h1>Boosters</h1>
 	<p class="tagline">
-		Chaque booster contient {PACK_SIZE} cartes. Les probabilités sont publiques ; chaque tirage
-		rejoint votre Registre.
+		Chaque booster contient {PACK_SIZE} cartes. Ouvrez-le, révélez vos tirages et ajoutez-les
+		automatiquement à votre collection.
 	</p>
 	<p class="colstat">
 		<span class="colstat-n">{stats.unique}</span>/{cards.length} cartes uniques ·
@@ -594,7 +600,7 @@
 					<small>Le Silence s'est ouvert — cinq cartes en Full Art prismatique.</small>
 				</div>
 			{/if}
-			<h2 class="recap-title">{bulk ? `Ton ouverture · ${pulls.length} cartes` : 'Ton tirage'}</h2>
+			<h2 class="recap-title">{bulk ? `Votre ouverture · ${pulls.length} cartes` : 'Votre tirage'}</h2>
 			<div class="recap-grid">
 				{#each pulls as p, i (i)}
 					<div class="recap-cell" style="--i: {i}">
@@ -612,7 +618,7 @@
 			</div>
 			<div class="reveal-controls">
 				<button class="primary" onclick={again}>Ouvrir un autre booster</button>
-				<a class="ghost" href="/">Retour au mur</a>
+				<a class="ghost" href="/registre">Voir la galerie</a>
 			</div>
 		</div>
 	{/if}
@@ -642,9 +648,9 @@
 	     eux, sont mesures sur le tirage complet : ils sont donc plus genereux, et
 	     il faut le dire ici pour qu'un joueur ne croie pas a une contradiction. -->
 	<p class="odds-note">
-		Ce tableau décrit le tirage de base d'un slot. Les garanties ci-dessous et les god packs le
-		rendent plus généreux en pratique : les taux réellement observés, version par version, sont
-		mesurés sur le tirage complet et publiés dans <a href="/raretes">l'échelle des raretés</a>.
+		Ce tableau présente les probabilités de base pour chaque emplacement du booster. Les garanties
+		et les boosters spéciaux améliorent ces résultats. Consultez la <a href="/raretes">page Raretés</a>
+		pour connaître la fréquence réelle de chaque version.
 	</p>
 	<div class="pitie">
 		<h3>Garanties</h3>
@@ -703,9 +709,13 @@
 
 	<p class="odds-note">
 		Les taux ci-dessus sont ceux du tirage seul, <strong>avant</strong> les garanties : à l'usage,
-		les compteurs les relèvent à 4,5&nbsp;% de boosters avec Prismatique (contre 3,4&nbsp;%) et
-		10&nbsp;% avec Full Art (contre 9&nbsp;%), et bornent la pire disette à
-		{PITY_PRISM} et {PITY_FULLART} boosters au lieu de 245 et 99.
+		les compteurs les relèvent à {pct(mesures.boostersAvec.prism)}&nbsp;% de boosters avec
+		Prismatique (contre {pct(mesures.boostersSansGarantie.prism)}&nbsp;%) et
+		{pct(mesures.boostersAvec.fullArt)}&nbsp;% avec Full Art (contre
+		{pct(mesures.boostersSansGarantie.fullArt)}&nbsp;%), et bornent la pire disette à
+		{mesures.boostersAvec.pireDisettePrism} et {mesures.boostersAvec.pireDisetteFullArt} boosters
+		au lieu de {mesures.boostersSansGarantie.pireDisettePrism} et
+		{mesures.boostersSansGarantie.pireDisetteFullArt}.
 		Si une rareté tirée n'a aucune carte forgée, le tirage se replie sur la rareté la plus proche.
 		Pas de doublon à l'intérieur d'un même booster tant que le pool le permet. Chaque carte épique
 		ou au-delà a {Math.round(FULLART_RATE * 100)}&nbsp;% de chance de sortir en version
