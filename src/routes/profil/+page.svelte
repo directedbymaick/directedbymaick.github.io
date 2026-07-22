@@ -8,7 +8,8 @@
 	import { charter } from '$lib/charter';
 	import { loadCollection, saveCollection, collectionStats, FULLART_RATE } from '$lib/gacha';
 	import { versionsOf } from '$lib/variants';
-	import { session, initSession, setPseudo } from '$lib/account.svelte';
+	import { session, initSession, signOut, setPseudo } from '$lib/account.svelte';
+	import AuthPanel from '$lib/AuthPanel.svelte';
 	import { nsKey, scheduleCloudSync } from '$lib/store';
 	import {
 		eco,
@@ -246,6 +247,11 @@
 		earn(total, `Revente du surplus : ${count} carte${count > 1 ? 's' : ''}`);
 	}
 
+	async function logout() {
+		await signOut();
+		if (typeof location !== 'undefined') location.assign('/');
+	}
+
 	/* réinitialiser la collection (utile après des tests) */
 	function resetCollection() {
 		if (!confirm('Vider entièrement votre collection ? Cette action est irréversible.')) return;
@@ -304,13 +310,18 @@
 	<meta name="description" content="Votre espace : collection et decks de {charter.game.name}." />
 </svelte:head>
 
-{#if account}
+{#if session.ready && !account}
+	<!-- ============ PORTE : connexion requise ============ -->
+	<section class="gate">
+		<AuthPanel />
+	</section>
+{:else if account}
 	<!-- ============ EN-TÊTE DU NOM ============ -->
 	<header class="idcard">
 		<img class="sigil" src={logo} alt="" aria-hidden="true" />
 		<div class="who">
 			<input class="pseudo" bind:value={pseudo} maxlength="24" aria-label="Votre pseudo" />
-			<p class="sub">Sauvegarde locale · Niveau d'Équilibre 0</p>
+			<p class="sub">{account.email} · Niveau d'Équilibre 0</p>
 		</div>
 		<div class="chips">
 			<span class="chip gold"><i class="shard" aria-hidden="true"></i><b>{eco.balance}</b> Éclats</span>
@@ -318,6 +329,7 @@
 			<span class="chip"><b>{stats.total}</b> tirées</span>
 			<span class="chip"><b>{decks.length}</b> deck{decks.length > 1 ? 's' : ''}</span>
 			<span class="chip"><b>{eco.stats.wins}</b> victoire{eco.stats.wins > 1 ? 's' : ''}</span>
+			<button class="outbtn" onclick={logout}>Se déconnecter</button>
 		</div>
 	</header>
 
@@ -679,6 +691,21 @@
 {/if}
 
 <style>
+	/* ---------- la porte ---------- */
+	.gate {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.8rem;
+		max-width: 430px;
+		margin: 7rem auto 4rem;
+		padding: 2.6rem 2.4rem 2rem;
+		text-align: center;
+		background: var(--panel);
+		border: 1px solid rgba(213, 178, 94, 0.3);
+		border-radius: 20px;
+		backdrop-filter: blur(12px);
+	}
 	/* ---------- Éclats / quêtes / succès ---------- */
 	.chip.gold {
 		display: inline-flex;
@@ -828,6 +855,21 @@
 		color: var(--gold);
 	}
 
+	.outbtn {
+		padding: 0.4rem 0.85rem;
+		font-family: inherit;
+		font-size: 0.78rem;
+		font-weight: 550;
+		color: rgba(255, 150, 150, 0.75);
+		background: transparent;
+		border: 1px solid rgba(220, 90, 90, 0.35);
+		border-radius: 999px;
+		cursor: pointer;
+	}
+	.outbtn:hover {
+		color: #ffb3b3;
+		border-color: rgba(220, 90, 90, 0.6);
+	}
 	/* ---------- en-tête ---------- */
 	.idcard {
 		display: flex;
