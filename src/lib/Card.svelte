@@ -830,7 +830,18 @@
 	.ff-alt {
 		display: inline-block;
 		margin-left: 1.2cqw;
-		padding: 0.35cqw 1.3cqw 0.25cqw;
+		/* Même correction que .ff-sp, qui avait le problème avant elle : les
+		   capitales posent sur la ligne de base sans descendante, donc à
+		   rembourrage égal l'encre tombe sous le centre de la pilule. Ici le
+		   rembourrage penchait en plus vers le haut, ce qui enfonçait le texte.
+		   Plus de marge en bas qu'en haut, et un léger relèvement pour aligner
+		   la pastille sur les capitales voisines du pied. */
+		padding: 0.24cqw 1.3cqw 0.36cqw;
+		vertical-align: 0.06em;
+		position: relative;
+		/* relèvement mesuré, pas estimé : à -0.28cqw la pastille passait 0,21 px
+		   au-dessus du centre optique des capitales du pied (carte de 380 px). */
+		top: -0.224cqw;
 		font-size: 1.7cqw;
 		font-weight: 700;
 		letter-spacing: 0.18em;

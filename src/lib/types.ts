@@ -55,6 +55,8 @@ export interface CardVariant {
  */
 export interface AltReglage {
 	foilPreset?: FoilPreset;
+	/** finition de la vue Full Art DE CET ALT ; à défaut, celle de la carte de base */
+	fullArtFoil?: FoilPreset;
 	/** décalage de brillance ; à défaut, seed de la base + 97 × (index + 1) */
 	seed?: number;
 	/** finitions supplémentaires, comme `variants` sur la carte de base */
