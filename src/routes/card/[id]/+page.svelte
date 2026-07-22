@@ -2,7 +2,6 @@
 	import Card from '$lib/Card.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
-	import { altView } from '$lib/cards';
 	import { onMount } from 'svelte';
 	import { FULLART_RATE, loadCollection, saveCollection } from '$lib/gacha';
 	import { eco, initEconomy, depenserSyllabes } from '$lib/economy.svelte';
@@ -20,28 +19,16 @@
 	   montre que le Raw ; c'est ici qu'on voit ce qui est réellement poolable. */
 	const versions = $derived(versionsOf(card, FULLART_RATE));
 
-	/* les artworks alternatifs restent proposés à la suite (ils ne sont pas des
-	   versions au sens tirage : même carte, autre illustration) */
-	const alts = $derived(
-		(card.alts ?? []).map((art, i) => ({
-			key: `alt${i + 2}`,
-			label: `Alt ${i + 1}`,
-			view: altView(card, art, i)
-		}))
-	);
-
 	let artSel = $state('');
 	$effect(() => {
 		card.id; // reset à chaque navigation de carte
 		const v = new URLSearchParams(location.search).get('v');
-		const dispo = [...versions.map((x) => x.key), ...alts.map((a) => a.key)];
+		const dispo = versions.map((x) => x.key);
 		artSel = v && dispo.includes(v) ? v : versions[0].key;
 	});
 
 	const shown: CardData = $derived(
-		versions.find((v) => v.key === artSel)?.view ??
-			alts.find((a) => a.key === artSel)?.view ??
-			versions[0].view
+		versions.find((v) => v.key === artSel)?.view ?? versions[0].view
 	);
 	const shownFullArt = $derived(versions.find((v) => v.key === artSel)?.fullArt ?? false);
 
@@ -122,18 +109,6 @@
 					<small class="taux">
 						{formatRate(v.rate)}{possedee(v.key) > 0 ? ` · ×${possedee(v.key)}` : ''}
 					</small>
-				</button>
-			{/each}
-			{#each alts as a (a.key)}
-				<button
-					class="vbtn"
-					class:active={artSel === a.key}
-					role="tab"
-					aria-selected={artSel === a.key}
-					onclick={() => (artSel = a.key)}
-				>
-					{a.label}
-					<small class="taux">artwork alt.</small>
 				</button>
 			{/each}
 		</div>

@@ -1,5 +1,6 @@
 import type { CardData, FoilPreset, Rarity } from '$lib/types';
 import { eligibleFullArt, fullArtView } from '$lib/gacha';
+import { altView } from '$lib/cards';
 
 /**
  * Les versions réellement existantes d'une carte, et leur probabilité de sortie.
@@ -11,6 +12,16 @@ import { eligibleFullArt, fullArtView } from '$lib/gacha';
 
 /** Chance qu'un tirage soit foil plutôt que Raw. */
 export const FOIL_RATE = 0.15;
+
+/**
+ * Chance qu'un tirage donne UN art alternatif donné, plutôt que l'illustration
+ * de base. Une carte à deux alts leur cède donc 2 × ce taux.
+ *
+ * Réglé sous la Full Art (6 %) : l'alt est l'artwork chase de la carte.
+ * Et un alt ne sort JAMAIS en Raw — c'est une pièce de collection, elle porte
+ * toujours une finition.
+ */
+export const ALT_RATE = 0.01;
 
 export const FOIL_LABEL: Record<FoilPreset, string> = {
 	mat: 'Raw',
@@ -95,15 +106,22 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 	   un DÉTOURAGE : le personnage flotte alors au-dessus du holo, et la carte porte
 	   le tag « no bg ». Sans détourage, ce foil ne fait qu'appliquer le holo de fond
 	   de la rareté — c'est donc une finition ordinaire, au même poids que les autres. */
-	const poids = (f: FoilPreset) => (f === 'showcase' && card.cutout ? 0.4 : 1);
+	const poidsDe = (f: FoilPreset, c: Pick<CardData, 'cutout'>) =>
+		f === 'showcase' && c.cutout ? 0.4 : 1;
+	const poids = (f: FoilPreset) => poidsDe(f, card);
 
 	const eligible = eligibleFullArt(card);
 	const pFA = eligible ? fullArtRate : 0;
 
 	const versions: CardVersion[] = [];
 
+	/* Les arts alternatifs prélèvent leur part sur l'illustration de base : le
+	   total des versions d'une carte vaut toujours 1. */
+	const alts = card.alts ?? [];
+	const pArt = 1 - alts.length * ALT_RATE;
+
 	for (const fullArt of eligible ? [false, true] : [false]) {
-		const pForme = fullArt ? pFA : 1 - pFA;
+		const pForme = (fullArt ? pFA : 1 - pFA) * pArt;
 		const foils = finitions(fullArt);
 		const suffixe = fullArt ? '--fullart' : '';
 		const vueForme = fullArt
@@ -132,6 +150,52 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 			});
 		}
 	}
+
+	/* ---------------------------------------------------- arts alternatifs
+	   Un alt est une troisième forme, avec ses propres finitions réglées au Lab.
+	   Deux différences avec l'illustration de base : il n'a jamais de Raw, et son
+	   illustration n'étant pas détourée, ses libellés suivent la matière de la
+	   rareté et non la « SP ». */
+	alts.forEach((art, i) => {
+		const reglage = card.altReglages?.[i];
+		// à défaut de validation au Lab, la finition héritée de la carte de base
+		const defaut: FoilPreset =
+			card.gene.foilPreset === 'mat' ? 'regular' : card.gene.foilPreset;
+
+		const finitionsAlt = (fullArt: boolean): FoilPreset[] => {
+			const officielle = fullArt ? reglage?.fullArtFoil : reglage?.foilPreset;
+			const list = [
+				...(estFoil(officielle) ? [officielle] : []),
+				...(reglage?.variants ?? [])
+					.filter((v) => !!v.fullArt === fullArt)
+					.map((v) => v.foilPreset)
+			].filter(estFoil);
+			// jamais vide : un alt porte toujours une finition
+			return list.length ? [...new Set(list)] : [defaut];
+		};
+
+		for (const fullArt of eligible ? [false, true] : [false]) {
+			const pForme = (fullArt ? pFA : 1 - pFA) * ALT_RATE;
+			const vueAlt = altView(card, art, i);
+			const vueForme = fullArt
+				? { ...fullArtView(vueAlt), gene: { ...vueAlt.gene } }
+				: vueAlt;
+			const suffixe = `--alt${i + 1}${fullArt ? '--fullart' : ''}`;
+			const foils = finitionsAlt(fullArt);
+			const total = foils.reduce((a, f) => a + poidsDe(f, vueAlt), 0);
+
+			for (const f of foils) {
+				versions.push({
+					key: `${card.id}${suffixe}--${f}`,
+					label: `Alt ${i + 1}${fullArt ? ' · Full Art' : ''} · ${foilLabel(f, vueAlt, fullArt)}`,
+					foil: f,
+					fullArt,
+					rate: (pForme * poidsDe(f, vueAlt)) / total,
+					view: { ...vueForme, gene: { ...vueForme.gene, foilPreset: f } }
+				});
+			}
+		}
+	});
 
 	return versions;
 }

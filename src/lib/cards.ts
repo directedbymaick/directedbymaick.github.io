@@ -36,7 +36,7 @@ export function altView(
 ): CardData {
 	const reglage = card.altReglages?.[index];
 	const defaut = card.gene.foilPreset === 'mat' ? 'regular' : card.gene.foilPreset;
-	return {
+	const vue: CardData = {
 		...card,
 		art,
 		alt: index + 1,
@@ -46,4 +46,13 @@ export function altView(
 			seed: reglage?.seed ?? card.gene.seed + 97 * (index + 1)
 		}
 	};
+	/* Le détourage appartient à l'illustration de BASE. Le garder ici ferait
+	   flotter le sujet découpé de la carte de base au-dessus de l'artwork de
+	   l'alt, et ferait étiqueter cette version « SP » alors qu'elle n'est pas
+	   détourée. Un alt détouré devra porter son propre découpage. */
+	delete vue.cutout;
+	delete vue.cutoutX;
+	delete vue.cutoutY;
+	delete vue.cutoutScale;
+	return vue;
 }

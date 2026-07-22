@@ -18,6 +18,8 @@ export interface Palier {
 	rarity: Rarity;
 	fullArt: boolean;
 	foil: FoilPreset | null;
+	/** version bâtie sur un art alternatif plutôt que sur l'illustration de base */
+	alt: boolean;
 	/** l'illustration est détourée : le personnage flotte, la carte porte « no bg ».
 	    Depuis que le showcase sans détourage s'appelle « Reflet », ce booléen vaut
 	    exactement `foil === 'showcase'` — il reste exposé pour filtrer, mais il
@@ -133,9 +135,15 @@ export function prixNom(taux: number): number {
 const ECHELLE_RARETE: Rarity[] = ['common', 'rare', 'epic', 'legendary', 'prism'];
 
 /** L'identité d'une version, rareté mise à part. */
-function forme(v: { fullArt: boolean; foil: FoilPreset | null }, c: CardData): string {
-	const nobg = v.foil === 'showcase' && !!c.cutout;
-	return `${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}`;
+function forme(
+	v: { fullArt: boolean; foil: FoilPreset | null; view?: CardData },
+	c: CardData
+): string {
+	const vue = v.view ?? c;
+	const nobg = v.foil === 'showcase' && !!vue.cutout;
+	// un alt ne se compare qu'à d'autres alts : ce sont deux échelles distinctes
+	const alt = !!vue.alt;
+	return `${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}|${alt ? 'alt' : ''}`;
 }
 
 /** forme -> rareté -> prix minimal admissible, hérité des raretés inférieures. */
@@ -172,8 +180,9 @@ function planchers(): Map<string, number[]> {
 }
 
 /**
- * Le prix affiché : celui que dicte le taux mesuré, relevé au plancher de sa
- * forme si une rareté inférieure coûtait davantage.
+ * Le taux de sortie mesuré détermine le prix de départ. Pour une même finition,
+ * chaque palier de rareté applique ensuite un prix plancher au moins égal au
+ * prix maximal des paliers inférieurs.
  */
 export function prixVersion(
 	card: CardData,
@@ -192,8 +201,12 @@ export function paliers(): Palier[] {
 	for (const c of cards) {
 		for (const v of versionsOf(c, FULLART_RATE)) {
 			const rarity = v.view.sourceRarity ?? v.view.rarity;
-			const nobg = v.foil === 'showcase' && !!c.cutout;
-			const key = `${rarity}|${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}`;
+			const nobg = v.foil === 'showcase' && !!v.view.cutout;
+			/* L'art alternatif est un palier À PART : sans ça une Alt à 0,1 % se
+			   fondait dans la ligne de sa finition de base à 14 %, et la fréquence
+			   affichée pour ce palier ne décrivait plus aucune des deux. */
+			const alt = !!v.view.alt;
+			const key = `${rarity}|${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}|${alt ? 'alt' : ''}`;
 
 			/* Mesuré, pas déduit : le nombre de fois que cette version exacte est
 			   sortie de `openPack`, rapporté au nombre de boosters ouverts. */
@@ -210,11 +223,13 @@ export function paliers(): Palier[] {
 				rarity,
 				fullArt: v.fullArt,
 				foil: v.foil,
+				alt,
 				nobg,
 				label: [
 					charter.rarities[rarity].name,
+					alt ? 'Alt' : null,
 					v.fullArt ? 'Full Art' : null,
-					v.foil ? foilLabel(v.foil, c, v.fullArt) : 'Raw'
+					v.foil ? foilLabel(v.foil, v.view, v.fullArt) : 'Raw'
 				]
 					.filter(Boolean)
 					.join(' · '),
