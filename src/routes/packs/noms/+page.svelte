@@ -8,7 +8,7 @@
 	import { FULLART_RATE, loadCollection, saveCollection } from '$lib/gacha';
 	import { versionsOf } from '$lib/variants';
 	import { eco, initEconomy, depenserSyllabes } from '$lib/economy.svelte';
-	import { tauxVersion, prixNom, frequence } from '$lib/paliers';
+	import { tauxVersion, prixVersion, frequence } from '$lib/paliers';
 	import type { CardData, FactionId, Rarity } from '$lib/types';
 
 	/**
@@ -51,7 +51,7 @@
 				fullArt: v.fullArt,
 				rarity,
 				taux,
-				prix: prixNom(taux)
+				prix: prixVersion(c, v)
 			};
 		})
 	);

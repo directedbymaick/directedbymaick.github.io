@@ -7,7 +7,7 @@
 	import { FULLART_RATE, loadCollection, saveCollection } from '$lib/gacha';
 	import { eco, initEconomy, depenserSyllabes } from '$lib/economy.svelte';
 	import { versionsOf, formatRate } from '$lib/variants';
-	import { tauxVersion, prixNom } from '$lib/paliers';
+	import { tauxVersion, prixVersion } from '$lib/paliers';
 	import type { CardData } from '$lib/types';
 
 	let { data } = $props();
@@ -63,7 +63,7 @@
 	   valent pas pareil. */
 	const versionCourante = $derived(versions.find((v) => v.key === artSel) ?? null);
 	const prix = $derived(
-		versionCourante ? prixNom(tauxVersion(card, versionCourante)) : 0
+		versionCourante ? prixVersion(card, versionCourante) : 0
 	);
 	let messageForge = $state('');
 

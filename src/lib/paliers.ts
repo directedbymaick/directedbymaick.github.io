@@ -120,6 +120,72 @@ export function prixNom(taux: number): number {
 	return Math.max(PRIX_PLANCHER, Math.round(brut / arrondi) * arrondi);
 }
 
+/* ------------------------------------------------------------------ plancher
+   Le prix suit le taux mesuré, et le taux mesuré ne suit pas la rareté : les
+   garanties et les god packs promeuvent toujours la carte la plus rare du
+   booster, jamais une Rare. Une Rare Full Art SP se retrouvait donc plus dure à
+   sortir — et deux fois plus chère — qu'une Prismatique Full Art SP.
+
+   La règle : à forme égale (Full Art, finition, détourage), le prix d'une
+   rareté ne peut pas descendre sous celui de la même forme à une rareté
+   inférieure. Le tirage reste ce qu'il est, l'échelle des raretés reste
+   sincère ; c'est la boutique seule qui garde une hiérarchie lisible. */
+const ECHELLE_RARETE: Rarity[] = ['common', 'rare', 'epic', 'legendary', 'prism'];
+
+/** L'identité d'une version, rareté mise à part. */
+function forme(v: { fullArt: boolean; foil: FoilPreset | null }, c: CardData): string {
+	const nobg = v.foil === 'showcase' && !!c.cutout;
+	return `${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}`;
+}
+
+/** forme -> rareté -> prix minimal admissible, hérité des raretés inférieures. */
+let planchersCache: Map<string, number[]> | null = null;
+function planchers(): Map<string, number[]> {
+	if (planchersCache) return planchersCache;
+
+	// prix bruts les plus élevés observés pour chaque (forme, rareté)
+	const brut = new Map<string, number[]>();
+	for (const c of cards) {
+		for (const v of versionsOf(c, FULLART_RATE)) {
+			const r = (v.view.sourceRarity ?? v.view.rarity) as Rarity;
+			const i = ECHELLE_RARETE.indexOf(r);
+			if (i < 0) continue;
+			const f = forme(v, c);
+			const ligne = brut.get(f) ?? ECHELLE_RARETE.map(() => 0);
+			ligne[i] = Math.max(ligne[i], prixNom(tauxVersion(c, v)));
+			brut.set(f, ligne);
+		}
+	}
+
+	// puis on propage vers le haut : chaque rareté hérite du maximum d'en dessous
+	planchersCache = new Map();
+	for (const [f, ligne] of brut) {
+		const sol = ECHELLE_RARETE.map(() => 0);
+		let acc = 0;
+		for (let i = 0; i < ligne.length; i++) {
+			sol[i] = acc; // strictement les raretés INFÉRIEURES
+			acc = Math.max(acc, ligne[i]);
+		}
+		planchersCache.set(f, sol);
+	}
+	return planchersCache;
+}
+
+/**
+ * Le prix affiché : celui que dicte le taux mesuré, relevé au plancher de sa
+ * forme si une rareté inférieure coûtait davantage.
+ */
+export function prixVersion(
+	card: CardData,
+	v: { key: string; rate: number; fullArt: boolean; foil: FoilPreset | null; view: CardData }
+): number {
+	const p = prixNom(tauxVersion(card, v));
+	const r = (v.view.sourceRarity ?? v.view.rarity) as Rarity;
+	const i = ECHELLE_RARETE.indexOf(r);
+	if (i < 0) return p;
+	return Math.max(p, planchers().get(forme(v, card))?.[i] ?? 0);
+}
+
 export function paliers(): Palier[] {
 	const map = new Map<string, Palier>();
 
