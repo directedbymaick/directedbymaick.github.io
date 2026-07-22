@@ -73,27 +73,8 @@
 	   tirage lui-même. La publier ici, c'est publier les vraies probabilités. */
 	const ECHELLE = paliers();
 
-	/* ---- pitié ----
-	   Le booster suivant est pré-tiré pour que le sachet soit prêt à l'écran. Ses
-	   compteurs ne doivent pourtant avancer QUE s'il est réellement ouvert : on
-	   tire donc sur une copie, et on ne la valide qu'au paiement. Sans ça, quitter
-	   la page brûlerait de la pitié pour rien. */
+	/* ---- pitié ---- */
 	let pity = $state<Pity>({ sansPrism: 0, sansFullArt: 0 });
-	let pityEnAttente: Pity | null = null;
-
-	function preparer() {
-		const copie = { ...pity };
-		pending = openPack(copie);
-		pityEnAttente = copie;
-	}
-
-	function validerPity() {
-		if (pityEnAttente) {
-			pity = pityEnAttente;
-			pityEnAttente = null;
-			savePity($state.snapshot(pity));
-		}
-	}
 
 	const RARITY_TINT: Record<Rarity, string> = {
 		common: '#8b95a5',
@@ -111,7 +92,6 @@
 	onMount(() => {
 		initEconomy();
 		pity = loadPity();
-		preparer();
 		reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (!reduced) {
 			(async () => {
@@ -134,9 +114,6 @@
 		return () => fx?.destroy();
 	});
 
-	/* Le sachet est pré-tiré : la fuite de lumière et la déflagration prennent
-	   la couleur du meilleur tirage qui dort dedans. */
-	let pending: Pull[] = $state([]);
 	/* Le Full Art d'une Commune ne vaut pas une Prismatique : le rang suit la
 	   VRAIE rareté, et le sommet est réservé à l'apex. */
 	const TIER_RANK: Record<FxTier, number> = {
@@ -152,10 +129,6 @@
 		fullart: '#cbb8ff',
 		apex: '#e6d8ff'
 	};
-	const bestTier = $derived(
-		pending.reduce<FxTier>((best, p) => (TIER_RANK[fxOf(p)] > TIER_RANK[best] ? fxOf(p) : best), 'common')
-	);
-	const packPrisma = $derived(bestTier === 'prism' || bestTier === 'fullart' || bestTier === 'apex');
 
 	/* Retenue : peu de matière, lente, sans forme lisible. Le palier monte surtout
 	   par la lumière (bloom, vignette, rémanence), pas par le nombre de particules. */
@@ -213,7 +186,7 @@
 	 */
 	function syllabesDe(p: Pull, nouveau: boolean): number {
 		if ((p.card.sourceRarity ?? p.card.rarity) === 'prism')
-			return nouveau ? SYLLABES_PULL : SYLLABES_PULL + SYLLABES_DOUBLON;
+			return nouveau ? SYLLABES_PULL : SYLLABES_DOUBLON;
 		if (p.card.gene.foilPreset === 'showcase' && p.card.cutout) return SYLLABES_SP;
 		if (p.fullArt) return SYLLABES_FULLART;
 		return 0;
@@ -306,13 +279,8 @@
 		// le booster se paye en Éclats — dernier garde-fou si l'UI a laissé passer
 		if (!spend(PACK_PRICE)) return;
 		track('packOpened');
-		if (pending.length) {
-			pulls = pending;
-			validerPity();
-		} else {
-			pulls = openPack(pity);
-			savePity($state.snapshot(pity));
-		}
+		pulls = openPack(pity);
+		savePity($state.snapshot(pity));
 		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
 		moissonnerSyllabes(pulls, freshIds);
@@ -322,10 +290,12 @@
 			let count = 0;
 			for (const p of pulls) {
 				const id = p.card.id;
+				const rarity = p.card.sourceRarity ?? p.card.rarity;
+				if (rarity === 'prism') continue;
 				const n = (collection[id] ?? 0) - SELL_KEEP;
 				if (n > 0) {
 					collection[id] = SELL_KEEP;
-					total += n * (SELL_VALUE[p.card.rarity] ?? 5);
+					total += n * (SELL_VALUE[rarity] ?? 2);
 					count += n;
 				}
 			}
@@ -456,7 +426,6 @@
 		pulls = [];
 		flipped = [];
 		godHit = false;
-		preparer();
 	}
 
 	/* ---- ouverture groupée : 5 boosters d'un coup, récap direct ---- */
@@ -471,7 +440,6 @@
 		track('packOpened', BULK_N);
 		const all: Pull[] = [];
 		let god = false;
-		pityEnAttente = null; // l'ouverture groupée ignore le sachet pré-tiré
 		for (let k = 0; k < BULK_N; k++) {
 			const pk = openPack(pity);
 			if (isGodPack(pk)) god = true;
@@ -485,10 +453,12 @@
 			let count = 0;
 			for (const p of all) {
 				const id = p.card.id;
+				const rarity = p.card.sourceRarity ?? p.card.rarity;
+				if (rarity === 'prism') continue;
 				const n = (collection[id] ?? 0) - SELL_KEEP;
 				if (n > 0) {
 					collection[id] = SELL_KEEP;
-					total += n * (SELL_VALUE[p.card.rarity] ?? 5);
+					total += n * (SELL_VALUE[rarity] ?? 2);
 					count += n;
 				}
 			}
@@ -502,7 +472,6 @@
 		godHit = god;
 		bulk = true;
 		savePity($state.snapshot(pity));
-		preparer();
 		stage = 'recap';
 		await tick();
 		// une seule note de lumière au point du sachet — le reste est en CSS
@@ -562,7 +531,7 @@
 			</p>
 			{#if canAfford}
 				<p class="hint">⠿ Tire la languette pour ouvrir</p>
-				<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW[bestTier]} prisma={packPrisma} />
+				<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW.common} prisma={false} />
 				<div class="openrow">
 					<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
 					<button class="ghost bulk" disabled={!canAffordBulk} onclick={bulkOpen}>
@@ -571,7 +540,7 @@
 				</div>
 			{:else}
 				<div class="broke-pack">
-					<PackVisual glow={TIER_GLOW[bestTier]} prisma={false} />
+					<PackVisual glow={TIER_GLOW.common} prisma={false} />
 				</div>
 				<p class="broke">
 					Éclats insuffisants — gagnez-en en <a href="/arene">Arène</a> et via vos
@@ -583,9 +552,9 @@
 		<div class="stage-inner">
 			<div
 					class="reveal-glow"
-					class:prisma={packPrisma}
+					class:prisma={false}
 					aria-hidden="true"
-					style="--rglow: {TIER_GLOW[bestTier]}"
+					style="--rglow: {TIER_GLOW.common}"
 				></div>
 				<div class="fan">
 				<!-- couche de lueurs : derrière TOUT l'éventail, jamais coupée par une carte voisine.
