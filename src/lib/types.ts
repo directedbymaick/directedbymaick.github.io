@@ -48,6 +48,19 @@ export interface CardVariant {
 	label?: string;
 }
 
+/**
+ * Un art alternatif se règle comme une petite carte : sa finition officielle et,
+ * éventuellement, des finitions supplémentaires. Sans réglage, `altView` applique
+ * la règle par défaut — foil hérité de la base, brillance décalée.
+ */
+export interface AltReglage {
+	foilPreset?: FoilPreset;
+	/** décalage de brillance ; à défaut, seed de la base + 97 × (index + 1) */
+	seed?: number;
+	/** finitions supplémentaires, comme `variants` sur la carte de base */
+	variants?: CardVariant[];
+}
+
 export interface CardData {
 	/** Slug unique, utilisé comme id d'URL (/card/[id]). */
 	id: string;
@@ -110,6 +123,9 @@ export interface CardData {
 	variants?: CardVariant[];
 	/** Artworks alternatifs (static/art/alt/), affichés comme versions de la carte. */
 	alts?: string[];
+	/** Réglages propres à chaque art alternatif, indexés comme `alts`.
+	    Absent = l'alt garde le comportement par défaut d'`altView`. */
+	altReglages?: AltReglage[];
 	/** Index de version alternative (1+) — posé par altView à l'affichage, jamais dans les JSON. */
 	alt?: number;
 	gene: CardGene;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
-	import { cards } from '$lib/cards';
+	import { cards, altView } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import { fullArtView, eligibleFullArt } from '$lib/gacha';
 	import type { CardData, FactionId, FoilPreset, Rarity } from '$lib/types';
@@ -58,6 +58,9 @@
 	function loadCard(id: string) {
 		const found = cards.find((c) => c.id === id);
 		if (found) base = structuredClone($state.snapshot(found) as CardData);
+		// la nouvelle carte n'a pas forcément d'alt : rester sur « Alt 2 » afficherait
+		// la base tout en écrivant dans un index inexistant
+		altActif = -1;
 	}
 
 	function setRarity(r: Rarity) {
@@ -70,17 +73,28 @@
 	}
 
 	// Version Full Art (le chase) : dispo pour les cartes qui ont un détourage.
+	/* Art alternatif en cours d'édition : -1 = la carte de base. Les trois axes
+	   (base, Full Art, alt) s'excluent — un alt est un autre artwork, le combiner
+	   au cadre Full Art n'aurait pas de sens tant qu'un alt n'a pas son détourage. */
+	let altActif = $state(-1);
+	const altsDispo = $derived(base.alts ?? []);
+	const surAlt = $derived(altActif >= 0 && altActif < altsDispo.length);
+
 	let showFullArt = $state(false);
 	const hasFullArt = $derived(eligibleFullArt(base));
 	// snapshot : fullArtView fait un structuredClone → il faut un objet simple, pas le proxy $state
 	const preview = $derived(
-		showFullArt && hasFullArt
-			? {
-					...fullArtView($state.snapshot(base) as CardData),
-					// en full art on prévisualise le foil choisi dans le Lab, pas le défaut
-					gene: { ...$state.snapshot(base).gene }
-				}
-			: base
+		surAlt
+			? // l'alt se prévisualise avec le foil courant du Lab, pas avec celui
+				// déjà enregistré : c'est justement ce qu'on est en train de régler
+				altView($state.snapshot(base) as CardData, altsDispo[altActif], altActif, base.gene.foilPreset)
+			: showFullArt && hasFullArt
+				? {
+						...fullArtView($state.snapshot(base) as CardData),
+						// en full art on prévisualise le foil choisi dans le Lab, pas le défaut
+						gene: { ...$state.snapshot(base).gene }
+					}
+				: base
 	);
 
 	/* ---------- validation : le Lab écrit dans cards/<id>.json ----------
@@ -128,7 +142,19 @@
 			foil: v.foilPreset,
 			fullArt: !!v.fullArt,
 			defaut: false
-		}))
+		})),
+		...(officiel?.alts ?? []).flatMap((_, i) => {
+			const r = officiel?.altReglages?.[i];
+			return [
+				{ role: `Alt ${i + 1}`, foil: r?.foilPreset, fullArt: false, defaut: !r?.foilPreset },
+				...(r?.variants ?? []).map((v) => ({
+					role: `Alt ${i + 1} · variante`,
+					foil: v.foilPreset,
+					fullArt: !!v.fullArt,
+					defaut: false
+				}))
+			];
+		})
 	]);
 
 	async function envoyer(patch: Record<string, unknown>, message: string) {
@@ -164,6 +190,16 @@
 
 	async function valider() {
 		const b = $state.snapshot(base) as CardData;
+		if (surAlt) {
+			if (
+				await envoyer(
+					{ ...textes(b), altIndex: altActif, altGene: { foilPreset: b.gene.foilPreset } },
+					`Alt ${altActif + 1} officialisé : ${foilLabels[b.gene.foilPreset]}`
+				)
+			)
+				marquerValide(b.id);
+			return;
+		}
 		if (showFullArt && hasFullArt) {
 			if (
 				await envoyer(
@@ -191,6 +227,13 @@
 
 	async function validerVariante() {
 		const b = $state.snapshot(base) as CardData;
+		if (surAlt) {
+			await envoyer(
+				{ ...textes(b), altIndex: altActif, addAltVariant: { foilPreset: b.gene.foilPreset } },
+				`Variante ajoutée à l'alt ${altActif + 1} : ${foilLabels[b.gene.foilPreset]}`
+			);
+			return;
+		}
 		await envoyer(
 			{ ...textes(b), addVariant: { foilPreset: b.gene.foilPreset, fullArt: showFullArt && hasFullArt } },
 			`Variante ajoutée : ${foilLabels[b.gene.foilPreset]}${showFullArt && hasFullArt ? ' (Full Art)' : ''}`
@@ -237,7 +280,7 @@
 
 <div class="lab" style="--card-w: {cardW}px">
 	<div class="preview">
-		<Card card={preview} fullArt={showFullArt && hasFullArt} />
+		<Card card={preview} fullArt={!surAlt && showFullArt && hasFullArt} />
 	</div>
 
 	<form class="controls" onsubmit={(e) => e.preventDefault()}>
@@ -250,7 +293,39 @@
 			</select>
 		</label>
 
-		{#if hasFullArt}
+		{#if altsDispo.length}
+			<div class="field">
+				<span class="field-label">Version à régler</span>
+				<div class="chips">
+					<button
+						type="button"
+						class="chip"
+						class:on={!surAlt}
+						onclick={() => (altActif = -1)}
+					>
+						Illustration de base
+					</button>
+					{#each altsDispo as _, i (i)}
+						<button
+							type="button"
+							class="chip"
+							class:on={altActif === i}
+							onclick={() => {
+								altActif = i;
+								// un alt a sa propre finition : on charge celle déjà enregistrée
+								base.gene.foilPreset =
+									officiel?.altReglages?.[i]?.foilPreset ??
+									(base.gene.foilPreset === 'mat' ? 'regular' : base.gene.foilPreset);
+							}}
+						>
+							Alt {i + 1}
+						</button>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		{#if hasFullArt && !surAlt}
 			<label class="row toggle fullart-toggle">
 				<input type="checkbox" bind:checked={showFullArt} />
 				Version Full Art (le chase — cadre prismatique)
@@ -340,7 +415,11 @@
 
 		<div class="valider">
 			<button type="button" class="primaire" disabled={enCours} onclick={valider}>
-				{showFullArt && hasFullArt ? 'Valider la Full Art' : 'Valider la composition'}
+				{surAlt
+					? `Valider l'alt ${altActif + 1}`
+					: showFullArt && hasFullArt
+						? 'Valider la Full Art'
+						: 'Valider la composition'}
 			</button>
 			<button type="button" disabled={enCours || !baseValidee} onclick={validerVariante}>
 				Valider comme variante

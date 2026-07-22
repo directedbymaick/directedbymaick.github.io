@@ -2,7 +2,7 @@ import { dev } from '$app/environment';
 import { error, json } from '@sveltejs/kit';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { CardData, CardVariant } from '$lib/types';
+import type { AltReglage, CardData, CardVariant } from '$lib/types';
 
 /**
  * Écriture d'une fiche de carte depuis le Lab.
@@ -28,6 +28,14 @@ interface Patch {
 	addVariant?: CardVariant;
 	/** vide la liste des variantes */
 	clearVariants?: boolean;
+	/** index dans `alts` visé par les trois champs suivants */
+	altIndex?: number;
+	/** composition officielle de cet art alternatif (fusionnée) */
+	altGene?: Partial<AltReglage>;
+	/** variante à ajouter à CET art alternatif */
+	addAltVariant?: CardVariant;
+	/** vide les variantes de CET art alternatif */
+	clearAltVariants?: boolean;
 }
 
 export async function POST({ request }) {
@@ -66,6 +74,38 @@ export async function POST({ request }) {
 		// pas de doublon : une même paire (foil, fullArt) ne sert à rien deux fois
 		const exists = list.some((x) => x.foilPreset === v.foilPreset && !!x.fullArt === !!v.fullArt);
 		if (!exists) card.variants = [...list, v];
+	}
+
+	/* ---- arts alternatifs ----
+	   Le même modèle que la carte de base, mais indexé : une composition
+	   officielle par alt, plus une liste de finitions supplémentaires. */
+	const viseAlt =
+		patch.altGene !== undefined ||
+		patch.addAltVariant !== undefined ||
+		patch.clearAltVariants !== undefined;
+	if (viseAlt) {
+		const i = patch.altIndex;
+		if (typeof i !== 'number' || !Number.isInteger(i) || i < 0)
+			error(400, 'altIndex manquant ou invalide');
+		if (i >= (card.alts?.length ?? 0)) error(400, `La carte ${id} n'a pas d'art alternatif ${i}`);
+
+		const liste: AltReglage[] = [...(card.altReglages ?? [])];
+		while (liste.length < (card.alts?.length ?? 0)) liste.push({});
+		const cible: AltReglage = { ...liste[i] };
+
+		if (patch.altGene) Object.assign(cible, patch.altGene);
+		if (patch.clearAltVariants) delete cible.variants;
+		if (patch.addAltVariant) {
+			const l = cible.variants ?? [];
+			const v = patch.addAltVariant;
+			const existe = l.some((x) => x.foilPreset === v.foilPreset && !!x.fullArt === !!v.fullArt);
+			if (!existe) cible.variants = [...l, v];
+		}
+
+		liste[i] = cible;
+		// on ne garde le tableau que s'il porte au moins un réglage
+		card.altReglages = liste.some((r) => Object.keys(r).length > 0) ? liste : undefined;
+		if (!card.altReglages) delete card.altReglages;
 	}
 
 	// tabulations + newline final : le format des fiches déjà en place
