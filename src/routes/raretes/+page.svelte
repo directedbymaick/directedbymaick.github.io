@@ -52,20 +52,29 @@
 		{/each}
 	</ol>
 
-	<div class="filtres">
-		<button class="fbtn" class:on={filtre === 'all'} onclick={() => (filtre = 'all')}>
-			Toutes <span class="fn">{echelle.length}</span>
-		</button>
-		{#each raretes as r (r)}
-			{@const n = echelle.filter((p) => p.rarity === r).length}
-			<button class="fbtn" class:on={filtre === r} disabled={n === 0} onclick={() => (filtre = r)}>
-				{charter.rarities[r].name} <span class="fn">{n}</span>
-			</button>
-		{/each}
-	</div>
 </header>
 
+<!-- Le détail, avec ses propres filtres. Ils étaient au-dessus du titre, si bien
+     que la page annonçait « six classes » puis « 35 » sans dire que les deux
+     nombres ne comptent pas la même chose. -->
 <h2 class="detail-titre">Le détail — {echelle.length} paliers</h2>
+<p class="detail-chapo">
+	Le tirage produit {echelle.length} combinaisons de rareté, de forme et de finition, réparties sur
+	{echelle.reduce((a, p) => a + p.membres, 0)} versions collectionnables. C'est la vérité du moteur ;
+	les six classes ci-dessus en sont la lecture courante.
+</p>
+
+<div class="filtres">
+	<button class="fbtn" class:on={filtre === 'all'} onclick={() => (filtre = 'all')}>
+		Toutes <span class="fn">{echelle.length}</span>
+	</button>
+	{#each raretes as r (r)}
+		{@const n = echelle.filter((p) => p.rarity === r).length}
+		<button class="fbtn" class:on={filtre === r} disabled={n === 0} onclick={() => (filtre = r)}>
+			{charter.rarities[r].name} <span class="fn">{n}</span>
+		</button>
+	{/each}
+</div>
 
 <ol class="echelle">
 	{#each montre as p, i (p.key)}
@@ -143,6 +152,19 @@
 		text-transform: uppercase;
 		color: var(--gold);
 		white-space: nowrap;
+	}
+	.detail-chapo {
+		max-width: 1240px;
+		margin: 0 auto 1.4rem;
+		padding: 0 var(--spacing-20);
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: rgba(238, 240, 245, 0.6);
+	}
+	.filtres {
+		max-width: 1240px;
+		margin: 0 auto 1.8rem;
+		padding: 0 var(--spacing-20);
 	}
 	.detail-titre {
 		max-width: 1240px;
