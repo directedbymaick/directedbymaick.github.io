@@ -317,7 +317,7 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | M01 | Tala, heureuse de tomber | Être | C | 2 | À l'arrivée, choisissez : Tala devient 3/1 ou 1/3. | Elle choisit sa destination avant de toucher terre. |
 | M02 | Faire peau neuve | Verbe | C | 2 | Échangez l'ATQ et l'Intégrité d'un Être allié. | « Nous ne remonterons pas. Nous deviendrons autre chose. » |
 | M03 | Moren, des deux mondes | Être | R | 3 | La première carte que vous jouez à chaque tour coûte 1 Volonté de moins. | Il a connu Vasen et Xenen. Un seul des deux lui manque. |
-| M04 | L'Enfant dont le mot porta | Être | E | 3 | À l'arrivée, copiez le dernier Verbe joué pendant ce duel. Vous pouvez choisir de nouvelles cibles. | Lorsqu'il parla, cinq peuples retinrent leur souffle. |
+| M04 | Enfant de Xenen | Être | E | 3 | À l'arrivée, copiez le dernier Verbe joué pendant ce duel. Vous pouvez choisir de nouvelles cibles. | Lorsqu'il parla, cinq peuples retinrent leur souffle. |
 | M05 | Moras, le sourire dans la chute | Être | L | 5 | Une fois par tour, pour chacun de vos Êtres, vous pouvez échanger son ATQ et son Intégrité jusqu'à la fin du tour. | « Je souriais parce que je tombais enfin du bon côté. » |
 
 #### VELAR (2 communes · 1 rare · 1 épique · 1 légendaire)
