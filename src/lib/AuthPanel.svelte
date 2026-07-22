@@ -1,18 +1,14 @@
 <script lang="ts">
 	import logo from '$lib/assets/logo.svg';
 	import {
-		signIn,
-		signUp,
+		requestLoginCode,
 		verifyCode,
 		resendCode,
-		isValidEmail,
-		isValidPassword
+		isValidEmail
 	} from '$lib/account.svelte';
 
-	let mode = $state<'login' | 'signup'>('login');
-	let step = $state<'creds' | 'code'>('creds');
+	let step = $state<'email' | 'code'>('email');
 	let email = $state('');
-	let password = $state('');
 	let code = $state('');
 	let err = $state('');
 	let info = $state('');
@@ -23,7 +19,7 @@
 		if (typeof location !== 'undefined') location.assign('/profil');
 	}
 
-	async function submitCreds(e: SubmitEvent) {
+	async function submitEmail(e: SubmitEvent) {
 		e.preventDefault();
 		err = '';
 		info = '';
@@ -31,31 +27,15 @@
 			err = 'Cet e-mail ne semble pas valide.';
 			return;
 		}
-		if (!isValidPassword(password)) {
-			err = 'Le mot de passe doit faire au moins 6 caractères.';
+		busy = true;
+		const res = await requestLoginCode(email);
+		busy = false;
+		if (!res.ok) {
+			err = res.error ?? 'Envoi du code impossible.';
 			return;
 		}
-		busy = true;
-		if (mode === 'signup') {
-			const res = await signUp(email, password);
-			busy = false;
-			if (!res.ok) {
-				err = res.error ?? 'Inscription impossible.';
-				return;
-			}
-			if (res.needsCode) {
-				step = 'code';
-				info = `Un code à 6 chiffres a été envoyé à ${email}.`;
-			} else done();
-		} else {
-			const res = await signIn(email, password);
-			busy = false;
-			if (res.ok) done();
-			else if (res.needsCode) {
-				step = 'code';
-				info = res.error ?? 'Entrez le code reçu par e-mail.';
-			} else err = res.error ?? 'Connexion impossible.';
-		}
+		step = 'code';
+		info = `Un code de connexion a été envoyé à ${email}.`;
 	}
 
 	async function submitCode(e: SubmitEvent) {
@@ -81,14 +61,12 @@
 <div class="auth">
 	<img class="auth-logo" src={logo} alt="" aria-hidden="true" />
 
-	{#if step === 'creds'}
-		<h3>{mode === 'signup' ? 'Créer un compte' : 'Se connecter'}</h3>
+	{#if step === 'email'}
+		<h3>Entrer dans le Silence</h3>
 		<p class="auth-sub">
-			{mode === 'signup'
-				? 'Sauvegardez votre collection et vos decks, puis jouez depuis tous vos appareils.'
-				: 'Entrez votre e-mail et votre mot de passe.'}
+			Entrez votre e-mail. Nous vous enverrons un code à usage unique, sans mot de passe.
 		</p>
-		<form onsubmit={submitCreds}>
+		<form onsubmit={submitEmail}>
 			<input
 				type="email"
 				bind:value={email}
@@ -96,34 +74,14 @@
 				autocomplete="email"
 				required
 			/>
-			<input
-				type="password"
-				bind:value={password}
-				placeholder="Mot de passe"
-				autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
-				required
-			/>
 			{#if err}<p class="auth-err">{err}</p>{/if}
 			{#if info}<p class="auth-info">{info}</p>{/if}
 			<button class="auth-submit" type="submit" disabled={busy}>
-				{busy ? '…' : mode === 'signup' ? 'Créer mon compte' : 'Se connecter'}
+				{busy ? '…' : 'Recevoir mon code'}
 			</button>
 		</form>
-		<p class="auth-switch">
-			{#if mode === 'signup'}
-				Déjà un compte ?
-				<button type="button" onclick={() => ((mode = 'login'), (err = ''), (info = ''))}
-					>Se connecter</button
-				>
-			{:else}
-				Pas encore de compte ?
-				<button type="button" onclick={() => ((mode = 'signup'), (err = ''), (info = ''))}
-					>S'inscrire</button
-				>
-			{/if}
-		</p>
 	{:else}
-		<h3>Vérification</h3>
+		<h3>Code de connexion</h3>
 		<p class="auth-sub">{info || `Entrez le code envoyé à ${email}.`}</p>
 		<form onsubmit={submitCode}>
 			<input
@@ -145,13 +103,13 @@
 			Pas reçu ?
 			<button type="button" onclick={resend} disabled={busy}>Renvoyer le code</button>
 			·
-			<button type="button" onclick={() => ((step = 'creds'), (err = ''), (code = ''))}
+			<button type="button" onclick={() => ((step = 'email'), (err = ''), (code = ''))}
 				>Modifier l'e-mail</button
 			>
 		</p>
 	{/if}
 
-	<p class="auth-note">Votre mot de passe est protégé et vos données sont sauvegardées en ligne.</p>
+	<p class="auth-note">Le code expire rapidement et ne peut être utilisé qu'une fois. Vos données sont sauvegardées en ligne.</p>
 </div>
 
 <style>

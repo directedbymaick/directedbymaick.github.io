@@ -1,6 +1,6 @@
 /**
- * Le compte : authentification Supabase (e-mail + mot de passe, confirmation
- * par code envoyé par e-mail) et sauvegarde cloud des données du joueur.
+ * Le compte : authentification Supabase sans mot de passe, par code à usage
+ * unique envoyé à chaque connexion, et sauvegarde cloud des données du joueur.
  */
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '$lib/supabase';
@@ -15,6 +15,10 @@ export interface Account {
 	email: string;
 	name: string;
 }
+
+const WELCOME_CREDITS = 300000;
+const ECONOMY_KEY = 'expelled-eco';
+const WELCOME_GRANT_VERSION = 1;
 
 /** L'état partagé : toute l'app lit et réagit à session.account. */
 export const session = $state<{ account: Account | null; ready: boolean }>({
@@ -53,12 +57,25 @@ export function initSession(): void {
 export function isValidEmail(e: string): boolean {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
 }
-export function isValidPassword(p: string): boolean {
-	return p.length >= 6;
-}
 
 /** Après authentification : cloud → local, ou migration invité → cloud si neuf. */
-async function afterAuth(): Promise<void> {
+function grantWelcomeCredits(email: string): void {
+	if (typeof localStorage === 'undefined') return;
+	const key = `${ECONOMY_KEY}::${email}`;
+	let economy: Record<string, unknown> = {};
+	try {
+		const raw = localStorage.getItem(key);
+		if (raw) economy = JSON.parse(raw) as Record<string, unknown>;
+	} catch {
+		/* sauvegarde illisible : le cadeau recrée un socle économique sain */
+	}
+	if (Number(economy.welcomeGrantVersion ?? 0) >= WELCOME_GRANT_VERSION) return;
+	economy.balance = Math.max(Number(economy.balance ?? 0) || 0, WELCOME_CREDITS);
+	economy.welcomeGrantVersion = WELCOME_GRANT_VERSION;
+	localStorage.setItem(key, JSON.stringify(economy));
+}
+
+async function afterAuth(newAccount = false): Promise<void> {
 	const { data } = await supabase.auth.getUser();
 	const user = data.user;
 	const email = user?.email;
@@ -70,27 +87,24 @@ async function afterAuth(): Promise<void> {
 		applyCloud(cloud as Record<string, string | null>);
 	} else {
 		migrateGuestToNamespace(email);
+		if (newAccount) grantWelcomeCredits(email);
 		await pushCloudNow();
 	}
 }
 
-/** Inscription : crée le compte et envoie le code de confirmation par e-mail. */
-export async function signUp(
-	emailRaw: string,
-	password: string
-): Promise<{ ok: boolean; needsCode: boolean; error?: string }> {
+/** Envoie un code de connexion. Supabase crée le compte s'il n'existe pas. */
+export async function requestLoginCode(
+	emailRaw: string
+): Promise<{ ok: boolean; error?: string }> {
 	const email = emailRaw.trim().toLowerCase();
-	const { data, error } = await supabase.auth.signUp({ email, password });
-	if (error) return { ok: false, needsCode: false, error: error.message };
-	// session non nulle = confirmation e-mail désactivée (connexion immédiate)
-	if (data.session) {
-		await afterAuth();
-		return { ok: true, needsCode: false };
-	}
-	return { ok: true, needsCode: true };
+	const { error } = await supabase.auth.signInWithOtp({
+		email,
+		options: { shouldCreateUser: true }
+	});
+	return error ? { ok: false, error: error.message } : { ok: true };
 }
 
-/** Valide le code à 6 chiffres reçu par e-mail. */
+/** Valide le code à usage unique reçu par e-mail. */
 export async function verifyCode(
 	emailRaw: string,
 	token: string
@@ -98,34 +112,13 @@ export async function verifyCode(
 	const email = emailRaw.trim().toLowerCase();
 	const { error } = await supabase.auth.verifyOtp({ email, token: token.trim(), type: 'email' });
 	if (error) return { ok: false, error: error.message };
-	await afterAuth();
+	await afterAuth(true);
 	return { ok: true };
 }
 
-/** Renvoie un code de confirmation. */
+/** Renvoie un nouveau code de connexion. */
 export async function resendCode(emailRaw: string): Promise<{ ok: boolean; error?: string }> {
-	const email = emailRaw.trim().toLowerCase();
-	const { error } = await supabase.auth.resend({ type: 'signup', email });
-	return error ? { ok: false, error: error.message } : { ok: true };
-}
-
-/** Connexion e-mail + mot de passe. */
-export async function signIn(
-	emailRaw: string,
-	password: string
-): Promise<{ ok: boolean; needsCode?: boolean; error?: string }> {
-	const email = emailRaw.trim().toLowerCase();
-	const { error } = await supabase.auth.signInWithPassword({ email, password });
-	if (error) {
-		// compte non confirmé : proposer la saisie du code
-		if (/confirm/i.test(error.message)) {
-			await supabase.auth.resend({ type: 'signup', email }).catch(() => {});
-			return { ok: false, needsCode: true, error: 'Compte non confirmé — entrez le code reçu.' };
-		}
-		return { ok: false, error: error.message };
-	}
-	await afterAuth();
-	return { ok: true };
+	return requestLoginCode(emailRaw);
 }
 
 export async function signOut(): Promise<void> {

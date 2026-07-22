@@ -31,7 +31,7 @@ export const MAILBOX: MailDef[] = [
 		subject: 'Bienvenue dans le Silence',
 		date: '2026-07-19T09:00:00Z',
 		body: [
-			'Votre compte est prêt. Les Éclats que vous amasserez ouvriront des boosters, et chaque carte tirée rejoindra votre collection — d’un appareil à l’autre, rien ne se perd.',
+			'Votre compte est prêt et votre dotation de bienvenue de 300 000 Éclats a été créditée. Chaque carte tirée rejoindra votre collection — d’un appareil à l’autre, rien ne se perd.',
 			'Que votre voix porte loin dans le Silence.'
 		]
 	},
