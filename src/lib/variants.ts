@@ -31,14 +31,18 @@ export const ALT_RATE = 0.0027;
  * Répartition À L'INTÉRIEUR d'un art alternatif.
  *
  * L'alt n'emprunte PAS le taux global de Full Art : s'il le faisait, sa Full Art
- * serait mécaniquement seize fois plus rare que son détourage, et le détourage
- * ne pourrait jamais être la pièce de tête. Ici c'est l'inverse qui est voulu :
- * la version détourée simple est la plus rare des deux.
+ * serait seize fois plus rare que le reste, sans qu'on puisse en décider.
  *
  * Un alt DÉTOURÉ n'existe qu'en SP : détouré simple, et détouré en Full Art.
  * La version nue ne s'utilise que pour un alt sans découpe.
+ *
+ * La Full Art est la plus rare des deux, comme partout ailleurs dans le set —
+ * elle reçoit donc la PLUS PETITE part. Une version antérieure faisait l'inverse,
+ * héritage d'un modèle à trois versions où le détourage était un troisième
+ * produit distinct de la Full Art ; depuis que les deux sont détourées, cet ordre
+ * n'avait plus de sens.
  */
-export const ALT_FULLART_PART = 0.778;
+export const ALT_FULLART_PART = 0.222;
 
 export const FOIL_LABEL: Record<FoilPreset, string> = {
 	mat: 'Raw',
