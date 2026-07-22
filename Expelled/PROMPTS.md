@@ -216,3 +216,30 @@ Si la prismatique ressemble seulement à une commune plus détaillée, renforcer
 - lumière prismatique contrôlée ;
 - densité d'ornement ;
 - posture iconique.
+
+---
+
+## 7. Repeindre avec ChatGPT (montée en qualité)
+
+ChatGPT sert de passe de repeinte : même composition, exécution meilleure.
+Son défaut connu : une texture de micro-coups de pinceau uniforme plaquée sur
+toute l'image — le « filtre huile » qui crie IA. Il est stochastique : sans
+verrouiller la finition, c'est la loterie.
+
+Trois règles, intégrées au prompt ci-dessous :
+
+- ne JAMAIS demander de « brushwork » — le mot invite littéralement la touche ;
+- qualifier la référence de style par sa finition (« smooth, blended, polished
+  finish ») pour que « splash art » ne tire pas vers le mode peinture ;
+- poser le négatif en langage naturel : ChatGPT n'a pas de `--no`, mais il
+  suit bien une interdiction écrite en toutes lettres.
+
+```text
+Repaint this illustration at professional trading card game quality, in the style of Riot Games and Magic: The Gathering splash art — their smooth, blended, polished finish. Keep the exact same composition, pose, framing, color palette AND the same overall brightness — do not darken the image, do not increase the contrast. Only improve the execution: smooth blended shading, sharper detail on the face and hands, remove all AI artifacts and mushy areas. Render every surface cleanly: absolutely no visible brushstroke texture, no uniform paint dabs, no impasto, no oil-painting filter look — brush marks must be invisible in the final image. Fix any anatomy mistakes: wrong number of fingers, broken hands, twisted limbs, odd proportions — correct them naturally without changing the pose. No new elements, no text, no logo. Same aspect ratio.
+```
+
+Si la texture apparaît quand même : ne pas relancer à l'aveugle — répondre
+« same image, re-render with smooth blended shading, remove the visible
+brushstroke texture ». L'édition multi-tours garde la composition et ne
+change que la finition. En dernier recours, une passe Magnific à faible
+créativité lisse les micro-touches sans regénérer.
