@@ -845,7 +845,7 @@
 		padding: 0.18cqw 1.3cqw 0.28cqw;
 		vertical-align: 0.06em;
 		position: relative;
-		top: -0.3cqw;
+		top: -0.34cqw;
 		font-size: 1.7cqw;
 		font-weight: 700;
 		letter-spacing: 0.18em;
