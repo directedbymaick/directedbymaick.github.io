@@ -229,17 +229,19 @@
 	 */
 	const badgeDe = (p: Pull): { txt: string; ton: 'or' | 'apex' | 'noble' } | null => {
 		const sp = p.card.gene.foilPreset === 'showcase' && !!p.card.cutout;
+		const vraieRarete = p.card.sourceRarity ?? p.card.rarity;
+		const spNoble = vraieRarete === 'legendary' || vraieRarete === 'prism';
 		/* Libellés courts, un mot chacun :
 		   — Alt prime sur tout : « Alt », ou « Full Art · Alt »
 		   — SP se dit « SP », full art ou non
 		   — Full Art nue se dit « Full Art » ; avec foil, le NOM DU FOIL seul —
 		     un foil non-full-art n'est jamais tagué, le contexte est sans ambiguïté
 		   Trois robes, du haut vers le bas de l'échelle des classes :
-		   — noble (rouge et or) : Full Art SP et tous les Alts — les deux sommets
+		   — noble (rouge et or) : Full Art SP, SP Légendaire/Prismatique et tous les Alts
 		   — apex (prismatique) : SP simple
 		   — or (champagne) : Full Art et ses foils */
 		if (p.card.alt) return { txt: p.fullArt ? 'Full Art · Alt' : 'Alt', ton: 'noble' };
-		if (sp) return { txt: 'SP', ton: p.fullArt ? 'noble' : 'apex' };
+		if (sp) return { txt: 'SP', ton: p.fullArt || spNoble ? 'noble' : 'apex' };
 		if (p.fullArt) {
 			const foil = p.version.startsWith('Full Art · ') ? p.version.slice(11) : p.version;
 			return { txt: foil === 'Raw' ? 'Full Art' : foil, ton: 'or' };
