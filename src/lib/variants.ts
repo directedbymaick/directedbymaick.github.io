@@ -77,13 +77,16 @@ const SHOWCASE_MATIERE: Record<Rarity, string> = {
 
 export function foilLabel(
 	foil: FoilPreset,
-	card: Pick<CardData, 'cutout' | 'rarity'>,
+	card: Pick<CardData, 'cutout' | 'rarity' | 'sourceRarity'>,
 	fullArt = false
 ): string {
 	if (foil !== 'showcase') return FOIL_LABEL[foil];
 	if (card.cutout) return FOIL_LABEL.showcase; // détourée : la SP, nom propre
 	// en Full Art, le holo derrière est toujours la Galerie (cf. Card.svelte)
-	return fullArt ? FOIL_LABEL.galerie : SHOWCASE_MATIERE[card.rarity];
+	/* `sourceRarity` d'abord : une vue promue en prismatique (Full Art, alt) doit
+	   garder le nom de matière de sa rareté RÉELLE, sinon une Commune promue
+	   s'appellerait « Secret ». */
+	return fullArt ? FOIL_LABEL.galerie : SHOWCASE_MATIERE[card.sourceRarity ?? card.rarity];
 }
 
 export interface CardVersion {
@@ -194,7 +197,18 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		const vueSP = altView(card, art, i);
 		const vueNue = altView(card, art, i);
 		delete vueNue.cutout;
-		const vue = detourage ? vueSP : vueNue;
+		/* La vue à rareté INTACTE. C'est elle qu'on passe à `fullArtView`, qui lit
+		   `rarity` pour remplir `sourceRarity` : lui donner une vue déjà promue lui
+		   ferait écrire « prism » et l'échelle classerait la carte comme Prismatique
+		   au lieu de Commune. */
+		const vueOrigine = detourage ? vueSP : vueNue;
+
+		/* Un art alternatif porte TOUJOURS le cadre prismatique, même sur une
+		   Commune : c'est une pièce de collection, pas une impression ordinaire.
+		   Même promotion que `fullArtView` — la rareté d'origine reste dans
+		   `sourceRarity`, si bien que l'échelle des raretés et le plancher de prix
+		   continuent de la classer comme Commune. */
+		const vue: CardData = { ...vueOrigine, sourceRarity: card.rarity, rarity: 'prism' };
 
 		/* Finitions supplémentaires validées au Lab pour cet alt. Elles se partagent
 		   la part de leur forme avec la finition officielle — sans ça, « Valider
@@ -228,7 +242,7 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 				`--alt${i + 1}--fullart`,
 				pFullArt,
 				foilFA,
-				{ ...fullArtView(vue), gene: { ...vue.gene } },
+				{ ...fullArtView(vueOrigine), gene: { ...vueOrigine.gene } },
 				true
 			);
 		}
