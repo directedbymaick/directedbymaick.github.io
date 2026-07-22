@@ -430,19 +430,17 @@
 		godHit = false;
 	}
 
-	/* ---- ouverture groupée : 5 boosters d'un coup, récap direct ---- */
+	/* ---- ouverture groupée : 5 ou 10 boosters d'un coup, récap direct ---- */
 	let godHit = $state(false);
-	let bulk = $state(false); // le récap vient d'une ouverture ×5
-	const BULK_N = 5;
-	const canAffordBulk = $derived(eco.balance >= PACK_PRICE * BULK_N);
+	let bulk = $state(false); // le récap vient d'une ouverture groupée
 
-	async function bulkOpen() {
-		const cost = PACK_PRICE * BULK_N;
+	async function bulkOpen(n: number) {
+		const cost = PACK_PRICE * n;
 		if (!spend(cost)) return;
-		track('packOpened', BULK_N);
+		track('packOpened', n);
 		const all: Pull[] = [];
 		let god = false;
-		for (let k = 0; k < BULK_N; k++) {
+		for (let k = 0; k < n; k++) {
 			const pk = openPack(pity);
 			if (isGodPack(pk)) god = true;
 			all.push(...pk);
@@ -536,8 +534,11 @@
 				<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW.common} prisma={false} />
 				<div class="openrow">
 					<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
-					<button class="ghost bulk" disabled={!canAffordBulk} onclick={bulkOpen}>
-						×5 boosters — <i class="shard" aria-hidden="true"></i> {PACK_PRICE * BULK_N}
+					<button class="ghost bulk" disabled={eco.balance < PACK_PRICE * 5} onclick={() => bulkOpen(5)}>
+						×5 boosters — <i class="shard" aria-hidden="true"></i> {PACK_PRICE * 5}
+					</button>
+					<button class="ghost bulk" disabled={eco.balance < PACK_PRICE * 10} onclick={() => bulkOpen(10)}>
+						×10 boosters — <i class="shard" aria-hidden="true"></i> {PACK_PRICE * 10}
 					</button>
 				</div>
 			{:else}
