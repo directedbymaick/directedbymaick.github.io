@@ -9,7 +9,15 @@
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
 	import { loadDecks } from '$lib/decks';
-	import { Duel, BOARD_SLOTS, type PlayerSnap, type HandEntry, type Ev } from '$lib/game/engine';
+	import {
+		Duel,
+		BOARD_SLOTS,
+		type PlayerSnap,
+		type HandEntry,
+		type Ev,
+		type Choix,
+		type Sel
+	} from '$lib/game/engine';
 	import type { CardData, FactionId } from '$lib/types';
 
 	/**
@@ -30,6 +38,29 @@
 	let meta = $state({ turn: 1, active: 0 as 0 | 1, winner: null as 0 | 1 | -1 | null, will: 0, maxWill: 0 });
 	let main = $state<HandEntry[]>([]);
 	let journal = $state<Ev[]>([]);
+	let impact = $state<{ id: number; kind: 'effect' | 'death' | 'play' } | null>(null);
+	let audio: AudioContext | null = null;
+
+	function son(kind: 'card' | 'hit' | 'effect' | 'turn') {
+		if (sobre || typeof AudioContext === 'undefined') return;
+		audio ??= new AudioContext();
+		const now = audio.currentTime;
+		const osc = audio.createOscillator();
+		const gain = audio.createGain();
+		osc.type = kind === 'hit' ? 'sawtooth' : kind === 'effect' ? 'sine' : 'triangle';
+		osc.frequency.setValueAtTime(kind === 'hit' ? 92 : kind === 'turn' ? 330 : 190, now);
+		osc.frequency.exponentialRampToValueAtTime(kind === 'effect' ? 720 : 120, now + .18);
+		gain.gain.setValueAtTime(.0001, now);
+		gain.gain.exponentialRampToValueAtTime(kind === 'hit' ? .075 : .035, now + .012);
+		gain.gain.exponentialRampToValueAtTime(.0001, now + .24);
+		osc.connect(gain).connect(audio.destination);
+		osc.start(now); osc.stop(now + .25);
+	}
+
+	function etincelles(kind: 'effect' | 'death' | 'play') {
+		impact = { id: Date.now(), kind };
+		setTimeout(() => (impact = null), 760);
+	}
 
 	/** Le Verbe qu'on vient de prononcer, montré au centre avant la défausse. */
 	let verbeMontre = $state<CardData | null>(null);
@@ -183,7 +214,12 @@
 		main = duel.hand();
 		const evs = duel.drain();
 		if (evs.length) journal = [...journal, ...evs].slice(-60);
-		for (const e of evs) if (e.t === 'verb') montrerVerbe(e.cardId);
+		for (const e of evs) {
+			if (e.t === 'verb') montrerVerbe(e.cardId);
+			if (e.t === 'death') { son('hit'); etincelles('death'); }
+			else if (e.t === 'effect' || e.t === 'prononcer') { son('effect'); etincelles('effect'); }
+			else if (e.t === 'play' || e.t === 'summon') { son('card'); etincelles('play'); }
+		}
 	}
 
 	function montrerVerbe(id?: string) {
@@ -245,13 +281,65 @@
 		carteLue = c ?? null;
 	}
 
+	/* ---------------- Le sélecteur : les choix appartiennent au joueur ----------------
+	   Brume montre ses trois cartes, Eshel ouvre le deck, Tala demande sa forme,
+	   Exva fait répartir ses dégâts. La carte n'est JOUÉE qu'à la validation :
+	   annuler ne coûte ni la carte ni la Volonté. */
+	let choix = $state<null | {
+		spec: Choix;
+		action: { type: 'main'; index: number } | { type: 'prononcer'; uid: number };
+		picks: (number | 'korum')[];
+	}>(null);
+
 	function jouer(i: number) {
 		// les cartes injouables ne sont plus `disabled` : un bouton désactivé ne
 		// reçoit aucun survol, et c'est justement celles-là qu'on veut lire.
 		if (!main[i]?.playable) return;
+		const spec = duel?.choiceFor(i);
+		if (spec) {
+			choix = { spec, action: { type: 'main', index: i }, picks: [] };
+			carteLue = null;
+			return;
+		}
 		if (!duel?.play(i)) return;
 		carteLue = null;
 		rafraichir();
+	}
+
+	function pick(v: number | 'korum') {
+		if (!choix) return;
+		const { spec } = choix;
+		if (spec.type === 'forme' || spec.n === 1) {
+			validerChoix([v]);
+			return;
+		}
+		// choix multiples : les cartes ne se prennent qu'une fois, les dégâts se répètent
+		if (spec.type === 'carte' && choix.picks.includes(v)) {
+			choix.picks = choix.picks.filter((x) => x !== v);
+			return;
+		}
+		if (choix.picks.length >= spec.n) return;
+		choix.picks = [...choix.picks, v];
+	}
+
+	function validerChoix(picks?: (number | 'korum')[]) {
+		if (!choix || !duel) return;
+		const { spec, action } = choix;
+		const p = picks ?? choix.picks;
+		const sel: Sel =
+			spec.type === 'carte'
+				? { cartes: p.filter((x): x is number => x !== 'korum') }
+				: spec.type === 'forme'
+					? { forme: p[0] === 'korum' ? 0 : (p[0] ?? 0) }
+					: { unites: p };
+		if (action.type === 'main') duel.play(action.index, sel);
+		else duel.pronounce(action.uid, sel);
+		choix = null;
+		rafraichir();
+	}
+
+	function annulerChoix() {
+		choix = null;
 	}
 
 	function clicMonEtre(uid: number) {
@@ -287,12 +375,26 @@
 	function finirTour() {
 		attaquant = null;
 		duel?.endTurn();
+		son('turn');
 		secondes = 0;
 		rafraichir();
 	}
 
 	function prononcer(uid: number) {
+		const spec = duel?.choiceForPronounce(uid);
+		if (spec) {
+			choix = { spec, action: { type: 'prononcer', uid }, picks: [] };
+			return;
+		}
 		duel?.pronounce(uid);
+		rafraichir();
+	}
+
+	/* ---------------- Moras : l'échange ATQ/INT, enfin offert au joueur ---------------- */
+	const echangeables = $derived(version >= 0 && duel && monTour ? duel.swappables() : []);
+
+	function echanger(uid: number) {
+		if (!duel?.swap(uid)) return;
 		rafraichir();
 	}
 
@@ -379,12 +481,18 @@
 >
 	<div class="arena-atmosphere" aria-hidden="true">
 		<div class="vault-glow"></div>
+		<div class="table-rift"></div>
 		<div class="arena-ring ring-one"></div>
 		<div class="arena-ring ring-two"></div>
 		<div class="motes">
 			{#each Array(18) as _, i (i)}<i style="--i: {i}; --d: {12 + (i % 7) * 2}s; left: {(i * 37) % 100}%"></i>{/each}
 		</div>
 	</div>
+	{#if impact}
+		<div class="impact {impact.kind}" aria-hidden="true">
+			{#each Array(22) as _, i (i)}<i style="--n:{i}; --a:{i * 16.36}deg; --r:{55 + (i % 6) * 15}px"></i>{/each}
+		</div>
+	{/if}
 	<div class="corner corner-nw" aria-hidden="true"></div>
 	<div class="corner corner-ne" aria-hidden="true"></div>
 	<div class="corner corner-sw" aria-hidden="true"></div>
@@ -451,6 +559,7 @@
 						out:mort
 						class="slot occupe"
 						class:frappe={blesses.has(u.uid)}
+						class:neutralise={u.locked}
 						class:ciblable={attaquant !== null && ciblesLegales.units.includes(u.uid)}
 						data-cible={u.uid}
 						onclick={() => clicSonEtre(u.uid)}
@@ -524,6 +633,7 @@
 						out:mort
 						class="slot occupe"
 						class:frappe={blesses.has(u.uid)}
+						class:neutralise={u.locked}
 						class:pret={attaquantsPossibles.includes(u.uid)}
 						class:choisi={attaquant === u.uid}
 						class:traine={traine?.uid === u.uid}
@@ -538,7 +648,41 @@
 						{#if c}<div class="mini"><Card card={c} interactive={false} thumb /></div>{/if}
 						<span class="stats">{u.atk} / {u.hp}</span>
 						{#if prononcables.some((x: { uid: number }) => x.uid === u.uid)}
-							<span class="pron" title="Prononcer disponible">EX</span>
+							<!-- le badge déclenche le Prononcer — il existait sans être branché -->
+							<span
+								class="pron actif"
+								title="Prononcer — cliquer pour activer"
+								role="button"
+								tabindex="-1"
+								onclick={(e) => {
+									e.stopPropagation();
+									prononcer(u.uid);
+								}}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										e.stopPropagation();
+										prononcer(u.uid);
+									}
+								}}>EX</span
+							>
+						{/if}
+						{#if echangeables.includes(u.uid)}
+							<span
+								class="echange"
+								title="Moras — échanger ATQ et INT"
+								role="button"
+								tabindex="-1"
+								onclick={(e) => {
+									e.stopPropagation();
+									echanger(u.uid);
+								}}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										e.stopPropagation();
+										echanger(u.uid);
+									}
+								}}>⇄</span
+							>
 						{/if}
 					</button>
 				{:else}
@@ -665,12 +809,85 @@
 <svelte:window onpointermove={bougeTraine} onpointerup={finTraine} onpointercancel={() => (traine = null)} />
 
 <!-- ============ consultation de la défausse ============ -->
+{#if choix}
+	<div class="voile" role="dialog" aria-modal="true" aria-label={choix.spec.titre}>
+		<button class="voile-fond" aria-label="Annuler" onclick={annulerChoix}></button>
+		<div class="voile-boite choix-boite" in:scale={{ duration: duree(220), start: 0.94, easing: backOut }}>
+			<h3 class="choix-titre">{choix.spec.titre}</h3>
+
+			{#if choix.spec.type === 'carte'}
+				<div class="choix-cartes">
+					{#each choix.spec.cartes ?? [] as c, i (i)}
+						<button
+							class="choix-carte"
+							class:pris={choix.picks.includes(i)}
+							onclick={() => pick(i)}
+							onpointerenter={() => lire(c)}
+							onpointerleave={() => (carteLue = null)}
+						>
+							<Card card={c} interactive={false} thumb />
+						</button>
+					{/each}
+				</div>
+			{:else if choix.spec.type === 'unite'}
+				<div class="choix-unites">
+					{#each choix.spec.unites ?? [] as u (u.uid)}
+						{@const snap = u.side === 0 ? moi : lui}
+						{@const vue = snap?.board.find((b) => b.uid === u.uid)}
+						<button class="choix-unite" onclick={() => pick(u.uid)}>
+							<b>{u.nom}</b>
+							{#if vue}<span>{vue.atk} / {vue.hp}</span>{/if}
+							{#if choix.spec.n > 1 && choix.picks.filter((x) => x === u.uid).length}
+								<i class="pts">{choix.picks.filter((x) => x === u.uid).length}</i>
+							{/if}
+						</button>
+					{/each}
+					{#if choix.spec.korum}
+						<button class="choix-unite korum" onclick={() => pick('korum')}>
+							<b>Korum adverse</b>
+							{#if choix.spec.n > 1 && choix.picks.filter((x) => x === 'korum').length}
+								<i class="pts">{choix.picks.filter((x) => x === 'korum').length}</i>
+							{/if}
+						</button>
+					{/if}
+				</div>
+			{:else}
+				<div class="choix-formes">
+					{#each choix.spec.formes ?? [] as f, i (i)}
+						<button class="choix-forme" onclick={() => pick(i)}>{f}</button>
+					{/each}
+				</div>
+			{/if}
+
+			{#if choix.spec.n > 1}
+				<p class="choix-compte">
+					{choix.picks.length} / {choix.spec.n}
+					{#if choix.spec.korum}— le reste ira au Korum{/if}
+				</p>
+				<button
+					class="choix-valider"
+					disabled={choix.spec.type === 'carte' && choix.picks.length < choix.spec.n}
+					onclick={() => validerChoix()}
+				>
+					Valider
+				</button>
+			{/if}
+			<button class="voile-x" onclick={annulerChoix}>Annuler</button>
+		</div>
+	</div>
+{/if}
+
 {#if defausseOuverte !== null}
 	<div class="voile" role="dialog" aria-modal="true" aria-label="Défausse">
 		<button class="voile-fond" aria-label="Fermer" onclick={() => (defausseOuverte = null)}></button>
-		<div class="voile-boite">
-			<h2>Défausse — {defausseOuverte === 0 ? 'vous' : 'adversaire'}</h2>
-			<p class="voile-vide">La défausse se consulte librement, des deux côtés.</p>
+		<div class="voile-boite discard-panel">
+			<div class="discard-head"><div><small>Archives du duel</small><h2>Défausse — {defausseOuverte === 0 ? 'vous' : 'adversaire'}</h2></div><span>{(defausseOuverte === 0 ? moi : lui)?.discard ?? 0} cartes</span></div>
+			<div class="discard-grid">
+				{#each ((defausseOuverte === 0 ? moi : lui)?.discardCards ?? []) as id, i (`${id}-${i}`)}
+					{@const c = getCard(id)}
+					{#if c}<button onclick={() => (carteZoom = c)} title={`Lire ${c.name}`}><Card card={c} interactive={false} thumb /></button>{/if}
+				{:else}<p class="voile-vide">Aucune carte n'a encore rejoint la défausse.</p>{/each}
+			</div>
 			<button class="voile-x" onclick={() => (defausseOuverte = null)}>Fermer</button>
 		</div>
 	</div>
@@ -1199,6 +1416,152 @@
 		color: #d5b25e;
 	}
 
+	/* ============ LE SÉLECTEUR DE CHOIX ============ */
+	.choix-boite {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		max-width: min(58rem, 92vw);
+		max-height: 86vh;
+		overflow-y: auto;
+	}
+	.choix-titre {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1.15rem;
+		letter-spacing: 0.08em;
+		color: var(--or, #d5b25e);
+	}
+	.choix-cartes {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.9rem;
+	}
+	.choix-carte {
+		width: 9.5rem;
+		padding: 0;
+		border: 2px solid transparent;
+		border-radius: 0.8rem;
+		background: none;
+		cursor: pointer;
+		transition:
+			transform 0.16s ease,
+			border-color 0.16s ease;
+	}
+	.choix-carte:hover {
+		transform: translateY(-4px);
+	}
+	.choix-carte.pris {
+		border-color: #d5b25e;
+		box-shadow: 0 0 18px rgba(213, 178, 94, 0.45);
+	}
+	.choix-unites {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.6rem;
+	}
+	.choix-unite {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.15rem;
+		min-width: 8rem;
+		padding: 0.7rem 1rem;
+		border: 1px solid rgba(213, 178, 94, 0.4);
+		border-radius: 0.6rem;
+		background: rgba(10, 14, 24, 0.9);
+		color: #eef0f5;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			transform 0.15s ease;
+	}
+	.choix-unite:hover {
+		border-color: #d5b25e;
+		transform: translateY(-2px);
+	}
+	.choix-unite.korum {
+		border-color: rgba(179, 39, 58, 0.6);
+	}
+	.choix-unite .pts {
+		position: absolute;
+		top: -0.45rem;
+		right: -0.45rem;
+		display: grid;
+		place-items: center;
+		width: 1.35rem;
+		height: 1.35rem;
+		border-radius: 50%;
+		background: #d5b25e;
+		color: #14100a;
+		font-style: normal;
+		font-weight: 700;
+		font-size: 0.78rem;
+	}
+	.choix-formes {
+		display: flex;
+		gap: 0.8rem;
+	}
+	.choix-forme {
+		padding: 0.85rem 1.6rem;
+		border: 1px solid rgba(213, 178, 94, 0.5);
+		border-radius: 0.6rem;
+		background: rgba(10, 14, 24, 0.9);
+		color: #eef0f5;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	.choix-forme:hover {
+		border-color: #d5b25e;
+	}
+	.choix-compte {
+		margin: 0;
+		font-size: 0.85rem;
+		color: rgba(238, 240, 245, 0.6);
+	}
+	.choix-valider {
+		padding: 0.7rem 2.4rem;
+		border: none;
+		border-radius: 0.5rem;
+		background: #d5b25e;
+		color: #14100a;
+		font: inherit;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+	.choix-valider:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+	/* badge EX actif + échange de Moras */
+	.pron.actif {
+		cursor: pointer;
+		pointer-events: auto;
+	}
+	.echange {
+		position: absolute;
+		bottom: 0.3rem;
+		right: 0.3rem;
+		z-index: 3;
+		display: grid;
+		place-items: center;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 50%;
+		background: rgba(143, 180, 217, 0.92);
+		color: #10141c;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
 	.voile {
 		position: fixed;
 		inset: 0;
@@ -1533,4 +1896,76 @@
 		.will-pips { gap: .16rem; }
 		.will-pips i { width: .34rem; height: .34rem; }
 	}
+
+	/* Table rituelle — profondeur, lisibilité et feedback tactique */
+	.terrain {
+		--ink: #05070b;
+		--ivory: #f4eedf;
+		grid-template-rows: 3.9rem 2.6rem minmax(0,1fr) 2.55rem minmax(0,1fr) 3.9rem 7.6rem;
+		gap: .3rem;
+		padding: .65rem 1rem .35rem;
+		background:
+			radial-gradient(ellipse at 50% 52%, rgba(37,50,62,.72) 0, rgba(12,17,24,.92) 47%, #030507 100%),
+			linear-gradient(105deg,#030507,#111722 50%,#030507);
+	}
+	.table-rift {
+		position:absolute; inset: 9% 12%; opacity:.5;
+		background:
+			linear-gradient(112deg,transparent 49.8%,rgba(237,202,111,.22) 50%,transparent 50.25%),
+			linear-gradient(71deg,transparent 49.8%,rgba(118,150,171,.13) 50%,transparent 50.2%);
+		filter: drop-shadow(0 0 12px rgba(217,185,95,.14));
+	}
+	.ring-one { width:min(40vw,38rem); opacity:.28; border-style:dashed; }
+	.ring-two { width:3.8rem; opacity:.4; }
+	.bandeau {
+		padding:.35rem .8rem;
+		border:1px solid rgba(225,207,157,.17);
+		background:linear-gradient(100deg,rgba(7,11,17,.97),rgba(23,30,40,.91) 45%,rgba(7,11,17,.97));
+		box-shadow:0 12px 30px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.055),inset 0 -1px rgba(0,0,0,.8);
+	}
+	.qui { display:flex; align-items:center; gap:.85rem; min-width:11rem; }
+	.identity { gap:.14rem; padding-left:.08rem; }
+	.identity small { color:rgba(244,238,223,.57); font-size:.56rem; }
+	.identity b { color:var(--ivory); font-size:1.08rem; }
+	.sigil { flex:none; margin:0 .15rem; }
+	.rangee {
+		padding:.6rem .85rem; gap:1rem; overflow:visible;
+		background:linear-gradient(180deg,rgba(23,30,40,.55),rgba(4,7,11,.38));
+		border:1px solid rgba(215,192,132,.08); border-radius:5px;
+		box-shadow:inset 0 12px 40px rgba(0,0,0,.28),0 10px 28px rgba(0,0,0,.18);
+	}
+	.slots { gap:clamp(.55rem,1.25vw,1.25rem); height:100%; align-items:center; }
+	.slot { max-width:7.8rem; max-height:calc(100% - .25rem); }
+	.slot:not(.occupe)::before { content:''; position:absolute; inset:8%; border:1px solid rgba(217,185,95,.07); clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%); }
+	.slot.occupe { transform:perspective(650px) rotateX(2deg); box-shadow:0 14px 22px rgba(0,0,0,.5),0 0 0 1px rgba(242,222,167,.1); }
+	.slot.occupe:hover { transform:perspective(650px) translateY(-.55rem) rotateX(0) scale(1.025); z-index:8; }
+	.slot.neutralise { filter:grayscale(.72) brightness(.55); }
+	.slot.neutralise::after { content:'NEUTRALISÉ'; position:absolute; inset:36% -8% auto; z-index:6; padding:.32rem; color:#ffe0d7; background:rgba(96,18,18,.88); border-block:1px solid #d66a59; font-size:.55rem; font-weight:800; letter-spacing:.18em; box-shadow:0 0 20px rgba(211,53,40,.42); transform:rotate(-5deg); }
+	.centre { min-height:2.55rem; }
+	.central-seal { width:3.3rem; opacity:.22; transition:opacity .25s,filter .25s; }
+	.central-seal.active { opacity:.42; }
+	.tour { min-width:11rem; position:relative; z-index:2; background:rgba(5,8,12,.78); }
+	.chrono { position:absolute; left:calc(50% + 6.7rem); color:rgba(244,238,223,.58); }
+	.pile { border-color:rgba(227,207,151,.17); background:linear-gradient(145deg,rgba(25,32,42,.84),rgba(5,8,12,.9)); transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease; }
+	.pile:not(.pioche):hover { transform:translateY(-.35rem); border-color:rgba(238,208,127,.62); box-shadow:0 12px 25px rgba(0,0,0,.5),0 0 15px rgba(217,185,95,.14); }
+	.pile-l { color:rgba(244,238,223,.62); }
+	.ma-main { height:7.6rem; gap:clamp(.08rem,.45vw,.42rem); perspective:900px; }
+	.carte-main { --card-w:5.65rem; transform-origin:50% 120%; filter:drop-shadow(0 8px 8px rgba(0,0,0,.62)); transition:transform .24s cubic-bezier(.2,.8,.2,1),opacity .2s,filter .2s; }
+	.carte-main:hover,.carte-main.jouable:hover { transform:translateY(-2.2rem) scale(1.11); z-index:15; filter:drop-shadow(0 18px 18px rgba(0,0,0,.75)) drop-shadow(0 0 11px rgba(217,185,95,.22)); }
+	.action-hint { bottom:.15rem; padding:.22rem .75rem; background:rgba(4,7,10,.72); border-radius:2px; color:rgba(244,238,223,.58); }
+	.impact { position:fixed; left:50%; top:50%; z-index:35; pointer-events:none; }
+	.impact::before { content:''; position:absolute; width:3rem; aspect-ratio:1; translate:-50% -50%; border-radius:50%; border:2px solid #f0ce73; animation:shock .7s ease-out forwards; box-shadow:0 0 30px currentColor; }
+	.impact.death { color:#e84838; }.impact.effect { color:#d7b65a; }.impact.play { color:#7ea8be; }
+	.impact i { position:absolute; width:4px; height:4px; border-radius:50%; background:currentColor; box-shadow:0 0 8px currentColor; animation:spark .72s cubic-bezier(.1,.7,.1,1) forwards; transform:rotate(var(--a)) translateX(0); }
+	.discard-panel { width:min(72rem,92vw); max-width:none!important; min-height:min(34rem,78vh); background:linear-gradient(145deg,#121822,#080b10)!important; box-shadow:0 35px 90px rgba(0,0,0,.75),inset 0 1px rgba(255,255,255,.06); }
+	.discard-head { display:flex; align-items:end; justify-content:space-between; border-bottom:1px solid rgba(217,185,95,.18); margin-bottom:1.2rem; }
+	.discard-head small { color:#c7a958; font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; }
+	.discard-head span { margin-bottom:.75rem; color:rgba(244,238,223,.45); font-size:.72rem; }
+	.discard-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(7.2rem,1fr)); gap:1rem; max-height:58vh; overflow:auto; padding:.4rem .4rem 1.4rem; }
+	.discard-grid button { --card-w:100%; padding:0; border:0; background:none; cursor:zoom-in; transition:transform .2s,filter .2s; filter:drop-shadow(0 9px 10px rgba(0,0,0,.5)); }
+	.discard-grid button:hover { transform:translateY(-.4rem) scale(1.035); filter:drop-shadow(0 14px 15px rgba(0,0,0,.65)); }
+	@keyframes shock { from{scale:.2;opacity:1} to{scale:5;opacity:0} }
+	@keyframes spark { 60%{opacity:1} to{transform:rotate(var(--a)) translateX(var(--r));opacity:0} }
+	@media (max-height:800px) { .terrain{grid-template-rows:3.3rem 2rem minmax(0,1fr) 2.2rem minmax(0,1fr) 3.3rem 6.4rem}.ma-main{height:6.4rem}.carte-main{--card-w:4.8rem}.rangee{padding:.35rem .65rem} }
+	@media (prefers-reduced-motion:reduce){.impact{display:none}.carte-main,.slot,.pile{transition:none!important}}
 </style>

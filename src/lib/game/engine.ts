@@ -105,6 +105,7 @@ export interface PlayerSnap {
 	hand: number;
 	deck: number;
 	discard: number;
+	discardCards: string[];
 	exile: number;
 	board: UnitSnap[];
 	/** Reliques, Verbes attachés et Lieux posés. `targetUid` dit DERRIÈRE quel Être
@@ -285,6 +286,7 @@ function snapPlayer(g: G, side: Side): PlayerSnap {
 		hand: p.hand.length,
 		deck: p.deck.length,
 		discard: p.discard.length,
+		discardCards: p.discard.map((card) => card.id),
 		exile: p.exile.length,
 		board: p.board.map((u) => ({
 			uid: u.uid,
@@ -369,6 +371,20 @@ function spawnUnit(g: G, side: Side, card: CardData, silent = false): Unit | nul
 	return u;
 }
 
+/** Les attachements posés sur cet Être partent à la défausse de leur propriétaire.
+    Servait uniquement à la mort ; un Être renvoyé en main ou exilé laissait sa
+    Relique orpheline sur le terrain. */
+function detachSupports(g: G, uid: number): void {
+	for (const owner of g.players) {
+		for (const s of [...owner.supports]) {
+			if (s.targetUid === uid) {
+				owner.supports.splice(owner.supports.indexOf(s), 1);
+				owner.discard.push(s.card);
+			}
+		}
+	}
+}
+
 /** Détruit un Être (mort ou sacrifice). Déclenche les Ruptures. */
 function destroy(g: G, side: Side, u: Unit, why: 'death' | 'sacrifice'): void {
 	const p = g.players[side];
@@ -378,14 +394,7 @@ function destroy(g: G, side: Side, u: Unit, why: 'death' | 'sacrifice'): void {
 	if (!u.token) p.discard.push(u.card);
 	p.allyDiedThisTurn = true;
 	if (why === 'sacrifice') p.sacrificedThisTurn = true;
-	// reliques attachées à ce corps meurent avec lui
-	for (const s of [...p.supports, ...g.players[other(side)].supports]) {
-		if (s.targetUid === u.uid) {
-			const owner = p.supports.includes(s) ? p : g.players[other(side)];
-			owner.supports.splice(owner.supports.indexOf(s), 1);
-			owner.discard.push(s.card);
-		}
-	}
+	detachSupports(g, u.uid);
 	ev(g, {
 		t: why === 'sacrifice' ? 'sacrifice' : 'death',
 		side,
@@ -486,14 +495,60 @@ function memFactor(p: P): number {
 	return hasSupport(p, 'interstice') ? 2 : 1;
 }
 
+/* --------------------------- Choix du joueur (arène) ------------------------
+   Le moteur résolvait TOUT avec les heuristiques de l'IA, même côté humain :
+   la Brume choisissait « la meilleure » des trois cartes au lieu de les
+   montrer, Eshel fouillait le deck toute seule, Tala décidait de sa forme.
+   Un joueur humain déclare désormais ses choix : l'UI demande la spécification
+   (`Choix`), collecte la sélection (`Sel`) et la passe à `play`/`pronounce`.
+   Sans sélection, les heuristiques restent le repli — l'IA et les anciennes
+   UIs continuent de fonctionner à l'identique. */
+
+export interface ChoixOption {
+	uid: number;
+	side: Side;
+	nom: string;
+}
+
+export interface Choix {
+	type: 'carte' | 'unite' | 'forme';
+	titre: string;
+	/** combien d'options choisir (les dégâts d'Exva : un choix par point) */
+	n: number;
+	cartes?: CardData[];
+	unites?: ChoixOption[];
+	/** le Korum adverse est une option valide ('korum' dans la sélection) */
+	korum?: boolean;
+	formes?: string[];
+}
+
+/** Sélection du joueur — indices dans `cartes`/`formes`, uids pour les unités. */
+export interface Sel {
+	cartes?: number[];
+	unites?: (number | 'korum')[];
+	forme?: number;
+}
+
+/** Liste triée STABLE pour présenter un tas de cartes sans révéler son ordre. */
+function listeStable(cartes: CardData[]): CardData[] {
+	return [...cartes].sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
+}
+
 /* ----------------------------- Effets des Verbes --------------------------- */
 
-/** Résout l'effet d'un Verbe. Retourne false si aucune cible utile (l'IA ne le joue pas). */
-function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
+/** Résout l'effet d'un Verbe. Retourne false si aucune cible utile (l'IA ne le joue pas).
+    `sel` : la sélection du joueur humain ; absente, les heuristiques tranchent. */
+function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean, sel?: Sel): boolean {
 	const p = g.players[side];
 	const en = other(side);
 	const e = g.players[en];
 	const act = !dryRun;
+	/** l'unité désignée par la sélection, cherchée dans les deux camps */
+	const selUnit = (i = 0): Unit | null => {
+		const v = sel?.unites?.[i];
+		if (v === undefined || v === 'korum') return null;
+		return p.board.find((u) => u.uid === v) ?? e.board.find((u) => u.uid === v) ?? null;
+	};
 	switch (c.id) {
 		case 'messe-basse':
 			if (act) draw(g, side, 1);
@@ -509,6 +564,13 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 			if (act) damageKorum(g, en, 3);
 			return true;
 		case 'rompre': {
+			// le joueur désigne sa cible ; l'IA garde son heuristique
+			if (act && sel?.unites?.length) {
+				const t = selUnit();
+				if (sel.unites[0] === 'korum' || !t) damageKorum(g, en, 3);
+				else damageUnit(g, en, t, 3);
+				return true;
+			}
 			// équilibrage run-002 : 2 → 3 dégâts
 			const kill = e.board.filter((u) => unitHp(g, en, u) <= 3).sort((a, b) => unitAtk(g, en, b) - unitAtk(g, en, a))[0];
 			if (kill) {
@@ -527,13 +589,21 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 			return false;
 		}
 		case 'appel-a-lordre': {
-			const t = strongest(g, en);
-			if (!t || t.card.cost < 2) return false;
-			if (act) {
-				e.board.splice(e.board.indexOf(t), 1);
-				if (!t.token) e.hand.push(t.card);
-				ev(g, { t: 'effect', side, targetUid: t.uid, msg: `${t.card.name} est renvoyé dans la main adverse` });
+			/* Le texte dit « un Être » : le joueur peut renvoyer n'importe lequel,
+			   y compris un des siens (rejouer une arrivée). Le garde-fou « coût < 2 »
+			   n'était qu'une évaluation d'IA : il reste au dryRun — appliqué à la
+			   résolution, il faisait perdre la carte face à un plateau de jetons. */
+			if (dryRun) {
+				const t = strongest(g, en);
+				return !!t && t.card.cost >= 2;
 			}
+			const t = selUnit() ?? strongest(g, en);
+			if (!t) return false;
+			const owner = p.board.includes(t) ? p : e;
+			owner.board.splice(owner.board.indexOf(t), 1);
+			if (!t.token) owner.hand.push(t.card);
+			detachSupports(g, t.uid);
+			ev(g, { t: 'effect', side, targetUid: t.uid, msg: `${t.card.name} est renvoyé dans la main de son propriétaire` });
 			return true;
 		}
 		case 'recitation':
@@ -544,7 +614,7 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 			}
 			return true;
 		case 'clameur-dexen': {
-			const t = strongest(g, side);
+			const t = (act ? selUnit() : null) ?? strongest(g, side);
 			if (!t) return false;
 			if (act) {
 				t.tempAtk += 2;
@@ -555,7 +625,7 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 		case 'seconde-sentence': {
 			// équilibrage run-002 : la fenêtre s'étend au tour précédent
 			if (!p.allyDiedThisTurn && !p.allyDiedLastTurn) return false;
-			const t = strongest(g, side);
+			const t = (act ? selUnit() : null) ?? strongest(g, side);
 			if (!t) return false;
 			if (act) {
 				t.permAtk += 2;
@@ -565,7 +635,7 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 			return true;
 		}
 		case 'echo-du-dixieme-mot': {
-			const sac = weakest(g, side);
+			const sac = (act ? selUnit() : null) ?? weakest(g, side);
 			if (!sac) return false;
 			if (act) {
 				destroy(g, side, sac, 'sacrifice');
@@ -574,11 +644,16 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 			return true;
 		}
 		case 'nouvelle-peau': {
-			const t = [...p.board].sort(
+			/* « Un de vos Êtres échange » — n'importe lequel. L'exigence d'un écart
+			   d'au moins 2 est un seuil de rentabilité : il ne vaut que pour l'IA,
+			   un humain a le droit de faire un échange défensif. */
+			const auto = [...p.board].sort(
 				(a, b) => unitHp(g, side, b) - unitAtk(g, side, b) - (unitHp(g, side, a) - unitAtk(g, side, a))
 			)[0];
-			if (!t || unitHp(g, side, t) - unitAtk(g, side, t) < 2) return false;
-			if (act) {
+			if (dryRun) return !!auto && unitHp(g, side, auto) - unitAtk(g, side, auto) >= 2;
+			const t = selUnit() ?? auto;
+			if (!t) return false;
+			{
 				const a = t.baseAtk + t.permAtk;
 				const h = t.baseHp + t.permHp - t.dmg;
 				t.baseAtk = h;
@@ -592,16 +667,21 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 		case 'brume-memorielle': {
 			if (p.deck.length === 0) return false;
 			if (act) {
+				/* « Regardez les 3 prochaines cartes, piochez-en une » : le joueur
+				   choisit parmi les trois, les autres restent sur le deck dans
+				   l'ordre. L'heuristique ne sert plus qu'à l'IA. */
 				const top = p.deck.slice(0, 3);
-				const best = [...top].sort((a, b) => handScore(b) - handScore(a))[0];
-				p.deck.splice(p.deck.indexOf(best), 1);
-				p.hand.push(best);
-				ev(g, { t: 'effect', side, msg: `La brume choisit : ${best.name} rejoint la main` });
+				const i = sel?.cartes?.[0];
+				const choisie =
+					i !== undefined && top[i] ? top[i] : [...top].sort((a, b) => handScore(b) - handScore(a))[0];
+				p.deck.splice(p.deck.indexOf(choisie), 1);
+				p.hand.push(choisie);
+				ev(g, { t: 'effect', side, msg: `La brume se lève : ${choisie.name} rejoint la main` });
 			}
 			return true;
 		}
 		case 'sentence-dor': {
-			const t = strongest(g, en);
+			const t = (act ? selUnit() : null) ?? strongest(g, en);
 			if (!t) return false;
 			if (act) {
 				t.chained = true;
@@ -611,9 +691,10 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 		}
 		case 'sentence-retournee': {
 			// équilibrage run-002 : mode de repli — sans allié entravé, buff simple
-			const t = p.board.find((u) => isLocked(g, u));
+			const choisi = act ? selUnit() : null;
+			const t = choisi && isLocked(g, choisi) ? choisi : p.board.find((u) => isLocked(g, u));
 			if (!t) {
-				const ally = strongest(g, side);
+				const ally = choisi ?? strongest(g, side);
 				if (!ally) return false;
 				if (act) {
 					ally.permAtk += 1;
@@ -638,7 +719,11 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 			return true;
 		}
 		case 'vasis-assemble': {
-			if (e.board.length < 2) return false;
+			/* « Neutralisez TOUS les Êtres adverses » : un seul suffit à résoudre.
+			   Exiger deux Êtres est un seuil de rentabilité d'IA — au dryRun
+			   seulement, sinon la carte se dépensait pour rien face à un Être. */
+			if (dryRun) return e.board.length >= 2;
+			if (e.board.length === 0) return false;
 			if (act) {
 				for (const u of e.board) u.neutralizedUntil = g.t + 2;
 				ev(g, { t: 'effect', side, msg: `Le Vasis parle d'une seule voix — le camp adverse est neutralisé` });
@@ -671,16 +756,33 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean): boolean {
 
 /* --------------------------- Effets d'arrivée (ETB) ------------------------ */
 
-function onSummon(g: G, side: Side, u: Unit): void {
+function onSummon(g: G, side: Side, u: Unit, sel?: Sel): void {
 	const p = g.players[side];
 	const en = other(side);
 	const e = g.players[en];
+	const selUnit = (i = 0): Unit | null => {
+		const v = sel?.unites?.[i];
+		if (v === undefined || v === 'korum') return null;
+		return p.board.find((x) => x.uid === v) ?? e.board.find((x) => x.uid === v) ?? null;
+	};
+	/** carte désignée dans une liste STABLE (cf. listeStable) */
+	const selCarte = (source: CardData[], i = 0): CardData | null => {
+		const idx = sel?.cartes?.[i];
+		if (idx === undefined) return null;
+		return listeStable(source)[idx] ?? null;
+	};
 	switch (u.card.id) {
 		case 'norel':
 			draw(g, side, 1);
 			break;
 		case 'renna': {
-			const t = strongest(g, side) === u ? p.board.find((o) => o !== u) : strongest(g, side);
+			const choisi = selUnit();
+			const t =
+				choisi && choisi !== u
+					? choisi
+					: strongest(g, side) === u
+						? p.board.find((o) => o !== u)
+						: strongest(g, side);
 			const target = t && t !== u ? t : p.board.find((o) => o !== u);
 			if (target) {
 				target.permAtk += 1;
@@ -711,7 +813,7 @@ function onSummon(g: G, side: Side, u: Unit): void {
 			break;
 		}
 		case 'korven': {
-			const t = strongest(g, en);
+			const t = selUnit() ?? strongest(g, en);
 			if (t) {
 				t.neutralizedUntil = g.t + 2;
 				ev(g, { t: 'effect', side, targetUid: t.uid, msg: `${t.card.name} est neutralisé par la sentence de Korven` });
@@ -735,39 +837,55 @@ function onSummon(g: G, side: Side, u: Unit): void {
 			break;
 		case 'eshna': {
 			const n = memFactor(p);
+			// la liste stable est figée AVANT les retraits : les indices restent valides
+			const stable = listeStable(p.discard);
+			const choisies = (sel?.cartes ?? []).map((i) => stable[i]).filter(Boolean);
 			for (let i = 0; i < n; i++) {
-				const best = [...p.discard].sort((a, b) => handScore(b) - handScore(a))[0];
-				if (!best) break;
-				p.discard.splice(p.discard.indexOf(best), 1);
-				p.hand.push(best);
-				ev(g, { t: 'effect', side, msg: `Eshna ramasse ${best.name} dans la défausse` });
+				const carte =
+					choisies[i] && p.discard.includes(choisies[i])
+						? choisies[i]
+						: [...p.discard].sort((a, b) => handScore(b) - handScore(a))[0];
+				if (!carte) break;
+				p.discard.splice(p.discard.indexOf(carte), 1);
+				p.hand.push(carte);
+				ev(g, { t: 'effect', side, msg: `Eshna ramasse ${carte.name} dans la défausse` });
 			}
 			break;
 		}
 		case 'eskor': {
 			const n = memFactor(p);
+			const stable = listeStable(p.exile);
+			const choisies = (sel?.cartes ?? []).map((i) => stable[i]).filter(Boolean);
 			for (let i = 0; i < n; i++) {
-				const best = [...p.exile].sort((a, b) => handScore(b) - handScore(a))[0];
-				if (!best) break;
-				p.exile.splice(p.exile.indexOf(best), 1);
-				p.hand.push(best);
-				ev(g, { t: 'effect', side, msg: `Eskor rapporte ${best.name} de l'exil — l'impossible` });
+				const carte =
+					choisies[i] && p.exile.includes(choisies[i])
+						? choisies[i]
+						: [...p.exile].sort((a, b) => handScore(b) - handScore(a))[0];
+				if (!carte) break;
+				p.exile.splice(p.exile.indexOf(carte), 1);
+				p.hand.push(carte);
+				ev(g, { t: 'effect', side, msg: `Eskor rapporte ${carte.name} de l'exil — l'impossible` });
 			}
 			break;
 		}
 		case 'eshel': {
-			const best = [...p.deck].sort((a, b) => handScore(b) - handScore(a))[0];
-			if (best) {
-				p.deck.splice(p.deck.indexOf(best), 1);
-				p.hand.push(best);
-				ev(g, { t: 'effect', side, msg: `Eshel ouvre l'archive : ${best.name} rejoint la main` });
+			/* « Cherchez n'importe quelle carte » : c'est un tuteur, le choix
+			   appartient au joueur. La liste présentée est triée (listeStable)
+			   pour ne pas révéler l'ordre du deck. */
+			const carte =
+				selCarte(p.deck) ?? [...p.deck].sort((a, b) => handScore(b) - handScore(a))[0];
+			if (carte) {
+				p.deck.splice(p.deck.indexOf(carte), 1);
+				p.hand.push(carte);
+				ev(g, { t: 'effect', side, msg: `Eshel ouvre l'archive : ${carte.name} rejoint la main` });
 			}
 			break;
 		}
 		case 'korsa': {
-			const s = e.supports[0];
+			const idx = sel?.cartes?.[0];
+			const s = (idx !== undefined ? e.supports[idx] : undefined) ?? e.supports[0];
 			if (s) {
-				e.supports.splice(0, 1);
+				e.supports.splice(e.supports.indexOf(s), 1);
 				e.discard.push(s.card);
 				// briser la Première Chaîne libère l'Être qu'elle retenait
 				if (s.card.id === 'premiere-chaine' && s.targetUid !== undefined) {
@@ -779,7 +897,12 @@ function onSummon(g: G, side: Side, u: Unit): void {
 			break;
 		}
 		case 'tala': {
-			const aggressive = e.korum <= 12 || p.board.length > e.board.length;
+			/* « choisissez sa forme » : le joueur décide ; l'heuristique ne vaut
+			   que pour l'IA. forme 0 = défensive (1/3), forme 1 = offensive (3/1). */
+			const aggressive =
+				sel?.forme !== undefined
+					? sel.forme === 1
+					: e.korum <= 12 || p.board.length > e.board.length;
 			if (aggressive) {
 				u.baseAtk = 3;
 				u.baseHp = 1;
@@ -799,7 +922,7 @@ function onSummon(g: G, side: Side, u: Unit): void {
 
 /* ------------------------------ Jouer une carte ---------------------------- */
 
-function playCard(g: G, side: Side, c: CardData): void {
+function playCard(g: G, side: Side, c: CardData, sel?: Sel): void {
 	const p = g.players[side];
 	const cost = playCost(g, side, c);
 	p.will -= cost;
@@ -810,18 +933,21 @@ function playCard(g: G, side: Side, c: CardData): void {
 	if (c.kind === 'etre') {
 		ev(g, { t: 'play', side, cardId: c.id, msg: `${p.name} joue ${c.name} (${cost} Volonté)` });
 		const u = spawnUnit(g, side, c);
-		if (u) onSummon(g, side, u);
+		if (u) onSummon(g, side, u, sel);
 	} else if (c.kind === 'verbe') {
 		ev(g, { t: 'verb', side, cardId: c.id, msg: `${p.name} prononce ${c.name} (${cost} Volonté)` });
-		resolveVerb(g, side, c, false);
+		resolveVerb(g, side, c, false, sel);
 		g.lastVerb = c;
 		p.discard.push(c);
 	} else {
-		// relique / lieu
+		// relique / lieu — l'attachement suit la sélection du joueur, sinon l'heuristique
+		const selUid = sel?.unites?.[0];
+		const pick = (camp: P) =>
+			typeof selUid === 'number' ? camp.board.find((u) => u.uid === selUid) : undefined;
 		let targetUid: number | undefined;
-		if (c.id === 'couronne-dos') targetUid = strongest(g, side)?.uid;
+		if (c.id === 'couronne-dos') targetUid = (pick(p) ?? strongest(g, side) ?? undefined)?.uid;
 		if (c.id === 'premiere-chaine') {
-			const t = strongest(g, other(side));
+			const t = pick(g.players[other(side)]) ?? strongest(g, other(side));
 			if (t) {
 				t.chained = true;
 				targetUid = t.uid;
@@ -867,16 +993,7 @@ function tryPrononcer(g: G, side: Side): boolean {
 				p.will -= cost;
 				ev(g, { t: 'prononcer', side, uid: u.uid, msg: `Exva PRONONCE (${cost}) — ${dmg} dégâts répartis` });
 				triggerSenel(g, side);
-				let left = dmg;
-				const targets = [...e.board].sort((a, b) => unitHp(g, en, a) - unitHp(g, en, b));
-				for (const t of targets) {
-					const hp = unitHp(g, en, t);
-					if (hp <= left) {
-						left -= hp;
-						damageUnit(g, en, t, hp);
-					}
-				}
-				if (left > 0) damageKorum(g, en, left);
+				resoudreExva(g, side);
 				exileUnit(g, side, u);
 				return true;
 			}
@@ -904,6 +1021,7 @@ function exileUnit(g: G, side: Side, u: Unit): void {
 	if (idx >= 0) {
 		p.board.splice(idx, 1);
 		if (!u.token) p.exile.push(u.card);
+		detachSupports(g, u.uid);
 		ev(g, { t: 'effect', side, uid: u.uid, msg: `${u.card.name} est exilé — définitivement` });
 	}
 }
@@ -1146,6 +1264,175 @@ export function simulate(
 	};
 }
 
+/* ----------------------- Spécification des choix joueur ----------------------- */
+
+/**
+ * Ce qu'une carte demande au joueur AVANT d'être jouée. `null` : rien — soit la
+ * carte n'a pas de choix, soit aucune option n'existe (l'effet se résout seul).
+ * Toutes les options d'un effet d'arrivée se calculent avant la pose : aucune ne
+ * dépend de l'état d'après-invocation.
+ */
+function choixPour(g: G, side: Side, c: CardData): Choix | null {
+	const p = g.players[side];
+	const en = other(side);
+	const e = g.players[en];
+	const miens = (): ChoixOption[] =>
+		p.board.map((u) => ({ uid: u.uid, side, nom: u.card.name }));
+	const siens = (): ChoixOption[] =>
+		e.board.map((u) => ({ uid: u.uid, side: en, nom: u.card.name }));
+	switch (c.id) {
+		case 'brume-memorielle': {
+			const top = p.deck.slice(0, 3);
+			return top.length > 1
+				? { type: 'carte', titre: 'Brume des souvenirs — gardez une carte', n: 1, cartes: top }
+				: null;
+		}
+		case 'rompre':
+			return e.board.length
+				? { type: 'unite', titre: 'Rompre — 3 dégâts sur…', n: 1, unites: siens(), korum: true }
+				: null; // plateau vide : les dégâts vont au Korum, rien à choisir
+		case 'appel-a-lordre': {
+			const tous = [...siens(), ...miens()];
+			return tous.length
+				? { type: 'unite', titre: 'Appel à l’ordre — renvoyez un Être', n: 1, unites: tous }
+				: null;
+		}
+		case 'clameur-dexen':
+			return p.board.length > 1
+				? { type: 'unite', titre: 'Clameur d’Exen — +2 ATQ pour…', n: 1, unites: miens() }
+				: null;
+		case 'seconde-sentence':
+			return (p.allyDiedThisTurn || p.allyDiedLastTurn) && p.board.length > 1
+				? { type: 'unite', titre: 'Seconde sentence — +2/+2 pour…', n: 1, unites: miens() }
+				: null;
+		case 'echo-du-dixieme-mot':
+			return p.board.length
+				? { type: 'unite', titre: 'Écho du dixième mot — sacrifiez…', n: 1, unites: miens() }
+				: null;
+		case 'nouvelle-peau':
+			return p.board.length > 1
+				? { type: 'unite', titre: 'Nouvelle peau — échangez ATQ et INT de…', n: 1, unites: miens() }
+				: null;
+		case 'sentence-dor':
+			return e.board.length > 1
+				? { type: 'unite', titre: 'Sentence d’or — enchaînez…', n: 1, unites: siens() }
+				: null;
+		case 'sentence-retournee': {
+			const entraves = p.board.filter((u) => isLocked(g, u));
+			const pool = entraves.length ? entraves : p.board;
+			return pool.length > 1
+				? {
+						type: 'unite',
+						titre: entraves.length
+							? 'Sentence retournée — libérez…'
+							: 'Sentence retournée — +1/+1 pour…',
+						n: 1,
+						unites: pool.map((u) => ({ uid: u.uid, side, nom: u.card.name }))
+					}
+				: null;
+		}
+		case 'couronne-dos':
+			return p.board.length > 1
+				? { type: 'unite', titre: 'Couronne d’os — attachez à…', n: 1, unites: miens() }
+				: null;
+		case 'premiere-chaine':
+			return e.board.length > 1
+				? { type: 'unite', titre: 'Première Chaîne — entravez…', n: 1, unites: siens() }
+				: null;
+		// ------- effets d'arrivée -------
+		case 'eshel':
+			return p.deck.length > 1
+				? { type: 'carte', titre: 'Eshel — cherchez une carte du deck', n: 1, cartes: listeStable(p.deck) }
+				: null;
+		case 'eshna': {
+			const nb = Math.min(memFactor(p), p.discard.length);
+			return p.discard.length > 1
+				? { type: 'carte', titre: 'Eshna — reprenez dans la défausse', n: nb, cartes: listeStable(p.discard) }
+				: null;
+		}
+		case 'eskor': {
+			const nb = Math.min(memFactor(p), p.exile.length);
+			return p.exile.length > 1
+				? { type: 'carte', titre: 'Eskor — rapportez de l’exil', n: nb, cartes: listeStable(p.exile) }
+				: null;
+		}
+		case 'korven':
+			return e.board.length > 1
+				? { type: 'unite', titre: 'Korven — neutralisez…', n: 1, unites: siens() }
+				: null;
+		case 'korsa':
+			return e.supports.length > 1
+				? { type: 'carte', titre: 'Korsa — brisez…', n: 1, cartes: e.supports.map((x) => x.card) }
+				: null;
+		case 'renna':
+			return p.board.length > 1
+				? { type: 'unite', titre: 'Renna — +1/+1 pour…', n: 1, unites: miens() }
+				: null;
+		case 'tala':
+			return {
+				type: 'forme',
+				titre: 'Tala — choisissez sa forme',
+				n: 1,
+				formes: ['Défensive (1/3)', 'Offensive (3/1)']
+			};
+	}
+	return null;
+}
+
+/** Le Prononcer d'Exva répartit ses dégâts : un choix par point. */
+function choixPourPrononcer(g: G, side: Side, u: Unit): Choix | null {
+	const en = other(side);
+	const e = g.players[en];
+	if (u.card.id !== 'exva' || e.board.length === 0) return null;
+	const total = 5 + (hasSupport(g.players[side], 'porte-du-dehors') ? 1 : 0);
+	return {
+		type: 'unite',
+		titre: `Exva — répartissez ${total} dégâts (un choix par point)`,
+		n: total,
+		unites: e.board.map((x) => ({ uid: x.uid, side: en, nom: x.card.name })),
+		korum: true
+	};
+}
+
+/**
+ * Résolution partagée du Prononcer d'Exva : chaque entrée de `sel.unites` vaut
+ * UN point de dégât ; les points restants (sélection courte ou cible déjà
+ * morte) vont au Korum. Sans sélection : l'heuristique (achève du plus petit
+ * au plus grand, le reste au Korum).
+ */
+function resoudreExva(g: G, side: Side, sel?: Sel): void {
+	const en = other(side);
+	const e = g.players[en];
+	const boost = hasSupport(g.players[side], 'porte-du-dehors') ? 1 : 0;
+	let left = 5 + boost;
+	if (sel?.unites?.length) {
+		for (const v of sel.unites) {
+			if (left <= 0) break;
+			if (v === 'korum') {
+				damageKorum(g, en, 1);
+				left--;
+				continue;
+			}
+			const t = e.board.find((x) => x.uid === v);
+			if (t) {
+				damageUnit(g, en, t, 1);
+				left--;
+			}
+		}
+		if (left > 0) damageKorum(g, en, left);
+		return;
+	}
+	const targets = [...e.board].sort((a, b) => unitHp(g, en, a) - unitHp(g, en, b));
+	for (const t of targets) {
+		const hp = unitHp(g, en, t);
+		if (hp <= left) {
+			left -= hp;
+			damageUnit(g, en, t, hp);
+		}
+	}
+	if (left > 0) damageKorum(g, en, left);
+}
+
 /* --------------------- Duel interactif : Joueur 1 contre IA --------------------- */
 
 export interface HandEntry {
@@ -1267,12 +1554,47 @@ export class Duel {
 		}));
 	}
 
-	play(index: number): boolean {
+	/**
+	 * Le choix que cette carte demanderait si elle était jouée maintenant.
+	 * L'UI le présente AVANT d'appeler `play(index, sel)` ; `null` = jouer direct.
+	 */
+	choiceFor(index: number): Choix | null {
+		const c = this.g.players[0].hand[index];
+		if (!this.myTurn || !c) return null;
+		return choixPour(this.g, 0, c);
+	}
+
+	play(index: number, sel?: Sel): boolean {
 		const p = this.g.players[0];
 		const c = p.hand[index];
 		if (!this.myTurn || !c || playCost(this.g, 0, c) > p.will) return false;
 		if (!hasSlot(this.g, 0, c)) return false; // les cinq emplacements sont pris
-		playCard(this.g, 0, c);
+		playCard(this.g, 0, c, sel);
+		return true;
+	}
+
+	/* ---- Moras : l'échange ATQ/INT, jusqu'ici réservé à l'IA ---- */
+
+	/** uids des Êtres qui peuvent échanger leur ATQ et leur INT ce tour. */
+	swappables(): number[] {
+		if (!this.myTurn) return [];
+		const p = this.g.players[0];
+		if (!p.board.some((u) => u.card.id === 'moras')) return [];
+		return p.board.filter((u) => !u.swapped && !u.token).map((u) => u.uid);
+	}
+
+	swap(uid: number): boolean {
+		if (!this.myTurn) return false;
+		const g = this.g;
+		const p = g.players[0];
+		if (!p.board.some((u) => u.card.id === 'moras')) return false;
+		const u = p.board.find((x) => x.uid === uid);
+		if (!u || u.swapped || u.token) return false;
+		const ba = u.baseAtk;
+		u.baseAtk = u.baseHp;
+		u.baseHp = ba;
+		u.swapped = true;
+		ev(g, { t: 'effect', side: 0, uid: u.uid, msg: `${u.card.name} inverse son être (${unitAtk(g, 0, u)}/${unitHp(g, 0, u)}) — le sourire de Moras` });
 		return true;
 	}
 
@@ -1322,7 +1644,14 @@ export class Duel {
 			.filter((x) => x.cost <= p.will);
 	}
 
-	pronounce(uid: number): boolean {
+	/** Le choix demandé par ce Prononcer (Exva répartit ses dégâts) ; `null` = direct. */
+	choiceForPronounce(uid: number): Choix | null {
+		if (!this.myTurn) return null;
+		const u = this.g.players[0].board.find((x) => x.uid === uid);
+		return u ? choixPourPrononcer(this.g, 0, u) : null;
+	}
+
+	pronounce(uid: number, sel?: Sel): boolean {
 		if (!this.myTurn) return false;
 		const g = this.g;
 		const p = g.players[0];
@@ -1333,20 +1662,10 @@ export class Duel {
 		const cost = prononcerCost(g, 0, pr.cost);
 		if (p.will < cost) return false;
 		p.will -= cost;
-		const boost = hasSupport(p, 'porte-du-dehors') ? 1 : 0;
 		ev(g, { t: 'prononcer', side: 0, uid: u.uid, msg: `${u.card.name} PRONONCE (${cost}) — ${pr.text}` });
 		triggerSenel(g, 0);
 		if (u.card.id === 'exva') {
-			let left = 5 + boost;
-			const targets = [...e.board].sort((a, b) => unitHp(g, 1, a) - unitHp(g, 1, b));
-			for (const t of targets) {
-				const hp = unitHp(g, 1, t);
-				if (hp <= left) {
-					left -= hp;
-					damageUnit(g, 1, t, hp);
-				}
-			}
-			if (left > 0) damageKorum(g, 1, left);
+			resoudreExva(g, 0, sel);
 		} else if (u.card.id === 'rasen') {
 			for (const t of [...e.board]) destroy(g, 1, t, 'death');
 			for (const t of [...p.board]) if (t !== u) destroy(g, 0, t, 'death');
@@ -1474,12 +1793,40 @@ export class Match {
 		}));
 	}
 
-	play(side: Side, index: number): boolean {
+	choiceFor(side: Side, index: number): Choix | null {
+		const c = this.g.players[side].hand[index];
+		if (!this.isTurn(side) || !c) return null;
+		return choixPour(this.g, side, c);
+	}
+
+	play(side: Side, index: number, sel?: Sel): boolean {
 		const p = this.g.players[side];
 		const c = p.hand[index];
 		if (!this.isTurn(side) || !c || playCost(this.g, side, c) > p.will) return false;
 		if (!hasSlot(this.g, side, c)) return false; // les cinq emplacements sont pris
-		playCard(this.g, side, c);
+		playCard(this.g, side, c, sel);
+		return true;
+	}
+
+	swappables(side: Side): number[] {
+		if (!this.isTurn(side)) return [];
+		const p = this.g.players[side];
+		if (!p.board.some((u) => u.card.id === 'moras')) return [];
+		return p.board.filter((u) => !u.swapped && !u.token).map((u) => u.uid);
+	}
+
+	swap(side: Side, uid: number): boolean {
+		if (!this.isTurn(side)) return false;
+		const g = this.g;
+		const p = g.players[side];
+		if (!p.board.some((u) => u.card.id === 'moras')) return false;
+		const u = p.board.find((x) => x.uid === uid);
+		if (!u || u.swapped || u.token) return false;
+		const ba = u.baseAtk;
+		u.baseAtk = u.baseHp;
+		u.baseHp = ba;
+		u.swapped = true;
+		ev(g, { t: 'effect', side, uid: u.uid, msg: `${u.card.name} inverse son être (${unitAtk(g, side, u)}/${unitHp(g, side, u)}) — le sourire de Moras` });
 		return true;
 	}
 
@@ -1526,7 +1873,13 @@ export class Match {
 			.filter((x) => x.cost <= p.will);
 	}
 
-	pronounce(side: Side, uid: number): boolean {
+	choiceForPronounce(side: Side, uid: number): Choix | null {
+		if (!this.isTurn(side)) return null;
+		const u = this.g.players[side].board.find((x) => x.uid === uid);
+		return u ? choixPourPrononcer(this.g, side, u) : null;
+	}
+
+	pronounce(side: Side, uid: number, sel?: Sel): boolean {
 		if (!this.isTurn(side)) return false;
 		const g = this.g;
 		const p = g.players[side];
@@ -1538,20 +1891,10 @@ export class Match {
 		const cost = prononcerCost(g, side, pr.cost);
 		if (p.will < cost) return false;
 		p.will -= cost;
-		const boost = hasSupport(p, 'porte-du-dehors') ? 1 : 0;
 		ev(g, { t: 'prononcer', side, uid: u.uid, msg: `${u.card.name} PRONONCE (${cost}) — ${pr.text}` });
 		triggerSenel(g, side);
 		if (u.card.id === 'exva') {
-			let left = 5 + boost;
-			const targets = [...e.board].sort((x, y) => unitHp(g, en, x) - unitHp(g, en, y));
-			for (const t of targets) {
-				const hp = unitHp(g, en, t);
-				if (hp <= left) {
-					left -= hp;
-					damageUnit(g, en, t, hp);
-				}
-			}
-			if (left > 0) damageKorum(g, en, left);
+			resoudreExva(g, side, sel);
 		} else if (u.card.id === 'rasen') {
 			for (const t of [...e.board]) destroy(g, en, t, 'death');
 			for (const t of [...p.board]) if (t !== u) destroy(g, side, t, 'death');
