@@ -26,6 +26,17 @@ export interface MailDef {
 /** La boîte d'envoi d'Expelled — contenu statique livré avec le jeu. */
 export const MAILBOX: MailDef[] = [
 	{
+		id: 'cadeau-eclats-2026-07-23',
+		from: 'Le Bureau du Silence',
+		subject: 'Un présent du Bureau',
+		date: '2026-07-23T09:00:00Z',
+		coins: 10,
+		body: [
+			'Le Bureau du Silence salue les voix qui peuplent déjà l’Arène.',
+			'Acceptez ce présent : 10 Éclats, à réclamer ci-dessous.'
+		]
+	},
+	{
 		id: 'welcome',
 		from: 'Le Bureau du Silence',
 		subject: 'Bienvenue dans le Silence',
