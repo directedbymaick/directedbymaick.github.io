@@ -20,9 +20,14 @@
 	},
 	"attack": 2,
 	"health": 1,
-	"flavor": "Le bord du monde est un plongeoir.",
+	"flavor": "Pour elle, le bord du monde n’est qu’un point de départ.",
 	"alts": [
 		"/art/alt/velsa-alt1.webp"
 	],
-	"fullArtFoil": "showcase"
+	"fullArtFoil": "showcase",
+	"altReglages": [
+		{
+			"cutout": "/art/alt/velsa-alt1-cutout.webp"
+		}
+	]
 }

@@ -46,13 +46,13 @@ export function altView(
 			seed: reglage?.seed ?? card.gene.seed + 97 * (index + 1)
 		}
 	};
-	/* Le détourage appartient à l'illustration de BASE. Le garder ici ferait
-	   flotter le sujet découpé de la carte de base au-dessus de l'artwork de
-	   l'alt, et ferait étiqueter cette version « SP » alors qu'elle n'est pas
-	   détourée. Un alt détouré devra porter son propre découpage. */
-	delete vue.cutout;
+	/* Le détourage de la carte de BASE découpe une autre illustration : le laisser
+	   ici ferait flotter le mauvais sujet au-dessus de l'artwork de l'alt. L'alt
+	   n'a de version détourée que s'il apporte le sien. */
 	delete vue.cutoutX;
 	delete vue.cutoutY;
 	delete vue.cutoutScale;
+	if (reglage?.cutout) vue.cutout = reglage.cutout;
+	else delete vue.cutout;
 	return vue;
 }

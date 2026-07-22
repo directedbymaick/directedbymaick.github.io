@@ -55,6 +55,10 @@ export interface CardVariant {
  */
 export interface AltReglage {
 	foilPreset?: FoilPreset;
+	/** Détourage PROPRE à cet art alternatif (static/art/alt/…-cutout.webp).
+	    Sans lui l'alt n'a pas de version « SP » : celui de la carte de base ne
+	    convient pas, il découpe une autre illustration. */
+	cutout?: string;
 	/** finition de la vue Full Art DE CET ALT ; à défaut, celle de la carte de base */
 	fullArtFoil?: FoilPreset;
 	/** décalage de brillance ; à défaut, seed de la base + 97 × (index + 1) */

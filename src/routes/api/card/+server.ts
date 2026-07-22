@@ -30,7 +30,7 @@ interface Patch {
 	clearVariants?: boolean;
 	/** index dans `alts` visé par les trois champs suivants */
 	altIndex?: number;
-	/** composition officielle de cet art alternatif (fusionnée) */
+	/** composition officielle de cet art alternatif (fusionnée : finition, détourage) */
 	altGene?: Partial<AltReglage>;
 	/** variante à ajouter à CET art alternatif */
 	addAltVariant?: CardVariant;

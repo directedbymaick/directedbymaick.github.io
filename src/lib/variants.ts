@@ -23,6 +23,23 @@ export const FOIL_RATE = 0.15;
  */
 export const ALT_RATE = 0.01;
 
+/**
+ * Répartition À L'INTÉRIEUR d'un art alternatif.
+ *
+ * L'alt n'emprunte PAS le taux global de Full Art : s'il le faisait, sa Full Art
+ * serait mécaniquement seize fois plus rare que son détourage, et le détourage
+ * ne pourrait jamais être la pièce de tête. Les trois versions d'un alt ont donc
+ * leur propre échelle, du plus courant au plus rare :
+ *
+ *   nu (finition ordinaire) → Full Art → détouré
+ *
+ * Les parts sont calées pour que, sur une carte du set, le détouré sorte environ
+ * 3,5 fois moins souvent que la Full Art — l'écart qui sépare leurs prix d'un
+ * facteur deux une fois passés dans la courbe de `prixNom`.
+ */
+export const ALT_FULLART_PART = 0.21;
+export const ALT_NOBG_PART = 0.06;
+
 export const FOIL_LABEL: Record<FoilPreset, string> = {
 	mat: 'Raw',
 	regular: 'Holographique',
@@ -158,42 +175,64 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 	   rareté et non la « SP ». */
 	alts.forEach((art, i) => {
 		const reglage = card.altReglages?.[i];
+		const detourage = reglage?.cutout;
 		// à défaut de validation au Lab, la finition héritée de la carte de base
-		const defaut: FoilPreset =
+		const herite: FoilPreset =
 			card.gene.foilPreset === 'mat' ? 'regular' : card.gene.foilPreset;
+		/* « showcase » est réservé à la version détourée. Si la carte de base le
+		   porte et que l'alt a un détourage, la version nue prend une matière
+		   ordinaire — sinon les deux porteraient le même nom. */
+		const finitionNue: FoilPreset =
+			reglage?.foilPreset ?? (herite === 'showcase' && detourage ? 'regular' : herite);
+		const finitionFA: FoilPreset = reglage?.fullArtFoil ?? (detourage ? 'galerie' : herite);
 
-		const finitionsAlt = (fullArt: boolean): FoilPreset[] => {
-			const officielle = fullArt ? reglage?.fullArtFoil : reglage?.foilPreset;
-			const list = [
-				...(estFoil(officielle) ? [officielle] : []),
-				...(reglage?.variants ?? [])
-					.filter((v) => !!v.fullArt === fullArt)
-					.map((v) => v.foilPreset)
-			].filter(estFoil);
-			// jamais vide : un alt porte toujours une finition
-			return list.length ? [...new Set(list)] : [defaut];
-		};
+		// la vue nue : l'artwork alternatif sans découpe
+		const vueNue = altView(card, art, i);
+		delete vueNue.cutout;
 
-		for (const fullArt of eligible ? [false, true] : [false]) {
-			const pForme = (fullArt ? pFA : 1 - pFA) * ALT_RATE;
-			const vueAlt = altView(card, art, i);
-			const vueForme = fullArt
-				? { ...fullArtView(vueAlt), gene: { ...vueAlt.gene } }
-				: vueAlt;
-			const suffixe = `--alt${i + 1}${fullArt ? '--fullart' : ''}`;
-			const foils = finitionsAlt(fullArt);
-			const total = foils.reduce((a, f) => a + poidsDe(f, vueAlt), 0);
+		const formes: { cle: string; p: number; foil: FoilPreset; vue: CardData; fa: boolean }[] = [];
 
-			for (const f of foils) {
-				versions.push({
-					key: `${card.id}${suffixe}--${f}`,
-					label: `Alt ${i + 1}${fullArt ? ' · Full Art' : ''} · ${foilLabel(f, vueAlt, fullArt)}`,
-					foil: f,
-					fullArt,
-					rate: (pForme * poidsDe(f, vueAlt)) / total,
-					view: { ...vueForme, gene: { ...vueForme.gene, foilPreset: f } }
-				});
-			}
+		const pFullArt = eligible ? ALT_FULLART_PART : 0;
+		const pNobg = detourage ? ALT_NOBG_PART : 0;
+
+		formes.push({
+			cle: `--alt${i + 1}`,
+			p: 1 - pFullArt - pNobg,
+			foil: finitionNue,
+			vue: vueNue,
+			fa: false
+		});
+
+		if (eligible) {
+			formes.push({
+				cle: `--alt${i + 1}--fullart`,
+				p: pFullArt,
+				foil: finitionFA,
+				vue: { ...fullArtView(vueNue), gene: { ...vueNue.gene } },
+				fa: true
+			});
+		}
+
+		if (detourage) {
+			// la pièce de tête : l'artwork alternatif détouré
+			formes.push({
+				cle: `--alt${i + 1}--nobg`,
+				p: pNobg,
+				foil: 'showcase',
+				vue: altView(card, art, i),
+				fa: false
+			});
+		}
+
+		for (const f of formes) {
+			versions.push({
+				key: `${card.id}${f.cle}--${f.foil}`,
+				label: `Alt ${i + 1}${f.fa ? ' · Full Art' : ''} · ${foilLabel(f.foil, f.vue, f.fa)}`,
+				foil: f.foil,
+				fullArt: f.fa,
+				rate: ALT_RATE * f.p,
+				view: { ...f.vue, gene: { ...f.vue.gene, foilPreset: f.foil } }
+			});
 		}
 	});
 
