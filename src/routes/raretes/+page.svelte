@@ -1,12 +1,15 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import { charter } from '$lib/charter';
-	import { paliers, frequence } from '$lib/paliers';
+	import { paliers, frequence, classes } from '$lib/paliers';
 	import type { Rarity } from '$lib/types';
 
 	/* L'échelle est dérivée du tirage lui-même : rien n'est saisi à la main ici,
 	   donc valider une variante au Lab la fait apparaître sur cette page. */
 	const echelle = paliers();
+	/* Six classes en tête, trente-cinq paliers en détail : personne ne retient
+	   trente-cinq niveaux, mais tout le monde reconnaît une carte détourée. */
+	const lesClasses = classes();
 
 	const raretes = Object.keys(charter.rarities) as Rarity[];
 	let filtre = $state<'all' | Rarity>('all');
@@ -16,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>L'échelle des raretés — {charter.game.name}</title>
+	<title>Raretés et probabilités — {charter.game.name}</title>
 	<meta
 		name="description"
 		content="Les {echelle.length} paliers de « Nés du silence », de la Commune Raw à la Prismatique Full Art détourée."
@@ -25,13 +28,29 @@
 
 <header class="tete">
 	<p class="kicker">Nés du silence · Set 01</p>
-	<h1>L'échelle</h1>
+	<h1>Raretés</h1>
 	<p class="chapo">
-		La rareté seule ne dit plus ce qu'on tient. Deux Prismatiques n'ont pas la même valeur selon
-		qu'elles sortent brutes ou détourées. Voici les <b>{echelle.length} paliers</b> qui existent
-		réellement, du plus courant au plus rare — jusqu'à
+		Une carte se lit en <b>six classes</b>, reconnaissables à l’œil. En dessous, le détail complet :
+		les <b>{echelle.length} paliers</b> que produit réellement le tirage, jusqu’à
 		<b>{leRare.label}</b>, {frequence(leRare.taux).toLowerCase()}.
 	</p>
+
+	<!-- ============ LES SIX CLASSES ============
+	     Le vocabulaire courant du jeu. Chaque règle se vérifie sur la carte, sans
+	     table de correspondance, et l’ordre est monotone en rareté : une classe
+	     n’est jamais plus courante que la précédente. -->
+	<ol class="classes">
+		{#each lesClasses as c, i (c.id)}
+			<li class="classe">
+				<span class="c-rang">{i + 1}</span>
+				<span class="c-corps">
+					<b class="c-nom">{c.nom}</b>
+					<span class="c-regle">{c.regle}</span>
+				</span>
+				<span class="c-taux">{frequence(c.taux)}</span>
+			</li>
+		{/each}
+	</ol>
 
 	<div class="filtres">
 		<button class="fbtn" class:on={filtre === 'all'} onclick={() => (filtre = 'all')}>
@@ -45,6 +64,8 @@
 		{/each}
 	</div>
 </header>
+
+<h2 class="detail-titre">Le détail — {echelle.length} paliers</h2>
 
 <ol class="echelle">
 	{#each montre as p, i (p.key)}
@@ -68,13 +89,81 @@
 </ol>
 
 <p class="note">
-	Ces taux ne sont pas calculés : ils sont mesurés. Trois millions de boosters sont ouverts avec le
-	moteur de tirage du jeu, god packs et garanties compris, et chaque version est comptée telle
-	qu'elle sort. La somme des {echelle.length} paliers vaut donc exactement 5 — la taille d'un
-	booster — et le tableau reste vrai quoi qu'on ajoute plus tard au booster.
+	Ces probabilités proviennent d’une simulation de trois millions de boosters utilisant exactement
+	les mêmes règles que le jeu, garanties et boosters spéciaux compris. Chaque finition est comptée
+	séparément afin de refléter sa fréquence réelle.
 </p>
 
 <style>
+	/* ============ LES SIX CLASSES ============ */
+	.classes {
+		list-style: none;
+		margin: 2.2rem 0 0;
+		padding: 0;
+		display: grid;
+		gap: 1px;
+		background: var(--panel-line);
+		border: 1px solid var(--panel-line);
+	}
+	.classe {
+		display: grid;
+		grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+		gap: 1rem;
+		align-items: center;
+		padding: 0.85rem 1.1rem;
+		background: rgba(8, 12, 20, 0.9);
+	}
+	.c-rang {
+		font-family: Cinzel, Georgia, serif;
+		font-size: 0.95rem;
+		color: var(--gold);
+		text-align: center;
+	}
+	.c-corps {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.2rem 0.8rem;
+		min-width: 0;
+	}
+	.c-nom {
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1.05rem;
+		letter-spacing: 0.05em;
+	}
+	.c-regle {
+		font-size: 0.88rem;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.c-taux {
+		font-family: var(--display);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--gold);
+		white-space: nowrap;
+	}
+	.detail-titre {
+		max-width: 1240px;
+		margin: 3.5rem auto 1.2rem;
+		padding: 0 var(--spacing-20);
+		font-family: var(--display);
+		font-size: 0.76rem;
+		font-weight: 700;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.45);
+	}
+	@media (max-width: 640px) {
+		.classe {
+			grid-template-columns: 1.8rem minmax(0, 1fr);
+		}
+		.c-taux {
+			grid-column: 2;
+		}
+	}
+
 	.tete {
 		margin: 3.5rem 0 3rem;
 		max-width: 44rem;

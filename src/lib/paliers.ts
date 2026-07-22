@@ -260,3 +260,66 @@ export function frequence(taux: number): string {
 		n < 100 ? Math.round(n) : n < 1000 ? Math.round(n / 10) * 10 : Math.round(n / 100) * 100;
 	return `1 booster sur ${arrondi.toLocaleString('fr-FR')}`;
 }
+/* ------------------------------------------------------------------ classes
+   Trente-cinq paliers, c'est la vérité du tirage — ce n'est pas un vocabulaire.
+   Aucun joueur ne retient trente-cinq niveaux ; MTG en annonce quatre, Lorcana
+   six. On expose donc SIX classes, et les paliers deviennent le détail qu'on
+   consulte, pas le langage courant.
+
+   Deux exigences ont guidé le découpage :
+   — chaque règle se vérifie à l'œil sur la carte, sans table de correspondance ;
+   — les classes sont MONOTONES en rareté, vérifié sur la mesure. Une classe qui
+     serait parfois plus rare que la suivante mentirait à chaque annonce. */
+
+export interface Classe {
+	id: string;
+	nom: string;
+	regle: string;
+	/** exemplaires attendus par booster */
+	taux: number;
+	paliers: number;
+	versions: number;
+	exemple: CardData;
+	exempleFullArt: boolean;
+}
+
+/** La classe d'un palier — de la plus courante à la plus rare. */
+function classeDe(p: Palier): { id: string; nom: string; regle: string } {
+	if (p.alt) return { id: 'alt', nom: 'Alt', regle: 'Une autre illustration du même nom' };
+	if (p.fullArt && p.nobg)
+		return { id: 'fa-sp', nom: 'Full Art SP', regle: 'Détourée ET pleine illustration' };
+	if (p.nobg) return { id: 'sp', nom: 'SP', regle: 'Le sujet détouré, sans fond' };
+	if (p.fullArt) return { id: 'fa', nom: 'Full Art', regle: 'Illustration pleine, cadre prismatique' };
+	if (p.foil) return { id: 'foil', nom: 'Foil', regle: 'Une matière : reflet, cosmique, galerie…' };
+	return { id: 'raw', nom: 'Raw', regle: 'Aucune finition — l’état de base' };
+}
+
+const ORDRE_CLASSES = ['raw', 'foil', 'fa', 'sp', 'fa-sp', 'alt'];
+
+/**
+ * Les six classes du jeu, avec leur fréquence mesurée.
+ * C'est ce que les pages annoncent ; `paliers()` reste le détail.
+ */
+export function classes(): Classe[] {
+	const map = new Map<string, Classe>();
+	for (const p of paliers()) {
+		const c = classeDe(p);
+		const vu = map.get(c.id);
+		if (vu) {
+			vu.taux += p.taux;
+			vu.paliers++;
+			vu.versions += p.membres;
+			// on garde l'exemple le plus rare de la classe : le plus parlant
+			continue;
+		}
+		map.set(c.id, {
+			...c,
+			taux: p.taux,
+			paliers: 1,
+			versions: p.membres,
+			exemple: p.exemple,
+			exempleFullArt: p.exempleFullArt
+		});
+	}
+	return ORDRE_CLASSES.map((id) => map.get(id)).filter(Boolean) as Classe[];
+}
