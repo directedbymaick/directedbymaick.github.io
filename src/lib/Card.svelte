@@ -676,7 +676,10 @@
 		display: none;
 	}
 	.card[data-fullart='true'] .statbar {
-		justify-content: space-between;
+		/* Pas de `justify-content` ici : `.statbar` le pose déjà, et le redéclarer
+		   écrasait `.protocol-bar` par spécificité (0,2,1 contre 0,1,0). Les cartes
+		   sans statistiques — Lieu, Verbe, Relique — n'ont que le point de rareté
+		   dans cette rangée : en `space-between` il partait de 162 px à gauche. */
 		padding: 0;
 		/* ATQ/INT gardent EXACTEMENT la position du mode normal : on annule le
 		   sur-padding du panneau full-art (horizontal) et on redescend au bas. */
