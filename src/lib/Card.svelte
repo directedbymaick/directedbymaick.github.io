@@ -842,10 +842,19 @@
 		   cassant la première — le texte monte avec son fond.
 		   La sortie est de resserrer la pilule autour de son texte : moins haute,
 		   elle déborde moins, ce qui laisse l'encre redescendre à sa place. */
-		padding: 0.18cqw 1.3cqw 0.28cqw;
+		/* Le rembourrage penche vers le HAUT, contrairement à .ff-sp : la boîte de
+		   ligne réserve sous la ligne de base une place de descendante que « ALT 1 »
+		   n'utilise pas, si bien qu'à rembourrage égal l'encre remonte. Mesuré à
+		   0,695 px au-dessus du centre de la pilule ; on rend cet écart au haut.
+		   La somme reste 0.46cqw, donc la pilule ne change ni de hauteur ni de
+		   place — seule l'encre descend en son centre. */
+		padding: 0.363cqw 1.3cqw 0.097cqw;
 		vertical-align: 0.06em;
 		position: relative;
-		top: -0.34cqw;
+		/* Descendre l'encre remonte la pilule d'autant, puisqu'elle s'aligne par sa
+		   ligne de base : on lui rend ces 0,7 px pour qu'elle retrouve exactement la
+		   place validée. */
+		top: -0.156cqw;
 		font-size: 1.7cqw;
 		font-weight: 700;
 		letter-spacing: 0.18em;
