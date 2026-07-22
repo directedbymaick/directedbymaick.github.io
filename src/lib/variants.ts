@@ -17,28 +17,28 @@ export const FOIL_RATE = 0.15;
  * Chance qu'un tirage donne UN art alternatif donné, plutôt que l'illustration
  * de base. Une carte à deux alts leur cède donc 2 × ce taux.
  *
- * Réglé sous la Full Art (6 %) : l'alt est l'artwork chase de la carte.
- * Et un alt ne sort JAMAIS en Raw — c'est une pièce de collection, elle porte
+ * Un alt ne sort JAMAIS en Raw : c'est une pièce de collection, elle porte
  * toujours une finition.
+ *
+ * La valeur est calée pour que les deux versions détourées de Velsa gardent
+ * exactement les fréquences validées — 1 booster sur 4 000 pour la Full Art,
+ * 1 sur 14 700 pour la simple. Retirer une version d'un alt ne doit pas rendre
+ * les autres plus courantes par ricochet.
  */
-export const ALT_RATE = 0.01;
+export const ALT_RATE = 0.0027;
 
 /**
  * Répartition À L'INTÉRIEUR d'un art alternatif.
  *
  * L'alt n'emprunte PAS le taux global de Full Art : s'il le faisait, sa Full Art
  * serait mécaniquement seize fois plus rare que son détourage, et le détourage
- * ne pourrait jamais être la pièce de tête. Les trois versions d'un alt ont donc
- * leur propre échelle, du plus courant au plus rare :
+ * ne pourrait jamais être la pièce de tête. Ici c'est l'inverse qui est voulu :
+ * la version détourée simple est la plus rare des deux.
  *
- *   nu (finition ordinaire) → Full Art → détouré
- *
- * Les parts sont calées pour que, sur une carte du set, le détouré sorte environ
- * 3,5 fois moins souvent que la Full Art — l'écart qui sépare leurs prix d'un
- * facteur deux une fois passés dans la courbe de `prixNom`.
+ * Un alt DÉTOURÉ n'existe qu'en SP : détouré simple, et détouré en Full Art.
+ * La version nue ne s'utilise que pour un alt sans découpe.
  */
-export const ALT_FULLART_PART = 0.21;
-export const ALT_NOBG_PART = 0.06;
+export const ALT_FULLART_PART = 0.778;
 
 export const FOIL_LABEL: Record<FoilPreset, string> = {
 	mat: 'Raw',
@@ -186,9 +186,11 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 			reglage?.foilPreset ?? (herite === 'showcase' && detourage ? 'regular' : herite);
 		const finitionFA: FoilPreset = reglage?.fullArtFoil ?? (detourage ? 'galerie' : herite);
 
-		// la vue nue : l'artwork alternatif sans découpe
+		// la vue détourée quand l'alt en a une, sinon l'artwork nu
+		const vueSP = altView(card, art, i);
 		const vueNue = altView(card, art, i);
 		delete vueNue.cutout;
+		const vue = detourage ? vueSP : vueNue;
 
 		/* Finitions supplémentaires validées au Lab pour cet alt. Elles se partagent
 		   la part de leur forme avec la finition officielle — sans ça, « Valider
@@ -202,7 +204,9 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		const formes: { cle: string; p: number; foil: FoilPreset; vue: CardData; fa: boolean }[] = [];
 
 		const pFullArt = eligible ? ALT_FULLART_PART : 0;
-		const pNobg = detourage ? ALT_NOBG_PART : 0;
+		// la finition d'un alt détouré est toujours « showcase » : c'est la SP
+		const foilSimple: FoilPreset = detourage ? 'showcase' : finitionNue;
+		const foilFA: FoilPreset = detourage ? 'showcase' : finitionFA;
 
 		/** répartit la part d'une forme entre sa finition officielle et ses suppléments */
 		const etaler = (cle: string, part: number, officielle: FoilPreset, vue: CardData, fa: boolean) => {
@@ -213,27 +217,16 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 			}
 		};
 
-		etaler(`--alt${i + 1}`, 1 - pFullArt - pNobg, finitionNue, vueNue, false);
+		etaler(`--alt${i + 1}`, 1 - pFullArt, foilSimple, vue, false);
 
 		if (eligible) {
 			etaler(
 				`--alt${i + 1}--fullart`,
 				pFullArt,
-				finitionFA,
-				{ ...fullArtView(vueNue), gene: { ...vueNue.gene } },
+				foilFA,
+				{ ...fullArtView(vue), gene: { ...vue.gene } },
 				true
 			);
-		}
-
-		if (detourage) {
-			// la pièce de tête : l'artwork alternatif détouré
-			formes.push({
-				cle: `--alt${i + 1}--nobg`,
-				p: pNobg,
-				foil: 'showcase',
-				vue: altView(card, art, i),
-				fa: false
-			});
 		}
 
 		for (const f of formes) {
