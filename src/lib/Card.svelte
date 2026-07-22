@@ -839,9 +839,13 @@
 		padding: 0.24cqw 1.3cqw 0.36cqw;
 		vertical-align: 0.06em;
 		position: relative;
-		/* relèvement mesuré, pas estimé : à -0.28cqw la pastille passait 0,21 px
-		   au-dessus du centre optique des capitales du pied (carte de 380 px). */
-		top: -0.224cqw;
+		/* Centrer géométriquement la pilule sur la hauteur de capitale ne suffit
+		   pas : elle fait 10,3 px pour 6 px de capitale, si bien qu'à centre égal
+		   elle déborde autant sous la ligne de base qu'au-dessus des lettres — et
+		   c'est la ligne de base que l'œil lit, donc la pastille paraît pendre.
+		   On répartit donc l'excédent 2 pour 1 en faveur du haut : 2,85 px
+		   au-dessus des capitales, 1,42 px sous la ligne de base. */
+		top: -0.413cqw;
 		font-size: 1.7cqw;
 		font-weight: 700;
 		letter-spacing: 0.18em;
