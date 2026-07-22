@@ -27,7 +27,9 @@
 	"fullArtFoil": "showcase",
 	"altReglages": [
 		{
-			"cutout": "/art/alt/velsa-alt1-cutout.webp"
+			"cutout": "/art/alt/velsa-alt1-cutout.webp",
+			"fullArtFoil": "showcase",
+			"foilPreset": "showcase"
 		}
 	]
 }

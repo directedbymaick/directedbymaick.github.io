@@ -1,6 +1,6 @@
 {
 	"_": "Généré par scripts/taux.mjs — ne pas éditer à la main.",
-	"empreinte": "e775c23f4c15cf56",
+	"empreinte": "85e93391753db9b9",
 	"boosters": 3000000,
 	"graine": 99537381,
 	"cartes": 15000000,
@@ -186,7 +186,7 @@
 		"senel--fullart--showcase": 3164,
 		"clameur-dexen--fullart--regular": 2629,
 		"talvas--fullart--regular": 2592,
-		"velsa--alt1--regular": 2536,
+		"velsa--alt1--showcase": 2536,
 		"rasen--showcase": 2533,
 		"doran--showcase": 2511,
 		"velna--showcase": 2361,
@@ -199,7 +199,7 @@
 		"koren--fullart--showcase": 2024,
 		"velor--fullart--regular": 1825,
 		"velor--fullart--showcase": 757,
-		"velsa--alt1--fullart--galerie": 747,
+		"velsa--alt1--fullart--showcase": 747,
 		"velsa--alt1--nobg--showcase": 204
 	}
 }

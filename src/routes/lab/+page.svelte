@@ -474,7 +474,7 @@
 				{#each versionsOfficielles as v, i (i)}
 					<li>
 						<span class="role" class:fa={v.fullArt}
-						>{v.role}{v.fullArt && v.role !== 'Full Art' ? ' · Full Art' : ''}</span
+						>{v.role}{v.fullArt && !v.role.includes('Full Art') ? ' · Full Art' : ''}</span
 					>
 						<span class="quoi">{v.foil ? foilLabels[v.foil] : 'Raw seulement'}</span>
 						{#if v.defaut}<span class="dft">non validée</span>{/if}

@@ -190,27 +190,39 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 		const vueNue = altView(card, art, i);
 		delete vueNue.cutout;
 
+		/* Finitions supplémentaires validées au Lab pour cet alt. Elles se partagent
+		   la part de leur forme avec la finition officielle — sans ça, « Valider
+		   comme variante » écrivait dans la fiche sans jamais créer de version. */
+		const supplements = (fa: boolean) =>
+			(reglage?.variants ?? [])
+				.filter((v) => !!v.fullArt === fa)
+				.map((v) => v.foilPreset)
+				.filter(estFoil);
+
 		const formes: { cle: string; p: number; foil: FoilPreset; vue: CardData; fa: boolean }[] = [];
 
 		const pFullArt = eligible ? ALT_FULLART_PART : 0;
 		const pNobg = detourage ? ALT_NOBG_PART : 0;
 
-		formes.push({
-			cle: `--alt${i + 1}`,
-			p: 1 - pFullArt - pNobg,
-			foil: finitionNue,
-			vue: vueNue,
-			fa: false
-		});
+		/** répartit la part d'une forme entre sa finition officielle et ses suppléments */
+		const etaler = (cle: string, part: number, officielle: FoilPreset, vue: CardData, fa: boolean) => {
+			const foils = [...new Set([officielle, ...supplements(fa)])];
+			const total = foils.reduce((a, f) => a + poidsDe(f, vue), 0);
+			for (const f of foils) {
+				formes.push({ cle, p: (part * poidsDe(f, vue)) / total, foil: f, vue, fa });
+			}
+		};
+
+		etaler(`--alt${i + 1}`, 1 - pFullArt - pNobg, finitionNue, vueNue, false);
 
 		if (eligible) {
-			formes.push({
-				cle: `--alt${i + 1}--fullart`,
-				p: pFullArt,
-				foil: finitionFA,
-				vue: { ...fullArtView(vueNue), gene: { ...vueNue.gene } },
-				fa: true
-			});
+			etaler(
+				`--alt${i + 1}--fullart`,
+				pFullArt,
+				finitionFA,
+				{ ...fullArtView(vueNue), gene: { ...vueNue.gene } },
+				true
+			);
 		}
 
 		if (detourage) {

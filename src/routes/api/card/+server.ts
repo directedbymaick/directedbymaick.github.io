@@ -73,7 +73,13 @@ export async function POST({ request }) {
 		const v = patch.addVariant;
 		// pas de doublon : une même paire (foil, fullArt) ne sert à rien deux fois
 		const exists = list.some((x) => x.foilPreset === v.foilPreset && !!x.fullArt === !!v.fullArt);
-		if (!exists) card.variants = [...list, v];
+		/* ni doublon de la composition OFFICIELLE : une variante identique à ce que
+		   la carte porte déjà ne crée aucune version, elle ne fait qu'apparaître
+		   deux fois dans les listes. */
+		const officielle = v.fullArt
+			? card.fullArtFoil === v.foilPreset
+			: card.gene.foilPreset === v.foilPreset;
+		if (!exists && !officielle) card.variants = [...list, v];
 	}
 
 	/* ---- arts alternatifs ----
@@ -99,7 +105,11 @@ export async function POST({ request }) {
 			const l = cible.variants ?? [];
 			const v = patch.addAltVariant;
 			const existe = l.some((x) => x.foilPreset === v.foilPreset && !!x.fullArt === !!v.fullArt);
-			if (!existe) cible.variants = [...l, v];
+			// même garde que sur la carte de base : pas de doublon de l'officielle
+			const officielle = v.fullArt
+				? cible.fullArtFoil === v.foilPreset
+				: cible.foilPreset === v.foilPreset;
+			if (!existe && !officielle) cible.variants = [...l, v];
 		}
 
 		liste[i] = cible;
