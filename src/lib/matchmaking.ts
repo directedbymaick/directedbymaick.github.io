@@ -1,13 +1,19 @@
 /**
- * Matchmaking temps réel : une file d'attente partagée via la présence
- * Supabase Realtime — aucun serveur à nous, aucune table, aucun compte requis.
+ * Matchmaking temps réel : une file d'attente partagée via Supabase Realtime
+ * (présence + broadcast) — aucun serveur à nous, aucune table, aucun compte.
  *
- * Chaque joueur entre dans la file en hébergeant DÉJÀ son propre salon PeerJS :
- * il annonce son code et sa date d'entrée. Tous les clients voient le même
- * annuaire et s'apparient de la même façon (tri par date d'entrée, paires
- * d'indices adjacents) : le premier de la paire reste hôte, le second ferme
- * son salon et rejoint celui du premier. Un nombre impair laisse le dernier
- * en attente du prochain arrivant.
+ * Chaque joueur entre dans la file en annonçant le code du salon qu'il
+ * HÉBERGERA si l'appariement le désigne hôte. L'annuaire est trié par date
+ * d'entrée et découpé en paires d'indices adjacents : le premier de la paire
+ * sera l'hôte, le second l'invité.
+ *
+ * L'initiative appartient à l'INVITÉ seul. Quand il voit sa paire complète,
+ * il prévient l'hôte par un broadcast explicite puis part rejoindre son code.
+ * L'hôte, lui, n'agit QUE sur ce broadcast : on ne peut pas se fier aux
+ * événements de présence pour lui, car un invité qui s'apparie quitte le
+ * canal en quelques millisecondes et Phoenix compresse les diffs — un
+ * join+leave dans la même fenêtre s'annule et l'hôte ne verrait jamais rien
+ * (constaté en test : l'invité partait, l'hôte attendait pour toujours).
  */
 import { supabase } from '$lib/supabase';
 
@@ -25,7 +31,7 @@ export interface Appariement {
 }
 
 /**
- * Entre dans la file avec le code du salon qu'on héberge.
+ * Entre dans la file avec le code du salon qu'on hébergera.
  * Retourne une fonction pour quitter la file (annulation ou appariement conclu).
  */
 export function entrerFile(code: string, surAppariement: (a: Appariement) => void): () => void {
@@ -39,20 +45,39 @@ export function entrerFile(code: string, surAppariement: (a: Appariement) => voi
 		void supabase.removeChannel(canal);
 	};
 
-	canal.on('presence', { event: 'sync' }, () => {
-		if (fini) return;
+	/* L'hôte est prévenu ici, et seulement ici. */
+	canal.on('broadcast', { event: 'apparie' }, ({ payload }) => {
+		if (fini || payload?.hote !== key) return;
+		quitter();
+		surAppariement({ code: String(payload.inviteCode ?? ''), hote: true });
+	});
+
+	/* L'invité détecte sa paire par la présence (sync à l'arrivée, join si
+	   l'hôte se présentait après lui) et prend l'initiative. */
+	let engage = false; // l'envoi est asynchrone : un second sync ne doit pas doubler
+	const evaluer = () => {
+		if (fini || engage) return;
 		const etat = canal.presenceState<Entree>();
 		const file = Object.values(etat)
 			.flat()
 			.sort((a, b) => a.at - b.at || a.key.localeCompare(b.key));
 		const moi = file.findIndex((e) => e.key === key);
-		if (moi === -1) return;
-		const autre = file[moi % 2 === 0 ? moi + 1 : moi - 1];
-		if (!autre) return; // seul dans la paire : on attend le prochain
-		const a: Appariement = { code: autre.code, hote: moi % 2 === 0 };
-		quitter();
-		surAppariement(a);
-	});
+		if (moi === -1 || moi % 2 === 0) return; // absent, ou hôte : on attend le broadcast
+		const hote = file[moi - 1];
+		if (!hote) return;
+		engage = true;
+		const envoi = canal.send({
+			type: 'broadcast',
+			event: 'apparie',
+			payload: { hote: hote.key, inviteCode: code }
+		});
+		void Promise.resolve(envoi).finally(() => {
+			quitter();
+			surAppariement({ code: hote.code, hote: false });
+		});
+	};
+	canal.on('presence', { event: 'sync' }, evaluer);
+	canal.on('presence', { event: 'join' }, evaluer);
 
 	canal.subscribe((statut) => {
 		if (statut === 'SUBSCRIBED') {

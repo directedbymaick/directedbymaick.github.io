@@ -461,26 +461,36 @@
 	async function rejoindreSalon(codeSalon: string) {
 		maCote = 1;
 		pvp = { role: 'invite', statut: 'connexion', code: codeSalon };
-		try {
-			const net = await import('$lib/net');
-			const res = await net.joinHost(codeSalon);
-			peer = res.peer;
-			conn = res.conn;
-			conn.on('data', (raw) => surDonneesInvite(raw as MsgPvp));
-			conn.on('close', surDepart);
-			conn.send({
-				t: 'hello',
-				name: monNom,
-				deck: maListe ? maListe.map((c) => c.id) : null,
-				faction: maFaction
-			} satisfies MsgPvp);
-		} catch (e) {
-			pvp = {
-				role: 'invite',
-				statut: 'erreur',
-				code: codeSalon,
-				message: e instanceof Error ? e.message : 'Connexion impossible.'
-			};
+		const net = await import('$lib/net');
+		/* En partie rapide, la fenêtre de l'hôte s'ouvre en même temps que la
+		   nôtre : son salon peut mettre quelques secondes à s'enregistrer. On
+		   réessaie donc au lieu d'échouer au premier refus. */
+		for (let essai = 0; ; essai++) {
+			try {
+				const res = await net.joinHost(codeSalon);
+				peer = res.peer;
+				conn = res.conn;
+				conn.on('data', (raw) => surDonneesInvite(raw as MsgPvp));
+				conn.on('close', surDepart);
+				conn.send({
+					t: 'hello',
+					name: monNom,
+					deck: maListe ? maListe.map((c) => c.id) : null,
+					faction: maFaction
+				} satisfies MsgPvp);
+				return;
+			} catch (e) {
+				if (essai >= 3) {
+					pvp = {
+						role: 'invite',
+						statut: 'erreur',
+						code: codeSalon,
+						message: e instanceof Error ? e.message : 'Connexion impossible.'
+					};
+					return;
+				}
+				await new Promise((r) => setTimeout(r, 1500));
+			}
 		}
 	}
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import logo from '$lib/assets/logo.svg';
 	import { charter } from '$lib/charter';
@@ -15,9 +15,10 @@
 	 * LE VESTIBULE — la page ne fait plus jouer : elle prépare.
 	 *
 	 * Tous les duels se disputent sur le vrai terrain (/duel), dans sa propre
-	 * fenêtre plein écran. Ici on choisit son deck et sa porte d'entrée :
-	 * partie rapide (matchmaking), création d'un salon privé, ou code d'un ami.
-	 * C'est la fenêtre de duel qui héberge le salon, affiche le code et attend.
+	 * fenêtre plein écran, comme les parties IA contre IA du simulateur. Ici on
+	 * choisit son deck et sa porte d'entrée : partie rapide (la recherche se
+	 * vit sur cette page, la fenêtre s'ouvre à l'instant où l'adversaire est
+	 * trouvé), création d'un salon privé, ou code d'un ami.
 	 */
 
 	let myDecks = $state<Deck[]>([]);
@@ -25,6 +26,20 @@
 	let joinCode = $state('');
 	let fenetreBloquee = $state(false);
 	let lance = $state<null | { type: 'rapide' | 'hote' | 'invite'; code?: string }>(null);
+
+	/* ---- partie rapide : la file d'attente vit ICI, pas dans la fenêtre ---- */
+	let recherche = $state<null | 'file' | 'trouve'>(null);
+	let annulerFile: (() => void) | null = null;
+	/** L'URL du terrain apparié, gardée pour le bouton de secours si le
+	    navigateur bloque une fenêtre ouverte hors clic. */
+	let urlTrouvee = $state<string | null>(null);
+
+	const ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+	function genCode(): string {
+		let c = '';
+		for (let i = 0; i < 6; i++) c += ABC[Math.floor(Math.random() * ABC.length)];
+		return c;
+	}
 
 	const myName = $derived(
 		session.account
@@ -83,11 +98,54 @@
 		return true;
 	}
 
-	function partieRapide() {
-		const q = paramsBase();
-		q.set('rapide', '1');
-		if (ouvrirDuel(q)) lance = { type: 'rapide' };
+	/**
+	 * Partie rapide : on attend SUR CETTE PAGE, et la fenêtre du terrain ne
+	 * s'ouvre qu'à l'instant où un adversaire est trouvé — la même interaction
+	 * que le simulateur IA contre IA. Personne n'héberge pendant l'attente :
+	 * chacun annonce le code qu'il hébergera, et les deux fenêtres se
+	 * retrouvent une fois la paire formée.
+	 */
+	async function partieRapide() {
+		const code = genCode();
+		recherche = 'file';
+		urlTrouvee = null;
+		const { entrerFile } = await import('$lib/matchmaking');
+		annulerFile = entrerFile(code, (a) => {
+			annulerFile = null;
+			const q = paramsBase();
+			q.set('role', a.hote ? 'hote' : 'invite');
+			q.set('code', a.hote ? code : a.code);
+			urlTrouvee = `/duel?${q}`;
+			recherche = 'trouve';
+			/* hors clic, un bloqueur peut refuser la fenêtre : le bouton de
+			   secours reste affiché tant que le joueur n'est pas entré */
+			ouvrirDuel(q);
+		});
 	}
+
+	function annulerRecherche() {
+		annulerFile?.();
+		annulerFile = null;
+		recherche = null;
+		urlTrouvee = null;
+	}
+
+	function entrerSurLeTerrain() {
+		if (!urlTrouvee) return;
+		const f = window.open(
+			urlTrouvee,
+			'expelled-terrain',
+			`popup=yes,width=${screen.availWidth},height=${screen.availHeight},left=0,top=0`
+		);
+		if (f && !f.closed) {
+			fenetreBloquee = false;
+			f.focus();
+		}
+	}
+
+	onDestroy(() => {
+		annulerFile?.();
+	});
 
 	function creerSalon() {
 		const q = paramsBase();
@@ -143,7 +201,22 @@
 	</section>
 	<section class="spanel">
 		<h2>Trouver un adversaire</h2>
-		<button class="startbtn rapide" onclick={partieRapide}>⚡ Partie rapide</button>
+		{#if recherche === 'file'}
+			<div class="file-box">
+				<p class="waiting">Recherche d'un adversaire…</p>
+				<p class="file-sub">La fenêtre du terrain s'ouvrira dès qu'un joueur sera trouvé.</p>
+				<button class="ghostbtn" onclick={annulerRecherche}>Annuler</button>
+			</div>
+		{:else if recherche === 'trouve'}
+			<div class="file-box trouve">
+				<p class="file-titre">Adversaire trouvé !</p>
+				<p class="file-sub">Le duel s'ouvre sur le terrain, dans sa propre fenêtre.</p>
+				<button class="startbtn rapide" onclick={entrerSurLeTerrain}>Entrer sur le terrain ↗</button>
+				<button class="ghostbtn" onclick={annulerRecherche}>Fermer</button>
+			</div>
+		{:else}
+			<button class="startbtn rapide" onclick={partieRapide}>⚡ Partie rapide</button>
+		{/if}
 		<p class="ou">— ou par salon privé —</p>
 		<button class="startbtn" onclick={creerSalon}>Créer un salon</button>
 		<div class="joinrow">
@@ -368,5 +441,58 @@
 	.note.lancee img {
 		width: 1.6rem;
 		filter: drop-shadow(0 0 8px rgba(213, 178, 94, 0.45));
+	}
+
+	/* ---- la file d'attente, vécue dans le vestibule ---- */
+	.file-box {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1.1rem 1rem;
+		text-align: center;
+		border: 1px solid rgba(213, 178, 94, 0.35);
+		border-radius: 14px;
+		background: rgba(213, 178, 94, 0.06);
+	}
+	.file-box.trouve {
+		border-color: rgba(213, 178, 94, 0.6);
+		box-shadow: 0 0 26px rgba(213, 178, 94, 0.18);
+	}
+	.file-titre {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1.25rem;
+		color: var(--gold);
+	}
+	.file-sub {
+		margin: 0;
+		font-size: 0.82rem;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.waiting {
+		margin: 0;
+		font-weight: 650;
+		color: var(--gold);
+		animation: breathe 2.4s ease-in-out infinite;
+	}
+	@keyframes breathe {
+		0%,
+		100% {
+			opacity: 0.45;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+	.ghostbtn {
+		margin-top: 0.3rem;
+		padding: 0.5rem 1.2rem;
+		border: 1px solid var(--panel-line);
+		border-radius: 999px;
+		background: transparent;
+		color: rgba(238, 240, 245, 0.65);
+		font-family: inherit;
+		cursor: pointer;
 	}
 </style>
