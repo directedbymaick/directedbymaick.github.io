@@ -2,7 +2,6 @@
 	import Card from '$lib/Card.svelte';
 	import { charter } from '$lib/charter';
 	import { paliers, frequence, classes } from '$lib/paliers';
-	import type { Rarity } from '$lib/types';
 
 	/* L'échelle est dérivée du tirage lui-même : rien n'est saisi à la main ici,
 	   donc valider une variante au Lab la fait apparaître sur cette page. */
@@ -11,11 +10,20 @@
 	   trente-cinq niveaux, mais tout le monde reconnaît une carte détourée. */
 	const lesClasses = classes();
 
-	const raretes = Object.keys(charter.rarities) as Rarity[];
-	let filtre = $state<'all' | Rarity>('all');
-	const montre = $derived(echelle.filter((p) => filtre === 'all' || p.rarity === filtre));
+	/* Le filtre porte sur la CLASSE : c'est le vocabulaire de la page, et les six
+	   lignes du haut servent directement de commande — pas de troisième rangée de
+	   boutons pour dire la même chose. */
+	let filtre = $state<'all' | string>('all');
+	const montre = $derived(echelle.filter((p) => filtre === 'all' || p.classe === filtre));
+	function basculer(id: string) {
+		filtre = filtre === id ? 'all' : id;
+	}
 
 	const leRare = echelle[echelle.length - 1];
+
+	/* Le total se compte en VERSIONS collectionnables, pas en paliers : c'est
+	   l'unité de la page, et chaque classe affiche sa part. */
+	const versionsTotal = echelle.reduce((a, p) => a + p.membres, 0);
 </script>
 
 <svelte:head>
@@ -41,13 +49,21 @@
 	     n’est jamais plus courante que la précédente. -->
 	<ol class="classes">
 		{#each lesClasses as c, i (c.id)}
-			<li class="classe">
-				<span class="c-rang">{i + 1}</span>
-				<span class="c-corps">
-					<b class="c-nom">{c.nom}</b>
-					<span class="c-regle">{c.regle}</span>
-				</span>
-				<span class="c-taux">{frequence(c.taux)}</span>
+			<li>
+				<button
+					class="classe"
+					class:on={filtre === c.id}
+					aria-pressed={filtre === c.id}
+					onclick={() => basculer(c.id)}
+				>
+					<span class="c-rang">{i + 1}</span>
+					<span class="c-corps">
+						<b class="c-nom">{c.nom}</b>
+						<span class="c-regle">{c.regle}</span>
+					</span>
+					<span class="c-taux">{frequence(c.taux)}</span>
+					<span class="c-n">{c.versions}</span>
+				</button>
 			</li>
 		{/each}
 	</ol>
@@ -57,24 +73,23 @@
 <!-- Le détail, avec ses propres filtres. Ils étaient au-dessus du titre, si bien
      que la page annonçait « six classes » puis « 35 » sans dire que les deux
      nombres ne comptent pas la même chose. -->
-<h2 class="detail-titre">Le détail — {echelle.length} paliers</h2>
+<h2 class="detail-titre">
+	{#if filtre === 'all'}
+		Le détail — {echelle.length} paliers
+	{:else}
+		{lesClasses.find((c) => c.id === filtre)?.nom} — {montre.length} palier{montre.length > 1
+			? 's'
+			: ''}
+		<button class="raz" onclick={() => (filtre = 'all')}>tout afficher</button>
+	{/if}
+</h2>
 <p class="detail-chapo">
 	Le tirage produit {echelle.length} combinaisons de rareté, de forme et de finition, réparties sur
-	{echelle.reduce((a, p) => a + p.membres, 0)} versions collectionnables. C'est la vérité du moteur ;
-	les six classes ci-dessus en sont la lecture courante.
+	{versionsTotal} versions collectionnables. C'est la vérité du moteur ; les six classes ci-dessus en
+	sont la lecture courante — cliquez-en une pour ne garder que ses paliers.
 </p>
 
-<div class="filtres">
-	<button class="fbtn" class:on={filtre === 'all'} onclick={() => (filtre = 'all')}>
-		Toutes <span class="fn">{echelle.length}</span>
-	</button>
-	{#each raretes as r (r)}
-		{@const n = echelle.filter((p) => p.rarity === r).length}
-		<button class="fbtn" class:on={filtre === r} disabled={n === 0} onclick={() => (filtre = r)}>
-			{charter.rarities[r].name} <span class="fn">{n}</span>
-		</button>
-	{/each}
-</div>
+
 
 <ol class="echelle">
 	{#each montre as p, i (p.key)}
@@ -116,11 +131,53 @@
 	}
 	.classe {
 		display: grid;
-		grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+		grid-template-columns: 2.4rem minmax(0, 1fr) auto auto;
 		gap: 1rem;
 		align-items: center;
 		padding: 0.85rem 1.1rem;
 		background: rgba(8, 12, 20, 0.9);
+	}
+	.classe {
+		width: 100%;
+		border: none;
+		font: inherit;
+		/* `font: inherit` ne transporte PAS la couleur : sans cette ligne le bouton
+		   prend le noir système, invisible sur la toile sombre. */
+		color: inherit;
+		text-align: left;
+		cursor: pointer;
+		transition: background 0.16s ease;
+	}
+	.classe:hover {
+		background: rgba(255, 255, 255, 0.045);
+	}
+	.classe.on {
+		background: rgba(213, 178, 94, 0.1);
+		box-shadow: inset 3px 0 0 var(--gold);
+	}
+	/* nombre de versions dans la classe — l'unité collectionnable */
+	.c-n {
+		min-width: 2.6rem;
+		text-align: right;
+		font-family: var(--display);
+		font-size: 0.72rem;
+		font-weight: 700;
+		color: rgba(238, 240, 245, 0.35);
+	}
+	.raz {
+		margin-left: 0.7rem;
+		padding: 0;
+		border: none;
+		background: none;
+		font: inherit;
+		font-size: 0.7rem;
+		letter-spacing: 0.12em;
+		color: var(--gold);
+		cursor: pointer;
+		text-transform: none;
+	}
+	.raz:hover {
+		text-decoration: underline;
 	}
 	.c-rang {
 		font-family: Cinzel, Georgia, serif;
@@ -160,11 +217,6 @@
 		font-size: 0.95rem;
 		line-height: 1.65;
 		color: rgba(238, 240, 245, 0.6);
-	}
-	.filtres {
-		max-width: 1240px;
-		margin: 0 auto 1.8rem;
-		padding: 0 var(--spacing-20);
 	}
 	.detail-titre {
 		max-width: 1240px;
@@ -217,45 +269,6 @@
 		color: #f2f0ea;
 	}
 
-	.filtres {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem;
-	}
-	.fbtn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		padding: 0.42rem 0.95rem;
-		font-family: inherit;
-		font-size: 0.8rem;
-		font-weight: 550;
-		color: rgba(242, 240, 234, 0.55);
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 999px;
-		cursor: pointer;
-		transition:
-			color 0.16s ease,
-			background 0.16s ease;
-	}
-	.fbtn:hover:not(:disabled) {
-		color: #f2f0ea;
-	}
-	.fbtn.on {
-		color: #0a0a0d;
-		background: #f2f0ea;
-		border-color: transparent;
-	}
-	.fbtn:disabled {
-		opacity: 0.3;
-		cursor: default;
-	}
-	.fn {
-		font-size: 0.72rem;
-		font-variant-numeric: tabular-nums;
-		opacity: 0.6;
-	}
 
 	.echelle {
 		list-style: none;

@@ -20,6 +20,8 @@ export interface Palier {
 	foil: FoilPreset | null;
 	/** version bâtie sur un art alternatif plutôt que sur l'illustration de base */
 	alt: boolean;
+	/** identifiant de la classe (cf. classes()) — la lecture courante du palier */
+	classe: string;
 	/** l'illustration est détourée : le personnage flotte, la carte porte « no bg ».
 	    Depuis que le showcase sans détourage s'appelle « Reflet », ce booléen vaut
 	    exactement `foil === 'showcase'` — il reste exposé pour filtrer, mais il
@@ -228,6 +230,7 @@ export function paliers(): Palier[] {
 				foil: v.foil,
 				alt,
 				nobg,
+				classe: classeDe({ alt, fullArt: v.fullArt, nobg, foil: v.foil }).id,
 				label: [
 					charter.rarities[rarity].name,
 					alt ? 'Alt' : null,
@@ -284,7 +287,12 @@ export interface Classe {
 }
 
 /** La classe d'un palier — de la plus courante à la plus rare. */
-function classeDe(p: Palier): { id: string; nom: string; regle: string } {
+function classeDe(p: {
+	alt: boolean;
+	fullArt: boolean;
+	nobg: boolean;
+	foil: FoilPreset | null;
+}): { id: string; nom: string; regle: string } {
 	if (p.alt) return { id: 'alt', nom: 'Alt', regle: 'Une autre illustration du même nom' };
 	if (p.fullArt && p.nobg)
 		return { id: 'fa-sp', nom: 'Full Art SP', regle: 'Détourée ET pleine illustration' };
