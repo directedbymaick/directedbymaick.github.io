@@ -247,6 +247,11 @@
 		earn(total, `Revente du surplus : ${count} carte${count > 1 ? 's' : ''}`);
 	}
 
+	/** Réclame d'un coup tous les succès accomplis — claimAchievement filtre seul. */
+	function toutReclamerSucces() {
+		for (const a of ACHIEVEMENTS) claimAchievement(a.id, achCtx);
+	}
+
 	async function logout() {
 		await signOut();
 		if (typeof location !== 'undefined') location.assign('/');
@@ -523,9 +528,17 @@
 {:else if tab === 'succes'}
 	<!-- ============ LIVRE DE SUCCÈS ============ -->
 	{@const claimedCount = ACHIEVEMENTS.filter((a) => eco.ach[a.id]?.claimed).length}
+	{@const reclamables = ACHIEVEMENTS.filter(
+		(a) => !(eco.ach[a.id]?.claimed ?? false) && a.check(eco.stats, achCtx)
+	).length}
 	<div class="qwrap">
 		<p class="qsummary">
 			<b>{claimedCount}</b>/{ACHIEVEMENTS.length} succès réclamés
+			{#if reclamables > 0}
+				<button class="qclaim tout" onclick={toutReclamerSucces}>
+					Tout réclamer ({reclamables})
+				</button>
+			{/if}
 		</p>
 		{#each ACH_CATEGORIES as cat (cat.id)}
 			{@const list = ACHIEVEMENTS.filter((a) => a.cat === cat.id)}
@@ -836,6 +849,10 @@
 		background: rgba(213, 178, 94, 0.15);
 		color: var(--gold);
 		font-weight: 700;
+	}
+	.qclaim.tout {
+		margin-left: 0.8rem;
+		padding: 0.35rem 0.9rem;
 	}
 	.qsummary {
 		margin: 0;
