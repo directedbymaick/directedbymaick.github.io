@@ -6,6 +6,10 @@
  * vignette pour rien. Card.svelte bascule sur ce miroir via son prop `thumb`.
  *
  * À relancer après tout ajout ou remplacement d'artwork :  node scripts/vignettes.mjs
+ *
+ * `--si-obsolete` ne régénère que les vignettes absentes ou plus vieilles que
+ * leur source. C'est ce mode qui tourne sur `prebuild` : déposer un artwork
+ * suffit, le miroir suit tout seul.
  */
 import sharp from 'sharp';
 import fs from 'node:fs';
@@ -27,13 +31,31 @@ function lister(dir, rel = '') {
 	return out;
 }
 
+const SI_OBSOLETE = process.argv.includes('--si-obsolete');
+
 const fichiers = lister(SRC);
 let avant = 0;
 let apres = 0;
+let refaites = 0;
 
 for (const f of fichiers) {
 	const dest = path.join(OUT, f.rel);
+
+	if (SI_OBSOLETE) {
+		try {
+			// la vignette est bonne tant qu'elle est postérieure à sa source
+			if (fs.statSync(dest).mtimeMs >= fs.statSync(f.src).mtimeMs) {
+				avant += fs.statSync(f.src).size;
+				apres += fs.statSync(dest).size;
+				continue;
+			}
+		} catch {
+			/* pas encore de vignette : on la fabrique */
+		}
+	}
+
 	fs.mkdirSync(path.dirname(dest), { recursive: true });
+	refaites++;
 	// withoutEnlargement : un artwork déjà petit reste tel quel, jamais upscalé
 	await sharp(f.src)
 		.resize({ width: LARGEUR, withoutEnlargement: true })
@@ -44,4 +66,8 @@ for (const f of fichiers) {
 }
 
 const Mo = (n) => `${(n / 1048576).toFixed(1)} Mo`;
-console.log(`${fichiers.length} vignettes — ${Mo(avant)} → ${Mo(apres)}`);
+console.log(
+	SI_OBSOLETE
+		? `${fichiers.length} vignettes, ${refaites} régénérée${refaites > 1 ? 's' : ''} — ${Mo(avant)} → ${Mo(apres)}`
+		: `${fichiers.length} vignettes — ${Mo(avant)} → ${Mo(apres)}`
+);

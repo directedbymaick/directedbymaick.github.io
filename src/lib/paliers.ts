@@ -80,9 +80,10 @@ const COMPTES = mesures.versions as Record<string, number>;
 
 export function tauxVersion(card: CardData, v: { key: string; rate: number }): number {
 	const vus = COMPTES[v.key];
-	// Les 193 versions du set sont toutes apparues à la dernière mesure. Si une
-	// nouveauté n'y est pas encore, le modèle évite un taux nul — qui vaudrait un
-	// prix plancher sur la carte la plus rare du jeu.
+	/* Toutes les versions du set apparaissent dans la mesure — `prebuild` la
+	   régénère dès qu'une carte ou le moteur de tirage bouge. Ce filet ne sert donc
+	   qu'à une exécution où le fichier serait momentanément en retard : un taux nul
+	   donnerait un prix plancher sur la carte la plus rare du jeu. */
 	if (vus === undefined) return tauxModele(card, v.rate);
 	return vus / mesures.boosters;
 }

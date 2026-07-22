@@ -14,12 +14,53 @@
  * mécanismes auxquels personne n'a encore pensé.
  *
  *   node scripts/taux.mjs [boosters]
+ *   node scripts/taux.mjs --si-obsolete     ne remesure que si les entrées ont bougé
+ *
+ * Le second mode est branché sur `prebuild` : ajouter une carte, valider une
+ * variante ou toucher au moteur de tirage suffit à invalider la mesure, et le
+ * site ne peut plus partir avec des probabilités périmées.
  */
 import { createServer } from 'vite';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
-const BOOSTERS = Number(process.argv[2] ?? 3_000_000);
+const args = process.argv.slice(2);
+const SI_OBSOLETE = args.includes('--si-obsolete');
+const BOOSTERS = Number(args.find((a) => /^\d+$/.test(a)) ?? 3_000_000);
 const SORTIE = 'src/lib/taux-mesures.json';
+
+/**
+ * Empreinte de tout ce qui peut changer un taux : les fiches de cartes et les
+ * trois modules qui décident des versions et du tirage. Elle est rangée dans le
+ * fichier produit ; si elle ne correspond plus, la mesure est périmée.
+ */
+function empreinte() {
+	const h = createHash('sha256');
+	for (const f of readdirSync('cards').filter((f) => f.endsWith('.json')).sort()) {
+		h.update(f);
+		h.update(readFileSync(`cards/${f}`));
+	}
+	for (const f of ['src/lib/gacha.ts', 'src/lib/variants.ts', 'src/lib/cards.ts']) {
+		h.update(readFileSync(f));
+	}
+	h.update(String(BOOSTERS));
+	return h.digest('hex').slice(0, 16);
+}
+
+const attendue = empreinte();
+
+if (SI_OBSOLETE) {
+	try {
+		const actuel = JSON.parse(readFileSync(SORTIE, 'utf8'));
+		if (actuel.empreinte === attendue) {
+			console.log(`${SORTIE} : à jour (empreinte ${attendue}), rien à remesurer`);
+			process.exit(0);
+		}
+		console.log(`${SORTIE} : périmé (${actuel.empreinte ?? 'aucune empreinte'} → ${attendue}), remesure`);
+	} catch {
+		console.log(`${SORTIE} : absent ou illisible, mesure initiale`);
+	}
+}
 
 /* Le fichier produit est commité : il doit être reproductible à l'identique.
    Math.random ne l'est pas, on le remplace par un mulberry32 semé. */
@@ -68,6 +109,7 @@ try {
 		JSON.stringify(
 			{
 				_: 'Généré par scripts/taux.mjs — ne pas éditer à la main.',
+				empreinte: attendue,
 				boosters: BOOSTERS,
 				graine: GRAINE,
 				cartes,

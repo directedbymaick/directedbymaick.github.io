@@ -248,7 +248,7 @@
 	<p class="kicker"><span class="k-diamond">◯</span> Le Laboratoire</p>
 	<h1>IA contre IA</h1>
 	<p class="tagline">
-		Deux IA jouent le set en duel réel — règles v1, les 60 cartes, effets compris. Modulez les
+		Deux IA jouent le set en duel réel — règles v1, tout le set, effets compris. Modulez les
 		decks, imposez une carte à tester, fixez la graine, puis regardez un duel en direct ou lancez
 		un lot de parties pour mesurer son taux de victoire.
 	</p>

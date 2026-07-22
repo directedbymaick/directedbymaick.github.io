@@ -2,6 +2,7 @@
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
+	import { paliers } from '$lib/paliers';
 	import type { FactionId, Rarity } from '$lib/types';
 
 	const factions = Object.keys(charter.factions) as FactionId[];
@@ -131,12 +132,12 @@
 	</table>
 	<p class="note">
 		Une rareté ne dit plus tout : la finition et le détourage comptent autant.
-		<a href="/raretes">Voir l'échelle complète</a> — les 33 paliers réels, du plus courant au plus
-		rare, avec leur fréquence de sortie.
+		<a href="/raretes">Voir l'échelle complète</a> — les {paliers().length} paliers réels, du plus
+		courant au plus rare, avec leur fréquence de sortie.
 	</p>
 	<p class="note">
-		Premier cycle, « Nés du silence » : {cards.length}/60 noms inscrits. Cette grammaire évoluera
-		avec les prochains duels.
+		Premier cycle, « Nés du silence » : {cards.length} noms inscrits. Cette grammaire évoluera avec
+		les prochains duels.
 	</p>
 </section>
 
