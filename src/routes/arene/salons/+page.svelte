@@ -76,6 +76,7 @@
 	let banner = $state<{ title: string; sub: string } | null>(null);
 	let bannerN = $state(0);
 	let zoomed = $state<CardData | null>(null);
+	let discardOpen = $state<Side | null>(null);
 	let rewarded = $state(false);
 
 	const me = $derived(view ? view[mySide] : null);
@@ -503,6 +504,13 @@
 {:else if view && meta && me && foe}
 	<!-- ============ LE PLATEAU ============ -->
 	<div class="duel" class:replaying>
+		<div class="arena-atmosphere" aria-hidden="true">
+			<div class="vault-glow"></div>
+			<div class="table-rift"></div>
+			<div class="arena-ring ring-one"></div>
+			<div class="arena-ring ring-two"></div>
+			<div class="motes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+		</div>
 		<div class="rail-left">
 			<button
 				class="gem foe"
@@ -543,7 +551,10 @@
 					<span class="back"><img src={logo} alt="" /></span>
 				{/each}
 			</div>
-			<span class="foe-deck">{foe.deck} au deck</span>
+			<div class="hud-piles">
+				<button onclick={() => (discardOpen = mySide === 0 ? 1 : 0)} title="Consulter la défausse adverse"><b>{foe.discard}</b><small>Défausse</small></button>
+				<span><b>{foe.deck}</b><small>Pioche</small></span>
+			</div>
 		</div>
 
 		<div class="lane foe-lane">
@@ -629,6 +640,10 @@
 				</button>
 			{/each}
 		</div>
+		<div class="my-piles">
+			<button onclick={() => (discardOpen = mySide)} title="Consulter votre défausse"><b>{me.discard}</b><small>Défausse</small></button>
+			<span><b>{me.deck}</b><small>Pioche</small></span>
+		</div>
 		<p class="handhint">Glissez une carte sur le plateau pour la jouer · cliquez pour l'examiner</p>
 
 		{#if flash}
@@ -661,6 +676,23 @@
 				<button class="zoom-backdrop" aria-label="Fermer" onclick={() => (zoomed = null)}></button>
 				<div class="zoom-card"><Card card={zoomed} /></div>
 				<button class="zoom-close" aria-label="Fermer" onclick={() => (zoomed = null)}>✕</button>
+			</div>
+		{/if}
+
+		{#if discardOpen !== null}
+			{@const owner = view[discardOpen]}
+			<div class="discard-veil" role="dialog" aria-modal="true" aria-label="Défausse">
+				<button class="discard-backdrop" aria-label="Fermer" onclick={() => (discardOpen = null)}></button>
+				<section class="discard-panel">
+					<header><div><small>Archives du duel</small><h2>Défausse — {discardOpen === mySide ? 'vous' : 'adversaire'}</h2></div><b>{owner.discard} carte{owner.discard > 1 ? 's' : ''}</b></header>
+					<div class="discard-grid">
+						{#each owner.discardCards as id, i (`${id}-${i}`)}
+							{@const c = getCard(id)}
+							{#if c}<button onclick={() => (zoomed = c)} title={`Lire ${c.name}`}><Card card={c} interactive={false} thumb /></button>{/if}
+						{:else}<p>Aucune carte n’a encore rejoint la défausse.</p>{/each}
+					</div>
+					<button class="discard-close" onclick={() => (discardOpen = null)}>Fermer</button>
+				</section>
 			</div>
 		{/if}
 
@@ -1493,6 +1525,174 @@
 		background: linear-gradient(135deg, #f2d98a, #a97f2c);
 		box-shadow: 0 0 8px rgba(213, 178, 94, 0.5);
 	}
+
+	/* Nouveau terrain — même langage visuel que /duel */
+	.duel {
+		isolation: isolate;
+		background:
+			radial-gradient(ellipse at 50% 45%, rgba(40, 55, 86, 0.72) 0%, rgba(9, 14, 25, 0.94) 48%, #030507 100%),
+			linear-gradient(135deg, #080b12, #111827 45%, #05070b);
+		box-shadow: inset 0 0 0 1px rgba(213, 178, 94, 0.2), inset 0 0 100px rgba(0, 0, 0, 0.72);
+		overflow: hidden;
+	}
+	.arena-atmosphere {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		overflow: hidden;
+	}
+	.vault-glow {
+		position: absolute;
+		inset: 8% 13%;
+		background: radial-gradient(ellipse at center, rgba(94, 125, 174, 0.17), transparent 66%);
+		filter: blur(18px);
+	}
+	.table-rift {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 120%;
+		height: 1px;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(90deg, transparent, rgba(213, 178, 94, 0.14), rgba(199, 69, 79, 0.25), rgba(213, 178, 94, 0.14), transparent);
+		box-shadow: 0 0 24px rgba(199, 69, 79, 0.15);
+	}
+	.arena-ring {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		border: 1px solid rgba(213, 178, 94, 0.08);
+		border-radius: 50%;
+		transform: translate(-50%, -50%);
+	}
+	.ring-one { width: min(54vw, 760px); aspect-ratio: 1; }
+	.ring-two { width: min(31vw, 440px); aspect-ratio: 1; border-style: dashed; opacity: 0.65; }
+	.motes { position: absolute; inset: 0; }
+	.motes i {
+		position: absolute;
+		width: 3px;
+		height: 3px;
+		border-radius: 50%;
+		background: #d5b25e;
+		box-shadow: 0 0 9px #d5b25e;
+		animation: salon-mote 7s ease-in-out infinite alternate;
+	}
+	.motes i:nth-child(1) { left: 18%; top: 24%; }
+	.motes i:nth-child(2) { left: 31%; top: 67%; animation-delay: -2s; }
+	.motes i:nth-child(3) { left: 52%; top: 18%; animation-delay: -4s; }
+	.motes i:nth-child(4) { left: 73%; top: 71%; animation-delay: -1s; }
+	.motes i:nth-child(5) { left: 87%; top: 35%; animation-delay: -5s; }
+	.motes i:nth-child(6) { left: 61%; top: 54%; animation-delay: -3s; }
+	@keyframes salon-mote { to { translate: 0 -18px; opacity: 0.25; } }
+
+	.rail-left,
+	.rail-right {
+		background: linear-gradient(180deg, rgba(15, 22, 37, 0.9), rgba(5, 8, 14, 0.82));
+		border-color: rgba(213, 178, 94, 0.22);
+		box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34), inset 0 1px rgba(255, 255, 255, 0.035);
+		backdrop-filter: blur(14px);
+	}
+	.lane {
+		background: linear-gradient(180deg, rgba(22, 31, 48, 0.58), rgba(7, 11, 19, 0.45));
+		border: 1px solid rgba(140, 170, 220, 0.09);
+		box-shadow: inset 0 1px rgba(255, 255, 255, 0.025), 0 20px 50px rgba(0, 0, 0, 0.18);
+		backdrop-filter: blur(5px);
+	}
+	.slot {
+		background: linear-gradient(145deg, rgba(20, 29, 45, 0.62), rgba(5, 8, 14, 0.4));
+		border-color: rgba(213, 178, 94, 0.2);
+		box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.34), 0 12px 30px rgba(0, 0, 0, 0.22);
+	}
+	.slot:hover,
+	.slot.legal {
+		border-color: rgba(213, 178, 94, 0.58);
+		box-shadow: 0 0 26px rgba(213, 178, 94, 0.18), inset 0 0 22px rgba(213, 178, 94, 0.06);
+	}
+	.centerline::before {
+		content: 'EX';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		translate: -50% -50%;
+		display: grid;
+		place-items: center;
+		width: 3.2rem;
+		aspect-ratio: 1;
+		border: 1px solid rgba(213, 178, 94, 0.28);
+		border-radius: 50%;
+		background: rgba(7, 10, 17, 0.78);
+		font-family: Cinzel, Georgia, serif;
+		font-size: 0.68rem;
+		letter-spacing: 0.12em;
+		color: rgba(213, 178, 94, 0.62);
+		box-shadow: 0 0 28px rgba(213, 178, 94, 0.1);
+	}
+	.foehead { gap: 1rem; }
+	.hud-piles,
+	.my-piles {
+		display: flex;
+		gap: 0.4rem;
+	}
+	.hud-piles button,
+	.hud-piles span,
+	.my-piles button,
+	.my-piles span {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-width: 3.6rem;
+		padding: 0.35rem 0.55rem;
+		border: 1px solid rgba(140, 170, 220, 0.18);
+		border-radius: 9px;
+		background: rgba(8, 12, 20, 0.72);
+		color: rgba(238, 240, 245, 0.72);
+		font-family: inherit;
+	}
+	.hud-piles button,
+	.my-piles button { cursor: pointer; }
+	.hud-piles button:hover,
+	.my-piles button:hover { border-color: rgba(213, 178, 94, 0.55); color: #fff; }
+	.hud-piles b,
+	.my-piles b { font-size: 0.9rem; color: #f3e5bc; }
+	.hud-piles small,
+	.my-piles small { font-size: 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; }
+	.my-piles {
+		position: absolute;
+		right: 4.6rem;
+		bottom: 1rem;
+		z-index: 7;
+	}
+
+	.discard-veil {
+		position: fixed;
+		inset: 0;
+		z-index: 80;
+		display: grid;
+		place-items: center;
+	}
+	.discard-backdrop { position: absolute; inset: 0; border: 0; background: rgba(2, 4, 8, 0.82); backdrop-filter: blur(12px); }
+	.discard-panel {
+		position: relative;
+		width: min(920px, 92vw);
+		max-height: 82vh;
+		padding: 1.5rem;
+		border: 1px solid rgba(213, 178, 94, 0.32);
+		border-radius: 18px;
+		background: linear-gradient(145deg, rgba(18, 25, 40, 0.98), rgba(5, 8, 14, 0.98));
+		box-shadow: 0 35px 100px rgba(0, 0, 0, 0.7);
+		overflow: auto;
+	}
+	.discard-panel header { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.2rem; }
+	.discard-panel header small { color: var(--gold); text-transform: uppercase; letter-spacing: 0.13em; }
+	.discard-panel h2 { margin: 0.15rem 0 0; font-family: Cinzel, Georgia, serif; font-weight: 500; }
+	.discard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.9rem; }
+	.discard-grid button { border: 0; padding: 0; background: none; cursor: zoom-in; }
+	.discard-grid button :global(.card) { width: 100%; }
+	.discard-grid p { grid-column: 1 / -1; padding: 3rem; text-align: center; color: rgba(238, 240, 245, 0.45); }
+	.discard-close { display: block; margin: 1.4rem auto 0; padding: 0.55rem 1.4rem; border: 1px solid rgba(213, 178, 94, 0.35); border-radius: 999px; background: transparent; color: var(--gold); cursor: pointer; }
+
 	@media (max-width: 760px) {
 		.duel {
 			padding: 0.6rem 3.4rem 0.4rem;
@@ -1504,5 +1704,8 @@
 			--card-w: clamp(108px, 16vh, 150px);
 			margin: 0 -1.4rem;
 		}
+		.my-piles { right: 0.8rem; bottom: 0.7rem; transform: scale(0.82); transform-origin: right bottom; }
+		.hud-piles { display: none; }
+		.arena-ring { opacity: 0.45; }
 	}
 </style>
