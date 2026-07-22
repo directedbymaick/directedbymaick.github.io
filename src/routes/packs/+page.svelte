@@ -240,6 +240,21 @@
 		);
 	}
 
+	/**
+	 * L'aura du récap : un halo derrière les tirages qui valent quelque chose,
+	 * pour qu'une ouverture groupée se scanne d'un regard.
+	 *   'apex' — SP détourée et arts alternatifs, le sommet : halo prismatique
+	 *   'or'   — Prismatique et Full Art : halo doré
+	 * Les foils courants (Reflet, Holo… 1,5 par booster) n'en ont pas :
+	 * un signal posé sur un tiers des cartes ne signale plus rien.
+	 */
+	const auraOf = (p: Pull): '' | 'or' | 'apex' => {
+		if ((p.card.gene.foilPreset === 'showcase' && p.card.cutout) || p.card.alt) return 'apex';
+		const vraie = p.card.sourceRarity ?? p.card.rarity;
+		if (p.fullArt || vraie === 'prism') return 'or';
+		return '';
+	};
+
 	const fxOf = (p: Pull): FxTier => {
 		if (p.card.gene.foilPreset === 'showcase' && p.card.cutout) return 'apex';
 		const vraie = p.card.sourceRarity ?? p.card.rarity;
@@ -603,7 +618,8 @@
 			<h2 class="recap-title">{bulk ? `Votre ouverture · ${pulls.length} cartes` : 'Votre tirage'}</h2>
 			<div class="recap-grid">
 				{#each pulls as p, i (i)}
-					<div class="recap-cell" style="--i: {i}">
+					{@const aura = auraOf(p)}
+					<div class="recap-cell" class:aura={aura !== ''} class:apex={aura === 'apex'} style="--i: {i}">
 						{#if p.fullArt}
 							<span class="fabadge">Full Art</span>
 						{:else if freshIds.includes(p.card.id) && pulls.findIndex((q) => q.card.id === p.card.id) === i}
@@ -1443,6 +1459,67 @@
 			animation: none;
 		}
 	}
+	/* ---- l'aura des tirages de valeur ----
+	   Un halo flou DERRIÈRE la carte (::before, z-index 0), la carte par-dessus.
+	   Doré pour Prismatique et Full Art ; prismatique tournant pour les SP
+	   détourées et les alts. Il respire, il ne clignote pas. */
+	.recap-cell.aura .zoombtn {
+		position: relative;
+		z-index: 1;
+	}
+	.recap-cell.aura::before {
+		content: '';
+		position: absolute;
+		/* DÉBORDE de la carte : un halo posé derrière ne se voit qu'à ce qui
+		   dépasse. (La cellule contient aussi le nom, d'où le retrait du bas.) */
+		inset: -6% -9% 8% -9%;
+		z-index: 0;
+		border-radius: 18px;
+		background: radial-gradient(
+			closest-side,
+			rgba(213, 178, 94, 0.55),
+			rgba(213, 178, 94, 0.2) 55%,
+			transparent 78%
+		);
+		filter: blur(14px);
+		animation: aura-respire 2.6s ease-in-out infinite;
+		pointer-events: none;
+	}
+	.recap-cell.apex::before {
+		background: radial-gradient(
+			closest-side,
+			rgba(203, 184, 255, 0.6),
+			rgba(255, 215, 122, 0.3) 50%,
+			transparent 78%
+		);
+		animation:
+			aura-respire 2.2s ease-in-out infinite,
+			aura-prisme 5s linear infinite;
+	}
+	@keyframes aura-respire {
+		0%,
+		100% {
+			opacity: 0.55;
+			transform: scale(0.97);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.03);
+		}
+	}
+	@keyframes aura-prisme {
+		to {
+			filter: blur(14px) hue-rotate(360deg);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.recap-cell.aura::before,
+		.recap-cell.apex::before {
+			animation: none;
+			opacity: 0.75;
+		}
+	}
+
 	.newbadge {
 		position: absolute;
 		top: -0.6rem;
