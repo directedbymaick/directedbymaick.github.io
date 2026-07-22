@@ -8,6 +8,7 @@ import { nsKey, scheduleCloudSync } from '$lib/store';
 
 export const PACK_PRICE = 100;
 export const STARTER_GRANT = 300000;
+const LOCAL_GRANT_VERSION = 2;
 /** Plafond de solde : un compte ne peut pas dépasser cette somme d'Éclats. */
 export const MAX_BALANCE = 999999;
 export const MATCH_REWARD = { win: 25, loss: 8, pvpWin: 35, pvpLoss: 12 };
@@ -183,6 +184,8 @@ interface QuestState {
 interface EcoState {
 	ready: boolean;
 	balance: number;
+	/** Version de la dotation locale déjà appliquée à ce navigateur. */
+	welcomeGrantVersion: number;
 	/** Syllabes — la monnaie des noms, gagnée sur les seules Prismatiques. */
 	syllabes: number;
 	stats: Stats;
@@ -213,6 +216,7 @@ const blankStats = (): Stats => ({
 export const eco = $state<EcoState>({
 	ready: false,
 	balance: 0,
+	welcomeGrantVersion: 0,
 	syllabes: 0,
 	stats: blankStats(),
 	day: '',
@@ -250,6 +254,7 @@ export function initEconomy(): void {
 		if (raw) {
 			const d = JSON.parse(raw);
 			eco.balance = d.balance ?? 0;
+			eco.welcomeGrantVersion = d.welcomeGrantVersion ?? 0;
 			eco.syllabes = d.syllabes ?? 0;
 			eco.stats = { ...blankStats(), ...(d.stats ?? {}) };
 			eco.day = d.day ?? '';
@@ -261,10 +266,21 @@ export function initEconomy(): void {
 			eco.autoSell = d.autoSell ?? false;
 		} else {
 			eco.balance = STARTER_GRANT;
+			eco.welcomeGrantVersion = LOCAL_GRANT_VERSION;
 			eco.lastGain = { amount: STARTER_GRANT, reason: 'Bienvenue dans le Silence', at: Date.now() };
 		}
 	} catch {
 		eco.balance = STARTER_GRANT;
+		eco.welcomeGrantVersion = LOCAL_GRANT_VERSION;
+	}
+	if (eco.welcomeGrantVersion < LOCAL_GRANT_VERSION) {
+		const before = eco.balance;
+		eco.balance = Math.max(eco.balance, STARTER_GRANT);
+		eco.welcomeGrantVersion = LOCAL_GRANT_VERSION;
+		const gained = eco.balance - before;
+		if (gained > 0) {
+			eco.lastGain = { amount: gained, reason: 'Dotation du profil local', at: Date.now() };
+		}
 	}
 	// rotation des périodes
 	const today = dayKey();

@@ -57,5 +57,4 @@ export async function signOut(): Promise<void> {
 
 export async function setPseudo(name: string): Promise<void> {
 	if (typeof localStorage !== 'undefined') localStorage.setItem(PSEUDO_KEY, name);
-	if (session.account) session.account = { ...session.account, name };
 }

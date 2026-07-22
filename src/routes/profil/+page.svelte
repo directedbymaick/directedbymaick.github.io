@@ -901,11 +901,16 @@
 
 	/* ---------- onglets ---------- */
 	.tabs {
+		position: relative;
+		z-index: 2;
 		display: flex;
 		gap: 0.4rem;
 		margin-bottom: 1.8rem;
+		pointer-events: auto;
 	}
 	.tabs button {
+		position: relative;
+		z-index: 1;
 		font-family: inherit;
 		font-size: 0.9rem;
 		font-weight: 600;
@@ -915,6 +920,7 @@
 		background: rgba(140, 170, 220, 0.07);
 		color: rgba(238, 240, 245, 0.6);
 		cursor: pointer;
+		pointer-events: auto;
 		transition:
 			background 0.16s ease,
 			color 0.16s ease;
