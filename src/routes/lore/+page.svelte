@@ -3,6 +3,7 @@
 	import { cards } from '$lib/cards';
 	import { charter } from '$lib/charter';
 	import { LIVRES, QUESTION_FINALE, type Livre } from '$lib/lore';
+	import { NOTICES } from '$lib/notices';
 
 	/* Deux résolutions : la vignette 640 pour la lecture au fil du texte, l'original
 	   pour la visionneuse. Inutile de décoder du 1200 dans un bandeau, inutile de
@@ -60,6 +61,37 @@
 		}
 	].map((p) => ({ ...p, ...charter.factions[p.cle as keyof typeof charter.factions] }));
 
+	/* ---------------------------------------------------------------- notices
+	   Chaque carte du set a sa place dans le récit. On les range par peuple, et
+	   dans chaque peuple du plus haut nom au plus commun : c'est l'ordre dans
+	   lequel un lecteur les cherche. */
+	const ORDRE_RARETE = ['prism', 'legendary', 'epic', 'rare', 'common'];
+	const PEUPLE_ORDRE = ['vasar', 'exar', 'morar', 'eshar', 'velar'];
+
+	const REPERTOIRE = PEUPLE_ORDRE.map((cle) => ({
+		cle,
+		...charter.factions[cle as keyof typeof charter.factions],
+		entrees: cards
+			.filter((c) => c.faction === cle && NOTICES[c.id])
+			.sort(
+				(a, b) =>
+					ORDRE_RARETE.indexOf(a.rarity) - ORDRE_RARETE.indexOf(b.rarity) ||
+					a.name.localeCompare(b.name)
+			)
+			.map((c) => ({ carte: c, notice: NOTICES[c.id] }))
+	}));
+
+	// filtre par peuple ; null = tout le répertoire
+	let peupleActif = $state<string | null>(null);
+	const repertoireVu = $derived(
+		peupleActif ? REPERTOIRE.filter((p) => p.cle === peupleActif) : REPERTOIRE
+	);
+
+	function titreLivre(id: string) {
+		const l = LIVRES.find((x) => x.id === id);
+		return l ? `Livre ${l.num} · ${l.titre}` : '';
+	}
+
 	/* ------------------------------------------------------------ navigation */
 	// Le rail suit la lecture : la section la plus proche du haut de l'écran gagne.
 	let actif = $state(LIVRES[0].id);
@@ -69,9 +101,9 @@
 	// En frise horizontale, le chapitre courant sort vite du cadre : on le ramène.
 	$effect(() => {
 		const id = actif;
+		// le défileur est le rail lui-même : en frise, les <ol> sont en display:contents
 		const b = railEl?.querySelector<HTMLElement>(`[data-cible="${id}"]`);
-		const ol = b?.closest('ol');
-		if (!b || !ol || ol.scrollWidth <= ol.clientWidth) return;
+		if (!b || !railEl || railEl.scrollWidth <= railEl.clientWidth) return;
 		b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 	});
 
@@ -94,22 +126,40 @@
 
 	onMount(() => {
 		// le rail couvre les livres ET les deux sections de clôture
-		sections = [...LIVRES.map((l) => l.id), 'peuples', 'fin']
+		sections = [...LIVRES.map((l) => l.id), 'peuples', 'repertoire', 'fin']
 			.map((id) => document.getElementById(id))
 			.filter(Boolean) as HTMLElement[];
 
 		// rootMargin haut négatif : une section ne « prend » qu'une fois arrivée
 		// sous la barre de nav, sinon le rail change de ligne trop tôt.
-		const spy = new IntersectionObserver(
-			(entrees) => {
-				const vus = entrees.filter((e) => e.isIntersecting);
-				if (vus.length === 0) return;
-				vus.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-				actif = vus[0].target.id;
-			},
-			{ rootMargin: '-25% 0px -60% 0px', threshold: 0 }
-		);
-		sections.forEach((s) => spy.observe(s));
+		/* La bonne règle est « la dernière section commencée », pas « la plus haute
+		   visible » : quand deux sections se chevauchent à l'écran, la précédente
+		   commence forcément plus haut et gagnerait toujours. Un IntersectionObserver
+		   se prête mal à ça — il ne rapporte que les changements d'état — donc on lit
+		   les positions au défilement, en se limitant à une mesure par frame. */
+		const ANCRE = 0.3; // la ligne de lecture, à 30 % du haut de l'écran
+		let prevu = false;
+		function relire() {
+			prevu = false;
+			const ligne = window.innerHeight * ANCRE;
+			let gagnant = sections[0]?.id ?? '';
+			for (const s of sections) {
+				if (s.getBoundingClientRect().top <= ligne) gagnant = s.id;
+			}
+			/* En bas de page, la dernière section n'atteint jamais la ligne de lecture
+			   — le pied la retient. Sans ça, « La question » ne s'allume jamais. */
+			const fond = window.scrollY + window.innerHeight >= document.body.scrollHeight - 4;
+			if (fond) gagnant = sections[sections.length - 1]?.id ?? gagnant;
+			if (gagnant) actif = gagnant;
+		}
+		function planifier() {
+			if (prevu) return;
+			prevu = true;
+			requestAnimationFrame(relire);
+		}
+		addEventListener('scroll', planifier, { passive: true });
+		addEventListener('resize', planifier);
+		relire();
 
 		let ctx: { revert(): void } | undefined;
 		(async () => {
@@ -145,7 +195,8 @@
 		})();
 
 		return () => {
-			spy.disconnect();
+			removeEventListener('scroll', planifier);
+			removeEventListener('resize', planifier);
 			ctx?.revert();
 		};
 	});
@@ -193,12 +244,25 @@
 		<p class="rail-h rail-h2">Puis</p>
 		<ol class="rail-fin">
 			<li>
-				<button class:on={actif === 'peuples'} onclick={() => versSection('peuples')}>
+				<button
+					data-cible="peuples"
+					class:on={actif === 'peuples'}
+					onclick={() => versSection('peuples')}
+				>
 					<span class="rail-num">·</span><span class="rail-t">Les cinq peuples</span>
 				</button>
 			</li>
 			<li>
-				<button class:on={actif === 'fin'} onclick={() => versSection('fin')}>
+				<button
+					data-cible="repertoire"
+					class:on={actif === 'repertoire'}
+					onclick={() => versSection('repertoire')}
+				>
+					<span class="rail-num">·</span><span class="rail-t">Les soixante noms</span>
+				</button>
+			</li>
+			<li>
+				<button data-cible="fin" class:on={actif === 'fin'} onclick={() => versSection('fin')}>
 					<span class="rail-num">·</span><span class="rail-t">La question</span>
 				</button>
 			</li>
@@ -283,6 +347,62 @@
 					</article>
 				{/each}
 			</div>
+		</section>
+
+		<!-- =========================== RÉPERTOIRE ===========================
+		     Une notice par carte. Elle ne redit pas la citation — celle-ci est la
+		     voix du personnage, la notice est celle du copiste : elle situe le nom
+		     dans l'histoire au lieu de le faire parler. -->
+		<section class="repertoire" id="repertoire">
+			<p class="chap-num">Le registre du copiste</p>
+			<h2>Les soixante noms</h2>
+			<p class="peuples-intro">
+				Chaque carte du Silence occupe une place précise dans ce récit. Voici laquelle — non pas
+				ce que le personnage dit de lui-même, mais ce que le Korum en retient.
+			</p>
+
+			<div class="filtres">
+				<button class:on={peupleActif === null} onclick={() => (peupleActif = null)}>
+					Tous les peuples
+				</button>
+				{#each REPERTOIRE as p (p.cle)}
+					<button
+						class:on={peupleActif === p.cle}
+						style="--f:{p.color}"
+						onclick={() => (peupleActif = peupleActif === p.cle ? null : p.cle)}
+					>
+						<span aria-hidden="true">{p.sigil}</span>
+						{p.name}
+					</button>
+				{/each}
+			</div>
+
+			{#each repertoireVu as p (p.cle)}
+				<div class="rep-groupe" style="--f:{p.color}">
+					<h3 class="rep-h"><span aria-hidden="true">{p.sigil}</span> {p.name}</h3>
+					<ul class="rep-liste">
+						{#each p.entrees as e (e.carte.id)}
+							<li class="fiche">
+								<a class="fiche-art" href="/card/{e.carte.id}">
+									<img src={vignette(e.carte.id)} alt="" loading="lazy" />
+								</a>
+								<div class="fiche-txt">
+									<a class="fiche-nom" href="/card/{e.carte.id}">{e.carte.name}</a>
+									<p class="fiche-note">{e.notice.texte}</p>
+									<div class="fiche-pieds">
+										<button class="fiche-livre" onclick={() => versSection(e.notice.livre)}>
+											{titreLivre(e.notice.livre)}
+										</button>
+										{#if e.carte.flavor}
+											<p class="fiche-cit">« {e.carte.flavor.replace(/^«\s*|\s*»$/g, '')} »</p>
+										{/if}
+									</div>
+								</div>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/each}
 		</section>
 
 		<!-- ============================= FIN ============================= -->
@@ -731,6 +851,136 @@
 		color: rgba(238, 240, 245, 0.75);
 	}
 
+	/* ============================== RÉPERTOIRE ============================== */
+	.repertoire {
+		padding: clamp(3.5rem, 8vw, 6rem) 0;
+		border-bottom: 1px solid var(--panel-line);
+		scroll-margin-top: 6rem;
+	}
+	.repertoire h2 {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-weight: 700;
+		font-size: clamp(1.8rem, 4vw, 2.9rem);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.filtres {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: var(--spacing-40);
+	}
+	.filtres button {
+		padding: 0.5rem 0.95rem;
+		border: 1px solid var(--panel-line);
+		background: none;
+		border-radius: 0;
+		font-family: var(--display);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.6);
+		cursor: pointer;
+		transition:
+			border-color 0.16s ease,
+			color 0.16s ease;
+	}
+	.filtres button:hover {
+		color: var(--ink);
+	}
+	.filtres button.on {
+		color: var(--f, var(--gold));
+		border-color: var(--f, var(--gold));
+	}
+
+	.rep-groupe + .rep-groupe {
+		margin-top: var(--spacing-55);
+	}
+	.rep-h {
+		margin: 0 0 var(--spacing-20);
+		padding-bottom: var(--spacing-10);
+		border-bottom: 1px solid var(--panel-line);
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1.1rem;
+		letter-spacing: 0.2em;
+		color: var(--f);
+	}
+	.rep-liste {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		/* `min()` sinon le minmax impose 26rem même sur un écran plus étroit, et la
+		   fiche déborde au lieu de se replier. */
+		grid-template-columns: repeat(auto-fill, minmax(min(26rem, 100%), 1fr));
+		gap: var(--spacing-20);
+	}
+	.fiche {
+		display: grid;
+		grid-template-columns: 6.5rem minmax(0, 1fr);
+		gap: var(--spacing-20);
+		padding: var(--spacing-15);
+		border: 1px solid var(--panel-line);
+		border-left: 2px solid var(--f);
+		background: rgba(255, 255, 255, 0.02);
+	}
+	.fiche-art img {
+		width: 100%;
+		aspect-ratio: 3 / 4;
+		object-fit: cover;
+		display: block;
+		filter: saturate(0.8);
+		transition: filter 0.25s ease;
+	}
+	.fiche-art:hover img {
+		filter: saturate(1);
+	}
+	.fiche-nom {
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1rem;
+		letter-spacing: 0.03em;
+		color: var(--ink);
+		text-decoration: none;
+	}
+	.fiche-nom:hover {
+		color: var(--f);
+	}
+	.fiche-note {
+		margin: var(--spacing-10) 0 0;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: rgba(238, 240, 245, 0.72);
+	}
+	.fiche-pieds {
+		margin-top: var(--spacing-15);
+	}
+	.fiche-livre {
+		padding: 0;
+		border: none;
+		background: none;
+		font-family: var(--display);
+		font-size: 0.64rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: var(--gold);
+		cursor: pointer;
+	}
+	.fiche-livre:hover {
+		text-decoration: underline;
+	}
+	/* la citation reste présente mais en retrait : c'est la voix de la carte,
+	   pas celle du copiste — les confondre était justement le risque */
+	.fiche-cit {
+		margin: var(--spacing-8) 0 0;
+		font-size: 0.84rem;
+		font-style: italic;
+		color: rgba(238, 240, 245, 0.42);
+	}
+
 	/* ================================= FIN ================================= */
 	.fin {
 		padding: clamp(4rem, 10vw, 8rem) 0;
@@ -878,24 +1128,24 @@
 			backdrop-filter: blur(14px);
 			border-bottom: 1px solid var(--panel-line);
 		}
-		/* .rail ol vaut (0,1,1) : sans le ol ici, la règle ne passait pas et la
-		   frise gardait une seconde ligne vide. */
 		.rail-h,
 		.rail-h2 {
 			display: none;
 		}
-		.rail ol.rail-fin {
-			display: none;
-		}
-		.rail ol {
+		/* Les deux listes deviennent UN seul défilement : `display: contents` fait
+		   remonter les <li> dans le flex du rail, sinon « Les soixante noms » et
+		   « La question » restaient hors d'atteinte sur mobile. */
+		.rail {
 			display: flex;
 			gap: 0.4rem;
 			overflow-x: auto;
-			border-left: none;
 			scrollbar-width: none;
 		}
-		.rail ol::-webkit-scrollbar {
+		.rail::-webkit-scrollbar {
 			display: none;
+		}
+		.rail ol {
+			display: contents;
 		}
 		.rail button {
 			width: auto;
