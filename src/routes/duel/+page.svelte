@@ -13,15 +13,21 @@
 	import { GAME_RULES } from '$lib/game/rules';
 	import {
 		Duel,
+		Match,
 		simulate,
 		BOARD_SLOTS,
 		type PlayerSnap,
 		type HandEntry,
 		type Ev,
 		type Choix,
-		type Sel
+		type Sel,
+		type Side
 	} from '$lib/game/engine';
 	import type { CardData, FactionId } from '$lib/types';
+	import type { DataConnection } from '$lib/net';
+	import type Peer from 'peerjs';
+	import { nsKey } from '$lib/store';
+	import { initEconomy, rewardMatch, track } from '$lib/economy.svelte';
 
 	/**
 	 * LE TERRAIN — plein écran, sans rien du site autour.
@@ -36,6 +42,48 @@
 	 */
 
 	let duel = $state<Duel | null>(null);
+
+	/* ---------------- Mode PvP : le salon se joue ICI, sur le vrai terrain ----------------
+	   `?mode=pvp` — la page héberge ou rejoint elle-même le salon PeerJS ; la
+	   page Salons n'est plus qu'un vestibule qui ouvre cette fenêtre. L'hôte
+	   fait tourner le Match et diffuse à l'invité des vues prêtes à afficher,
+	   y compris les spécifications de choix (Brume, Tala, Exva…) pour que le
+	   sélecteur fonctionne des deux côtés du fil. */
+	type RolePvp = 'hote' | 'invite';
+	type StatutPvp = 'attente' | 'file' | 'connexion' | 'jeu' | 'quitte' | 'erreur';
+	type ActionPvp =
+		| { kind: 'play'; i: number; sel?: Sel }
+		| { kind: 'attack'; uid: number; target: number | 'korum' }
+		| { kind: 'pron'; uid: number; sel?: Sel }
+		| { kind: 'swap'; uid: number }
+		| { kind: 'end' };
+	interface VueInvite {
+		view: [PlayerSnap, PlayerSnap];
+		hand: HandEntry[];
+		attackers: number[];
+		legal: { units: number[]; korum: boolean };
+		pron: { uid: number; cost: number; text: string }[];
+		swappables: number[];
+		specs: (Choix | null)[];
+		pronSpecs: Record<number, Choix | null>;
+		meta: { turn: number; active: Side; winner: Side | -1 | null };
+	}
+	type MsgPvp =
+		| { t: 'hello'; name: string; deck: string[] | null; faction: FactionId }
+		| { t: 'action'; a: ActionPvp }
+		| { t: 'sync'; events: Ev[]; view: VueInvite };
+
+	let pvp = $state<null | { role: RolePvp; statut: StatutPvp; code: string; message?: string }>(null);
+	/** Mon camp aux yeux du moteur : 0 en solo et en hôte, 1 en invité. */
+	let maCote = $state<Side>(0);
+	let match: Match | null = null; // hôte seulement
+	let vueInvite = $state<VueInvite | null>(null); // invité seulement
+	let conn: DataConnection | null = null;
+	let peer: Peer | null = null;
+	let annulerFile: (() => void) | null = null;
+	let monNom = 'Sans-Nom';
+	let maFaction: FactionId = 'vasar';
+	let maListe: CardData[] | null = null;
 
 	/* ---------------- Mode spectateur : IA contre IA sur CE terrain ----------------
 	   `?mode=ia` — le simulateur envoie ses parties ici, sur le vrai plateau,
@@ -192,16 +240,15 @@
 		/* On interroge le moteur MAINTENANT plutôt que de lire `ciblesLegales` :
 		   ce $derived dépend de `attaquant`, posé au début du glisser, et Svelte
 		   ne l'a pas forcément recalculé quand on relâche. */
-		const legales = duel?.legalTargets() ?? { units: [], korum: false };
+		const legales = ciblesMaintenant();
 		if (cible === 'korum' && legales.korum) {
-			duel?.attack(t.uid, 'korum');
+			agir({ kind: 'attack', uid: t.uid, target: 'korum' });
 		} else {
 			const uid = Number(cible);
 			if (!legales.units.includes(uid)) return;
-			duel?.attack(t.uid, uid);
+			agir({ kind: 'attack', uid: t.uid, target: uid });
 		}
 		attaquant = null;
-		rafraichir();
 	}
 
 	/**
@@ -289,11 +336,192 @@
 		main = duel.hand();
 		const evs = duel.drain();
 		if (evs.length) journal = [...journal, ...evs].slice(-60);
+		effetsEvenements(evs);
+	}
+
+	function effetsEvenements(evs: Ev[]) {
 		for (const e of evs) {
 			if (e.t === 'verb') montrerVerbe(e.cardId);
 			if (e.t === 'death') { son('hit'); etincelles('death'); }
 			else if (e.t === 'effect' || e.t === 'prononcer') { son('effect'); etincelles('effect'); }
 			else if (e.t === 'play' || e.t === 'summon') { son('card'); etincelles('play'); }
+		}
+	}
+
+	/* ---------------- PvP : hôte ---------------- */
+
+	function brancherHote() {
+		peer?.on('connection', (c) => {
+			conn = c as DataConnection;
+			conn.on('data', (raw) => surDonneesHote(raw as MsgPvp));
+			conn.on('close', surDepart);
+		});
+	}
+
+	function surDonneesHote(msg: MsgPvp) {
+		if (msg.t === 'hello') {
+			annulerFile?.();
+			annulerFile = null;
+			match = new Match(
+				cards,
+				{ deck: maListe, faction: maFaction, name: monNom },
+				{ deck: deckDistant(msg.deck), faction: msg.faction, name: msg.name },
+				Math.floor(Math.random() * 1e9)
+			);
+			if (pvp) pvp.statut = 'jeu';
+			diffuser();
+			return;
+		}
+		if (msg.t === 'action') actionHote(1, msg.a);
+	}
+
+	/** Le deck imposé par l'invité, accepté seulement s'il est légal. */
+	function deckDistant(ids: string[] | null): CardData[] | null {
+		if (!ids) return null;
+		const fiche = {
+			id: 'distant',
+			name: 'Deck distant',
+			updatedAt: 0,
+			cards: ids.reduce<Record<string, number>>((n, id) => ({ ...n, [id]: (n[id] ?? 0) + 1 }), {})
+		};
+		if (!validateDeck(fiche, getCard).isLegal) return null;
+		const l = ids.map((id) => getCard(id)).filter((c): c is CardData => !!c);
+		return l.length === GAME_RULES.deckSize ? l : null;
+	}
+
+	function actionHote(cote: Side, a: ActionPvp) {
+		if (!match) return;
+		let ok = false;
+		if (a.kind === 'play') ok = match.play(cote, a.i, a.sel);
+		else if (a.kind === 'attack') ok = match.attack(cote, a.uid, a.target);
+		else if (a.kind === 'pron') ok = match.pronounce(cote, a.uid, a.sel);
+		else if (a.kind === 'swap') ok = match.swap(cote, a.uid);
+		else ok = match.endTurn(cote);
+		if (ok) diffuser();
+	}
+
+	/** L'hôte pousse le nouvel état : à son écran, et à l'invité. */
+	function diffuser() {
+		if (!match) return;
+		version++;
+		const evs = match.drain();
+		const [a, b] = match.state();
+		marquerBlesses([a, b]);
+		moi = a;
+		lui = b;
+		const m = match.meta();
+		meta = { turn: m.turn, active: m.active, winner: m.winner, will: a.will ?? 0, maxWill: a.maxWill ?? 0 };
+		main = match.hand(0);
+		if (evs.length) journal = [...journal, ...evs].slice(-60);
+		effetsEvenements(evs);
+		conn?.send({ t: 'sync', events: evs, view: vueDInvite() } satisfies MsgPvp);
+	}
+
+	function vueDInvite(): VueInvite {
+		const m = match!;
+		const hand = m.hand(1);
+		const pron = m.pronounceable(1);
+		const pronSpecs: Record<number, Choix | null> = {};
+		for (const p of pron) pronSpecs[p.uid] = m.choiceForPronounce(1, p.uid);
+		const mm = m.meta();
+		return {
+			view: m.state(),
+			hand,
+			attackers: m.attackers(1),
+			legal: m.legalTargets(1),
+			pron,
+			swappables: m.swappables(1),
+			specs: hand.map((h, i) => (h.playable ? m.choiceFor(1, i) : null)),
+			pronSpecs,
+			meta: { turn: mm.turn, active: mm.active, winner: mm.winner }
+		};
+	}
+
+	/* ---------------- PvP : invité ---------------- */
+
+	function surDonneesInvite(msg: MsgPvp) {
+		if (msg.t !== 'sync') return;
+		version++;
+		const v = msg.view;
+		if (msg.events.length) journal = [...journal, ...msg.events].slice(-60);
+		effetsEvenements(msg.events);
+		marquerBlesses(v.view);
+		moi = v.view[1];
+		lui = v.view[0];
+		main = v.hand;
+		vueInvite = v;
+		meta = { ...v.meta, will: v.view[1].will ?? 0, maxWill: v.view[1].maxWill ?? 0 };
+		if (pvp && pvp.statut !== 'jeu') pvp.statut = 'jeu';
+	}
+
+	function surDepart() {
+		if (meta.winner === null && pvp) pvp.statut = 'quitte';
+	}
+
+	async function rejoindreSalon(codeSalon: string) {
+		maCote = 1;
+		pvp = { role: 'invite', statut: 'connexion', code: codeSalon };
+		try {
+			const net = await import('$lib/net');
+			const res = await net.joinHost(codeSalon);
+			peer = res.peer;
+			conn = res.conn;
+			conn.on('data', (raw) => surDonneesInvite(raw as MsgPvp));
+			conn.on('close', surDepart);
+			conn.send({
+				t: 'hello',
+				name: monNom,
+				deck: maListe ? maListe.map((c) => c.id) : null,
+				faction: maFaction
+			} satisfies MsgPvp);
+		} catch (e) {
+			pvp = {
+				role: 'invite',
+				statut: 'erreur',
+				code: codeSalon,
+				message: e instanceof Error ? e.message : 'Connexion impossible.'
+			};
+		}
+	}
+
+	async function initPvp(params: URLSearchParams, liste: CardData[] | null) {
+		maListe = liste;
+		maFaction = (params.get('moi') as FactionId) || 'vasar';
+		monNom = localStorage.getItem(nsKey('expelled-pseudo')) ?? 'Sans-Nom';
+		const role = params.get('role');
+		if (role === 'invite') {
+			await rejoindreSalon((params.get('code') ?? '').trim().toUpperCase());
+			return;
+		}
+		try {
+			const net = await import('$lib/net');
+			const codeSalon = (params.get('code') ?? '').trim().toUpperCase() || net.salonCode();
+			peer = await net.createHost(codeSalon);
+			brancherHote();
+			if (params.get('rapide')) {
+				pvp = { role: 'hote', statut: 'file', code: codeSalon };
+				const { entrerFile } = await import('$lib/matchmaking');
+				annulerFile = entrerFile(codeSalon, (a) => {
+					annulerFile = null;
+					if (a.hote) {
+						// l'adversaire arrive chez nous : plus rien à faire qu'attendre son hello
+						if (pvp) pvp.statut = 'connexion';
+						return;
+					}
+					peer?.destroy();
+					peer = null;
+					void rejoindreSalon(a.code);
+				});
+			} else {
+				pvp = { role: 'hote', statut: 'attente', code: codeSalon };
+			}
+		} catch (e) {
+			pvp = {
+				role: 'hote',
+				statut: 'erreur',
+				code: '',
+				message: e instanceof Error ? e.message : 'Salon impossible à ouvrir.'
+			};
 		}
 	}
 
@@ -323,6 +551,20 @@
 					Array.from({ length: n }, () => getCard(id)!).filter(Boolean)
 				)
 			: null;
+
+		initEconomy();
+
+		if (params.get('mode') === 'pvp') {
+			void initPvp(params, liste);
+			sobre = matchMedia('(prefers-reduced-motion: reduce)').matches;
+			horloge = setInterval(() => secondes++, 1000);
+			return () => {
+				if (horloge) clearInterval(horloge);
+				if (verbeTimer) clearTimeout(verbeTimer);
+				annulerFile?.();
+				peer?.destroy();
+			};
+		}
 
 		if (params.get('mode') === 'ia') {
 			spectateur = true;
@@ -366,14 +608,65 @@
 		};
 	});
 
-	const monTour = $derived(meta.active === 0 && meta.winner === null);
-	const attaquantsPossibles = $derived(version >= 0 && duel && monTour ? duel.attackers() : []);
-	const ciblesLegales = $derived(
-		version >= 0 && duel && attaquant !== null
-			? duel.legalTargets()
-			: { units: [], korum: false }
-	);
-	const prononcables = $derived(version >= 0 && duel && monTour ? duel.pronounceable() : []);
+	const monTour = $derived(meta.active === maCote && meta.winner === null);
+	const attaquantsPossibles = $derived.by(() => {
+		if (version < 0 || !monTour) return [];
+		if (duel) return duel.attackers();
+		if (match) return match.attackers(0);
+		return vueInvite?.attackers ?? [];
+	});
+	const ciblesLegales = $derived.by(() => {
+		if (version < 0 || attaquant === null) return { units: [], korum: false };
+		return ciblesMaintenant();
+	});
+	const prononcables = $derived.by(() => {
+		if (version < 0 || !monTour) return [];
+		if (duel) return duel.pronounceable();
+		if (match) return match.pronounceable(0);
+		return vueInvite?.pron ?? [];
+	});
+
+	/** Les cibles légales, interrogées à l'instant T (cf. finTraine). */
+	function ciblesMaintenant(): { units: number[]; korum: boolean } {
+		if (duel) return duel.legalTargets();
+		if (match) return match.legalTargets(0);
+		return vueInvite?.legal ?? { units: [], korum: false };
+	}
+
+	/**
+	 * L'action du joueur, quel que soit son siège : appliquée au Duel en solo,
+	 * au Match chez l'hôte, envoyée sur le fil chez l'invité.
+	 */
+	function agir(a: ActionPvp) {
+		if (a.kind === 'play') track('cardPlayed');
+		if (a.kind === 'pron') track('prononcer');
+		if (duel) {
+			if (a.kind === 'play') duel.play(a.i, a.sel);
+			else if (a.kind === 'attack') duel.attack(a.uid, a.target);
+			else if (a.kind === 'pron') duel.pronounce(a.uid, a.sel);
+			else if (a.kind === 'swap') duel.swap(a.uid);
+			else duel.endTurn();
+			rafraichir();
+			return;
+		}
+		if (match) {
+			actionHote(0, a);
+			return;
+		}
+		conn?.send({ t: 'action', a } satisfies MsgPvp);
+	}
+
+	function specDeMain(i: number): Choix | null {
+		if (duel) return duel.choiceFor(i);
+		if (match) return match.choiceFor(0, i);
+		return vueInvite?.specs[i] ?? null;
+	}
+
+	function specDePron(uid: number): Choix | null {
+		if (duel) return duel.choiceForPronounce(uid);
+		if (match) return match.choiceForPronounce(0, uid);
+		return vueInvite?.pronSpecs[uid] ?? null;
+	}
 
 	/**
 	 * La carte survolée en main, montrée en grand au-dessus. Une carte de main
@@ -404,15 +697,14 @@
 		// les cartes injouables ne sont plus `disabled` : un bouton désactivé ne
 		// reçoit aucun survol, et c'est justement celles-là qu'on veut lire.
 		if (!main[i]?.playable) return;
-		const spec = duel?.choiceFor(i);
+		const spec = specDeMain(i);
 		if (spec) {
 			choix = { spec, action: { type: 'main', index: i }, picks: [] };
 			carteLue = null;
 			return;
 		}
-		if (!duel?.play(i)) return;
+		agir({ kind: 'play', i });
 		carteLue = null;
-		rafraichir();
 	}
 
 	function pick(v: number | 'korum') {
@@ -432,7 +724,7 @@
 	}
 
 	function validerChoix(picks?: (number | 'korum')[]) {
-		if (!choix || !duel) return;
+		if (!choix) return;
 		const { spec, action } = choix;
 		const p = picks ?? choix.picks;
 		const sel: Sel =
@@ -441,10 +733,9 @@
 				: spec.type === 'forme'
 					? { forme: p[0] === 'korum' ? 0 : (p[0] ?? 0) }
 					: { unites: p };
-		if (action.type === 'main') duel.play(action.index, sel);
-		else duel.pronounce(action.uid, sel);
+		if (action.type === 'main') agir({ kind: 'play', i: action.index, sel });
+		else agir({ kind: 'pron', uid: action.uid, sel });
 		choix = null;
-		rafraichir();
 	}
 
 	function annulerChoix() {
@@ -466,9 +757,8 @@
 
 	function clicSonEtre(uid: number) {
 		if (attaquant !== null && ciblesLegales.units.includes(uid)) {
-			duel?.attack(attaquant, uid);
+			agir({ kind: 'attack', uid: attaquant, target: uid });
 			attaquant = null;
-			rafraichir();
 			return;
 		}
 		etreOuvert = { side: 1, uid };
@@ -476,35 +766,36 @@
 
 	function frapperKorum() {
 		if (attaquant === null || !ciblesLegales.korum) return;
-		duel?.attack(attaquant, 'korum');
+		agir({ kind: 'attack', uid: attaquant, target: 'korum' });
 		attaquant = null;
-		rafraichir();
 	}
 
 	function finirTour() {
 		attaquant = null;
-		duel?.endTurn();
+		agir({ kind: 'end' });
 		son('turn');
 		secondes = 0;
-		rafraichir();
 	}
 
 	function prononcer(uid: number) {
-		const spec = duel?.choiceForPronounce(uid);
+		const spec = specDePron(uid);
 		if (spec) {
 			choix = { spec, action: { type: 'prononcer', uid }, picks: [] };
 			return;
 		}
-		duel?.pronounce(uid);
-		rafraichir();
+		agir({ kind: 'pron', uid });
 	}
 
 	/* ---------------- Moras : l'échange ATQ/INT, enfin offert au joueur ---------------- */
-	const echangeables = $derived(version >= 0 && duel && monTour ? duel.swappables() : []);
+	const echangeables = $derived.by(() => {
+		if (version < 0 || !monTour) return [];
+		if (duel) return duel.swappables();
+		if (match) return match.swappables(0);
+		return vueInvite?.swappables ?? [];
+	});
 
 	function echanger(uid: number) {
-		if (!duel?.swap(uid)) return;
-		rafraichir();
+		agir({ kind: 'swap', uid });
 	}
 
 	/** Les attachements d'un Être : Reliques et Verbes posés derrière lui. */
@@ -544,7 +835,7 @@
 		if (meta.winner !== null || t === dernierTour) return;
 		const premier = dernierTour === 0;
 		dernierTour = t;
-		if (meta.active !== 0) return; // on n'annonce que la reprise de parole
+		if (meta.active !== maCote) return; // on n'annonce que la reprise de parole
 		annonce = premier ? 'À vous' : 'À vous de jouer';
 		if (annonceTimer) clearTimeout(annonceTimer);
 		annonceTimer = setTimeout(() => (annonce = null), 1500);
@@ -572,6 +863,19 @@
 			coupMoi = true;
 			setTimeout(() => (coupMoi = false), 420);
 		}
+	});
+
+	/* Récompense de fin de duel — une seule fois, jamais en spectateur. Elle
+	   vivait dans les pages Arène et Salons ; maintenant que tous les combats
+	   se jouent ICI, c'est ici qu'elle se verse. */
+	let recompense = false;
+	$effect(() => {
+		if (meta.winner === null || recompense || spectateur) return;
+		if (!duel && !pvp) return; // page ouverte sans partie en cours
+		recompense = true;
+		const gagne = meta.winner === maCote;
+		if (pvp) rewardMatch(gagne ? 'pvpWin' : 'pvpLoss', gagne ? 'Victoire en salon' : 'Duel de salon');
+		else rewardMatch(gagne ? 'win' : 'loss', gagne ? 'Victoire en Arène' : 'Défaite honorable');
 	});
 
 	const mm = $derived(String(Math.floor(secondes / 60)).padStart(2, '0'));
@@ -926,17 +1230,44 @@
 				{#if spectateur}
 					{meta.winner === -1 ? 'Match nul' : `${(meta.winner === 0 ? moi : lui)?.name ?? 'L’IA'} l’emporte`}
 				{:else}
-					{meta.winner === 0 ? 'Victoire' : meta.winner === 1 ? 'Défaite' : 'Match nul'}
+					{meta.winner === maCote ? 'Victoire' : meta.winner === -1 ? 'Match nul' : 'Défaite'}
 				{/if}
 			</p>
 			<p class="fin-sub">
 				{#if spectateur}
 					{meta.winner === -1 ? 'Aucun Korum ne demeure.' : 'Le duel des IA est terminé.'}
 				{:else}
-					{meta.winner === 0 ? 'Votre parole résonne encore dans l’Arène.' : meta.winner === 1 ? 'Le Silence a repris le terrain.' : 'Aucun Korum ne demeure.'}
+					{meta.winner === maCote ? 'Votre parole résonne encore dans l’Arène.' : meta.winner === -1 ? 'Aucun Korum ne demeure.' : 'Le Silence a repris le terrain.'}
 				{/if}
 			</p>
-			<a class="fin-sortie" href="/arene">Quitter le terrain</a>
+			<a class="fin-sortie" href={pvp ? '/arene/salons' : '/arene'}>Quitter le terrain</a>
+		</div>
+	{/if}
+
+	<!-- ============ PvP : l'attente se vit sur le terrain ============ -->
+	{#if pvp && pvp.statut !== 'jeu' && meta.winner === null}
+		<div class="fin pvp-etat" role="dialog" aria-modal="true" in:fade={{ duration: duree(300) }}>
+			<div class="fin-emblem" aria-hidden="true"><span>EX</span></div>
+			{#if pvp.statut === 'attente'}
+				<p class="fin-txt">Salon ouvert</p>
+				<p class="fin-sub">Partagez ce code : le duel commencera dès que votre adversaire l'aura saisi.</p>
+				<p class="pvp-code">{pvp.code}</p>
+			{:else if pvp.statut === 'file'}
+				<p class="fin-txt">Recherche d'un adversaire…</p>
+				<p class="fin-sub">Vous serez apparié au premier joueur disponible.</p>
+			{:else if pvp.statut === 'connexion'}
+				<p class="fin-txt">Adversaire trouvé</p>
+				<p class="fin-sub">Connexion au salon…</p>
+			{:else if pvp.statut === 'quitte'}
+				<p class="fin-txt">Votre adversaire a quitté la partie</p>
+				<p class="fin-sub">Le Silence retombe sur le terrain.</p>
+			{:else}
+				<p class="fin-txt">Connexion impossible</p>
+				<p class="fin-sub">{pvp.message ?? 'Vérifiez le code du salon et réessayez.'}</p>
+			{/if}
+			<a class="fin-sortie" href="/arene/salons">
+				{pvp.statut === 'quitte' || pvp.statut === 'erreur' ? 'Retour aux salons' : 'Annuler'}
+			</a>
 		</div>
 	{/if}
 </div>
@@ -967,7 +1298,7 @@
 			{:else if choix.spec.type === 'unite'}
 				<div class="choix-unites">
 					{#each choix.spec.unites ?? [] as u (u.uid)}
-						{@const snap = u.side === 0 ? moi : lui}
+						{@const snap = u.side === maCote ? moi : lui}
 						{@const vue = snap?.board.find((b) => b.uid === u.uid)}
 						<button class="choix-unite" onclick={() => pick(u.uid)}>
 							<b>{u.nom}</b>
@@ -1568,6 +1899,21 @@
 	}
 	.fin-sortie {
 		color: #d5b25e;
+	}
+
+	/* ============ PVP : ATTENTE SUR LE TERRAIN ============ */
+	.pvp-etat .fin-txt {
+		font-size: clamp(2rem, 6vw, 3.6rem);
+	}
+	.pvp-code {
+		margin: 0.4rem 0 0;
+		font-family: 'Cinzel', Georgia, serif;
+		font-size: clamp(2.2rem, 7vw, 4rem);
+		font-weight: 700;
+		letter-spacing: 0.35em;
+		color: #f2d98d;
+		text-shadow: 0 0 34px rgba(213, 178, 94, 0.55);
+		user-select: all;
 	}
 
 	/* ============ LE SÉLECTEUR DE CHOIX ============ */
