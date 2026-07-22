@@ -836,16 +836,16 @@
 		   rembourrage penchait en plus vers le haut, ce qui enfonçait le texte.
 		   Plus de marge en bas qu'en haut, et un léger relèvement pour aligner
 		   la pastille sur les capitales voisines du pied. */
-		padding: 0.24cqw 1.3cqw 0.36cqw;
+		/* Deux exigences se contredisent tant qu'on ne fait que DÉPLACER la pilule :
+		   l'encre doit s'aligner sur les capitales voisines, et la pilule ne doit
+		   pas pendre sous la ligne de base. Relever l'ensemble règle la seconde en
+		   cassant la première — le texte monte avec son fond.
+		   La sortie est de resserrer la pilule autour de son texte : moins haute,
+		   elle déborde moins, ce qui laisse l'encre redescendre à sa place. */
+		padding: 0.18cqw 1.3cqw 0.28cqw;
 		vertical-align: 0.06em;
 		position: relative;
-		/* Centrer géométriquement la pilule sur la hauteur de capitale ne suffit
-		   pas : elle fait 10,3 px pour 6 px de capitale, si bien qu'à centre égal
-		   elle déborde autant sous la ligne de base qu'au-dessus des lettres — et
-		   c'est la ligne de base que l'œil lit, donc la pastille paraît pendre.
-		   On répartit donc l'excédent 2 pour 1 en faveur du haut : 2,85 px
-		   au-dessus des capitales, 1,42 px sous la ligne de base. */
-		top: -0.413cqw;
+		top: -0.3cqw;
 		font-size: 1.7cqw;
 		font-weight: 700;
 		letter-spacing: 0.18em;
