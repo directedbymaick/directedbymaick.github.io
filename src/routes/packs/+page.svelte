@@ -248,6 +248,19 @@
 	 * Les foils courants (Reflet, Holo… 1,5 par booster) n'en ont pas :
 	 * un signal posé sur un tiers des cartes ne signale plus rien.
 	 */
+	/**
+	 * Le badge du récap dit la VERSION exacte — le moteur la fournit déjà
+	 * (`Pull.version` : « SP », « Full Art · Galerie », « Alt 1 · Full Art · SP »…).
+	 * N'afficher que « Full Art » cachait tout le reste. Les foils courants
+	 * restent muets, même logique que l'aura : trop fréquents pour signaler.
+	 */
+	const badgeDe = (p: Pull): { txt: string; ton: 'or' | 'apex' } | null => {
+		const sp = p.card.gene.foilPreset === 'showcase' && !!p.card.cutout;
+		if (sp || p.card.alt) return { txt: p.version, ton: 'apex' };
+		if (p.fullArt) return { txt: p.version, ton: 'or' };
+		return null;
+	};
+
 	const auraOf = (p: Pull): '' | 'or' | 'apex' => {
 		if ((p.card.gene.foilPreset === 'showcase' && p.card.cutout) || p.card.alt) return 'apex';
 		const vraie = p.card.sourceRarity ?? p.card.rarity;
@@ -619,9 +632,10 @@
 			<div class="recap-grid">
 				{#each pulls as p, i (i)}
 					{@const aura = auraOf(p)}
+					{@const b = badgeDe(p)}
 					<div class="recap-cell" class:aura={aura !== ''} class:apex={aura === 'apex'} style="--i: {i}">
-						{#if p.fullArt}
-							<span class="fabadge">Full Art</span>
+						{#if b}
+							<span class="fabadge" class:apex={b.ton === 'apex'}>{b.txt}</span>
 						{:else if freshIds.includes(p.card.id) && pulls.findIndex((q) => q.card.id === p.card.id) === i}
 							<span class="newbadge">Nouvelle !</span>
 						{/if}
@@ -1271,6 +1285,20 @@
 	@keyframes sweep {
 		from { opacity: 1; background-position: 120% 0; }
 		to { opacity: 0; background-position: -60% 0; }
+	}
+
+	/* le badge apex (SP détourée, alts) : la même robe prismatique que la
+	   pastille Alt du pied de carte — champagne, lavande, ciel */
+	.fabadge.apex {
+		background: linear-gradient(100deg, #e8ecf4 0%, #cbb8ff 24%, #f4f0ff 46%, #ffe3a1 68%, #cbb8ff 100%);
+		background-size: 220% 100%;
+		animation: badge-sheen 5s linear infinite;
+	}
+	@keyframes badge-sheen {
+		to { background-position: -220% 0; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.fabadge.apex { animation: none; }
 	}
 
 	/* badge Full Art : champagne et lavande, pas un arc-en-ciel */
