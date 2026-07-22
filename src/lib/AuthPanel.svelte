@@ -88,10 +88,10 @@
 				class="codeinput"
 				type="text"
 				bind:value={code}
-				placeholder="——————"
+				placeholder="————————"
 				inputmode="numeric"
 				autocomplete="one-time-code"
-				maxlength="6"
+				maxlength="10"
 				required
 			/>
 			{#if err}<p class="auth-err">{err}</p>{/if}
