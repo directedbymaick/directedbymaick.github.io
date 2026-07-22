@@ -254,15 +254,19 @@
 	 * N'afficher que « Full Art » cachait tout le reste. Les foils courants
 	 * restent muets, même logique que l'aura : trop fréquents pour signaler.
 	 */
-	const badgeDe = (p: Pull): { txt: string; ton: 'or' | 'apex' } | null => {
+	const badgeDe = (p: Pull): { txt: string; ton: 'or' | 'apex' | 'noble' } | null => {
 		const sp = p.card.gene.foilPreset === 'showcase' && !!p.card.cutout;
 		/* Libellés courts, un mot chacun :
 		   — Alt prime sur tout : « Alt », ou « Full Art · Alt »
 		   — SP se dit « SP », full art ou non
 		   — Full Art nue se dit « Full Art » ; avec foil, le NOM DU FOIL seul —
-		     un foil non-full-art n'est jamais tagué, le contexte est sans ambiguïté */
-		if (p.card.alt) return { txt: p.fullArt ? 'Full Art · Alt' : 'Alt', ton: 'apex' };
-		if (sp) return { txt: 'SP', ton: 'apex' };
+		     un foil non-full-art n'est jamais tagué, le contexte est sans ambiguïté
+		   Trois robes, du haut vers le bas de l'échelle des classes :
+		   — noble (rouge et or) : Full Art SP et tous les Alts — les deux sommets
+		   — apex (prismatique) : SP simple
+		   — or (champagne) : Full Art et ses foils */
+		if (p.card.alt) return { txt: p.fullArt ? 'Full Art · Alt' : 'Alt', ton: 'noble' };
+		if (sp) return { txt: 'SP', ton: p.fullArt ? 'noble' : 'apex' };
 		if (p.fullArt) {
 			const foil = p.version.startsWith('Full Art · ') ? p.version.slice(11) : p.version;
 			return { txt: foil === 'Raw' ? 'Full Art' : foil, ton: 'or' };
@@ -644,7 +648,7 @@
 					{@const b = badgeDe(p)}
 					<div class="recap-cell" class:aura={aura !== ''} class:apex={aura === 'apex'} style="--i: {i}">
 						{#if b}
-							<span class="fabadge" class:apex={b.ton === 'apex'}>{b.txt}</span>
+							<span class="fabadge" class:apex={b.ton === 'apex'} class:noble={b.ton === 'noble'}>{b.txt}</span>
 						{:else if freshIds.includes(p.card.id) && pulls.findIndex((q) => q.card.id === p.card.id) === i}
 							<span class="newbadge">Nouvelle !</span>
 						{/if}
@@ -1305,6 +1309,23 @@
 	}
 	@keyframes badge-sheen {
 		to { background-position: -220% 0; }
+	}
+	/* la robe NOBLE — rouge et or, pour les deux sommets de l'échelle :
+	   Full Art SP et les arts alternatifs. L'encre passe en ivoire, le
+	   carmin est trop profond pour une encre sombre. */
+	.fabadge.noble {
+		color: #fff3dd;
+		text-shadow: 0 1px 2px rgba(60, 4, 10, 0.55);
+		background: linear-gradient(100deg, #7e1220 0%, #b3273a 26%, #ffd77a 50%, #b3273a 74%, #7e1220 100%);
+		background-size: 220% 100%;
+		border: 1px solid rgba(255, 215, 122, 0.75);
+		box-shadow:
+			0 0 12px rgba(179, 39, 58, 0.55),
+			0 0 4px rgba(255, 215, 122, 0.5);
+		animation: badge-sheen 4s linear infinite;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.fabadge.noble { animation: none; }
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.fabadge.apex { animation: none; }
