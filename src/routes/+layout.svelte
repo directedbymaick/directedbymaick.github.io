@@ -6,9 +6,7 @@
 	import { cards } from '$lib/cards';
 	import { page } from '$app/state';
 	import { dev } from '$app/environment';
-	import { session, initSession, signOut } from '$lib/account.svelte';
-	import { pushCloudNow } from '$lib/store';
-	import AuthPanel from '$lib/AuthPanel.svelte';
+	import { session, initSession } from '$lib/account.svelte';
 	import MailPanel from '$lib/MailPanel.svelte';
 	import { initMail, unreadCountFor } from '$lib/mail.svelte';
 	import { eco, initEconomy } from '$lib/economy.svelte';
@@ -67,7 +65,6 @@
 	/* ---- le compte : icône, menu, modale de connexion ---- */
 	const account = $derived(session.account);
 	let menuOpen = $state(false);
-	let loginOpen = $state(false);
 	let mailOpen = $state(false);
 	const unreadMail = $derived(unreadCountFor(session.account?.email ?? null));
 
@@ -75,13 +72,6 @@
 		initSession();
 		initEconomy();
 		initMail();
-		// ceinture de sécurité : pousser la sauvegarde avant de quitter/masquer l'onglet
-		const flush = () => {
-			if (document.visibilityState === 'hidden') pushCloudNow();
-		};
-		addEventListener('visibilitychange', flush);
-		addEventListener('pagehide', () => pushCloudNow());
-		return () => removeEventListener('visibilitychange', flush);
 	});
 
 	// recharge le courrier dès que le compte est prêt / change de compte
@@ -106,13 +96,7 @@
 
 
 	function acctClick() {
-		if (account) menuOpen = !menuOpen;
-		else loginOpen = true;
-	}
-	async function doLogout() {
-		menuOpen = false;
-		await signOut();
-		if (typeof location !== 'undefined') location.assign('/');
+		menuOpen = !menuOpen;
 	}
 </script>
 
@@ -177,8 +161,8 @@
 					class="acct-btn"
 					class:in={!!account}
 					onclick={acctClick}
-					aria-label={account ? `Compte : ${account.email}` : 'Se connecter'}
-					title={account ? account.email : 'Se connecter'}
+					aria-label="Profil local"
+					title="Profil enregistré sur ce navigateur"
 				>
 					{#if account}
 						<span class="avatar">{account.email.charAt(0).toUpperCase()}</span>
@@ -192,9 +176,8 @@
 				{#if menuOpen && account}
 					<button class="menu-veil" aria-label="Fermer" onclick={() => (menuOpen = false)}></button>
 					<div class="acct-menu">
-						<p class="am-mail">{account.email}</p>
+						<p class="am-mail">Session locale</p>
 						<a href="/profil" onclick={() => (menuOpen = false)}>Mon espace</a>
-						<button class="am-out" onclick={doLogout}>Se déconnecter</button>
 					</div>
 				{/if}
 			</div>
@@ -206,14 +189,6 @@
 		<div class="login" role="dialog" aria-modal="true" aria-label="Courrier">
 			<button class="login-backdrop" aria-label="Fermer" onclick={() => (mailOpen = false)}></button>
 			<MailPanel close={() => (mailOpen = false)} />
-		</div>
-	{/if}
-
-	<!-- modale de connexion -->
-	{#if loginOpen}
-		<div class="login" role="dialog" aria-modal="true" aria-label="Connexion">
-			<button class="login-backdrop" aria-label="Fermer" onclick={() => (loginOpen = false)}></button>
-			<div class="login-panel"><AuthPanel /></div>
 		</div>
 	{/if}
 
@@ -918,8 +893,7 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.acct-menu a,
-	.am-out {
+	.acct-menu a {
 		padding: 0.5rem 0.6rem;
 		border: none;
 		border-radius: 9px;
@@ -932,20 +906,11 @@
 		text-align: left;
 		cursor: pointer;
 	}
-	.acct-menu a:hover,
-	.am-out:hover {
+	.acct-menu a:hover {
 		background: rgba(213, 178, 94, 0.1);
 		color: var(--ink);
 	}
-	.am-out {
-		color: rgba(255, 150, 150, 0.75);
-	}
-	.am-out:hover {
-		color: #ffb3b3;
-		background: rgba(220, 90, 90, 0.1);
-	}
-
-	/* ---------- modale de connexion ---------- */
+	/* ---------- modale du courrier ---------- */
 	.login {
 		position: fixed;
 		inset: 0;
@@ -962,27 +927,6 @@
 		backdrop-filter: blur(10px);
 		cursor: pointer;
 	}
-	.login-panel {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.7rem;
-		width: min(400px, 92vw);
-		padding: 2.4rem 2.2rem 1.8rem;
-		background: rgba(10, 16, 30, 0.95);
-		border: 1px solid rgba(213, 178, 94, 0.35);
-		border-radius: 20px;
-		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-		animation: lpop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-	@keyframes lpop {
-		from {
-			opacity: 0;
-			transform: translateY(16px) scale(0.96);
-		}
-	}
-
 	main {
 		flex: 1;
 		width: 100%;

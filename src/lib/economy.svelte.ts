@@ -7,7 +7,7 @@
 import { nsKey, scheduleCloudSync } from '$lib/store';
 
 export const PACK_PRICE = 100;
-export const STARTER_GRANT = 300;
+export const STARTER_GRANT = 300000;
 /** Plafond de solde : un compte ne peut pas dépasser cette somme d'Éclats. */
 export const MAX_BALANCE = 999999;
 export const MATCH_REWARD = { win: 25, loss: 8, pvpWin: 35, pvpLoss: 12 };

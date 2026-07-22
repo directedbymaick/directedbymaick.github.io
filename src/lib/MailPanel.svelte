@@ -42,9 +42,7 @@
 		<button class="x" onclick={close} aria-label="Fermer">✕</button>
 	</header>
 
-	{#if !email}
-		<p class="empty">Connectez-vous pour recevoir le courrier d’Expelled.</p>
-	{:else if items.length === 0}
+	{#if items.length === 0}
 		<p class="empty">Aucun courrier pour l’instant.</p>
 	{:else}
 		<ul>

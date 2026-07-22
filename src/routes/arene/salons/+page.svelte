@@ -101,12 +101,6 @@
 		);
 	});
 
-	/* la porte PvP suit l'état de connexion (résolu de façon asynchrone) */
-	$effect(() => {
-		if (!session.ready) return;
-		if (!session.account && mode === 'menu') mode = 'gate';
-		else if (session.account && mode === 'gate') mode = 'menu';
-	});
 	onDestroy(() => {
 		peer?.destroy();
 	});
@@ -350,7 +344,7 @@
 		match = null;
 		view = null;
 		meta = null;
-		mode = session.account ? 'menu' : 'gate';
+		mode = 'menu';
 		code = '';
 		joinCode = '';
 	}
