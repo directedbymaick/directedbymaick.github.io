@@ -29,35 +29,35 @@
 			carte: 'koren',
 			devise: 'Ce qui fut dit doit être redit',
 			texte:
-				"Les premiers prononcés, chargés de tenir ouverts les mots déjà dits. Ils ne créent pas : ils entretiennent. Halos intacts, ors et ivoires, cathédrales de grammaire."
+				"Premiers-nés de KOR, les Vasar maintiennent les mots qui donnent forme au monde. Ils ne créent plus : ils préservent. Leurs halos intacts et leurs cathédrales d’or dissimulent une peur — celle de voir la Création s’éteindre avec la dernière récitation."
 		},
 		{
 			cle: 'exar',
 			carte: 'rasen',
 			devise: 'Le dehors est à nous',
 			texte:
-				"Les bannis qui ont repris leur chaîne comme un titre. Ils veulent prononcer EX jusqu'au bout et voir ce qu'il y a de l'autre côté. Halos brisés, rouges et os."
+				"Bannis par le Vasis, les Exar ont fait de leurs chaînes des insignes. Ils veulent prononcer EX jusqu’au bout et découvrir ce qui attend au-delà du monde. Leurs halos brisés ne marquent plus une honte, mais un serment."
 		},
 		{
 			cle: 'eshar',
 			carte: 'eshel',
 			devise: 'Rien de dit ne se perd tout à fait',
 			texte:
-				"Ceux qu'on a cessé de prononcer, tombés lentement, arrivés en bas à moitié dits. Ils collectionnent les syllabes perdues ; certains en ont reconstitué des noms entiers."
+				"Les Eshar sont ceux que le monde a cessé de prononcer. À moitié effacés, ils recueillent les syllabes perdues et préservent la mémoire des disparus. Certains possèdent désormais de quoi recomposer un nom entier."
 		},
 		{
 			cle: 'morar',
 			carte: 'moras',
 			devise: 'Je tombais du bon côté',
 			texte:
-				"Ceux qui ont fait de la chute une arrivée. Ni la colère d'Exen ni la nostalgie du retour : Xenen, le monde humain, et la mutation portée comme une fierté."
+				"Les Morar ont refusé la colère d’Exen comme la nostalgie de Vasen. Dans le monde humain, ils ont transformé leur chute en nouveau départ et leur mutation en liberté."
 		},
 		{
 			cle: 'velar',
 			carte: 'velna',
 			devise: 'La Volonté suffit',
 			texte:
-				"Ceux qui n'ont pas été jetés : ils ont sauté. Ils brûlent leurs jours comme des torches et tiennent le Bord du monde. Ors francs, ailes de verre, joie féroce."
+				"Les Velar n’ont pas été expulsés : ils ont choisi de sauter. Ils vivent comme si la Volonté suffisait, avec l’éclat dangereux de ceux qui préfèrent une vie brève à une éternité soumise."
 		}
 	].map((p) => ({ ...p, ...charter.factions[p.cle as keyof typeof charter.factions] }));
 
@@ -83,6 +83,7 @@
 
 	// filtre par peuple ; null = tout le répertoire
 	let peupleActif = $state<string | null>(null);
+	let pagesOuvertes = $state<Record<string, number>>({});
 	const repertoireVu = $derived(
 		peupleActif ? REPERTOIRE.filter((p) => p.cle === peupleActif) : REPERTOIRE
 	);
@@ -90,6 +91,16 @@
 	function titreLivre(id: string) {
 		const l = LIVRES.find((x) => x.id === id);
 		return l ? `Livre ${l.num} · ${l.titre}` : '';
+	}
+	function pageDe(livre: Livre) {
+		return pagesOuvertes[livre.id] ?? 0;
+	}
+	function tourner(livre: Livre, direction: -1 | 1) {
+		const prochaine = Math.max(0, Math.min(livre.pages.length - 1, pageDe(livre) + direction));
+		pagesOuvertes = { ...pagesOuvertes, [livre.id]: prochaine };
+	}
+	function ouvrirPage(livre: Livre, index: number) {
+		pagesOuvertes = { ...pagesOuvertes, [livre.id]: index };
 	}
 
 	/* ------------------------------------------------------------ navigation */
@@ -203,7 +214,7 @@
 </script>
 
 <svelte:head>
-	<title>Le Korum · le récit — {charter.game.name}</title>
+	<title>Lore — {charter.game.name}</title>
 	<meta
 		name="description"
 		content="Le récit d'Eshel : la Prononciation, la Fracture, les Sentences, et les cinq peuples nés du silence."
@@ -217,15 +228,37 @@
 	<img class="hero-fond" src={vignette('rasen')} alt="" aria-hidden="true" />
 	<div class="hero-voile"></div>
 	<div class="hero-txt">
-		<p class="kicker">Le récit</p>
+		<p class="kicker">Lore</p>
 		<h1>Le Korum</h1>
 		<p class="hero-sub">
-			Ce que j'ai vu, je l'écris. Ce que je n'ai pas vu, je le dis comme on me l'a rapporté, et je le
-			marque. Ce qui manque, je le laisse manquer.
+			J’écris ce que j’ai vu. Je distingue ce que l’on m’a confié. Quant aux mots disparus, je
+			laisse leur absence témoigner.
 		</p>
 		<p class="hero-sig">— Eshel, gardien des registres</p>
 	</div>
 </header>
+
+<section class="cosmographie" aria-labelledby="cosmo-titre">
+	<div class="cosmo-intro">
+		<p class="kicker">Cosmographie du Silence</p>
+		<h2 id="cosmo-titre">Le monde de KOR</h2>
+		<p>
+			Une lecture du monde après la Fracture : Vasen se tient dans la lumière de l’Origine,
+			Xenen vit au centre sans connaître la langue qui le soutient, et Exen grandit sous la
+			Création, dans l’ombre de ceux qu’elle a rejetés.
+		</p>
+		<p class="cosmo-note">Peinture conservée dans les archives d’Eshel · auteur inconnu</p>
+	</div>
+	<figure class="cosmo-cadre">
+		<picture>
+			<source srcset="/art/world-of-kor.avif" type="image/avif" />
+			<img src="/art/world-of-kor.webp" alt="Peinture cosmologique du monde de KOR, organisé autour d’un immense cercle entre Vasen, Xenen et Exen" />
+		</picture>
+		<span class="cosmo-label cosmo-vasen">Vasen <small>la parole maintenue</small></span>
+		<span class="cosmo-label cosmo-xenen">Xenen <small>le monde humain</small></span>
+		<span class="cosmo-label cosmo-exen">Exen <small>l’Envers</small></span>
+	</figure>
+</section>
 
 <div class="corps">
 	<!-- ============================ RAIL ============================ -->
@@ -272,6 +305,8 @@
 	<!-- ============================ LIVRES ============================ -->
 	<main class="texte">
 		{#each LIVRES as l, i (l.id)}
+			{@const pageIndex = pageDe(l)}
+			{@const pageLore = l.pages[pageIndex]}
 			<section class="chap" class:inverse={i % 2 === 1} id={l.id}>
 				<figure class="chap-fig anim">
 					<button class="chap-loupe" onclick={() => ouvrir(l)} title="Voir l'illustration en grand">
@@ -281,29 +316,59 @@
 					<figcaption>{nom(l.carte)}</figcaption>
 				</figure>
 
-				<div class="chap-txt">
+				<div class="chap-txt" aria-live="polite">
 					<p class="chap-num anim">Livre {l.num}</p>
 					<h2 class="anim">{l.titre}</h2>
 					<p class="chap-sous anim">{l.sousTitre}</p>
 
-					{#each l.paragraphes as p}
-						<p class="anim">{p}</p>
-					{/each}
-
-					{#if l.liste}
-						<dl class="mots anim">
-							{#each l.liste as m}
-								<div>
-									<dt>{m.terme}</dt>
-									<dd>{m.sens}</dd>
-								</div>
+					{#key pageIndex}
+					<article class="feuillet anim" class:feuillet-fin={pageIndex === l.pages.length - 1}>
+						<div class="folio-haut">
+							<span>{pageLore.surtitre ?? l.titre}</span>
+							<span>{String(pageIndex + 1).padStart(2, '0')}</span>
+						</div>
+						{#if pageLore.titre}<h3>{pageLore.titre}</h3>{/if}
+						<div class="prose">
+							{#each pageLore.paragraphes as p}
+								<p>{p}</p>
 							{/each}
-						</dl>
-					{/if}
+						</div>
+						{#if pageLore.citation}<blockquote>{pageLore.citation}</blockquote>{/if}
+						{#if l.liste && pageIndex === 1}
+							<dl class="mots">
+								{#each l.liste as m}
+									<div><dt>{m.terme}</dt><dd>{m.sens}</dd></div>
+								{/each}
+							</dl>
+						{/if}
+						<div class="folio-bas">— {pageIndex + 1} / {l.pages.length} —</div>
+					</article>
+					{/key}
 
-					{#if l.exergue}
-						<blockquote class="anim">{l.exergue}</blockquote>
-					{/if}
+					<div class="pagination anim" aria-label="Pages du livre {l.num}">
+						<button
+							class="tourner tourner-prev"
+							disabled={pageIndex === 0}
+							onclick={() => tourner(l, -1)}
+							aria-label="Page précédente"
+						>← <span>Précédente</span></button>
+						<div class="pages-dots">
+							{#each l.pages as _, p}
+								<button
+									class:on={p === pageIndex}
+									onclick={() => ouvrirPage(l, p)}
+									aria-label="Page {p + 1}"
+									aria-current={p === pageIndex ? 'page' : undefined}
+								></button>
+							{/each}
+						</div>
+						<button
+							class="tourner tourner-next"
+							disabled={pageIndex === l.pages.length - 1}
+							onclick={() => tourner(l, 1)}
+							aria-label="Page suivante"
+						><span>Suivante</span> →</button>
+					</div>
 
 					<!-- La note d'illustration : ce que l'image montre, et pourquoi elle est
 					     posée sur ce chapitre plutôt qu'un autre. -->
@@ -314,7 +379,7 @@
 
 					{#if l.renvois?.length}
 						<div class="renvois anim">
-							<span class="renvois-h">Au Registre</span>
+							<span class="renvois-h">Dans la galerie</span>
 							{#each l.renvois as r}
 								{#if carte(r)}
 									<a href="/card/{r}">{nom(r)}</a>
@@ -331,8 +396,8 @@
 			<p class="chap-num">Après la chute</p>
 			<h2>Les cinq peuples</h2>
 			<p class="peuples-intro">
-				Une même Origine, cinq réponses au silence. Chacun a raison depuis l'endroit où il se tient
-				— c'est ce qui rend la guerre insoluble.
+				Une même Origine. Cinq réponses au silence. Aucun peuple ne détient toute la vérité — mais
+				chacun en possède assez pour entrer en guerre.
 			</p>
 			<div class="grille-p">
 				{#each PEUPLES as p (p.cle)}
@@ -354,11 +419,11 @@
 		     voix du personnage, la notice est celle du copiste : elle situe le nom
 		     dans l'histoire au lieu de le faire parler. -->
 		<section class="repertoire" id="repertoire">
-			<p class="chap-num">Le registre du copiste</p>
+			<p class="chap-num">Galerie des cartes</p>
 			<h2>Les soixante noms</h2>
 			<p class="peuples-intro">
-				Chaque carte du Silence occupe une place précise dans ce récit. Voici laquelle — non pas
-				ce que le personnage dit de lui-même, mais ce que le Korum en retient.
+				Chaque nom conserve la trace d’un choix, d’une faute ou d’un serment. Cette galerie rassemble
+				ce que le Korum a préservé de leur histoire.
 			</p>
 
 			<div class="filtres">
@@ -410,11 +475,10 @@
 			<p class="chap-num">Le copiste referme son livre</p>
 			<p class="fin-q">{QUESTION_FINALE}</p>
 			<p class="fin-note">
-				Je ne le sais pas. J'écris pour que la question reste posée quand je ne serai plus là pour la
-				poser.
+				Je l’ignore. J’écris pour que la question me survive.
 			</p>
 			<div class="fin-actions">
-				<a class="btn-plein" href="/registre">Parcourir le Registre</a>
+				<a class="btn-plein" href="/registre">Voir la galerie</a>
 				<a class="btn-contour" href="/packs">Ouvrir un booster</a>
 			</div>
 		</section>
@@ -515,6 +579,94 @@
 		text-transform: uppercase;
 		color: rgba(238, 240, 245, 0.42);
 	}
+	.cosmographie {
+		width: 100vw;
+		margin-left: calc(50% - 50vw);
+		padding: clamp(4rem, 9vw, 8rem) max(clamp(1.5rem, 6vw, 7rem), calc((100% - 1540px) / 2));
+		display: grid;
+		grid-template-columns: minmax(16rem, 0.52fr) minmax(24rem, 1fr);
+		gap: clamp(2.5rem, 7vw, 8rem);
+		align-items: center;
+		background:
+			radial-gradient(circle at 72% 40%, rgba(211, 178, 94, 0.08), transparent 34%),
+			#060a12;
+		border-bottom: 1px solid var(--panel-line);
+	}
+	.cosmo-intro { max-width: 31rem; }
+	.cosmo-intro h2 {
+		margin: 0 0 1.5rem;
+		font-family: Cinzel, Georgia, serif;
+		font-size: clamp(2.2rem, 5vw, 4.5rem);
+		line-height: 0.98;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+	.cosmo-intro > p:not(.kicker):not(.cosmo-note) {
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: 1.28rem;
+		line-height: 1.65;
+		color: rgba(238, 240, 245, 0.74);
+	}
+	.cosmo-note {
+		margin-top: 2rem;
+		font-family: var(--display);
+		font-size: 0.67rem;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		color: rgba(238, 240, 245, 0.38);
+	}
+	.cosmo-cadre {
+		position: relative;
+		width: min(100%, 31rem, 53vh);
+		justify-self: center;
+		margin: 0;
+		padding: clamp(0.55rem, 1vw, 0.9rem);
+		background: #cdbb95;
+		box-shadow: 0 38px 100px rgba(0, 0, 0, 0.55);
+		transform: rotate(0.35deg);
+	}
+	.cosmo-cadre::before {
+		content: '';
+		position: absolute;
+		inset: 1.2rem;
+		z-index: 1;
+		border: 1px solid rgba(53, 35, 20, 0.42);
+		pointer-events: none;
+	}
+	.cosmo-cadre img {
+		display: block;
+		width: 100%;
+		height: auto;
+		object-fit: contain;
+		filter: saturate(0.88) contrast(1.02);
+	}
+	.cosmo-label {
+		position: absolute;
+		z-index: 2;
+		right: clamp(1.3rem, 3vw, 3rem);
+		display: grid;
+		padding: 0.45rem 0.7rem;
+		font-family: Cinzel, Georgia, serif;
+		font-size: clamp(0.7rem, 1vw, 0.9rem);
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: #2e2117;
+		background: rgba(235, 221, 190, 0.82);
+		border-left: 2px solid #8a3027;
+		backdrop-filter: blur(5px);
+	}
+	.cosmo-label small {
+		margin-top: 0.15rem;
+		font-family: var(--display);
+		font-size: 0.55rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		color: rgba(46, 33, 23, 0.66);
+	}
+	.cosmo-vasen { top: 16%; }
+	.cosmo-xenen { top: 46%; }
+	.cosmo-exen { top: 78%; }
 
 	/* ================================ GRILLE ================================ */
 	.corps {
@@ -683,6 +835,149 @@
 		margin: var(--spacing-10) 0 var(--spacing-30);
 		font-style: italic;
 		color: rgba(238, 240, 245, 0.55);
+	}
+	.feuillet {
+		position: relative;
+		min-height: 34rem;
+		margin-top: var(--spacing-25);
+		padding: clamp(2rem, 4vw, 3.8rem);
+		padding-bottom: 3.6rem;
+		color: #241d16;
+		background:
+			linear-gradient(90deg, rgba(67, 45, 26, 0.12), transparent 8%),
+			repeating-linear-gradient(0deg, transparent 0 27px, rgba(95, 70, 45, 0.028) 28px),
+			#e9dec7;
+		box-shadow:
+			0 28px 70px rgba(0, 0, 0, 0.38),
+			inset 1px 0 rgba(255, 255, 255, 0.52),
+			inset 18px 0 36px rgba(67, 45, 26, 0.09);
+		clip-path: polygon(0.5% 0, 99.4% 0.3%, 100% 99.1%, 0 100%);
+		animation: page-in 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	}
+	.feuillet::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(circle at 8% 12%, rgba(98, 65, 36, 0.07), transparent 23%),
+			radial-gradient(circle at 92% 88%, rgba(98, 65, 36, 0.06), transparent 24%);
+		mix-blend-mode: multiply;
+	}
+	.feuillet-fin {
+		background:
+			linear-gradient(90deg, rgba(67, 45, 26, 0.13), transparent 8%),
+			repeating-linear-gradient(0deg, transparent 0 27px, rgba(95, 70, 45, 0.03) 28px),
+			#e5d5b8;
+	}
+	.folio-haut {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-bottom: 0.7rem;
+		border-bottom: 1px solid rgba(67, 45, 26, 0.28);
+		font-family: var(--display);
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: #756149;
+	}
+	.feuillet h3 {
+		position: relative;
+		z-index: 1;
+		margin: 1.7rem 0 1.4rem;
+		font-family: Cinzel, Georgia, serif;
+		font-size: clamp(1.35rem, 2.5vw, 2rem);
+		line-height: 1.15;
+		letter-spacing: 0.02em;
+		color: #211912;
+	}
+	.feuillet .prose {
+		position: relative;
+		z-index: 1;
+	}
+	.feuillet .prose p {
+		margin: 0 0 1.15rem;
+		font-family: 'Cormorant Garamond', Georgia, serif;
+		font-size: clamp(1.12rem, 1.7vw, 1.28rem);
+		line-height: 1.62;
+		color: #30261d;
+	}
+	.feuillet .prose p:first-child::first-letter {
+		float: left;
+		margin: 0.05em 0.12em -0.08em 0;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 3.5em;
+		line-height: 0.82;
+		color: #7d2922;
+	}
+	.feuillet blockquote {
+		position: relative;
+		z-index: 1;
+		margin: 1.8rem 0 0;
+		padding: 1rem 0 0 1.2rem;
+		border-left: 2px solid #8a3027;
+		border-top: 1px solid rgba(67, 45, 26, 0.18);
+		font-size: 1.12rem;
+		font-style: italic;
+		color: #4b3326;
+	}
+	.feuillet .mots {
+		position: relative;
+		z-index: 1;
+		margin-bottom: 0;
+		border-color: rgba(67, 45, 26, 0.24);
+	}
+	.feuillet .mots dt { color: #7d2922; }
+	.feuillet .mots dd { color: #4b3d31; }
+	.folio-bas {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 1.3rem;
+		text-align: center;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 0.68rem;
+		letter-spacing: 0.16em;
+		color: #806c53;
+	}
+	.pagination {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+	.tourner {
+		border: 0;
+		padding: 0.7rem 0;
+		background: none;
+		font-family: var(--display);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--gold);
+		cursor: pointer;
+	}
+	.tourner-prev { text-align: left; }
+	.tourner-next { text-align: right; }
+	.tourner:disabled { opacity: 0.2; cursor: default; }
+	.pages-dots { display: flex; gap: 0.55rem; }
+	.pages-dots button {
+		width: 1.8rem;
+		height: 0.22rem;
+		padding: 0;
+		border: 0;
+		background: rgba(238, 240, 245, 0.18);
+		cursor: pointer;
+		transition: background 0.2s ease, transform 0.2s ease;
+	}
+	.pages-dots button.on { background: var(--gold); transform: scaleX(1.15); }
+	@keyframes page-in {
+		from { opacity: 0; transform: translateX(14px) rotateY(-2deg); }
+		to { opacity: 1; transform: none; }
 	}
 	/* La colonne peut grandir, la ligne non : au-delà d'une cinquantaine de
 	   signes l'œil perd le début de la ligne suivante. Le surplus va à l'image. */
@@ -1164,6 +1459,14 @@
 		}
 	}
 	@media (max-width: 820px) {
+		.cosmographie {
+			grid-template-columns: minmax(0, 1fr);
+			padding-inline: 1.25rem;
+		}
+		.cosmo-intro { max-width: none; }
+		.cosmo-cadre { width: min(100%, 25rem, 51vh); }
+		.cosmo-cadre img { height: auto; }
+		.cosmo-label { right: 1.1rem; }
 		.chap {
 			grid-template-columns: minmax(0, 1fr);
 		}
@@ -1176,6 +1479,17 @@
 		.chap-loupe {
 			aspect-ratio: 16 / 10;
 		}
+		.feuillet {
+			min-height: 0;
+			padding: 1.6rem 1.35rem 3.4rem;
+			clip-path: none;
+		}
+		.feuillet .prose p {
+			font-size: 1.12rem;
+			line-height: 1.58;
+		}
+		.tourner span { display: none; }
+		.pages-dots button { width: 1.25rem; }
 		.peuple {
 			grid-template-columns: minmax(0, 1fr);
 		}

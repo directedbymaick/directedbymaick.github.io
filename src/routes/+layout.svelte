@@ -53,14 +53,14 @@
 	   `dev` est résolu au build, donc le lien disparaît ET la page n'est plus
 	   atteignable par le crawler de prerender (cf. src/routes/lab/+layout.ts). */
 	const links = [
-		{ href: '/registre', label: 'Registre' },
-		{ href: '/packs', label: 'Réquisition' },
+		{ href: '/registre', label: 'Galerie' },
+		{ href: '/packs', label: 'Boosters' },
 		{ href: '/raretes', label: 'Raretés' },
-		{ href: '/lore', label: 'Récit' },
+		{ href: '/lore', label: 'Lore' },
 		{ href: '/arene', label: 'Arène' },
 		{ href: '/decks', label: 'Decks' },
 		{ href: '/regles', label: 'Règles' },
-		{ href: '/tuto', label: 'Initiation' },
+		{ href: '/tuto', label: 'Tutoriel' },
 		...(dev ? [{ href: '/lab', label: 'Lab' }] : [])
 	];
 
@@ -140,7 +140,7 @@
 					<a href={l.href} class:active={page.url.pathname === l.href}>{l.label}</a>
 				{/each}
 			</div>
-			<span class="setcount">Registre <b>{cards.length}</b>/60</span>
+			<span class="setcount">Collection <b>{cards.length}</b>/60</span>
 
 			<!-- les Éclats -->
 			<a class="wallet" href="/packs" title="Éclats — la monnaie du Silence">
@@ -237,18 +237,18 @@
 				<nav class="foot-col">
 					<p class="foot-h">Apprendre</p>
 					<a href="/regles">Règles</a>
-					<a href="/tuto">Initiation</a>
-					<a href="/decks">Voies conseillées</a>
+					<a href="/tuto">Tutoriel</a>
+					<a href="/decks/recommandes">Decks recommandés</a>
 					<a href="/profil">Mon espace</a>
 				</nav>
 				<nav class="foot-col">
 					<p class="foot-h">Univers</p>
-					<a href="/lore">Le Korum · le récit</a>
-					<a href="/registre">Nés du silence · Set 01</a>
-					<a href="/packs">Réquisition</a>
+					<a href="/lore">Lore</a>
+					<a href="/registre">Galerie · Set 01</a>
+					<a href="/packs">Boosters</a>
 					<a href="/raretes">Raretés</a>
 					<a href="/arene">Arène</a>
-					<a href="/arene/salons">Salons</a>
+					<a href="/arene/salons">Duel en ligne</a>
 				</nav>
 			</div>
 		</div>

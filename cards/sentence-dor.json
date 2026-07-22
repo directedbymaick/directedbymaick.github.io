@@ -1,10 +1,10 @@
 {
 	"id": "sentence-dor",
-	"name": "Sentence d'or",
+	"name": "Sentence d’or",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Enchaînez un Être adverse : il est neutralisé tant qu'il reste en jeu.",
-	"flavor": "Chaque maillon est un mot du verdict.",
+	"flavor": "Chaque maillon porte un mot. Ensemble, ils disent : coupable.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/sentence-dor.webp",

@@ -1,6 +1,6 @@
 {
 	"id": "porte-du-dehors",
-	"name": "Porte d'Exen",
+	"name": "La Porte à sens unique",
 	"kind": "lieu",
 	"cost": 3,
 	"text": "Vos effets Prononcer sont renforcés (+1 à leurs valeurs).",
@@ -17,7 +17,7 @@
 		"accent": "#b3273a",
 		"seed": 506112
 	},
-	"flavor": "Elle ne s'ouvre que dans un sens.",
+	"flavor": "Elle ne s’ouvre que vers l’exil. Personne n’a encore trouvé l’autre côté.",
 	"fullArtFoil": "cosmos",
 	"variants": [
 		{

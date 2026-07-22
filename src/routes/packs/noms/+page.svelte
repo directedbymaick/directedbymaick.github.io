@@ -122,25 +122,24 @@
 </script>
 
 <svelte:head>
-	<title>Le Glanage — {charter.game.name}</title>
+	<title>Invocations — {charter.game.name}</title>
 	<meta
 		name="description"
-		content="Reconstituez des noms entiers avec les Syllabes glanées sur les Prismatiques."
+		content="Utilisez vos Syllabes pour obtenir directement une carte ou une finition précise."
 	/>
 </svelte:head>
 
 <header class="tete">
-	<p class="kicker">Réquisition · Les Eshar</p>
-	<h1>Le Glanage</h1>
+	<p class="kicker">Cartes à l’unité</p>
+	<h1>Invocations</h1>
 	<p class="chapo">
-		Un nom qu'on ne dit plus s'efface, syllabe après syllabe. Les Eshar les ramassent. Rassemblez-en
-		assez et vous reconstituerez un nom entier — sans passer par le hasard d'un booster.
+		Choisissez directement la carte et la finition qui vous intéressent. L’invocation coûte des
+		Syllabes et ne dépend pas du hasard d’un booster.
 	</p>
 	<p class="chapo source">
-		Les Syllabes tombent des noms restés entiers : <b>+25</b> par Prismatique tirée,
-		<b>+75</b> si vous la possédiez déjà — le doublon résonne plus fort, mais la carte reste
-		dans votre Registre —, <b>+15</b> par SP et <b>+8</b> par Full Art. Jamais cumulé : une
-		Prismatique compte pour une Prismatique.
+		Vous gagnez <b>25 Syllabes</b> en tirant une Prismatique, ou <b>75</b> s’il s’agit d’un doublon.
+		Une SP rapporte <b>15 Syllabes</b> et une Full Art <b>8</b>. Seule la récompense la plus élevée
+		s’applique à chaque carte tirée.
 	</p>
 
 	<div class="bourse">
@@ -148,7 +147,7 @@
 			<span class="syl" aria-hidden="true"></span>
 			<b>{eco.syllabes}</b> Syllabe{eco.syllabes > 1 ? 's' : ''}
 		</span>
-		<span class="portee">{aPortee} nom{aPortee > 1 ? 's' : ''} à votre portée</span>
+		<span class="portee">{aPortee} invocation{aPortee > 1 ? 's' : ''} disponible{aPortee > 1 ? 's' : ''}</span>
 	</div>
 </header>
 
@@ -180,7 +179,7 @@
 		</button>
 	{/each}
 
-	<input class="rech" type="search" placeholder="Rechercher un nom…" bind:value={recherche} />
+		<input class="rech" type="search" placeholder="Rechercher une carte…" bind:value={recherche} />
 
 	<label class="bascule">
 		<input type="checkbox" bind:checked={masquerPossedes} />
@@ -188,11 +187,11 @@
 	</label>
 	<label class="bascule">
 		<input type="checkbox" bind:checked={abordablesSeules} />
-		À ma portée seulement
+		Afficher uniquement les cartes accessibles
 	</label>
 </div>
 
-<p class="compteur">{liste.length} nom{liste.length > 1 ? 's' : ''}</p>
+<p class="compteur">{liste.length} résultat{liste.length > 1 ? 's' : ''}</p>
 
 <div class="grille">
 	{#each liste as n (n.key)}
@@ -218,7 +217,7 @@
 </div>
 
 {#if liste.length === 0}
-	<p class="vide">Aucun nom ne répond à ces filtres.</p>
+	<p class="vide">Aucune carte ne correspond à ces filtres.</p>
 {/if}
 
 {#if apercu}
@@ -267,7 +266,7 @@
 					<span class="acquis">Possédé</span>
 				{:else}
 					<button class="acheter grand" disabled={!abordable} onclick={() => reconstituer(apercu!)}>
-						Reconstituer · {apercu.prix}
+						Invoquer · {apercu.prix}
 						<span class="syl" aria-hidden="true"></span>
 					</button>
 					{#if !abordable}

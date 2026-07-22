@@ -1,10 +1,10 @@
 {
 	"id": "recitation",
-	"name": "Récitation",
+	"name": "Récitation sans fin",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Vos Êtres gagnent +0/+2.",
-	"flavor": "Le monde tient tant qu'on le récite. Alors on récite.",
+	"flavor": "« KOR se tait. À nous de tenir la note. »",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/recitation.webp",

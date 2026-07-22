@@ -12,8 +12,9 @@ Ce dossier centralise le canon, la direction artistique, le set 01 et les décis
 
 | Fichier | Rôle |
 |---|---|
-| [KORUM.md](KORUM.md) | Texte mythologique source. Des fragments pourront servir de flavor text et d'indices de lore. |
+| [KORUM.md](KORUM.md) | Texte mythologique source. Ses fragments peuvent nourrir les citations d'ambiance et les indices de lore. |
 | [LORE.md](LORE.md) | Bible de l'univers : Langue Première, Fracture, peuples, lexique et mécanique `Prononcer`. |
+| [CHARTE-EDITORIALE.md](CHARTE-EDITORIALE.md) | Voix française canonique : règles de rédaction, naming, citations et clarté des systèmes. |
 | [DA.md](DA.md) | Direction artistique : invariants visuels, style validé, kits par peuple et règles de génération. |
 | [SET01.md](SET01.md) | Structure du premier set, **Nés du silence** : factions, raretés, gameplay et protocole de production. |
 | [RULES.md](RULES.md) | Règles v1 jouables : tour, Volonté, combat, Prononcer, mots-clés et deckbuilding. |

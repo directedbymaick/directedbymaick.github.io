@@ -1,10 +1,10 @@
 {
 	"id": "tours-de-grammaire",
-	"name": "Tours de grammaire",
+	"name": "Tours de la Syntaxe",
 	"kind": "lieu",
 	"cost": 2,
 	"text": "Vos Verbes coûtent (1) de moins.",
-	"flavor": "Koren y monte seul, la nuit. Personne n'a jamais osé demander pourquoi.",
+	"flavor": "La nuit, Koren y mesure ce qu’il reste du monde.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/tours-de-grammaire.webp",

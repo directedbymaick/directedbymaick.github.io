@@ -1,10 +1,10 @@
 {
 	"id": "premiere-chaine",
-	"name": "Première Chaîne",
+	"name": "La Première Chaîne",
 	"kind": "relique",
 	"cost": 2,
 	"text": "Attachez à un Être adverse : il ne peut pas attaquer.",
-	"flavor": "La chaîne de Rasen. Personne ne l'a ramenée de l'envers : elle est revenue seule.",
+	"flavor": "Nul ne l’a rapportée d’Exen. Elle est revenue seule.",
 	"rarity": "rare",
 	"faction": "vasar",
 	"art": "/art/premiere-chaine.webp",

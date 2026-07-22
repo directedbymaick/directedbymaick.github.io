@@ -1,6 +1,6 @@
 {
 	"id": "interstice",
-	"name": "Interstice",
+	"name": "L’Interstice",
 	"kind": "lieu",
 	"cost": 3,
 	"text": "Vos effets qui touchent la défausse ou l'exil sont doublés.",
@@ -17,7 +17,7 @@
 		"accent": "#8d6cb8",
 		"seed": 811425
 	},
-	"flavor": "Ni haut, ni bas. Le seul endroit qui n'a pas choisi.",
+	"flavor": "Ni Vasen ni Exen : un refuge pour ceux qui refusent de choisir.",
 	"fullArtFoil": "cosmos",
 	"variants": [
 		{

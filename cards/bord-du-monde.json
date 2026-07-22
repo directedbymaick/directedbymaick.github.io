@@ -1,6 +1,6 @@
 {
 	"id": "bord-du-monde",
-	"name": "Bord du monde",
+	"name": "Au bord du monde",
 	"kind": "lieu",
 	"cost": 4,
 	"text": "Tous vos Êtres ont Élan.",
@@ -17,7 +17,7 @@
 		"accent": "#f0a626",
 		"seed": 323002
 	},
-	"flavor": "Pas de garde-fou. Exprès.",
+	"flavor": "Aucun garde-fou. Ce n’est pas un oubli.",
 	"fullArtFoil": "cosmos",
 	"variants": [
 		{

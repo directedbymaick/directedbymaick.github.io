@@ -1,6 +1,6 @@
 {
 	"id": "moras",
-	"name": "Moras, sourire en chute",
+	"name": "Moras, le sourire dans la chute",
 	"kind": "etre",
 	"cost": 5,
 	"text": "Vos Êtres peuvent échanger leur ATQ et leur Intégrité à chaque tour.",
@@ -19,7 +19,7 @@
 	},
 	"attack": 3,
 	"health": 5,
-	"flavor": "« Parce que je tombais du bon côté. »",
+	"flavor": "« Je souriais parce que je tombais enfin du bon côté. »",
 	"fullArtFoil": "cosmos",
 	"variants": [
 		{

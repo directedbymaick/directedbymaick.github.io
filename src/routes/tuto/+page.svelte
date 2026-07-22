@@ -7,57 +7,57 @@
 	const demo = getCard('korven');
 
 	const ANATOMY = [
-		{ n: 1, t: 'La Volonté', d: 'Le coût à payer pour prononcer la carte (la jouer). La cellule en haut à gauche.' },
-		{ n: 2, t: 'Le sceau', d: 'Le peuple de la carte : son emblème officiel, en haut à droite de l’illustration.' },
-		{ n: 3, t: 'La plaque', d: 'Le nom, le type (Être / Verbe / Relique / Lieu) et le sous-titre.' },
-		{ n: 4, t: 'Le cartouche', d: "L'effet, le Prononcer éventuel (l'étiquette au cercle), et une ligne du Korum en italique." },
-		{ n: 5, t: 'Les stats', d: "ATQ (les dégâts qu'il inflige) et INT (l'Intégrité qu'il encaisse). Êtres uniquement." },
-		{ n: 6, t: 'La bordure', d: 'Le numéro de série, la rareté et le code du set — gravés dans le cadre.' }
+		{ n: 1, t: 'Coût', d: 'La quantité de Volonté nécessaire pour jouer la carte.' },
+		{ n: 2, t: 'Peuple', d: 'L’emblème indique à quel peuple appartient la carte.' },
+		{ n: 3, t: 'Identité', d: 'Le nom de la carte et son type : Être, Verbe, Relique ou Lieu.' },
+		{ n: 4, t: 'Capacités', d: "Les effets de la carte et, lorsqu’elle en possède un, son effet Prononcer." },
+		{ n: 5, t: 'ATQ et INT', d: "L’ATQ indique les dégâts infligés. L’Intégrité représente les dégâts que l’Être peut subir." },
+		{ n: 6, t: 'Informations', d: 'La bordure indique le numéro, la rareté et le set de la carte.' }
 	];
 
 	const STEPS = [
 		{
 			n: '01',
 			t: "L'objectif",
-			d: 'Votre Nom a 30 Intégrité. Celui d’en face aussi. Faites taire le sien d’abord — avec les attaques de vos Êtres, tour après tour.'
+			d: 'Chaque Korum commence avec 30 Intégrité. Réduisez celui de votre adversaire à zéro avant qu’il ne fasse de même avec le vôtre.'
 		},
 		{
 			n: '02',
 			t: 'La Volonté',
-			d: 'Votre Volonté se recharge et augmente de 1 chaque tour (max 10). Tout se paye avec : les Êtres, les Verbes, les Prononcer.'
+			d: 'Votre Volonté se recharge et augmente à chaque tour, jusqu’à 10. Utilisez-la pour jouer vos cartes et activer Prononcer.'
 		},
 		{
 			n: '03',
-			t: 'Prononcer une carte',
-			d: "Payer le coût d'une carte de votre main = elle entre en jeu (Être, Relique, Lieu) ou fait son effet et disparaît (Verbe)."
+			t: 'Jouer une carte',
+			d: "Payez son coût en Volonté. Les Êtres, Reliques et Lieux restent en jeu ; les Verbes appliquent leur effet puis vont dans la défausse."
 		},
 		{
 			n: '04',
 			t: 'Le combat',
-			d: 'Chaque Être peut attaquer une fois par tour : un Être adverse ou le Nom. Les dégâts sont simultanés. Un Serment en face doit être frappé d’abord.'
+			d: 'Chaque Être peut attaquer une fois par tour. Choisissez un Être adverse ou, si aucun défenseur ne le protège, le Korum adverse.'
 		},
 		{
 			n: '05',
 			t: 'Prononcer (n)',
-			d: "Le geste signature. Payez n : l'effet part, le halo se brise, et la carte est exilée définitivement. Une fois par carte. Choisissez votre moment."
+			d: "Payez le coût indiqué pour déclencher un effet puissant, puis exilez définitivement la carte. Le bon moment peut décider de la partie."
 		},
 		{
 			n: '06',
 			t: 'La victoire',
-			d: 'Nom adverse à 0 : la partie est dite. Le reste — peuples, raretés, mots-clés — vous attend dans les Règles.'
+			d: 'Vous gagnez dès que le Korum adverse atteint zéro. Consultez ensuite les règles complètes pour découvrir tous les mots-clés.'
 		}
 	];
 </script>
 
 <svelte:head>
-	<title>Initiation — {charter.game.name}</title>
+	<title>Tutoriel — {charter.game.name}</title>
 	<meta name="description" content="Votre première Prononciation : apprendre à jouer à {charter.game.name} en 6 étapes." />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◯</span> Premiers mots</p>
-	<h1>Initiation</h1>
-	<p class="tagline">Six gestes avant le duel. KOR se tait — votre Volonté parlera.</p>
+	<p class="kicker"><span class="k-diamond">◯</span> Bien débuter</p>
+	<h1>Tutoriel</h1>
+	<p class="tagline">Comprenez une carte et les six étapes d’un tour de jeu en quelques minutes.</p>
 </header>
 
 <section>
@@ -80,7 +80,7 @@
 			{/each}
 		</ol>
 	</div>
-	<p class="note">Survole la carte : le tilt et le foil réagissent — le halo répond à qui le regarde.</p>
+	<p class="note">Survolez la carte pour observer sa finition et ses reflets.</p>
 </section>
 
 <section>

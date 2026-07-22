@@ -8,11 +8,11 @@
 	   déborde déjà — un onglet ici plutôt qu'une entrée de plus en haut. */
 	const onglets = [
 		{ href: '/packs', label: 'Boosters' },
-		{ href: '/packs/noms', label: 'Le Glanage' }
+		{ href: '/packs/noms', label: 'Invocations' }
 	];
 </script>
 
-<nav class="onglets" aria-label="Section Réquisition">
+<nav class="onglets" aria-label="Section Boosters">
 	{#each onglets as o (o.href)}
 		<a href={o.href} class:actif={page.url.pathname === o.href}>{o.label}</a>
 	{/each}

@@ -1,6 +1,6 @@
 {
 	"id": "seconde-sentence",
-	"name": "Seconde sentence",
+	"name": "La Seconde Sentence",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Si un de vos Êtres est mort ce tour ou le précédent : un allié gagne +2/+2.",
@@ -17,5 +17,5 @@
 		"accent": "#b3273a",
 		"seed": 812636
 	},
-	"flavor": "On ne condamne pas deux fois. Eux, si."
+	"flavor": "Le Vasis ne condamne jamais deux fois le même être. Il condamne ceux qui le pleurent."
 }

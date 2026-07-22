@@ -46,7 +46,7 @@
 
 <svelte:head>
 	<title>Decks recommandés — {charter.game.name}</title>
-	<meta name="description" content="Les archétypes du Silence : listes complètes, plans de jeu, combos." />
+	<meta name="description" content="Découvrez des decks prêts à jouer avec leur stratégie, leurs forces et leurs principales combinaisons." />
 </svelte:head>
 
 <svelte:window
@@ -56,12 +56,12 @@
 />
 
 <header class="hero">
-	<p class="kicker">◯ Les archétypes du Silence</p>
+	<p class="kicker">◯ Listes prêtes à jouer</p>
 	<h1>Decks recommandés</h1>
 	<p class="tagline">
-		Quatre écoles de jeu, prêtes à l'emploi : la liste, le plan, les combos. Importez-les dans
-		<a href="/profil">votre espace</a> pour les jouer en <a href="/arene">Arène</a> ou en
-		<a href="/arene/salons">salon</a> — puis faites-les vôtres.
+		Choisissez un style de jeu, découvrez son plan de bataille et importez la liste dans
+		<a href="/profil">votre espace</a>. Vous pourrez ensuite la personnaliser avant de jouer dans
+		<a href="/arene">l’Arène</a> ou en <a href="/arene/salons">duel en ligne</a>.
 	</p>
 </header>
 

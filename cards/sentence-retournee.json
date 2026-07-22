@@ -1,6 +1,6 @@
 {
 	"id": "sentence-retournee",
-	"name": "Sentence retournée",
+	"name": "Retourner la sentence",
 	"kind": "verbe",
 	"cost": 3,
 	"text": "Libère un de vos Êtres neutralisé ou enchaîné et il gagne +1/+1. Sinon : un allié gagne +1/+1.",
@@ -17,5 +17,5 @@
 		"accent": "#b3273a",
 		"seed": 425187
 	},
-	"flavor": "Lisez la vôtre, avant de la porter."
+	"flavor": "« Lis leur verdict. Puis choisis lequel de vous deux le portera. »"
 }

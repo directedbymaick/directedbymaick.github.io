@@ -1,10 +1,10 @@
 {
 	"id": "vasis-assemble",
-	"name": "Vasis assemblé",
+	"name": "Le Vasis réuni",
 	"kind": "verbe",
 	"cost": 5,
 	"text": "Neutralisez tous les Êtres adverses jusqu'à votre prochain tour.",
-	"flavor": "Mille sentences prononcées d'une seule voix.",
+	"flavor": "Mille juges. Une voix. Aucun doute permis.",
 	"rarity": "epic",
 	"faction": "vasar",
 	"art": "/art/vasis-assemble.webp",

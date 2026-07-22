@@ -1,10 +1,10 @@
 {
 	"id": "echo-du-dixieme-mot",
-	"name": "Écho du dixième mot",
+	"name": "Écho du Dixième Mot",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Sacrifiez un de vos Êtres : piochez 2 cartes.",
-	"flavor": "On ne l'a prononcé qu'une fois. Il ne s'est jamais tu depuis.",
+	"flavor": "EX ne fut prononcé qu’une fois. Depuis, le monde entier lui répond.",
 	"rarity": "common",
 	"faction": "exar",
 	"art": "/art/echo-du-dixieme-mot.webp",

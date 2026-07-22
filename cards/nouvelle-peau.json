@@ -1,6 +1,6 @@
 {
 	"id": "nouvelle-peau",
-	"name": "Nouvelle peau",
+	"name": "Faire peau neuve",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Un de vos Êtres échange son ATQ et son Intégrité.",
@@ -18,5 +18,5 @@
 		"accent": "#8fb4d9",
 		"seed": 657805
 	},
-	"flavor": "On ne remonte pas. On devient."
+	"flavor": "« Nous ne remonterons pas. Nous deviendrons autre chose. »"
 }

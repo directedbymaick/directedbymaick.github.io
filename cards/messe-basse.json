@@ -1,6 +1,6 @@
 {
 	"id": "messe-basse",
-	"name": "Messe basse",
+	"name": "Murmures d’Exen",
 	"kind": "verbe",
 	"cost": 1,
 	"text": "Vous piochez une carte.",
@@ -17,5 +17,5 @@
 		"accent": "#b3273a",
 		"seed": 281118
 	},
-	"flavor": "Dehors, on prêche à voix basse."
+	"flavor": "Dehors, même les prières se font conspiratrices."
 }

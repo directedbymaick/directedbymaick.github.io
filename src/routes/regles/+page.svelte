@@ -17,15 +17,15 @@
 	};
 
 	const BASICS = [
-		{ t: 'Le duel', d: 'Deux joueurs, 30 cartes chacun. Votre Nom a 30 Intégrité — faites taire celui d’en face.' },
-		{ t: 'La Volonté', d: 'La ressource (NER). Elle se recharge et monte de 1 par tour, jusqu’à 10. Tout se paye avec.' },
-		{ t: 'Les types', d: 'Être (unité), Verbe (effet ponctuel), Relique (objet permanent), Lieu (domaine global — un seul actif par camp).' },
-		{ t: 'Le combat', d: 'Chaque Être attaque une fois par tour. Le Nom est protégé tant qu\'un Être adverse monte la garde — les entravés (neutralisés, enchaînés) ne défendent pas. Les effets « directement » ignorent la protection. Dégâts simultanés (THA).' }
+		{ t: 'Objectif', d: 'Chaque joueur commence avec un deck de 30 cartes et un Korum à 30 Intégrité. Réduisez le Korum adverse à zéro pour gagner.' },
+		{ t: 'Volonté', d: 'La Volonté permet de jouer vos cartes et d’activer Prononcer. Elle se recharge à chaque tour et augmente progressivement jusqu’à 10.' },
+		{ t: 'Types de cartes', d: 'Les Êtres combattent sur le plateau. Les Verbes produisent un effet immédiat. Les Reliques restent en jeu. Chaque camp ne peut contrôler qu’un seul Lieu.' },
+		{ t: 'Combat', d: 'Un Être peut attaquer une fois par tour. Lorsqu’il affronte un autre Être, les deux s’infligent simultanément des dégâts égaux à leur ATQ. Le Korum est protégé tant qu’un défenseur valide se trouve en jeu.' }
 	];
 
 	const KEYWORDS = [
-		{ kw: "À l'arrivée :", def: 'Effet déclenché quand la carte entre en jeu.' },
-		{ kw: 'Prononcer (n) :', def: "Payez n Volonté : l'effet se déclenche, le halo se brise, la carte est exilée définitivement. Une fois par carte." },
+		{ kw: "À l'arrivée :", def: 'Cet effet se déclenche immédiatement lorsque la carte entre en jeu.' },
+		{ kw: 'Prononcer (n) :', def: "Payez le coût indiqué pour déclencher cet effet, puis exilez définitivement la carte. Une carte ne peut Prononcer qu’une fois." },
 		{ kw: 'Serment', def: 'Les Êtres adverses doivent attaquer cet Être en priorité.' },
 		{ kw: 'Élan', def: 'Peut attaquer dès le tour de son arrivée.' },
 		{ kw: 'Mémoire', def: 'Regarder, récupérer ou copier une carte de la défausse ou de l’exil.' },
@@ -68,10 +68,11 @@
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◯</span> Grammaire du duel · v1</p>
+	<p class="kicker"><span class="k-diamond">◯</span> Guide de jeu</p>
 	<h1>Règles</h1>
 	<p class="tagline">
-		Deux Volontés s'affrontent. Brisez l'Intégrité du Nom adverse avant qu'il ne brise la vôtre.
+		Apprenez les règles essentielles, les mots-clés et l’identité de chaque peuple avant votre
+		premier duel.
 	</p>
 </header>
 
@@ -131,13 +132,12 @@
 		</tbody>
 	</table>
 	<p class="note">
-		Une rareté ne dit plus tout : la finition et le détourage comptent autant.
-		<a href="/raretes">Voir l'échelle complète</a> — les {paliers().length} paliers réels, du plus
-		courant au plus rare, avec leur fréquence de sortie.
+		La rareté détermine la limite de copies dans un deck. La finition et le format influencent
+		également la valeur de collection. <a href="/raretes">Consulter les {paliers().length} paliers et leurs probabilités.</a>
 	</p>
 	<p class="note">
-		Premier cycle, « Nés du silence » : {cards.length} noms inscrits. Cette grammaire évoluera avec
-		les prochains duels.
+		Le set Nés du silence contient actuellement {cards.length} cartes. Les règles seront précisées
+		à mesure des tests et des prochaines extensions.
 	</p>
 </section>
 

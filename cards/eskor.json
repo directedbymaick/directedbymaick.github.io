@@ -1,6 +1,6 @@
 {
 	"id": "eskor",
-	"name": "Eskor, passeur d'exil",
+	"name": "Eskor, passeur de l’exil",
 	"kind": "etre",
 	"cost": 4,
 	"text": "Quand il entre en jeu : récupérez une carte exilée.",
@@ -19,6 +19,6 @@
 	},
 	"attack": 3,
 	"health": 3,
-	"flavor": "Il sait ce qu'on peut faire d'un nom entier.",
+	"flavor": "Il connaît le chemin du retour. Il refuse d’en révéler le prix.",
 	"artPosition": "center 0%"
 }

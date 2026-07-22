@@ -1,10 +1,10 @@
 {
 	"id": "chant-daube",
-	"name": "Chant d'aube",
+	"name": "Premier Chant",
 	"kind": "verbe",
 	"cost": 1,
 	"text": "Restaurez 2 Intégrité. Piochez une carte.",
-	"flavor": "Le premier vers du jour est toujours juste.",
+	"flavor": "À l’aube, les Vasar récitent le monde avant de l’habiter.",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/chant-daube.webp",

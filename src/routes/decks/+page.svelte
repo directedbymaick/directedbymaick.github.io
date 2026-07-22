@@ -163,7 +163,7 @@
 	function ajouter(c: CardData) {
 		if (!deck) return;
 		if (possedees(c.id) === 0) {
-			signaler(`« ${c.name} » n'est pas dans ta collection — ouvre des boosters pour l'obtenir.`);
+			signaler(`« ${c.name} » ne fait pas partie de votre collection. Ouvrez des boosters pour l’obtenir.`);
 			return;
 		}
 		if (taille >= DECK_SIZE) {
@@ -248,8 +248,8 @@
 </script>
 
 <svelte:head>
-	<title>Atelier de deck — {charter.game.name}</title>
-	<meta name="description" content="Construisez vos decks du Silence : 30 cartes, copies limitées par rareté." />
+	<title>Construire un deck — {charter.game.name}</title>
+	<meta name="description" content="Construisez et gérez vos decks de 30 cartes pour les jouer dans l’Arène." />
 </svelte:head>
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && (apercu = null)} />
@@ -300,7 +300,7 @@
 					</span>
 				{/each}
 			{:else}
-				<p class="vide-note">Aucun peuple engagé.</p>
+				<p class="vide-note">Ajoutez une carte pour commencer.</p>
 			{/if}
 		</div>
 
@@ -322,8 +322,8 @@
 				</li>
 			{:else}
 				<li class="vide">
-					<p>Le deck est vide.</p>
-					<p class="sub">Double-cliquez une carte, ou glissez-la jusqu'ici.</p>
+					<p>Votre deck est vide.</p>
+					<p class="sub">Double-cliquez sur une carte ou faites-la glisser ici pour l’ajouter.</p>
 				</li>
 			{/each}
 		</ol>
@@ -371,7 +371,7 @@
 	<!-- ========== CATALOGUE ========== -->
 	<section class="catalogue">
 		<div class="barre-filtres">
-			<input class="recherche" type="search" placeholder="Rechercher un nom, un effet…" bind:value={recherche} />
+			<input class="recherche" type="search" placeholder="Rechercher une carte ou un effet…" bind:value={recherche} />
 
 			<div class="groupe" role="group" aria-label="Peuples">
 				{#each FACTIONS as f (f)}
@@ -426,7 +426,7 @@
 
 		<p class="compteur">
 			{catalogue.length} carte{catalogue.length > 1 ? 's' : ''}
-			<span class="aide-interaction">— clic pour lire, double-clic ou glisser vers le deck pour ajouter</span>
+			<span class="aide-interaction">— cliquez pour consulter ; double-cliquez ou faites glisser pour ajouter</span>
 		</p>
 
 		<div class="grille">
@@ -446,7 +446,7 @@
 					ondblclick={() => doubleClicTuile(c)}
 					title={owned
 						? 'Clic : lire la carte · Double-clic ou glisser vers le deck : ajouter'
-						: 'Carte non possédée — lisible, mais pas jouable tant que tu ne l’as pas tirée'}
+						: 'Carte non possédée — consultez-la dans la Galerie ou obtenez-la dans un booster'}
 				>
 					<span class="art"><img src={c.art} alt="" loading="lazy" /></span>
 					<span class="tcout">{c.cost}</span>

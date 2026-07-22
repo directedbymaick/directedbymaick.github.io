@@ -427,20 +427,18 @@
 {#if mode === 'gate'}
 	<section class="panelbox gate">
 		<img src={logo} alt="" aria-hidden="true" />
-		<h1>Les Salons</h1>
+		<h1>Duel en ligne</h1>
 		<p>
-			Les duels Joueur contre Joueur demandent un compte — connectez-vous depuis l'icône en haut à
-			droite, puis revenez ici.
+			Connectez-vous pour affronter d’autres joueurs et retrouver vos decks enregistrés.
 		</p>
 		<a class="startbtn" href="/profil">Se connecter</a>
 	</section>
 {:else if mode === 'menu'}
 	<header class="setup-hero">
 		<p class="kicker">◯ Salons en ligne</p>
-		<h1>Duel entre Noms</h1>
+		<h1>Duel en ligne</h1>
 		<p class="tagline">
-			Créez un salon et partagez son code, ou entrez le code d'un ami. La connexion est directe
-			entre vos deux navigateurs.
+			Créez une partie et partagez son code, ou saisissez celui d’un ami pour le rejoindre.
 		</p>
 	</header>
 	<div class="setup">
@@ -455,7 +453,7 @@
 						onclick={() => (deckChoice = `auto-${f}`)}
 					>
 						<span class="c-sigil"><FactionSigil faction={f} /></span>
-						<span class="c-name">{charter.factions[f].name} <small>deck auto</small></span>
+						<span class="c-name">{charter.factions[f].name} <small>prêt à jouer</small></span>
 					</button>
 				{/each}
 				{#each myDecks as d (d.id)}
@@ -486,8 +484,8 @@
 {:else if mode === 'hosting'}
 	<section class="panelbox">
 		<img src={logo} alt="" aria-hidden="true" />
-		<h1>Salon ouvert</h1>
-		<p>Partagez ce code — la partie démarre dès que votre adversaire le saisit :</p>
+		<h1>Partie créée</h1>
+		<p>Partagez ce code avec votre adversaire. Le duel commencera dès qu’il vous aura rejoint.</p>
 		<p class="salon-code">{code}</p>
 		<p class="waiting">En attente d'un adversaire…</p>
 		<button class="ghostbtn" onclick={backToMenu}>Annuler</button>
@@ -495,16 +493,16 @@
 {:else if mode === 'joining'}
 	<section class="panelbox">
 		<img src={logo} alt="" aria-hidden="true" />
-		<h1>Connexion…</h1>
-		<p class="waiting">Recherche du salon {joinCode.toUpperCase()}…</p>
+		<h1>Connexion à la partie…</h1>
+		<p class="waiting">Recherche du code {joinCode.toUpperCase()}…</p>
 		<button class="ghostbtn" onclick={backToMenu}>Annuler</button>
 	</section>
 {:else if mode === 'left'}
 	<section class="panelbox">
 		<img src={logo} alt="" aria-hidden="true" />
-		<h1>L'adversaire a quitté</h1>
-		<p>La connexion au salon s'est interrompue.</p>
-		<button class="startbtn" onclick={backToMenu}>Retour aux salons</button>
+		<h1>Votre adversaire a quitté la partie</h1>
+		<p>Le duel a été interrompu.</p>
+		<button class="startbtn" onclick={backToMenu}>Retour au duel en ligne</button>
 	</section>
 {:else if view && meta && me && foe}
 	<!-- ============ LE PLATEAU ============ -->
@@ -673,9 +671,7 @@
 		{#if winner !== null}
 			<div class="endveil">
 				<img src={logo} alt="" />
-				<h2>
-					{winner === mySide ? 'Le Korum adverse se tait.' : winner === -1 ? 'Double chute.' : 'Votre Korum se tait.'}
-				</h2>
+				<h2>{winner === mySide ? 'Victoire' : winner === -1 ? 'Match nul' : 'Défaite'}</h2>
 				<p>
 					{winner === mySide
 						? `Victoire contre ${foe.name}.`

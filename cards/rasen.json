@@ -1,6 +1,6 @@
 {
 	"id": "rasen",
-	"name": "Rasen, question sans réponse",
+	"name": "Rasen, l’Incondamné",
 	"kind": "etre",
 	"cost": 7,
 	"text": "",
@@ -24,7 +24,7 @@
 		"cost": 4,
 		"text": "Détruit tous les autres Êtres."
 	},
-	"flavor": "Il ne pose plus qu’une seule question.",
+	"flavor": "« Si EX vit en celui qui le prononce, qu’en est-il de celui qui le juge ? »",
 	"cutoutY": "-3.8%",
 	"faCutoutY": "2.95%",
 	"variants": [

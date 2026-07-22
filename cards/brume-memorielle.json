@@ -1,6 +1,6 @@
 {
 	"id": "brume-memorielle",
-	"name": "Brume mémorielle",
+	"name": "Brume des souvenirs",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Regardez les 3 prochaines cartes de votre deck, piochez-en une.",
@@ -17,5 +17,5 @@
 		"accent": "#8d6cb8",
 		"seed": 141994
 	},
-	"flavor": "La brume se souvient à ta place."
+	"flavor": "La brume se souvient de ce que vous étiez venu oublier."
 }

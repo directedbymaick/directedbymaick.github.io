@@ -6,6 +6,7 @@
 	import { charter } from '$lib/charter';
 	import { FULLART_RATE } from '$lib/gacha';
 	import { versionsOf } from '$lib/variants';
+	import { paliers } from '$lib/paliers';
 	import type { CardData, FactionId, Rarity } from '$lib/types';
 
 	/** nombre de versions existantes (Raw + finitions + Full Art) — indiqué sur la
@@ -182,8 +183,11 @@
 </script>
 
 <svelte:head>
-	<title>{charter.game.name} — Nés du silence</title>
-	<meta name="description" content={charter.game.tagline} />
+	<title>{charter.game.name} — Jeu de cartes en ligne</title>
+	<meta
+		name="description"
+		content="Collectionnez les {cards.length} cartes de Nés du silence, construisez votre deck et affrontez d’autres joueurs dans Expelled."
+	/>
 </svelte:head>
 
 <div bind:this={container}>
@@ -200,7 +204,8 @@
 			<p class="hero-kicker">Set 01 · Nés du silence</p>
 			<h1 class="hero-titre">Expelled</h1>
 			<p class="hero-accroche">
-				Un jeu de cartes où chaque Être porte un nom — et où le prononcer l'efface à jamais.
+				Collectionnez vos cartes, construisez votre deck et maîtrisez Prononcer : un pouvoir décisif
+				qui exile définitivement la carte utilisée.
 			</p>
 			<div class="hero-actions">
 				<a class="btn-plein" href="/packs">Ouvrir un booster</a>
@@ -211,7 +216,7 @@
 		<div class="hero-chiffres">
 			<span><b>{cards.length}</b> cartes</span>
 			<span><b>5</b> peuples</span>
-			<span><b>33</b> paliers de rareté</span>
+			<span><b>{paliers().length}</b> paliers de rareté</span>
 		</div>
 	</header>
 
@@ -222,11 +227,11 @@
 		<div class="sec-inner">
 			<h2 class="sec-titre">Les cinq peuples</h2>
 			<p class="sec-intro">
-				Cinq façons de tenir un nom. Chaque peuple impose son rythme, ses risques et sa manière
-				de gagner.
+				Cinq peuples, cinq styles de jeu. Découvrez leurs cartes et choisissez celui qui correspond
+				à votre stratégie.
 			</p>
 			<div class="sec-actions">
-				<a class="btn-plein" href="/registre">Parcourir le Registre</a>
+				<a class="btn-plein" href="/registre">Voir la galerie</a>
 			</div>
 
 			<div class="grille-peuples">
@@ -253,10 +258,10 @@
 	<section class="sec sombre">
 		<div class="sec-inner">
 			<p class="sec-kick">Le Korum · recueil d'Eshel</p>
-			<h2 class="sec-titre">Un créateur s’est taché</h2>
+			<h2 class="sec-titre">Découvrez l’origine du Silence</h2>
 			<p class="sec-intro">
-				KOR dit les noms, et tant qu'on les répétait, ceux qui les portaient existaient. Puis un
-				mot que nul n'avait dit est entré dans l'Origine.
+				KOR donna un nom au monde. Puis EX fut prononcé, l’Origine se brisa et cinq peuples durent
+				choisir ce qu’ils feraient du silence de leur créateur.
 			</p>
 
 			<div class="grille-lore">
@@ -296,7 +301,7 @@
 			</div>
 
 			<div class="sec-actions bas">
-				<a class="btn-plein" href="/lore">Lire le Korum</a>
+				<a class="btn-plein" href="/lore">Explorer le lore</a>
 			</div>
 		</div>
 	</section>
@@ -304,10 +309,10 @@
 	<!-- ============ COMMENT ON JOUE ============ -->
 	<section class="sec sombre">
 		<div class="sec-inner">
-			<h2 class="sec-titre">Comment on joue</h2>
+			<h2 class="sec-titre">Livrez votre premier duel</h2>
 			<p class="sec-intro">
-				Trente cartes, un Korum à faire tomber, et une Volonté qui monte d'un point par tour. On
-				ne gagne pas en accumulant : on gagne en choisissant ce qu'on accepte de perdre.
+				Déployez vos Êtres, lancez vos Verbes et réduisez l’Intégrité du Korum adverse à zéro.
+				Chaque tour renforce votre Volonté et ouvre de nouvelles possibilités.
 			</p>
 			<div class="sec-actions">
 				<a class="btn-plein" href="/tuto">Apprendre à jouer</a>
@@ -319,21 +324,21 @@
 					<span class="etape-n">01</span>
 					<span class="bloc-nom">Composez</span>
 					<span class="bloc-txt">
-						Trente cartes, trois copies maximum d'une Commune, une seule d'une Prismatique.
+						Construisez un deck de 30 cartes autour d’un plan de jeu cohérent.
 					</span>
 				</div>
 				<div class="etape">
 					<span class="etape-n">02</span>
 					<span class="bloc-nom">Prononcez</span>
 					<span class="bloc-txt">
-						Chaque Être porte un nom. Le prononcer déclenche son effet — puis l'exile pour de bon.
+						Dépensez votre Volonté pour jouer des Êtres, des Verbes, des Reliques et des Lieux.
 					</span>
 				</div>
 				<div class="etape">
 					<span class="etape-n">03</span>
 					<span class="bloc-nom">Faites taire</span>
 					<span class="bloc-txt">
-						Le Korum adverse tombe à zéro, ou son deck s'épuise. Il n'y a pas d'autre issue.
+						Utilisez Prononcer au moment décisif : l’effet est puissant, mais la carte est exilée.
 					</span>
 				</div>
 			</div>
@@ -345,8 +350,8 @@
 		<div class="sec-inner">
 			<h2 class="sec-titre">Obtenir des cartes</h2>
 			<p class="sec-intro">
-				Deux voies : le hasard d'un booster, ou la patience de reconstituer un nom précis avec
-				les Syllabes glanées sur les Prismatiques.
+				Ouvrez des boosters pour enrichir votre collection ou dépensez vos Syllabes pour obtenir
+				directement la carte qu’il vous manque.
 			</p>
 
 			<div class="grille-produits">
@@ -356,18 +361,17 @@
 					</span>
 					<span class="bloc-nom">Booster</span>
 					<span class="bloc-txt">
-						Cinq cartes, probabilités publiées, deux garanties : une Prismatique tous les 40
-						boosters au plus tard, un Full Art tous les 25.
+						Cinq cartes par booster, des probabilités publiques et des garanties pour les tirages
+						les plus rares.
 					</span>
 				</a>
 				<a class="produit" href="/packs/noms">
 					<span class="bloc-img grand">
 						{#if tuiles[0]}<img src={tuiles[0]} alt="" loading="lazy" />{/if}
 					</span>
-					<span class="bloc-nom">Le Glanage</span>
+					<span class="bloc-nom">Invocation</span>
 					<span class="bloc-txt">
-						Les 193 versions du set, chacune à son prix. Vous choisissez le nom au lieu de le
-						subir.
+						Choisissez directement une carte et obtenez-la avec vos Syllabes.
 					</span>
 				</a>
 			</div>

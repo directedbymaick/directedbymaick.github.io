@@ -122,9 +122,9 @@ export interface AchContext {
 export const ACH_CATEGORIES: { id: AchCategory; label: string }[] = [
 	{ id: 'combat', label: "L'Arène" },
 	{ id: 'prononciation', label: 'La Prononciation' },
-	{ id: 'salons', label: 'Les Salons' },
-	{ id: 'collection', label: 'Le Registre' },
-	{ id: 'voie', label: 'La Voie' }
+	{ id: 'salons', label: 'Duel en ligne' },
+	{ id: 'collection', label: 'Collection' },
+	{ id: 'voie', label: 'Decks et ressources' }
 ];
 
 export const ACHIEVEMENTS: AchDef[] = [
@@ -135,7 +135,7 @@ export const ACHIEVEMENTS: AchDef[] = [
 	{ id: 'a-wins-25', label: 'Rhéteur', desc: 'Gagner 25 parties.', reward: 400, cat: 'combat', check: (s) => s.wins >= 25 },
 	{ id: 'a-wins-50', label: "L'Arène vous connaît", desc: 'Gagner 50 parties.', reward: 600, cat: 'combat', check: (s) => s.wins >= 50 },
 	{ id: 'a-wins-100', label: 'Le Silence recule', desc: 'Gagner 100 parties.', reward: 1000, cat: 'combat', check: (s) => s.wins >= 100 },
-	{ id: 'a-losses-10', label: 'Apprendre en tombant', desc: 'Perdre 10 parties — la chute est une arrivée.', reward: 150, cat: 'combat', check: (s) => s.losses >= 10 },
+	{ id: 'a-losses-10', label: 'Apprendre de ses défaites', desc: 'Disputer et perdre 10 parties.', reward: 150, cat: 'combat', check: (s) => s.losses >= 10 },
 	{ id: 'a-games-25', label: "Habitué de l'Arène", desc: 'Disputer 25 parties.', reward: 200, cat: 'combat', check: (s) => s.wins + s.losses >= 25 },
 	{ id: 'a-cards-100', label: 'Cent gestes', desc: 'Jouer 100 cartes en duel.', reward: 150, cat: 'combat', check: (s) => s.cardsPlayed >= 100 },
 	{ id: 'a-cards-500', label: 'Le bras ne tremble plus', desc: 'Jouer 500 cartes en duel.', reward: 400, cat: 'combat', check: (s) => s.cardsPlayed >= 500 },
@@ -146,22 +146,22 @@ export const ACHIEVEMENTS: AchDef[] = [
 	{ id: 'a-pron-25', label: "La bouche d'or", desc: 'Prononcer 25 fois en duel.', reward: 350, cat: 'prononciation', check: (s) => s.prononces >= 25 },
 
 	/* ---- Les Salons : le PvP ---- */
-	{ id: 'a-pvp', label: 'Face à un Nom', desc: 'Gagner un duel Joueur contre Joueur.', reward: 250, cat: 'salons', check: (s) => s.pvpWins >= 1 },
-	{ id: 'a-pvp-5', label: 'Duelliste', desc: 'Gagner 5 duels en salon.', reward: 400, cat: 'salons', check: (s) => s.pvpWins >= 5 },
-	{ id: 'a-pvp-20', label: 'Votre code fait peur', desc: 'Gagner 20 duels en salon.', reward: 800, cat: 'salons', check: (s) => s.pvpWins >= 20 },
+	{ id: 'a-pvp', label: 'Premier duel en ligne', desc: 'Gagner un duel contre un autre joueur.', reward: 250, cat: 'salons', check: (s) => s.pvpWins >= 1 },
+	{ id: 'a-pvp-5', label: 'Duelliste', desc: 'Gagner 5 duels en ligne.', reward: 400, cat: 'salons', check: (s) => s.pvpWins >= 5 },
+	{ id: 'a-pvp-20', label: 'Maître des salons', desc: 'Gagner 20 duels en ligne.', reward: 800, cat: 'salons', check: (s) => s.pvpWins >= 20 },
 
 	/* ---- Le Registre : la collection ---- */
 	{ id: 'a-uniques-10', label: 'Premières pages', desc: 'Posséder 10 cartes uniques.', reward: 100, cat: 'collection', check: (_s, c) => c.uniques >= 10 },
-	{ id: 'a-uniques-30', label: 'Demi-Registre', desc: 'Posséder 30 cartes uniques.', reward: 200, cat: 'collection', check: (_s, c) => c.uniques >= 30 },
+	{ id: 'a-uniques-30', label: 'À mi-chemin', desc: 'Posséder 30 cartes uniques.', reward: 200, cat: 'collection', check: (_s, c) => c.uniques >= 30 },
 	{ id: 'a-uniques-45', label: 'Bibliothécaire', desc: 'Posséder 45 cartes uniques.', reward: 300, cat: 'collection', check: (_s, c) => c.uniques >= 45 },
-	{ id: 'a-uniques-60', label: 'Le Registre complet', desc: 'Posséder les 60 cartes du Silence.', reward: 500, cat: 'collection', check: (_s, c) => c.uniques >= c.setSize },
-	{ id: 'a-packs-10', label: 'Réquisition', desc: 'Ouvrir 10 boosters.', reward: 150, cat: 'collection', check: (s) => s.packsOpened >= 10 },
-	{ id: 'a-packs-25', label: 'Fournisseur officiel', desc: 'Ouvrir 25 boosters.', reward: 300, cat: 'collection', check: (s) => s.packsOpened >= 25 },
+	{ id: 'a-uniques-60', label: 'Collection complète', desc: 'Posséder les 60 cartes du Silence.', reward: 500, cat: 'collection', check: (_s, c) => c.uniques >= c.setSize },
+	{ id: 'a-packs-10', label: 'Premier lot', desc: 'Ouvrir 10 boosters.', reward: 150, cat: 'collection', check: (s) => s.packsOpened >= 10 },
+	{ id: 'a-packs-25', label: 'Collectionneur assidu', desc: 'Ouvrir 25 boosters.', reward: 300, cat: 'collection', check: (s) => s.packsOpened >= 25 },
 	{ id: 'a-pulls-100', label: 'Cent tirages', desc: 'Tirer 100 cartes de boosters.', reward: 200, cat: 'collection', check: (s) => s.pulls >= 100 },
 	{ id: 'a-prism-1', label: 'Toucher le prisme', desc: 'Posséder une carte Prismatique.', reward: 150, cat: 'collection', check: (_s, c) => c.prisms >= 1 },
 	{ id: 'a-prism-all', label: 'Les cinq lumières', desc: 'Posséder toutes les Prismatiques.', reward: 400, cat: 'collection', check: (_s, c) => c.prismTotal > 0 && c.prisms >= c.prismTotal },
 	{ id: 'a-legend-all', label: 'Panthéon', desc: 'Posséder toutes les Légendaires.', reward: 300, cat: 'collection', check: (_s, c) => c.legendTotal > 0 && c.legendaries >= c.legendTotal },
-	{ id: 'a-all-factions', label: 'Œcuménique', desc: 'Posséder au moins une carte de chaque peuple.', reward: 100, cat: 'collection', check: (_s, c) => c.factionsCovered >= c.factionTotal },
+	{ id: 'a-all-factions', label: 'Les cinq peuples', desc: 'Posséder au moins une carte de chaque peuple.', reward: 100, cat: 'collection', check: (_s, c) => c.factionsCovered >= c.factionTotal },
 
 	/* ---- La Voie : decks et Éclats ---- */
 	{ id: 'a-deck', label: 'Trente voix', desc: 'Construire un deck complet de 30 cartes.', reward: 100, cat: 'voie', check: (_s, c) => c.fullDecks >= 1 },

@@ -6,7 +6,7 @@
 	"attack": 0,
 	"health": 2,
 	"text": "À l'arrivée : piochez une carte.",
-	"flavor": "Il note les noms. Tous les noms.",
+	"flavor": "« Tant qu’un nom demeure au registre, le monde ne peut pas l’oublier. »",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/norel.webp",

@@ -1,6 +1,6 @@
 {
 	"id": "moren",
-	"name": "Moren, entre deux mondes",
+	"name": "Moren, des deux mondes",
 	"kind": "etre",
 	"cost": 3,
 	"text": "La première carte que vous jouez chaque tour coûte 1 Volonté de moins.",
@@ -19,5 +19,5 @@
 	},
 	"attack": 2,
 	"health": 3,
-	"flavor": "Il connaît les deux mondes. Il n'en regrette qu'un."
+	"flavor": "Il a connu Vasen et Xenen. Un seul des deux lui manque."
 }

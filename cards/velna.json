@@ -1,6 +1,6 @@
 {
 	"id": "velna",
-	"name": "Velna, soleil en chute",
+	"name": "Velna, soleil affranchi",
 	"kind": "etre",
 	"cost": 6,
 	"text": "Élan. Gagne +1 ATQ pour chaque autre allié avec Élan.",
@@ -19,7 +19,7 @@
 	},
 	"attack": 5,
 	"health": 4,
-	"flavor": "« Tu tiens la porte d’une maison vide. »",
+	"flavor": "« Tu gardes la porte d’une maison vide, Koren. Moi, je choisis le ciel. »",
 	"cutout": "/art/velna-cutout.webp",
 	"nameMaterial": "cristal",
 	"faCutoutY": "2.85%",

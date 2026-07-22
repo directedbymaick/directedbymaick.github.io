@@ -241,16 +241,16 @@
 
 <svelte:head>
 	<title>Arène — {charter.game.name}</title>
-	<meta name="description" content="IA contre IA : le set se teste en duel réel." />
+	<meta name="description" content="Simulez des duels et mesurez l’équilibre des decks et des cartes." />
 </svelte:head>
 
 <header class="hero">
-	<p class="kicker"><span class="k-diamond">◯</span> Le Laboratoire</p>
-	<h1>IA contre IA</h1>
+	<p class="kicker"><span class="k-diamond">◯</span> Simulateur</p>
+	<h1>Tester l’équilibre du jeu</h1>
 	<p class="tagline">
-		Deux IA jouent le set en duel réel — règles v1, tout le set, effets compris. Modulez les
-		decks, imposez une carte à tester, fixez la graine, puis regardez un duel en direct ou lancez
-		un lot de parties pour mesurer son taux de victoire.
+		Opposez deux decks contrôlés par l’IA, observez un duel en direct ou lancez une série de
+		parties pour comparer leurs performances. Vous pouvez imposer une carte et une graine pour
+		reproduire précisément un test.
 	</p>
 </header>
 
@@ -474,14 +474,14 @@
 	</section>
 {:else}
 	<section class="table empty">
-		<p>Choisis les camps et lance un duel — les IA jouent, tu regardes.</p>
+		<p>Choisissez les deux camps, puis lancez un duel pour suivre la partie.</p>
 	</section>
 {/if}
 
 <!-- ============ STATS D'ÉQUILIBRAGE ============ -->
 {#if batch}
 	<section class="stats">
-		<h2><span class="tab">Verdict sur {batch.games} parties</span><span class="rule"></span></h2>
+		<h2><span class="tab">Résultats sur {batch.games} parties</span><span class="rule"></span></h2>
 		<div class="verdict">
 			<div class="vcard" style="--fc: {fcolor(sideFaction(srcA))}">
 				<span class="vname">{sideLabel(srcA)} (A)</span>
@@ -499,7 +499,7 @@
 				<span class="vsub">tours · {batch.draws} nulle{batch.draws > 1 ? 's' : ''}</span>
 			</div>
 		</div>
-		<h3>Winrate quand la carte est jouée <small>(≥ 5 apparitions — les extrêmes désignent les cartes à retoucher)</small></h3>
+		<h3>Taux de victoire lorsque la carte est jouée <small>(au moins 5 apparitions)</small></h3>
 		<div class="cardstats">
 			{#each batch.cardRows as row (row.id)}
 				<a

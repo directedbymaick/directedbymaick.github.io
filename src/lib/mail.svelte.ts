@@ -31,7 +31,7 @@ export const MAILBOX: MailDef[] = [
 		subject: 'Bienvenue dans le Silence',
 		date: '2026-07-19T09:00:00Z',
 		body: [
-			'Votre nom a été inscrit au Registre. Les Éclats que vous amasserez ouvriront les boosters, et chaque carte tirée rejoindra votre compte — d’un appareil à l’autre, rien ne se perd.',
+			'Votre compte est prêt. Les Éclats que vous amasserez ouvriront des boosters, et chaque carte tirée rejoindra votre collection — d’un appareil à l’autre, rien ne se perd.',
 			'Que votre voix porte loin dans le Silence.'
 		]
 	},
@@ -43,7 +43,7 @@ export const MAILBOX: MailDef[] = [
 		to: 'mcksuperdukegaming@gmail.com',
 		coins: 100000,
 		body: [
-			'Le Bureau crédite votre bourse pour la campagne d’essai des réquisitions groupées.',
+			'Le Bureau crédite votre bourse pour la campagne d’essai des ouvertures groupées.',
 			'100 000 Éclats — de quoi ouvrir deux cents boosters ×5.'
 		]
 	},

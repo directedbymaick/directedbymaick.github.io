@@ -328,8 +328,8 @@
 		<p class="kicker">◯ L'Arène</p>
 		<h1>Duel d'entraînement</h1>
 		<p class="tagline">
-			Trente cartes, 25 d'Intégrité au Korum. Jouez vos cartes, choisissez vos cibles, prononcez au
-			bon moment — l'IA du Silence ne pardonne pas grand-chose.
+			Choisissez un deck de 30 cartes et affrontez l’IA. Réduisez l’Intégrité de son Korum à zéro
+			pour remporter le duel.
 		</p>
 	</header>
 	<div class="setup">
@@ -344,7 +344,7 @@
 						onclick={() => (deckChoice = `auto-${f}`)}
 					>
 						<span class="c-sigil"><FactionSigil faction={f} /></span>
-						<span class="c-name">{charter.factions[f].name} <small>deck auto</small></span>
+						<span class="c-name">{charter.factions[f].name} <small>prêt à jouer</small></span>
 					</button>
 				{/each}
 				{#each myDecks as d (d.id)}
@@ -375,8 +375,8 @@
 			</div>
 			<!-- Entrer dans l'Arène ouvre le vrai terrain, dans sa fenêtre. Jouer dans
 			     la page reste un repli : fenêtre bloquée, petit écran. -->
-			<button class="startbtn" onclick={ouvrirTerrain}>Entrer dans l'Arène ↗</button>
-			<button class="terrainbtn" onclick={start}>Jouer dans la page</button>
+			<button class="startbtn" onclick={ouvrirTerrain}>Lancer le duel ↗</button>
+			<button class="terrainbtn" onclick={start}>Jouer sur cette page</button>
 			{#if fenetreBloquee}
 				<p class="bloquee" role="status">
 					Votre navigateur a bloqué la fenêtre du terrain. Autorisez-la pour ce site, ou jouez dans
@@ -565,10 +565,8 @@
 		{#if winner !== null}
 			<div class="endveil">
 				<img src={logo} alt="" />
-				<h2>
-					{winner === 0 ? 'Le Korum adverse se tait.' : winner === 1 ? 'Votre Korum se tait.' : 'Double chute.'}
-				</h2>
-				<p>{winner === 0 ? 'Victoire — votre parole tient.' : winner === 1 ? 'Défaite — l’Arène retiendra votre nom.' : 'Match nul.'}</p>
+				<h2>{winner === 0 ? 'Victoire' : winner === 1 ? 'Défaite' : 'Match nul'}</h2>
+				<p>{winner === 0 ? 'Le Korum adverse a perdu toute son Intégrité.' : winner === 1 ? 'Votre Korum a perdu toute son Intégrité.' : 'Les deux Korums sont tombés au même instant.'}</p>
 				<p class="gain"><i class="shard" aria-hidden="true"></i> +{gainAmount} Éclats</p>
 				<button class="startbtn" onclick={rematch}>Rejouer</button>
 			</div>

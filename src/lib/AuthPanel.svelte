@@ -82,10 +82,10 @@
 	<img class="auth-logo" src={logo} alt="" aria-hidden="true" />
 
 	{#if step === 'creds'}
-		<h3>{mode === 'signup' ? 'Rejoindre le Silence' : 'Se connecter'}</h3>
+		<h3>{mode === 'signup' ? 'Créer un compte' : 'Se connecter'}</h3>
 		<p class="auth-sub">
 			{mode === 'signup'
-				? 'Créez votre compte — collection, decks et Arène vous suivent partout.'
+				? 'Sauvegardez votre collection et vos decks, puis jouez depuis tous vos appareils.'
 				: 'Entrez votre e-mail et votre mot de passe.'}
 		</p>
 		<form onsubmit={submitCreds}>
@@ -151,9 +151,7 @@
 		</p>
 	{/if}
 
-	<p class="auth-note">
-		Mot de passe haché côté serveur ; votre compte et vos cartes sont sauvegardés dans le cloud.
-	</p>
+	<p class="auth-note">Votre mot de passe est protégé et vos données sont sauvegardées en ligne.</p>
 </div>
 
 <style>

@@ -19,7 +19,7 @@
 	},
 	"attack": 3,
 	"health": 4,
-	"flavor": "« J'étais de peu d'importance. Grace à cela que j'ai survécu. »",
+	"flavor": "« J’étais sans importance. C’est peut-être ce qui m’a sauvé. »",
 	"cutout": "/art/eshel-cutout.webp",
 	"cutoutY": "-3.9%",
 	"variants": [

@@ -1,6 +1,6 @@
 {
 	"id": "velor",
-	"name": "Velor, rire en chute",
+	"name": "Velor, rire au vent",
 	"kind": "etre",
 	"cost": 3,
 	"text": "Élan (peut attaquer dès son arrivée).",
@@ -19,7 +19,7 @@
 	},
 	"attack": 3,
 	"health": 2,
-	"flavor": "On l'a entendu rire avant de le voir.",
+	"flavor": "Son rire franchit le bord du monde avant lui.",
 	"cutout": "/art/velor-cutout.webp",
 	"fullArt": true,
 	"fullArtFoil": "regular",

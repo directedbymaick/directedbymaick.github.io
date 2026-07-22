@@ -1,6 +1,6 @@
 {
 	"id": "exen",
-	"name": "Exen, l'Envers",
+	"name": "Exen, royaume de l’Envers",
 	"kind": "lieu",
 	"cost": 3,
 	"text": "Chaque fois qu'un de vos Êtres meurt : vous piochez une carte.",
@@ -17,7 +17,7 @@
 		"accent": "#b3273a",
 		"seed": 7624
 	},
-	"flavor": "Bâti là où le monde ne se regarde pas.",
+	"flavor": "Sous le monde, les bannis ont bâti ce que leurs juges leur refusaient.",
 	"fullArtFoil": "cosmos",
 	"variants": [
 		{

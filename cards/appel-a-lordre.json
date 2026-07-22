@@ -1,10 +1,10 @@
 {
 	"id": "appel-a-lordre",
-	"name": "Appel à l'ordre",
+	"name": "Rappel à l’ordre",
 	"kind": "verbe",
 	"cost": 2,
 	"text": "Renvoyez un Être dans la main de son propriétaire.",
-	"flavor": "La ligne se referme.",
+	"flavor": "Une seule note fausse, et tout le chœur recommence.",
 	"rarity": "common",
 	"faction": "vasar",
 	"art": "/art/appel-a-lordre.webp",

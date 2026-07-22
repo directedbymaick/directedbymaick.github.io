@@ -1,6 +1,6 @@
 {
 	"id": "exoran",
-	"name": "Exoran, amant de la chute",
+	"name": "Exoran, ivre de chute",
 	"kind": "etre",
 	"cost": 5,
 	"text": "",
@@ -19,5 +19,5 @@
 	},
 	"attack": 5,
 	"health": 4,
-	"flavor": "Il a appris à aimer la chute. C'est le plus dangereux."
+	"flavor": "Il ne redoute plus de tomber. Voilà ce qui le rend dangereux."
 }

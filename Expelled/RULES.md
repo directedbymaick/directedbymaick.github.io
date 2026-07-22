@@ -277,7 +277,8 @@ Pour le set 01, les deux decks principaux sont :
 
 ## 14. Wording recommandé
 
-Utiliser des formulations courtes et régulières.
+La rédaction française suit la [charte éditoriale](CHARTE-EDITORIALE.md). Utiliser des formulations
+courtes, régulières et littérales : moment, action, cible, valeur, puis durée.
 
 Exemples :
 

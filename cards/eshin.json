@@ -1,6 +1,6 @@
 {
 	"id": "eshin",
-	"name": "Eshin, visage emprunté",
+	"name": "Eshin, visage d’emprunt",
 	"kind": "etre",
 	"cost": 2,
 	"text": "Quand il entre en jeu : regardez la carte du dessus de votre deck.",
@@ -19,6 +19,6 @@
 	},
 	"attack": 1,
 	"health": 3,
-	"flavor": "Il te ressemble un peu trop.",
+	"flavor": "Son visage vous ressemble. Son souvenir aussi.",
 	"cutout": "/art/eshin-cutout.webp"
 }

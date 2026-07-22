@@ -384,7 +384,7 @@ Je finis ce livre sur la question qu'il nous a laissée :
 
 ## Fragments
 
-Fragments de marges, de copies abîmées et de mains inconnues. À utiliser comme flavor text.
+Fragments de marges, de copies abîmées et de mains inconnues. À utiliser comme citations d'ambiance.
 
 - Le premier mot s'est prononcé seul. Méfie-toi des commencements sans témoin.
 - On ne brise pas un halo. On cesse de prononcer un nom.

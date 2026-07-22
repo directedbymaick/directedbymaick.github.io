@@ -3,15 +3,16 @@
 Version de travail : v1 propre  
 Source canonique : **The First Language of Expelled v0.1** + décisions actées dans la DA.
 
-Dans Expelled, la langue n'est pas symbolique.  
-**Les mots ne décrivent pas le réel : ils le produisent.**
+Dans Expelled, la langue n'est ni un symbole ni un outil.
+
+**Les mots ne décrivent pas le réel : ils lui donnent forme.**
 
 ---
 
 ## 1. La Langue Première
 
-Avant le temps, il n'existait pas de phrases, de peuples ou de royaumes. Il existait seulement
-des **Concepts**. KOR les prononça, et chaque mot devint une loi du monde.
+Avant le temps, il n'existait ni peuple, ni royaume, ni même de phrase. Seuls demeuraient les
+**Concepts**. KOR les prononça ; chacun devint une loi du monde.
 
 La Langue Première est donc à la fois :
 
@@ -83,9 +84,9 @@ dans la parole de l'Origine.
 
 Puis survint **EX**.
 
-EX signifie *hors*. C'est un mot impossible, car une Création qui contient tout ne devrait pas
-avoir de dehors. Pourtant EX exista. Et si la Langue Première ne peut pas mentir, alors un mot
-qui existe a été prononcé.
+EX signifie *hors*. Ce mot ne devrait pas exister : si la Création contient toute chose, rien ne
+peut se tenir au-delà. Pourtant EX existe. Or la Langue Première ne peut pas mentir. Quelqu'un —
+ou quelque chose — l'a donc prononcé.
 
 Quand EX entra dans KOR, l'Origine se fissura.  
 Depuis cet instant, KOR se tait.
@@ -94,8 +95,7 @@ Depuis cet instant, KOR se tait.
 
 ## 5. L'Expulsion
 
-Après la Fracture, le Vasis, ordre des gardiens, décida que tout être touché par EX devait être
-mis hors de la Création intacte.
+Après la Fracture, le Vasis décréta que tout être touché par EX serait retranché de la Création.
 
 Cette décision fonde l'ironie centrale d'Expelled :
 
@@ -123,8 +123,8 @@ Racine : **VAS**
 Domaine : **Vasen**  
 Kit visuel : sacré, or, ivoire, lumière architecturale.
 
-Les Vasar maintiennent les mots déjà prononcés. Ils récitent parce que KOR ne parle plus.
-Leur ordre, le Vasis, a décrété les premières expulsions.
+Les Vasar maintiennent les mots déjà prononcés. Depuis que KOR se tait, leurs chœurs récitent le
+monde sans relâche. Leur ordre, le Vasis, a rendu les premières sentences d'expulsion.
 
 Leur vérité inavouable : **réciter n'est pas créer**.
 
@@ -134,8 +134,8 @@ Racine : **EX**
 Domaine : **Exen**  
 Kit visuel : menace, rouge, os, coulures, halos renversés.
 
-Les Exar ne veulent pas seulement survivre à l'Expulsion. Ils veulent comprendre ce que EX ouvre.
-Pour eux, le dehors n'est pas une punition : c'est une révélation.
+Les Exar refusent de réduire l'Expulsion à une condamnation. Ils veulent franchir ce qu'EX a
+ouvert. Pour eux, le dehors n'est pas une punition, mais une révélation.
 
 Leur question centrale :
 
@@ -147,8 +147,8 @@ Racine : **ESH**
 Domaine : entre-deux, mémoire, brume.  
 Kit visuel : spectre, violet, lunes, masques, papillons blancs.
 
-Les Eshar sont les êtres dont le nom s'est usé au lieu d'être brisé. Ils collectent les syllabes
-perdues et conservent la mémoire des noms effacés.
+Les Eshar sont ceux dont le nom s'est effacé au lieu de se briser. Ils recueillent les syllabes
+perdues et préservent la mémoire de ceux que le monde a oubliés.
 
 Certains en savent assez pour reconstituer des noms entiers.
 
@@ -158,8 +158,8 @@ Racine : **MOR**
 Domaine : **Xenen**, le monde humain.  
 Kit visuel : exil, pastels, streetwear, mélancolie douce.
 
-Les Morar sont les expulsés qui ont cessé d'attendre le pardon. Ils vivent parmi les humains et
-font de la chute une transformation.
+Les Morar ont cessé d'attendre le pardon. Ils vivent parmi les humains et transforment leur chute
+en nouveau départ.
 
 Leur force : ne plus vouloir remonter.
 
@@ -169,8 +169,8 @@ Racine : **VEL**
 Domaine : routes, plein jour, puissance libre.  
 Kit visuel : soleil, ors francs, énergie, verre, vitesse.
 
-Les Velar ne défendent ni l'Ordre ni la Rupture. Ils prouvent qu'en l'absence de KOR, la Volonté
-peut suffire.
+Les Velar ne servent ni l'Ordre ni la Rupture. Leur existence porte un défi : en l'absence de KOR,
+la Volonté seule peut suffire.
 
 Le Vasis les hait parce qu'ils ne contestent pas l'autorité : ils vivent comme si elle était déjà
 dépassée.

@@ -1,6 +1,6 @@
 {
 	"id": "enfant-de-xenen",
-	"name": "Enfant de Xenen",
+	"name": "L’Enfant dont le mot porta",
 	"kind": "etre",
 	"cost": 3,
 	"text": "Quand il entre en jeu : copiez le dernier Verbe joué, même adverse.",
@@ -20,7 +20,7 @@
 	},
 	"attack": 2,
 	"health": 3,
-	"flavor": "Cinq peuples retiennent leur souffle.",
+	"flavor": "Lorsqu’il parla, cinq peuples retinrent leur souffle.",
 	"faArtLift": "16%",
 	"fullArtFoil": "cosmos"
 }

@@ -215,7 +215,7 @@ Chaque carte doit être produite dans cet ordre :
 4. nom canonique ;
 5. coût, ATQ, Intégrité ;
 6. texte de règle ;
-7. flavor text éventuel ;
+7. citation d'ambiance éventuelle ;
 8. prompt d'art ;
 9. génération ;
 10. intégration dans la Forge ;
@@ -236,95 +236,95 @@ Chaque carte doit être produite dans cet ordre :
 
 Note : le préfixe `S` pour Velar vient de **Soleil** afin d'éviter la collision avec `Vasar`.
 
-### La table des 60 (proposition v1 — à refiner carte par carte en production)
+### La table des 60 (version éditoriale v2)
 
-*Personnages, lieux, objets et actions du Silence. Chaque nom répond à la règle d'or (racine
-conceptuelle). Les accroches renvoient au KORUM.*
+*Personnages, lieux, objets et actions de l'Âge du Silence. Les effets sont rédigés comme ils
+doivent être compris en jeu ; les citations donnent une voix au monde sans expliquer l'image.*
 
 #### VASAR (10 communes · 6 rares · 4 épiques · 1 légendaire · 1 prismatique)
 
-| Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
+| Slot | Nom | Type | Rareté | Coût | Texte de règle | Citation d'ambiance |
 |---|---|---|---|---:|---|---|
-| V01 | Vasna, voix sans repos | Être | C | 1 | Sans effet. 1 ATQ / 2 Intégrité. | Une voix parmi mille. Elle n'a pas manqué une nuit en vingt ans. |
-| V02 | Norel, gardien des noms | Être | C | 2 | Quand il entre en jeu : vous piochez une carte. | Il note les noms. Tous les noms. |
-| V03 | Renna, syllabe vive | Être | C | 2 | Quand elle entre en jeu : un autre de vos Êtres gagne +1/+1. | Elle livre les mots aux chœurs, sans jamais les lire. |
-| V04 | Doras, ligne d'or | Être | C | 3 | Serment : l'ennemi doit l'attaquer lui avant vos autres cibles. | Chaque chose à la place où KOR l'a dite. |
-| V05 | Senel, oreille des lisières | Être | C | 3 | Inflige 2 dégâts à l'adversaire quand il utilise un Prononcer. | Formée par Thalen. Elle écoute ce que les chœurs couvrent. |
-| V06 | Korven, poids des mots | Être | C | 4 | Quand il entre en jeu : un Être adverse est neutralisé (ne peut plus agir) pendant un tour. | Ses mots pèsent — littéralement. |
-| V07 | Récitation | Verbe | C | 2 | Tous vos Êtres gagnent +0/+2. | Le monde tient tant qu'on le récite. Alors on récite. |
-| V08 | Appel à l'ordre | Verbe | C | 2 | Renvoie un Être en main : un allié pour le rejouer, ou un ennemi pour le retarder. | La ligne se referme. |
-| V09 | Chant d'aube | Verbe | C | 1 | Soigne 2 Intégrité et vous piochez une carte. | Le premier vers du jour est toujours juste. |
-| V10 | Dorin, dernière recrue | Être | C | 1 | Sans effet. 2 ATQ / 1 Intégrité. | Encore un juge. Au début, ça faisait rire. Plus maintenant. |
-| V11 | Dasen, mesure d'or | Être | R | 4 | Vos autres Êtres Vasar gagnent +1 ATQ tant qu'il est en jeu. | La mesure avant la beauté. |
-| V12 | Thessa, cercle clos | Être | R | 4 | Chaque Prononcer adverse coûte 1 Volonté de plus. | Le cercle des juges s'élargit chaque année. Il ne s'est jamais resserré. |
-| V13 | Talvas, aile inflexible | Être | R | 5 | Serment. 2 ATQ / 7 Intégrité. | L'Ordre a des ailes, et elles ne plient pas. |
-| V14 | Sentence d'or | Verbe | R | 2 | Enchaîne un Être adverse : il est neutralisé pour le reste de la partie. | Chaque maillon est un mot du verdict. |
-| V15 | Tours de grammaire | Lieu | R | 2 | Tant que ce Lieu est actif, vos Verbes coûtent 1 Volonté de moins. | Koren y monte seul, la nuit. Personne n'a jamais osé demander pourquoi. |
-| V16 | Première Chaîne | Relique | R | 2 | S'attache à un Être adverse : il ne peut plus attaquer. | La chaîne de Rasen. Personne ne l'a ramenée de l'envers : elle est revenue seule. |
-| V17 | Dorvel, mémoire des listes | Être | E | 4 | À la fin de chacun de vos tours : vous piochez une carte. | Il connaît les listes par cœur. C'est bien le problème. |
-| V18 | Thalen, qui entendit EX | Être | E | 5 | Quand il entre en jeu : l'adversaire révèle sa main. | Le premier à entendre le mot. Il ne s'en est jamais remis. |
-| V19 | Vasis assemblé | Verbe | E | 5 | Tous les Êtres adverses sont neutralisés pendant un tour. | Mille sentences prononcées d'une seule voix. |
-| V20 | Doublement des chœurs | Verbe | E | 4 | Invoque deux Choristes (jetons 1/2). | Ce que Koren a lu dans les tours, il ne l'a dit à personne. |
-| V21 | Koren, voix du Vasis | Être | L | 6 | Tous vos Êtres gagnent +1/+1. Peut renvoyer un allié en main pour le rejouer. | Il aime les mots. Les gens qui les portent, beaucoup moins. |
-| V22 | Doran, sentence incarnée | Être | P | 7 | **Visage du set.** Quand il entre en jeu : enchaîne l'Être adverse le plus puissant (il ne peut plus attaquer). | Sa peur ne dit jamais son nom. Elle se déguise en devoir. |
+| V01 | Vasna, voix infatigable | Être | C | 1 | 1 ATQ / 2 Intégrité. | Vingt ans de veille, et jamais une syllabe de retard. |
+| V02 | Norel, gardien des noms | Être | C | 2 | À l'arrivée, piochez une carte. | « Tant qu'un nom demeure au registre, le monde ne peut pas l'oublier. » |
+| V03 | Renna, porte-syllabe | Être | C | 2 | À l'arrivée, un autre Être allié gagne +1 ATQ et +1 Intégrité. | Elle porte aux chœurs des mots qu'on lui interdit de lire. |
+| V04 | Doras, rempart d'or | Être | C | 3 | Serment. | « Chacun à sa place. Le monde tient ainsi. » |
+| V05 | Senel, guetteuse des lisières | Être | C | 3 | Chaque fois que l'adversaire Prononce, infligez-lui 2 dégâts. | Elle écoute sous les chœurs, là où le silence prend forme. |
+| V06 | Korven, poids de la loi | Être | C | 4 | À l'arrivée, épuisez un Être adverse. Il ne se prépare pas au prochain tour de son contrôleur. | Chez Korven, une parole donnée devient un fardeau. |
+| V07 | Récitation sans fin | Verbe | C | 2 | Vos Êtres gagnent +2 Intégrité ce tour-ci. | « KOR se tait. À nous de tenir la note. » |
+| V08 | Rappel à l'ordre | Verbe | C | 2 | Renvoyez un Être dans la main de son propriétaire. | Une seule note fausse, et tout le chœur recommence. |
+| V09 | Premier Chant | Verbe | C | 1 | Restaurez 2 Intégrité à une cible, puis piochez une carte. | À l'aube, les Vasar récitent le monde avant de l'habiter. |
+| V10 | Dorin, juge novice | Être | C | 1 | 2 ATQ / 1 Intégrité. | On riait autrefois d'un juge sans accusé. |
+| V11 | Dasen, Mesure d’Or | Être | R | 4 | Vos autres Êtres Vasar gagnent +1 ATQ. | « La justesse avant la beauté. Toujours. » |
+| V12 | Thessa, Cercle clos | Être | R | 4 | Les capacités Prononcer adverses coûtent 1 Volonté supplémentaire. | Son cercle ne protège rien : il empêche seulement de sortir. |
+| V13 | Talvas, aile inflexible | Être | R | 5 | Serment. 2 ATQ / 7 Intégrité. | Même blessée, l'aile de l'Ordre refuse de plier. |
+| V14 | Sentence d'or | Verbe | R | 2 | Enchaînez un Être adverse. Il ne peut plus attaquer. | Chaque maillon porte un mot. Ensemble, ils disent : coupable. |
+| V15 | Tours de la Syntaxe | Lieu | R | 2 | Vos Verbes coûtent 1 Volonté de moins. | La nuit, Koren y mesure ce qu'il reste du monde. |
+| V16 | La Première Chaîne | Relique | R | 2 | Attachez cette Relique à un Être adverse. L'Être attaché ne peut pas attaquer. | Nul ne l'a rapportée d'Exen. Elle est revenue seule. |
+| V17 | Dorvel, gardien des listes | Être | E | 4 | À la fin de votre tour, piochez une carte. | Il connaît chaque nom condamné. Il se souvient aussi des innocents. |
+| V18 | Thalen, l’Oreille du silence | Être | E | 5 | À l'arrivée, regardez la main de l'adversaire. | Elle entendit EX sous mille voix. Depuis, aucun silence ne la quitte. |
+| V19 | Le Vasis réuni | Verbe | E | 5 | Épuisez tous les Êtres adverses. Ils ne se préparent pas au prochain tour de leur contrôleur. | Mille juges. Une voix. Aucun doute permis. |
+| V20 | Redoublement des chœurs | Verbe | E | 4 | Créez deux jetons Choriste 1/2. | Koren doubla les voix quand il comprit que le monde faiblissait. |
+| V21 | Koren, voix du Vasis | Être | L | 6 | Vos autres Êtres gagnent +1 ATQ et +1 Intégrité. Une fois par tour, vous pouvez renvoyer un autre Être allié dans votre main. | Il chérit chaque mot de KOR, et sacrifie sans trembler ceux qui les portent. |
+| V22 | Doran, loi incarnée | Être | P | 7 | À l'arrivée, enchaînez l'Être adverse avec l'ATQ la plus élevée. | « Je ne crains pas le silence. Je crains ce que vous y entendrez. » |
 
 #### EXAR (10 communes · 6 rares · 3 épiques · 2 légendaires · 1 prismatique)
 
-| Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
+| Slot | Nom | Type | Rareté | Coût | Texte de règle | Citation d'ambiance |
 |---|---|---|---|---:|---|---|
-| X01 | Renas, chaîne encore chaude | Être | C | 1 | Sans effet. 2 ATQ / 1 Intégrité. | Sa chaîne est encore chaude. |
-| X02 | Morek, dix ans de chaîne | Être | C | 2 | Sans effet. 3 ATQ / 1 Intégrité. | Dix ans à porter la chaîne. C'est elle qui a cédé la première. |
-| X03 | Exna, halo renversé | Être | C | 2 | Gagne +1/+1 chaque fois qu'une carte alliée est détruite. | Elle porte son halo à l'envers, comme une bannière prise à l'ennemi. |
-| X04 | Thanor, main de l'Envers | Être | C | 3 | Sans effet. 3 ATQ / 3 Intégrité. | L'envers du monde a des mains. |
-| X05 | Morna, trait noir | Être | C | 3 | 4 ATQ / 2 Intégrité. Se blesse d'1 point quand elle attaque. | Ils l'ont marquée pour qu'on la fuie. On l'a suivie. |
+| X01 | Renas, fraîchement banni | Être | C | 1 | 2 ATQ / 1 Intégrité. | L'or de sa chaîne brûle encore. Sa colère aussi. |
+| X02 | Morek, briseur d'entraves | Être | C | 2 | 3 ATQ / 1 Intégrité. | Dix ans à porter leurs chaînes. Une nuit pour les briser. |
+| X03 | Exna, halo renversé | Être | C | 2 | Chaque fois qu'une carte alliée est détruite, Exna gagne +1 ATQ et +1 Intégrité. | Elle a fait de son halo brisé l'étendard des bannis. |
+| X04 | Thanor, main de l'Envers | Être | C | 3 | 3 ATQ / 3 Intégrité. | Même le dehors finit par tendre la main. |
+| X05 | Morna, marquée d'EX | Être | C | 3 | 4 ATQ / 2 Intégrité. Quand Morna attaque, elle subit 1 dégât. | Le Vasis l'a marquée pour qu'on la fuie. Les bannis l'ont suivie. |
 | X06 | Rompre | Verbe | C | 2 | Inflige 3 dégâts à une cible. | Un mot suffit. |
-| X07 | Messe basse | Verbe | C | 1 | Vous piochez une carte. | Dehors, on prêche à voix basse. |
-| X08 | Écho du dixième mot | Verbe | C | 2 | Sacrifiez un de vos Êtres : vous piochez 2 cartes. | On ne l'a prononcé qu'une fois. Il ne s'est jamais tu depuis. |
-| X09 | Exel, héritier d'Exen | Être | C | 2 | Gagne +2 ATQ le tour où vous sacrifiez un allié. | « On nous a jetés dehors — alors le dehors est à nous. » |
-| X10 | Seconde sentence | Verbe | C | 2 | Si un de vos Êtres est mort ce tour ou le précédent : un allié gagne +2/+2. | On ne condamne pas deux fois. Eux, si. |
-| X11 | Senna, voix de Rasen | Être | R | 3 | Vos Prononcer coûtent 1 Volonté de moins. | Elle pose la question de Rasen aux foules. |
-| X12 | Korsa, brise-cercle | Être | R | 4 | Quand elle entre en jeu : détruit une Relique ou un Lieu adverse. | Les cercles aussi peuvent se briser. |
-| X13 | Couronne d'os | Relique | R | 3 | S'attache à un de vos Êtres : il gagne +2/+1. | Le premier roi du dehors n'a pas eu droit à l'or. |
-| X14 | Exoran, amant de la chute | Être | R | 5 | Sans effet. 5 ATQ / 4 Intégrité. | Il a appris à aimer la chute. C'est le plus dangereux. |
-| X15 | Sentence retournée | Verbe | R | 3 | Libère un de vos Êtres neutralisé ou enchaîné et il gagne +1/+1. Sinon : un allié gagne +1/+1. | Lisez la vôtre, avant de la porter. |
-| X16 | Clameur d'Exen | Verbe | R | 2 | Un de vos Êtres gagne +2 ATQ jusqu'à la fin du tour. | L'envers a aussi ses chœurs. |
-| X17 | Exva, voix de l'Abîme | Être | E | 6 | Prononcer (3) : inflige 5 dégâts, répartis comme vous voulez. | Elle prononce pour ceux qui n'osent pas. |
-| X18 | Dernier Mot | Verbe | E | 5 | Inflige 3 dégâts à tous les Êtres adverses. | La dernière syllabe est la plus lourde. |
-| X19 | Première Armée | Verbe | E | 6 | Invoque trois Bannis (jetons 2/1). | Levée par son propre juge. |
-| X20 | Exen, l'Envers | Lieu | L | 3 | Chaque fois qu'un de vos Êtres meurt : vous piochez une carte. | Bâti là où le monde ne se regarde pas. |
-| X21 | Porte d'Exen | Lieu | L | 3 | Vos effets Prononcer sont renforcés (+1 à leurs valeurs). | Elle ne s'ouvre que dans un sens. |
-| X22 | Rasen, question sans réponse | Être | P | 7 | **Visage du set.** Prononcer (4) : détruit tous les autres Êtres. Le plus puissant Prononcer du jeu. | Il ne pose plus qu'une seule question. |
+| X07 | Murmures d'Exen | Verbe | C | 1 | Piochez une carte. | Dehors, même les prières se font conspiratrices. |
+| X08 | Écho du Dixième Mot | Verbe | C | 2 | Sacrifiez un Être allié. Si vous le faites, piochez deux cartes. | EX ne fut prononcé qu'une fois. Depuis, le monde entier lui répond. |
+| X09 | Exel, enfant d'Exen | Être | C | 2 | La première fois que vous sacrifiez un autre Être à chaque tour, Exel gagne +2 ATQ ce tour-ci. | « Vous nous avez jetés dehors. Nous en avons fait un royaume. » |
+| X10 | La Seconde Sentence | Verbe | C | 2 | Si un Être allié a été détruit depuis le début de votre dernier tour, un Être allié gagne +2 ATQ et +2 Intégrité ce tour-ci. | Le Vasis ne condamne jamais deux fois le même être. Il condamne ceux qui le pleurent. |
+| X11 | Senna, voix des bannis | Être | R | 3 | Vos capacités Prononcer coûtent 1 Volonté de moins. | À chaque foule, elle pose la question qui fit tomber Rasen. |
+| X12 | Korsa, brise-cercle | Être | R | 4 | À l'arrivée, détruisez une Relique ou un Lieu adverse. | « Tout cercle n'est qu'une chaîne qui se mord la queue. » |
+| X13 | Couronne d'os | Relique | R | 3 | Attachez cette Relique à un Être allié. Il gagne +2 ATQ et +1 Intégrité. | À défaut d'or, le premier roi d'Exen porta les restes de ses ennemis. |
+| X14 | Exoran, ivre de chute | Être | R | 5 | 5 ATQ / 4 Intégrité. | Il ne redoute plus de tomber. Voilà ce qui le rend dangereux. |
+| X15 | Retourner la sentence | Verbe | R | 3 | Libérez un Être allié enchaîné. Il gagne +1 ATQ et +1 Intégrité. S'il n'est pas enchaîné, il gagne tout de même ces bonus. | « Lis leur verdict. Puis choisis lequel de vous deux le portera. » |
+| X16 | Clameur d'Exen | Verbe | R | 2 | Un Être allié gagne +2 ATQ ce tour-ci. | L'Envers aussi possède ses chœurs. Ils ne chantent pas à l'unisson. |
+| X17 | Exva, voix de l'abîme | Être | E | 6 | Prononcer (3) : répartissez 5 dégâts entre autant de cibles que vous le souhaitez. | Elle prête sa voix à ceux que la peur réduit au silence. |
+| X18 | Le Dernier Mot | Verbe | E | 5 | Infligez 3 dégâts à chaque Être adverse. | Toute sentence s'achève. Toute révolte commence là. |
+| X19 | L'Armée des premiers bannis | Verbe | E | 6 | Créez trois jetons Banni 2/1. | Le Vasis prononça chaque nom de cette armée. Il appelle cela la justice. |
+| X20 | Exen, royaume de l'Envers | Lieu | L | 3 | Chaque fois qu'un Être allié est détruit, piochez une carte. | Sous le monde, les bannis ont bâti ce que leurs juges leur refusaient. |
+| X21 | La Porte à sens unique | Lieu | L | 3 | Ajoutez 1 à chaque valeur numérique des effets de vos capacités Prononcer. | Elle ne s'ouvre que vers l'exil. Personne n'a encore trouvé l'autre côté. |
+| X22 | Rasen, l'Incondamné | Être | P | 7 | Prononcer (4) : détruisez tous les autres Êtres. | « Si EX vit en celui qui le prononce, qu'en est-il de celui qui le juge ? » |
 
 #### ESHAR (2 communes · 2 rares · 1 épique · 1 légendaire)
 
-| Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
+| Slot | Nom | Type | Rareté | Coût | Texte de règle | Citation d'ambiance |
 |---|---|---|---|---:|---|---|
-| E01 | Eshin, visage emprunté | Être | C | 2 | 1 ATQ / 3 Intégrité. Quand il entre en jeu : regardez la carte du dessus de votre deck. | Il te ressemble un peu trop. |
-| E02 | Eshna, glaneuse de syllabes | Être | C | 3 | Quand elle entre en jeu : récupérez une carte de votre défausse dans votre main. | Tout se garde. Surtout ce qui tombe. |
-| E03 | Brume mémorielle | Verbe | R | 2 | Regardez les 3 prochaines cartes de votre deck, piochez-en une. | La brume se souvient à ta place. |
-| E04 | Eskor, passeur d'exil | Être | R | 4 | Quand il entre en jeu : récupérez une carte exilée. La seule carte du set capable de cela. | Il sait ce qu'on peut faire d'un nom entier. |
-| E05 | Interstice | Lieu | E | 3 | Vos effets qui touchent la défausse ou l'exil sont doublés. | Ni haut, ni bas. Le seul endroit qui n'a pas choisi. |
-| E06 | Eshel, mémoire intacte | Être | L | 5 | Quand elle entre en jeu : cherchez n'importe quelle carte de votre deck et mettez-la en main. | « J'étais de peu d'importance. C'est pour cela que j'ai survécu. » |
+| E01 | Eshin, visage d'emprunt | Être | C | 2 | 1 ATQ / 3 Intégrité. À l'arrivée, regardez la première carte de votre deck. | Son visage vous ressemble. Son souvenir aussi. |
+| E02 | Eshna, glaneuse de syllabes | Être | C | 3 | À l'arrivée, reprenez une carte de votre défausse dans votre main. | Rien ne disparaît. Certaines choses oublient seulement leur forme. |
+| E03 | Brume des souvenirs | Verbe | R | 2 | Regardez les trois premières cartes de votre deck. Ajoutez-en une à votre main et replacez les autres dans l'ordre de votre choix. | La brume se souvient de ce que vous étiez venu oublier. |
+| E04 | Eskor, passeur de l'exil | Être | R | 4 | À l'arrivée, reprenez dans votre main une de vos cartes exilées. | Il connaît le chemin du retour. Il refuse d'en révéler le prix. |
+| E05 | L'Interstice | Lieu | E | 3 | La première capacité que vous déclenchez depuis votre défausse ou votre exil à chaque tour se déclenche une fois de plus. | Ni Vasen ni Exen : un refuge pour ceux qui refusent de choisir. |
+| E06 | Eshel, mémoire intacte | Être | L | 5 | À l'arrivée, cherchez une carte dans votre deck, révélez-la et ajoutez-la à votre main. Mélangez ensuite votre deck. | « J'étais sans importance. C'est peut-être ce qui m'a sauvé. » |
 
 #### MORAR (2 communes · 1 rare · 1 épique · 1 légendaire)
 
-| Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
+| Slot | Nom | Type | Rareté | Coût | Texte de règle | Citation d'ambiance |
 |---|---|---|---|---:|---|---|
-| M01 | Tala, chute heureuse | Être | C | 2 | À son arrivée, choisissez sa forme : défensive (1/3) ou offensive (3/1). | Elle a choisi son côté en plein vol. |
-| M02 | Nouvelle peau | Verbe | C | 2 | Un de vos Êtres échange son ATQ et son Intégrité. | On ne remonte pas. On devient. |
-| M03 | Moren, entre deux mondes | Être | R | 3 | La première carte que vous jouez chaque tour coûte 1 Volonté de moins. | Il connaît les deux mondes. Il n'en regrette qu'un. |
-| M04 | Enfant de Xenen | Être | E | 3 | Quand il entre en jeu : copiez le dernier Verbe joué, même adverse. | Cinq peuples retiennent leur souffle. |
-| M05 | Moras, sourire en chute | Être | L | 5 | Vos Êtres peuvent échanger leur ATQ et leur Intégrité à chaque tour. | « Parce que je tombais du bon côté. » |
+| M01 | Tala, heureuse de tomber | Être | C | 2 | À l'arrivée, choisissez : Tala devient 3/1 ou 1/3. | Elle choisit sa destination avant de toucher terre. |
+| M02 | Faire peau neuve | Verbe | C | 2 | Échangez l'ATQ et l'Intégrité d'un Être allié. | « Nous ne remonterons pas. Nous deviendrons autre chose. » |
+| M03 | Moren, des deux mondes | Être | R | 3 | La première carte que vous jouez à chaque tour coûte 1 Volonté de moins. | Il a connu Vasen et Xenen. Un seul des deux lui manque. |
+| M04 | L'Enfant dont le mot porta | Être | E | 3 | À l'arrivée, copiez le dernier Verbe joué pendant ce duel. Vous pouvez choisir de nouvelles cibles. | Lorsqu'il parla, cinq peuples retinrent leur souffle. |
+| M05 | Moras, le sourire dans la chute | Être | L | 5 | Une fois par tour, pour chacun de vos Êtres, vous pouvez échanger son ATQ et son Intégrité jusqu'à la fin du tour. | « Je souriais parce que je tombais enfin du bon côté. » |
 
 #### VELAR (2 communes · 1 rare · 1 épique · 1 légendaire)
 
-| Slot | Nom | Type | Rareté | Coût | Effet (en clair) | Accroche |
+| Slot | Nom | Type | Rareté | Coût | Texte de règle | Citation d'ambiance |
 |---|---|---|---|---:|---|---|
-| S01 | Velsa, sans garde-fou | Être | C | 2 | Élan (peut attaquer dès son arrivée). 2 ATQ / 1 Intégrité. | Le bord du monde est un plongeoir. |
-| S02 | Brûler le jour | Verbe | C | 3 | Inflige 3 dégâts directement au Korum adverse (le joueur). | La journée est une torche. Autant l'allumer. |
-| S03 | Velor, rire en chute | Être | R | 3 | Élan. 3 ATQ / 2 Intégrité. | On l'a entendu rire avant de le voir. |
-| S04 | Bord du monde | Lieu | E | 4 | Tous vos Êtres ont Élan. | Pas de garde-fou. Exprès. |
-| S05 | Velna, soleil en chute | Être | L | 6 | Élan. 5 ATQ / 4 Intégrité. Gagne +1 ATQ pour chaque autre allié avec Élan. | « Tu tiens la porte d'une maison vide. » |
+| S01 | Velsa, sans garde-fou | Être | C | 2 | Élan. 2 ATQ / 1 Intégrité. | Pour elle, le bord du monde n'est qu'un point de départ. |
+| S02 | Brûler le jour | Verbe | C | 3 | Infligez 3 dégâts au Korum adverse. | « Le jour est trop court pour économiser sa lumière. » |
+| S03 | Velor, rire au vent | Être | R | 3 | Élan. 3 ATQ / 2 Intégrité. | Son rire franchit le bord du monde avant lui. |
+| S04 | Au bord du monde | Lieu | E | 4 | Vos Êtres ont Élan. | Aucun garde-fou. Ce n'est pas un oubli. |
+| S05 | Velna, soleil affranchi | Être | L | 6 | Élan. Velna gagne +1 ATQ pour chaque autre Être allié avec Élan. | « Tu gardes la porte d'une maison vide, Koren. Moi, je choisis le ciel. » |
 
 ---
 

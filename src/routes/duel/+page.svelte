@@ -372,26 +372,49 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class="terrain">
+<div
+	class="terrain"
+	class:my-turn={monTour}
+	style="--my-faction: {charter.factions[moi?.faction ?? 'vasar'].color}; --foe-faction: {charter.factions[lui?.faction ?? 'exar'].color}"
+>
+	<div class="arena-atmosphere" aria-hidden="true">
+		<div class="vault-glow"></div>
+		<div class="arena-ring ring-one"></div>
+		<div class="arena-ring ring-two"></div>
+		<div class="motes">
+			{#each Array(18) as _, i (i)}<i style="--i: {i}; --d: {12 + (i % 7) * 2}s; left: {(i * 37) % 100}%"></i>{/each}
+		</div>
+	</div>
+	<div class="corner corner-nw" aria-hidden="true"></div>
+	<div class="corner corner-ne" aria-hidden="true"></div>
+	<div class="corner corner-sw" aria-hidden="true"></div>
+	<div class="corner corner-se" aria-hidden="true"></div>
+
 	<!-- ================= ADVERSAIRE ================= -->
 	<header class="bandeau haut">
 		<span class="qui">
 			<span class="sigil"><FactionSigil faction={lui?.faction ?? 'exar'} flat /></span>
-			{lui?.name ?? 'Adversaire'}
+			<span class="identity"><small>Adversaire</small><b>{lui?.name ?? 'Adversaire'}</b></span>
 		</span>
-		<span class="korum" class:vise={ciblesLegales.korum && attaquant !== null} class:coup={coupLui} data-cible="korum">
+		<span class="korum korum-medal" class:vise={ciblesLegales.korum && attaquant !== null} class:coup={coupLui} data-cible="korum">
 			<button class="korum-btn" disabled={!ciblesLegales.korum || attaquant === null} onclick={frapperKorum}>
-				Korum <b>{lui?.korum ?? 0}</b>
+				<svg viewBox="0 0 44 44" aria-hidden="true"><circle class="kg-track" cx="22" cy="22" r="19" pathLength="100"/><circle class="kg-value" cx="22" cy="22" r="19" pathLength="100" style="stroke-dasharray: {Math.max(0, ((lui?.korum ?? 0) / 25) * 100)} 100"/></svg>
+				<small>Korum</small><b>{lui?.korum ?? 0}</b>
 			</button>
 		</span>
-		<span class="ressource">Volonté {lui?.will ?? 0}/{lui?.maxWill ?? 0}</span>
+		<span class="will-display foe" title="Volonté adverse : {lui?.will ?? 0} sur {lui?.maxWill ?? 0}">
+			<small>Volonté</small><span class="will-pips">{#each Array(lui?.maxWill ?? 0) as _, i (i)}<i class:on={i < (lui?.will ?? 0)}></i>{/each}</span>
+		</span>
 		<span class="ressource">Main {lui?.hand ?? 0}</span>
 	</header>
 
 	<!-- main adverse, face cachée -->
 	<div class="main-adverse" aria-label="Main de l'adversaire">
 		{#each Array(Math.min(lui?.hand ?? 0, 10)) as _, i (i)}
-			<div class="dos"><CardBack /></div>
+			<div
+				class="dos"
+				style="--tilt: {(i - (Math.min(lui?.hand ?? 0, 10) - 1) / 2) * 2.8}deg; --drop: {Math.abs(i - (Math.min(lui?.hand ?? 0, 10) - 1) / 2) * 0.07}rem"
+			><CardBack /></div>
 		{/each}
 	</div>
 
@@ -405,6 +428,7 @@
 		class:zone-visee={attaquant !== null && ciblesLegales.korum}
 		data-cible="korum"
 	>
+		<span class="zone-label enemy-label" aria-hidden="true">Front adverse</span>
 		{#if lieuDe(lui)}
 			{@const c = getCard(lieuDe(lui)!.cardId)}
 			<button class="pile lieu occupe" title="Lire {c?.name}" onclick={() => (carteZoom = c ?? null)}>
@@ -459,7 +483,8 @@
 
 	<!-- ================= CENTRE ================= -->
 	<div class="centre">
-		<span class="tour">Tour {meta.turn} · {monTour ? 'À vous' : 'Adversaire'}</span>
+		<div class="central-seal" class:active={monTour} aria-hidden="true"><i></i><span>EX</span></div>
+		<span class="tour"><small>Tour {meta.turn}</small><b>{monTour ? 'À vous de jouer' : 'Tour adverse'}</b></span>
 		<span class="chrono">{mm}:{ss}</span>
 		{#if verbeMontre}
 			<div
@@ -476,6 +501,7 @@
 
 	<!-- ================= NOUS ================= -->
 	<section class="rangee mienne">
+		<span class="zone-label ally-label" aria-hidden="true">Votre front</span>
 		{#if lieuDe(moi)}
 			{@const c = getCard(lieuDe(moi)!.cardId)}
 			<button class="pile lieu occupe" title="Lire {c?.name}" onclick={() => (carteZoom = c ?? null)}>
@@ -545,12 +571,22 @@
 	<footer class="bandeau bas">
 		<span class="qui">
 			<span class="sigil"><FactionSigil faction={moi?.faction ?? 'vasar'} flat /></span>
-			{moi?.name ?? 'Vous'}
+			<span class="identity"><small>Votre camp</small><b>{moi?.name ?? 'Vous'}</b></span>
 		</span>
-		<span class="korum mien" class:coup={coupMoi}>Korum <b>{moi?.korum ?? 0}</b></span>
-		<span class="ressource volonte">Volonté <b>{meta.will}</b>/{meta.maxWill}</span>
+		<span class="korum korum-medal mien" class:coup={coupMoi}>
+			<span class="korum-static"><svg viewBox="0 0 44 44" aria-hidden="true"><circle class="kg-track" cx="22" cy="22" r="19" pathLength="100"/><circle class="kg-value" cx="22" cy="22" r="19" pathLength="100" style="stroke-dasharray: {Math.max(0, ((moi?.korum ?? 0) / 25) * 100)} 100"/></svg><small>Korum</small><b>{moi?.korum ?? 0}</b></span>
+		</span>
+		<span class="will-display" title="Volonté : {meta.will} sur {meta.maxWill}">
+			<small>Volonté</small><span class="will-pips">{#each Array(meta.maxWill) as _, i (i)}<i class:on={i < meta.will}></i>{/each}</span>
+		</span>
 		<button class="finir" disabled={!monTour} onclick={finirTour}>Finir le tour</button>
 	</footer>
+
+	{#if monTour && meta.winner === null}
+		<p class="action-hint" aria-live="polite">
+			{attaquant !== null ? 'Choisissez une cible' : 'Jouez une carte ou sélectionnez un combattant'}
+		</p>
+	{/if}
 
 	<!-- la carte qu'on survole, lisible en grand -->
 	{#if carteLue}
@@ -616,9 +652,11 @@
 
 	{#if meta.winner !== null}
 		<div class="fin" role="dialog" aria-modal="true" in:fade={{ duration: duree(500) }}>
+			<div class="fin-emblem" aria-hidden="true"><span>EX</span></div>
 			<p class="fin-txt">
-				{meta.winner === 0 ? 'Victoire' : meta.winner === 1 ? 'Défaite' : 'Nulle'}
+				{meta.winner === 0 ? 'Victoire' : meta.winner === 1 ? 'Défaite' : 'Match nul'}
 			</p>
+			<p class="fin-sub">{meta.winner === 0 ? 'Votre parole résonne encore dans l’Arène.' : meta.winner === 1 ? 'Le Silence a repris le terrain.' : 'Aucun Korum ne demeure.'}</p>
 			<a class="fin-sortie" href="/arene">Quitter le terrain</a>
 		</div>
 	{/if}
@@ -721,8 +759,7 @@
 		width: 1.1rem;
 		height: 1.1rem;
 	}
-	.korum b,
-	.ressource b {
+	.korum b {
 		color: #d5b25e;
 		font-variant-numeric: tabular-nums;
 	}
@@ -1260,5 +1297,240 @@
 	.att-liste span {
 		color: rgba(242, 240, 234, 0.6);
 		font-size: 0.8rem;
+	}
+
+	/* ============================================================
+	   ARÈNE VIVANTE — mise en scène appliquée au terrain existant
+	   ============================================================ */
+	.terrain {
+		--arena-gold: #d9b95f;
+		--arena-gold-hot: #f5dfa0;
+		--arena-ember: #e06c45;
+		gap: 0.32rem;
+		padding: 0.65rem 1.2rem 0.55rem;
+		background:
+			radial-gradient(circle at 50% 50%, rgba(111, 91, 42, 0.18), transparent 19%),
+			radial-gradient(ellipse at 50% 50%, rgba(30, 39, 55, 0.94), rgba(8, 12, 19, 0.98) 64%, #030507 100%);
+		isolation: isolate;
+	}
+	.terrain::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background:
+			repeating-linear-gradient(115deg, transparent 0 78px, rgba(255,255,255,.012) 79px 80px),
+			linear-gradient(90deg, rgba(0,0,0,.6), transparent 18%, transparent 82%, rgba(0,0,0,.6));
+	}
+	.terrain::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 30;
+		pointer-events: none;
+		box-shadow: inset 0 0 9rem rgba(0,0,0,.86), inset 0 0 0 1px rgba(217,185,95,.08);
+	}
+	.arena-atmosphere { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+	.vault-glow {
+		position: absolute;
+		left: 50%; top: 50%;
+		width: min(80vw, 78rem); aspect-ratio: 1;
+		translate: -50% -50%;
+		opacity: .55;
+		background: repeating-conic-gradient(from 0deg, transparent 0 12deg, rgba(217,185,95,.04) 12.5deg 13deg);
+		-webkit-mask-image: radial-gradient(circle, #000 0 48%, transparent 71%);
+		mask-image: radial-gradient(circle, #000 0 48%, transparent 71%);
+		animation: vault-turn 80s linear infinite;
+	}
+	.arena-ring { position: absolute; left: 50%; top: 50%; translate: -50% -50%; border-radius: 50%; }
+	.ring-one { width: min(54vw, 48rem); aspect-ratio: 1; border: 1px solid rgba(217,185,95,.13); box-shadow: 0 0 4rem rgba(217,185,95,.05), inset 0 0 4rem rgba(217,185,95,.035); }
+	.ring-two { width: min(24vw, 21rem); aspect-ratio: 1; border: 1px solid rgba(217,185,95,.21); box-shadow: 0 0 2.5rem rgba(217,185,95,.09); }
+	.motes i {
+		position: absolute;
+		bottom: -2rem;
+		width: 2px; height: 2px;
+		border-radius: 50%;
+		background: var(--arena-gold-hot);
+		box-shadow: 0 0 8px var(--arena-gold);
+		opacity: 0;
+		animation: mote-rise var(--d) linear infinite;
+		animation-delay: calc(var(--i) * -1.7s);
+	}
+	.corner { position: absolute; z-index: 2; width: 5.5rem; height: 5.5rem; opacity: .3; pointer-events: none; }
+	.corner::before, .corner::after { content: ''; position: absolute; background: linear-gradient(90deg, transparent, var(--arena-gold)); }
+	.corner::before { width: 100%; height: 1px; top: 0; }
+	.corner::after { width: 1px; height: 100%; right: 0; background: linear-gradient(0deg, transparent, var(--arena-gold)); }
+	.corner-nw { top: .65rem; left: .65rem; rotate: -90deg; }
+	.corner-ne { top: .65rem; right: .65rem; }
+	.corner-sw { bottom: .65rem; left: .65rem; rotate: 180deg; }
+	.corner-se { bottom: .65rem; right: .65rem; rotate: 90deg; }
+
+	.bandeau {
+		position: relative;
+		z-index: 4;
+		background: linear-gradient(90deg, rgba(8,13,21,.92), rgba(27,33,43,.75), rgba(8,13,21,.92));
+		border-color: rgba(217,185,95,.15);
+		border-radius: 3px;
+		box-shadow: 0 8px 28px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.035);
+	}
+	.identity { display: grid; line-height: 1.05; }
+	.identity small { font-size: .54rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(242,240,234,.34); }
+	.identity b { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; font-weight: 600; letter-spacing: .04em; }
+	.sigil {
+		width: 1.7rem; height: 1.7rem;
+		padding: .28rem;
+		color: var(--arena-gold-hot);
+		background: radial-gradient(circle, rgba(217,185,95,.17), transparent 70%);
+		border: 1px solid rgba(217,185,95,.25);
+		rotate: 45deg;
+	}
+	.sigil :global(svg) { rotate: -45deg; }
+	.finir {
+		border-radius: 3px;
+		letter-spacing: .06em;
+		text-transform: uppercase;
+		box-shadow: 0 0 20px rgba(217,185,95,.16), inset 0 1px rgba(255,255,255,.4);
+	}
+	.rangee {
+		position: relative;
+		z-index: 3;
+		padding: .5rem .7rem;
+		border-radius: 8px;
+		background: linear-gradient(90deg, rgba(6,10,16,.4), rgba(25,32,41,.24) 50%, rgba(6,10,16,.4));
+		border-block: 1px solid rgba(255,255,255,.035);
+	}
+	.slot {
+		border-style: solid;
+		border-color: rgba(217,185,95,.11);
+		border-radius: 6px;
+		background: radial-gradient(circle at 50% 42%, rgba(217,185,95,.06), rgba(255,255,255,.018) 55%, transparent 72%);
+		box-shadow: inset 0 0 1.6rem rgba(0,0,0,.36), 0 8px 20px rgba(0,0,0,.2);
+	}
+	.slot.occupe:hover { transform: translateY(-.4rem) scale(1.018); }
+	.slot.pret { box-shadow: 0 0 20px rgba(217,185,95,.25), inset 0 0 18px rgba(217,185,95,.08); animation: ready-breathe 2.2s ease-in-out infinite; }
+	.stats {
+		bottom: -.42rem;
+		font-size: .76rem;
+		background: linear-gradient(180deg, #f3dfaa, #bd9341);
+		border: 1px solid rgba(255,245,207,.65);
+		border-radius: 3px;
+		box-shadow: 0 4px 12px rgba(0,0,0,.5);
+	}
+	.pile { border-radius: 5px; box-shadow: inset 0 0 1.5rem rgba(0,0,0,.3), 0 .5rem 1.2rem rgba(0,0,0,.18); }
+	.centre { z-index: 5; }
+	.tour {
+		display: grid;
+		min-width: 8.8rem;
+		padding: .28rem 1rem;
+		text-align: center;
+		background: linear-gradient(90deg, transparent, rgba(217,185,95,.14), transparent);
+		border: 0;
+		border-block: 1px solid rgba(217,185,95,.23);
+		border-radius: 0;
+	}
+	.tour small { font-size: .51rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(217,185,95,.62); }
+	.tour b { font-family: 'Cormorant Garamond', Georgia, serif; font-size: .95rem; font-weight: 600; letter-spacing: .04em; }
+	.central-seal { position: absolute; left: 50%; top: 50%; width: 5.2rem; aspect-ratio: 1; translate: -50% -50%; border: 1px solid rgba(217,185,95,.14); border-radius: 50%; opacity: .34; }
+	.central-seal i { position: absolute; inset: .42rem; border: 1px dashed rgba(217,185,95,.25); border-radius: 50%; animation: seal-turn 18s linear infinite; }
+	.central-seal span { position: absolute; inset: 0; display: grid; place-items: center; font: 600 1rem 'Cormorant Garamond', serif; color: var(--arena-gold); }
+	.central-seal.active { opacity: .78; filter: drop-shadow(0 0 12px rgba(217,185,95,.25)); }
+	.ma-main { position: relative; z-index: 6; }
+	.carte-main.jouable { filter: drop-shadow(0 0 8px rgba(217,185,95,.12)); }
+	.carte-main.jouable:hover { transform: translateY(-1.25rem) scale(1.035); filter: drop-shadow(0 12px 18px rgba(0,0,0,.7)) drop-shadow(0 0 12px rgba(217,185,95,.22)); }
+	.annonce::before, .annonce::after { content: ''; width: min(42rem, 78vw); height: 1px; background: linear-gradient(90deg, transparent, rgba(217,185,95,.56), transparent); }
+	.action-hint { position: fixed; left: 50%; bottom: .3rem; z-index: 7; translate: -50% 0; margin: 0; font-size: .56rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(242,240,234,.38); pointer-events: none; }
+	.fin { align-content: center; background: radial-gradient(circle at 50% 45%, rgba(93,75,34,.3), transparent 28%), rgba(3,5,8,.93); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+	.fin-emblem { width: 6rem; aspect-ratio: 1; display: grid; place-items: center; border: 1px solid rgba(217,185,95,.43); rotate: 45deg; box-shadow: 0 0 40px rgba(217,185,95,.17), inset 0 0 24px rgba(217,185,95,.08); }
+	.fin-emblem span { rotate: -45deg; font: 600 1.35rem 'Cormorant Garamond',serif; color: var(--arena-gold-hot); }
+	.fin-txt { line-height: .8; color: #f5edda; text-shadow: 0 0 32px rgba(217,185,95,.25); }
+	.fin-sub { margin: -.2rem 0 .6rem; color: rgba(242,240,234,.5); }
+	.fin-sortie { padding: .65rem 1.4rem; color: #0b0c0e; background: linear-gradient(180deg,#f2d98d,#bd943f); border-radius: 3px; font-size: .72rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; }
+
+	@keyframes vault-turn { to { rotate: 360deg; } }
+	@keyframes seal-turn { to { rotate: -360deg; } }
+	@keyframes ready-breathe { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.12); } }
+	@keyframes mote-rise { 0% { translate: 0 0; opacity: 0; } 12% { opacity: .45; } 82% { opacity: .2; } 100% { translate: 3rem -105vh; opacity: 0; } }
+	@media (max-width: 900px) {
+		.terrain { padding-inline: .45rem; }
+		.rangee { gap: .35rem; padding-inline: .25rem; }
+		.pile.lieu { width: 4.2rem; }
+		.pile { width: 3.25rem; }
+		.slots { gap: .25rem; }
+		.bandeau { gap: .55rem; }
+		.identity small, .action-hint { display: none; }
+		.ressource { font-size: .7rem; }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.vault-glow, .motes i, .central-seal i, .slot.pret { animation: none; }
+	}
+
+	/* Identité dynamique des deux peuples présents */
+	.terrain::before { background: linear-gradient(180deg, color-mix(in srgb, var(--foe-faction) 7%, transparent), transparent 34%, transparent 66%, color-mix(in srgb, var(--my-faction) 8%, transparent)), repeating-linear-gradient(115deg, transparent 0 78px, rgba(255,255,255,.012) 79px 80px), linear-gradient(90deg, rgba(0,0,0,.6), transparent 18%, transparent 82%, rgba(0,0,0,.6)); }
+	.haut { border-left: 2px solid color-mix(in srgb, var(--foe-faction) 72%, var(--arena-gold)); }
+	.bas { border-left: 2px solid color-mix(in srgb, var(--my-faction) 72%, var(--arena-gold)); }
+	.adverse .slot.occupe { box-shadow: 0 8px 20px rgba(0,0,0,.28), 0 0 18px color-mix(in srgb, var(--foe-faction) 9%, transparent); }
+	.mienne .slot.occupe { box-shadow: 0 8px 20px rgba(0,0,0,.28), 0 0 18px color-mix(in srgb, var(--my-faction) 10%, transparent); }
+	.my-turn .ring-two { border-color: color-mix(in srgb, var(--my-faction) 38%, var(--arena-gold)); box-shadow: 0 0 3rem color-mix(in srgb, var(--my-faction) 13%, transparent); animation: ring-pulse 3s ease-in-out infinite; }
+
+	/* Le Korum devient l'objectif visuel principal */
+	.korum-medal { width: 3.4rem; height: 3.4rem; flex: none; }
+	.korum-btn, .korum-static {
+		position: relative;
+		width: 100%; height: 100%;
+		display: grid; place-items: center;
+		padding: 0;
+	}
+	.korum-static { color: inherit; }
+	.korum-medal svg { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; overflow: visible; filter: drop-shadow(0 0 6px rgba(217,185,95,.14)); }
+	.kg-track, .kg-value { fill: rgba(3,5,8,.76); stroke-width: 2; }
+	.kg-track { stroke: rgba(255,255,255,.1); }
+	.kg-value { fill: none; stroke: var(--arena-gold); stroke-linecap: round; transition: stroke-dasharray .45s cubic-bezier(.2,.8,.2,1); }
+	.haut .kg-value { stroke: color-mix(in srgb, var(--foe-faction) 62%, var(--arena-gold-hot)); }
+	.bas .kg-value { stroke: color-mix(in srgb, var(--my-faction) 62%, var(--arena-gold-hot)); }
+	.korum-medal small { position: absolute; top: .85rem; font-size: .42rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; color: rgba(242,240,234,.42); }
+	.korum-medal b { position: absolute; top: 1.32rem; font: 650 1.05rem/1 'Cormorant Garamond',serif; color: #fff1c3; }
+	.korum.vise { filter: drop-shadow(0 0 13px var(--arena-ember)); }
+	.korum.vise .korum-btn { border: 0; animation: target-korum 1s ease-in-out infinite; }
+
+	/* Ressource lisible d'un seul regard */
+	.will-display { display: grid; gap: .2rem; min-width: 6.5rem; }
+	.will-display small { font-size: .5rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(242,240,234,.38); }
+	.will-pips { display: flex; gap: .24rem; min-height: .55rem; }
+	.will-pips i { width: .43rem; height: .43rem; rotate: 45deg; border: 1px solid rgba(217,185,95,.3); background: rgba(255,255,255,.03); box-shadow: inset 0 0 4px rgba(0,0,0,.6); }
+	.will-pips i.on { background: linear-gradient(135deg,#fff0b2,#bf8e32); border-color: #f7dfa0; box-shadow: 0 0 7px rgba(217,185,95,.62); }
+	.will-display.foe .will-pips i.on { background: color-mix(in srgb, var(--foe-faction) 62%, #e9c870); }
+
+	/* Une main adverse en éventail, davantage jeu de cartes que simple compteur */
+	.main-adverse { position: relative; z-index: 5; perspective: 700px; margin-top: -.18rem; }
+	.dos {
+		position: relative;
+		margin-inline: -.42rem;
+		transform-origin: 50% -120%;
+		rotate: var(--tilt);
+		translate: 0 var(--drop);
+		filter: drop-shadow(0 5px 7px rgba(0,0,0,.5));
+		transition: translate .25s ease, filter .25s ease;
+	}
+	.dos:hover { translate: 0 .2rem; filter: drop-shadow(0 8px 11px rgba(0,0,0,.65)); }
+
+	/* Les deux fronts sont identifiés sans ajouter de panneau */
+	.zone-label { position: absolute; left: 50%; z-index: -1; translate: -50% 0; font-size: .48rem; font-weight: 700; letter-spacing: .32em; text-transform: uppercase; color: rgba(242,240,234,.13); white-space: nowrap; }
+	.enemy-label { top: .15rem; }
+	.ally-label { bottom: .12rem; }
+	.rangee::after { content: ''; position: absolute; left: 12%; right: 12%; height: 1px; pointer-events: none; }
+	.rangee.adverse::after { bottom: 0; background: linear-gradient(90deg,transparent,color-mix(in srgb,var(--foe-faction) 25%,transparent),transparent); }
+	.rangee.mienne::after { top: 0; background: linear-gradient(90deg,transparent,color-mix(in srgb,var(--my-faction) 28%,transparent),transparent); }
+
+	@keyframes ring-pulse { 0%,100% { opacity: .65; scale: 1; } 50% { opacity: 1; scale: 1.025; } }
+	@keyframes target-korum { 0%,100% { scale: 1; } 50% { scale: 1.08; } }
+	@media (prefers-reduced-motion: reduce) { .my-turn .ring-two, .korum.vise .korum-btn { animation: none; } }
+	@media (max-width: 720px) {
+		.korum-medal { width: 2.8rem; height: 2.8rem; }
+		.korum-medal small { top: .63rem; }
+		.korum-medal b { top: 1.08rem; }
+		.will-display { min-width: 4.5rem; }
+		.will-pips { gap: .16rem; }
+		.will-pips i { width: .34rem; height: .34rem; }
 	}
 </style>

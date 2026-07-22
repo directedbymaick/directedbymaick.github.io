@@ -1,6 +1,6 @@
 {
 	"id": "premiere-armee",
-	"name": "Première Armée",
+	"name": "L’Armée des premiers bannis",
 	"kind": "verbe",
 	"cost": 6,
 	"text": "Invoque trois Bannis (jetons 2/1).",
@@ -18,6 +18,6 @@
 		"accent": "#b3273a",
 		"seed": 236803
 	},
-	"flavor": "Levée par son propre juge.",
+	"flavor": "Le Vasis prononça chaque nom de cette armée. Il appelle cela la justice.",
 	"fullArtFoil": "cosmos"
 }

@@ -292,7 +292,7 @@
 </script>
 
 <svelte:head>
-	<title>Mon Nom — {charter.game.name}</title>
+	<title>Mon espace — {charter.game.name}</title>
 	<meta name="description" content="Votre espace : collection et decks de {charter.game.name}." />
 </svelte:head>
 
@@ -372,8 +372,8 @@
 	</div>
 
 	<p class="hint">
-		Les cartes s'obtiennent en ouvrant des <a href="/packs">boosters</a> — les grisées manquent
-		encore à votre Registre. Au-delà de 3 copies, le surplus se revend en Éclats.
+		Ouvrez des <a href="/packs">boosters</a> pour compléter votre collection. Les cartes que vous
+		ne possédez pas apparaissent grisées. Les exemplaires au-delà de trois peuvent être revendus en Éclats.
 	</p>
 
 	<label class="autosell">
@@ -384,14 +384,14 @@
 		/>
 		<span class="track" aria-hidden="true"><i></i></span>
 		<span class="autosell-txt">
-			Revente automatique du surplus
-			<small>à l'ouverture d'un booster, les copies au-delà de 3 sont revendues aussitôt</small>
+			Revendre automatiquement les exemplaires en trop
+			<small>à l’ouverture d’un booster, chaque exemplaire au-delà du troisième est converti en Éclats</small>
 		</span>
 	</label>
 
 	<p class="reset-line">
 		<button class="resetbtn" onclick={resetCollection}>Réinitialiser ma collection</button>
-		<span>— repartir d'un Registre vide (Éclats, quêtes et succès conservés).</span>
+		<span>Cette action supprime vos cartes, mais conserve vos Éclats, quêtes et succès.</span>
 	</p>
 
 	{#if surplusCount > 0}
@@ -553,7 +553,7 @@
 	{#if decks.length === 0}
 		<div class="empty">
 			<img src={logo} alt="" aria-hidden="true" />
-			<p>Aucun deck. Trente cartes, une volonté — commencez le vôtre.</p>
+			<p>Vous n’avez encore aucun deck. Créez-en un et réunissez 30 cartes pour pouvoir jouer.</p>
 		</div>
 	{:else}
 		<div class="decklist">
@@ -656,7 +656,7 @@
 				{#if curSize === 0}<i style="flex: 1; background: rgba(140,170,220,.15)"></i>{/if}
 			</div>
 			{#if deckRows.length === 0}
-				<p class="empty-deck">Cliquez une carte du pool pour l'ajouter.</p>
+				<p class="empty-deck">Sélectionnez une carte de votre collection pour l’ajouter au deck.</p>
 			{:else}
 				<ul class="rows">
 					{#each deckRows as r (r.card.id)}

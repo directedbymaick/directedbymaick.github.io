@@ -1,6 +1,6 @@
 {
 	"id": "dernier-mot",
-	"name": "Dernier Mot",
+	"name": "Le Dernier Mot",
 	"kind": "verbe",
 	"cost": 5,
 	"text": "Inflige 3 dégâts à tous les Êtres adverses.",
@@ -17,7 +17,7 @@
 		"accent": "#b3273a",
 		"seed": 680190
 	},
-	"flavor": "La dernière syllabe est la plus lourde.",
+	"flavor": "Toute sentence s’achève. Toute révolte commence là.",
 	"fullArtFoil": "cosmos",
 	"variants": [
 		{

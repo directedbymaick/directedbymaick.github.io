@@ -24,12 +24,12 @@ export const NOTICES: Record<string, Notice> = {
 	recitation: {
 		livre: 'prononciation',
 		texte:
-			"La récitation n'est pas un rite, c'est de la maintenance. Chaque nom redit tient un jour de plus. C'est la tâche la plus ingrate de Vasen, et la seule dont l'interruption tuerait le monde."
+			"La récitation n’est pas un rite : elle maintient le monde en état. Chaque nom répété gagne un jour d’existence. Si les chœurs s’interrompent, nul ne sait combien de temps la Création tiendra."
 	},
 	vasna: {
 		livre: 'prononciation',
 		texte:
-			"Vingt ans sans manquer une nuit. Les chœurs sont faits de milliers de Vasna, et c'est leur constance — pas la voix de Koren — qui tient réellement les noms en place."
+			"Vasna chante depuis vingt ans sans avoir manqué une seule nuit. Les chœurs comptent des milliers de voix semblables à la sienne ; c’est leur constance, bien plus que l’autorité de Koren, qui retient les noms dans le monde."
 	},
 	renna: {
 		livre: 'prononciation',
@@ -59,7 +59,7 @@ export const NOTICES: Record<string, Notice> = {
 	thalen: {
 		livre: 'ex',
 		texte:
-			"Le point de bascule du récit : avant elle, personne ne savait qu'il existait un dehors. Elle a fait son office et rapporté ce qu'elle avait entendu — la faute la plus loyale de toute l'histoire."
+			"Thalen fut la première à entendre EX sous les chœurs. En rapportant ce mot impossible à Doran, elle accomplit son devoir — et donna au Vasis la connaissance qui allait déchirer le monde."
 	},
 	senel: {
 		livre: 'ex',
@@ -273,49 +273,49 @@ export const NOTICES: Record<string, Notice> = {
 			"Le copiste. Tout ce récit passe par ses yeux, y compris les pages qu'il n'a pas pu écrire. Il est parti de Vasen avec les registres, et c'est la seule raison pour laquelle vous lisez ceci."
 	},
 	eshna: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Elle glane les syllabes tombées des noms qui s'effacent. Rien ne se perd tout à fait : c'est la doctrine eshar, et accessoirement une méthode de survie."
 	},
 	eshin: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Un nom à moitié dit n'a plus de visage propre. Eshin emprunte ceux qu'il croise, sans malice — il lui faut bien une forme, et les siennes se sont effacées une à une."
 	},
 	eskor: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Un nom entier vaut fortune en bas. Eskor sait ce qu'on peut en faire, et ramène de l'exil ce que les autres tenaient pour définitivement perdu."
 	},
 	'brume-memorielle': {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Les Eshar sont tombés parce qu'on les a oubliés. Ils ont fait de l'oubli lui-même un instrument : la brume se souvient à votre place, et vous rend ce que vous n'avez pas gardé."
 	},
 	interstice: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Ni haut ni bas : le seul endroit du monde qui n'ait pas choisi. Les Eshar y vivent parce que c'est le seul lieu où un nom à moitié dit ne passe pas pour une anomalie."
 	},
 
 	/* ---------------------------------------------------------------- VELAR */
 	velna: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"La voix la plus vive des chœurs, jusqu'au jour où elle a demandé pourquoi répéter quand on a la force de dire du neuf. Elle n'a pas attendu la réponse : elle a sauté."
 	},
 	velor: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Chez les Velar, la joie est une arme. Ils tombent en riant parce que rien de ce qu'on leur retire ne leur appartenait vraiment."
 	},
 	velsa: {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Elle n'a pas été jetée, elle a sauté — comme Velna, et sans la moitié de ses raisons. « Le bord du monde est un plongeoir » est une doctrine velar, pas une bravade."
 	},
 	'bruler-le-jour': {
-		livre: 'eshar',
+		livre: 'eshar-velar',
 		texte:
 			"Les Velar ne comptent pas leurs jours, ils les dépensent. Brûler le jour n'est pas une image : leur puissance se paie sur le temps qui leur reste."
 	},

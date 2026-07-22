@@ -1,6 +1,6 @@
 {
 	"id": "senna",
-	"name": "Senna, voix de Rasen",
+	"name": "Senna, voix des bannis",
 	"kind": "etre",
 	"cost": 3,
 	"text": "Vos Prononcer coûtent 1 Volonté de moins.",
@@ -20,5 +20,5 @@
 	},
 	"attack": 2,
 	"health": 2,
-	"flavor": "Elle pose la question de Rasen aux foules."
+	"flavor": "À chaque foule, elle pose la question qui fit tomber Rasen."
 }

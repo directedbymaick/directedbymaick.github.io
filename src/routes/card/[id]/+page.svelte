@@ -112,12 +112,12 @@
 				</button>
 			{/each}
 		</div>
-		<p class="vhint">Taux de sortie par tirage de cette carte.</p>
+		<p class="vhint">Probabilité d’obtenir cette version lors d’un tirage.</p>
 
 		{#if versionCourante && shownPossedee === 0}
 			<div class="forge">
 				<button class="forge-btn" disabled={eco.syllabes < prix} onclick={reconstituer}>
-					Reconstituer ce nom · {prix}
+					Invoquer cette carte · {prix}
 					<span class="syl" aria-hidden="true"></span>
 				</button>
 				<p class="forge-solde">
@@ -177,7 +177,7 @@
 			{/each}
 		</p>
 
-		<a class="back" href="/">← Retour au mur</a>
+		<a class="back" href="/registre">← Retour à la galerie</a>
 	</aside>
 </section>
 

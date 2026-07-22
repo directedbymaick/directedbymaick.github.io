@@ -1,6 +1,6 @@
 {
 	"id": "exel",
-	"name": "Exel, héritier d'Exen",
+	"name": "Exel, enfant d’Exen",
 	"kind": "etre",
 	"cost": 2,
 	"text": "Gagne +2 ATQ le tour où vous sacrifiez un allié.",
@@ -19,5 +19,5 @@
 	},
 	"attack": 2,
 	"health": 2,
-	"flavor": "« On nous a jetés dehors — alors le dehors est à nous. »"
+	"flavor": "« Vous nous avez jetés dehors. Nous en avons fait un royaume. »"
 }

@@ -150,19 +150,19 @@
 
 <svelte:head>
 	<title>Galerie — {charter.game.name}</title>
-	<meta name="description" content="Les {cards.length} noms de Nés du silence, rangés par peuple." />
+	<meta name="description" content="Explorez les {cards.length} cartes du set Nés du silence, classées par peuple." />
 </svelte:head>
 
 <div bind:this={container}>
 	<header class="reg-tete">
 		<div class="hero-top">
 			<p class="hero-kicker">Set 01 — Nés du silence</p>
-			<p class="hero-kicker">{cards.length} / {SET_SIZE} noms inscrits</p>
+			<p class="hero-kicker">{cards.length} / {SET_SIZE} cartes disponibles</p>
 		</div>
 		<h1 class="mur"><span class="ligne"><span class="mot">Galerie</span></span></h1>
 		<p class="reg-chapo">
-			Les soixante noms du premier cycle, rangés par peuple. Chaque carte est montrée dans son
-			état de base ; ses finitions et sa Full Art se consultent sur sa fiche.
+			Explorez les cartes de Nés du silence par peuple. Sélectionnez une carte pour consulter ses
+			finitions, ses versions Full Art et toutes ses informations.
 		</p>
 	</header>
 
