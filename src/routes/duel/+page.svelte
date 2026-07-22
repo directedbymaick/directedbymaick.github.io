@@ -8,7 +8,9 @@
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
-	import { loadDecks } from '$lib/decks';
+	import { loadDecks, validateDeck, validateDeckOwnership } from '$lib/decks';
+	import { loadCollection } from '$lib/gacha';
+	import { GAME_RULES } from '$lib/game/rules';
 	import {
 		Duel,
 		simulate,
@@ -307,7 +309,15 @@
 		const params = new URLSearchParams(location.search);
 		const graine = Number(params.get('seed')) || Math.floor(Math.random() * 1e9);
 		const deckId = params.get('deck');
-		const deck = deckId ? loadDecks().find((d) => d.id === deckId) : null;
+		const collection = loadCollection();
+		const deck = deckId
+			? loadDecks().find(
+					(d) =>
+						d.id === deckId &&
+						validateDeck(d, getCard).isLegal &&
+						validateDeckOwnership(d, collection).isLegal
+				)
+			: null;
 		const liste = deck
 			? Object.entries(deck.cards).flatMap(([id, n]) =>
 					Array.from({ length: n }, () => getCard(id)!).filter(Boolean)
@@ -324,7 +334,7 @@
 				const v = params.get(k);
 				if (!v) return null;
 				const l = v.split(',').map((id) => getCard(id)).filter((c): c is CardData => !!c);
-				return l.length === 30 ? l : null;
+				return l.length === GAME_RULES.deckSize ? l : null;
 			};
 			const sim = simulate(cards, fa, fb, graine, [lireListe('da'), lireListe('db')]);
 			evtsIA = sim.events;
@@ -342,7 +352,7 @@
 
 		duel = new Duel(
 			cards,
-			liste && liste.length === 30 ? liste : null,
+			liste && liste.length === GAME_RULES.deckSize ? liste : null,
 			(params.get('moi') as FactionId) || 'vasar',
 			(params.get('lui') as FactionId) || 'exar',
 			graine

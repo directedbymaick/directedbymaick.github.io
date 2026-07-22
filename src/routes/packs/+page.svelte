@@ -1310,6 +1310,9 @@
 		font-size: 0.68rem;
 		font-weight: 700;
 		letter-spacing: 0.14em;
+		width: max-content;
+		max-width: none;
+		white-space: nowrap;
 		text-transform: uppercase;
 		padding: 0.24rem 0.7rem;
 		color: #0a0a0d;

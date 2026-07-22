@@ -13,7 +13,11 @@
 		maxCopiesOf,
 		costCurve,
 		factionSpread,
+		canAddFaction,
+		ownedCopies,
+		validateDeck,
 		DECK_SIZE,
+		MAX_FACTIONS,
 		type Deck
 	} from '$lib/decks';
 	import type { CardData, FactionId, Rarity } from '$lib/types';
@@ -88,11 +92,7 @@
 
 	/** Exemplaires possédés d'une carte, toutes versions confondues (Raw, foils, Full Art). */
 	function possedees(id: string): number {
-		let n = 0;
-		for (const [clé, q] of Object.entries(collection)) {
-			if (clé === id || clé.startsWith(`${id}--`)) n += q;
-		}
-		return n;
+		return ownedCopies(collection, id);
 	}
 
 	/* ---------------- filtres ---------------- */
@@ -147,7 +147,7 @@
 
 	function peutAjouter(c: CardData): boolean {
 		if (!deck) return false;
-		return possedees(c.id) > 0 && taille < DECK_SIZE && exemplaires(c.id) < maxCopiesOf(c);
+		return possedees(c.id) > exemplaires(c.id) && taille < DECK_SIZE && exemplaires(c.id) < maxCopiesOf(c) && canAddFaction(deck, c, getCard);
 	}
 
 	/** Dernier refus d'ajout, affiché brièvement pour dire POURQUOI ça n'a pas marché. */
@@ -162,12 +162,16 @@
 
 	function ajouter(c: CardData) {
 		if (!deck) return;
-		if (possedees(c.id) === 0) {
+		if (possedees(c.id) <= exemplaires(c.id)) {
 			signaler(`« ${c.name} » ne fait pas partie de votre collection. Ouvrez des boosters pour l’obtenir.`);
 			return;
 		}
 		if (taille >= DECK_SIZE) {
 			signaler(`Deck complet : ${DECK_SIZE} cartes maximum.`);
+			return;
+		}
+		if (!canAddFaction(deck, c, getCard)) {
+			signaler(`Un deck ne peut contenir que ${MAX_FACTIONS} peuples. Retirez un peuple avant d'ajouter ${c.name}.`);
 			return;
 		}
 		const max = maxCopiesOf(c);
@@ -208,9 +212,8 @@
 	);
 
 	/** Un deck est jouable s'il est complet et ne dépasse aucune limite de copies. */
-	const invalides = $derived(
-		lignes.filter((r) => r.n > maxCopiesOf(r.card)).map((r) => r.card.name)
-	);
+	const validation = $derived(deck ? validateDeck(deck, getCard) : { isLegal: false, errors: [] });
+	const invalides = $derived(validation.errors);
 
 	/* ---------------- interactions ----------------
 	   Clic simple = lire la carte en grand. Double-clic ou glisser-déposer = ajouter.

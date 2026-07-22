@@ -193,11 +193,17 @@ export function prixVersion(
 	card: CardData,
 	v: { key: string; rate: number; fullArt: boolean; foil: FoilPreset | null; view: CardData }
 ): number {
-	const p = prixNom(tauxVersion(card, v));
 	const r = (v.view.sourceRarity ?? v.view.rarity) as Rarity;
-	const i = ECHELLE_RARETE.indexOf(r);
-	if (i < 0) return p;
-	return Math.max(p, planchers().get(forme(v, card))?.[i] ?? 0);
+	const base: Record<Rarity, number> = {
+		common: 40,
+		rare: 70,
+		epic: 120,
+		legendary: 200,
+		prism: 300
+	};
+	const isSpecial = v.foil === 'showcase' && !!v.view.cutout;
+	const multiplier = v.view.alt ? 2.5 : v.fullArt && isSpecial ? 2.3 : isSpecial ? 1.8 : v.fullArt ? 1.7 : v.foil ? 1.3 : 1;
+	return Math.min(700, Math.round((base[r] * multiplier) / 5) * 5);
 }
 
 export function paliers(): Palier[] {

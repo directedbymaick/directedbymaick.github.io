@@ -33,33 +33,9 @@ export interface Offre {
 	cosmetique?: string;
 }
 
-/* Prix calés sur le marché : Pokémon Pocket et Hearthstone situent le booster
-   entre 0,80 € et 1,00 €, avec dégressivité. Cf. MONETISATION.md §2. */
+/* Le lancement ne vend que des biens déterministes. Les boosters restent une
+   récompense de jeu tant que l'autorité serveur et la revue juridique manquent. */
 export const CATALOGUE: Offre[] = [
-	{
-		id: 'poignee',
-		famille: 'boosters',
-		nom: 'Poignée',
-		detail: '5 boosters',
-		prixCentimes: 499,
-		boosters: 5
-	},
-	{
-		id: 'requisition',
-		famille: 'boosters',
-		nom: 'Réquisition',
-		detail: '12 boosters',
-		prixCentimes: 999,
-		boosters: 12
-	},
-	{
-		id: 'grande-requisition',
-		famille: 'boosters',
-		nom: 'Grande réquisition',
-		detail: '30 boosters, dont un Full Art garanti',
-		prixCentimes: 1999,
-		boosters: 30
-	},
 	{
 		id: 'dos-chaines',
 		famille: 'cosmetique',
@@ -80,7 +56,7 @@ export const CATALOGUE: Offre[] = [
 		id: 'passe-silence',
 		famille: 'passe',
 		nom: 'Passe du Silence',
-		detail: 'Huit semaines : Éclats doublés et cosmétiques exclusifs.',
+		detail: 'Huit semaines : progression cosmétique et récompenses visuelles exclusives.',
 		prixCentimes: 999
 	}
 ];

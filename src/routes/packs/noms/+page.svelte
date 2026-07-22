@@ -137,8 +137,8 @@
 		Syllabes et ne dépend pas du hasard d’un booster.
 	</p>
 	<p class="chapo source">
-		Vous gagnez <b>25 Syllabes</b> en tirant une Prismatique, ou <b>75</b> s’il s’agit d’un doublon.
-		Une SP rapporte <b>15 Syllabes</b> et une Full Art <b>8</b>. Seule la récompense la plus élevée
+		Vous gagnez <b>5 Syllabes</b> en découvrant une Prismatique pour la première fois. Un doublon
+		ne rapporte rien tant qu’il n’est pas défait. Une SP rapporte <b>3 Syllabes</b> et une Full Art <b>1</b>. Seule la récompense la plus élevée
 		s’applique à chaque carte tirée.
 	</p>
 

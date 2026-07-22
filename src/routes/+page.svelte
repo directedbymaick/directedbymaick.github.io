@@ -188,6 +188,21 @@
 		name="description"
 		content="Collectionnez les {cards.length} cartes de Nés du silence, construisez votre deck et affrontez d’autres joueurs dans Expelled."
 	/>
+	<meta property="og:title" content="{charter.game.name} — Le Créateur se tait. Pas vous." />
+	<meta property="og:description" content="Un jeu de cartes compétitif où Prononcer un pouvoir exile définitivement la carte utilisée." />
+	<meta name="twitter:title" content="{charter.game.name} — Le Créateur se tait. Pas vous." />
+	<meta name="twitter:description" content="Collectionnez, construisez votre deck et maîtrisez Prononcer dans Nés du silence." />
+	<script type="application/ld+json">
+		{JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'VideoGame',
+			name: charter.game.name,
+			description: 'Jeu de cartes compétitif en ligne dans lequel Prononcer un pouvoir exile définitivement la carte utilisée.',
+			genre: ['Jeu de cartes à collectionner', 'Jeu de stratégie'],
+			inLanguage: 'fr',
+			playMode: ['SinglePlayer', 'MultiPlayer']
+		})}
+	</script>
 </svelte:head>
 
 <div bind:this={container}>

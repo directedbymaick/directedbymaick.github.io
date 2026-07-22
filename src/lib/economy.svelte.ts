@@ -10,16 +10,17 @@ export const PACK_PRICE = 100;
 export const STARTER_GRANT = 300;
 /** Plafond de solde : un compte ne peut pas dépasser cette somme d'Éclats. */
 export const MAX_BALANCE = 999999;
-export const MATCH_REWARD = { win: 100, loss: 40, pvpWin: 150, pvpLoss: 60 };
+export const MATCH_REWARD = { win: 25, loss: 8, pvpWin: 35, pvpLoss: 12 };
+export const DAILY_REWARDED_MATCHES = 3;
 
 /** Revente des copies excédentaires (au-delà de 3) : valeur par rareté. */
 export const SELL_KEEP = 3;
 export const SELL_VALUE: Record<string, number> = {
-	common: 5,
-	rare: 10,
-	epic: 20,
-	legendary: 40,
-	prism: 80
+	common: 2,
+	rare: 4,
+	epic: 8,
+	legendary: 15,
+	prism: 25
 };
 
 /* ---------------- les Syllabes ----------------
@@ -38,21 +39,19 @@ export const SELL_VALUE: Record<string, number> = {
  * libère quelques-unes, en défaire une en rend beaucoup plus.
  */
 
-/* Rendement mesuré sur le tirage réel : ~5,2 Syllabes par booster, soit un nom
-   médian tous les 13 boosters et le sommet du set à 425. Sans la prime aux
-   doublons, la source se tarissait à 1,1 — 1 947 boosters pour le sommet. */
+/* Les montants sont volontairement faibles : les Syllabes suppriment le hasard
+   en achetant une version exacte et ne doivent pas auto-financer la collection. */
 
 /** Syllabes libérées par une Prismatique tirée pour la PREMIÈRE fois. */
-export const SYLLABES_PULL = 25;
-/** Prime du doublon : une Prismatique déjà possédée résonne plus fort. La carte
-    N'EST PAS consommée — rien n'est jamais vendu dans le dos du joueur. */
-export const SYLLABES_DOUBLON = 50;
+export const SYLLABES_PULL = 5;
+/** Un doublon ne rapporte rien tant que le joueur ne choisit pas de le défaire. */
+export const SYLLABES_DOUBLON = 0;
 /** Syllabes rendues en défaisant une Prismatique excédentaire, à la main. */
-export const SYLLABES_DEFAIRE = 50;
+export const SYLLABES_DEFAIRE = 25;
 /** Une SP non prismatique en libère aussi : c'est la finition la plus rare. */
-export const SYLLABES_SP = 15;
+export const SYLLABES_SP = 3;
 /** Un Full Art ordinaire, moins. */
-export const SYLLABES_FULLART = 8;
+export const SYLLABES_FULLART = 1;
 
 /* Le prix d'un nom ne vit PAS ici : il découle de la rareté réelle du palier
    (rareté × forme × finition), calculée dans paliers.ts — `prixNom(taux)`. Une
@@ -86,15 +85,14 @@ interface QuestDef {
 }
 
 export const DAILY: QuestDef[] = [
-	{ id: 'd-win', label: 'Gagner une partie en Arène', event: 'win', n: 1, reward: 60 },
-	{ id: 'd-cards', label: 'Jouer 12 cartes en duel', event: 'cardPlayed', n: 12, reward: 40 },
-	{ id: 'd-pack', label: 'Ouvrir un booster', event: 'packOpened', n: 1, reward: 30 }
+	{ id: 'd-win', label: 'Gagner une partie en Arène', event: 'win', n: 1, reward: 55 },
+	{ id: 'd-cards', label: 'Jouer 12 cartes en duel', event: 'cardPlayed', n: 12, reward: 45 }
 ];
 
 export const WEEKLY: QuestDef[] = [
-	{ id: 'w-wins', label: 'Gagner 5 parties', event: 'win', n: 5, reward: 200 },
-	{ id: 'w-packs', label: 'Ouvrir 5 boosters', event: 'packOpened', n: 5, reward: 150 },
-	{ id: 'w-pron', label: 'Prononcer 3 fois', event: 'prononcer', n: 3, reward: 150 }
+	{ id: 'w-wins', label: 'Gagner 5 parties', event: 'win', n: 5, reward: 120 },
+	{ id: 'w-cards', label: 'Jouer 60 cartes en duel', event: 'cardPlayed', n: 60, reward: 90 },
+	{ id: 'w-pron', label: 'Prononcer 3 fois', event: 'prononcer', n: 3, reward: 90 }
 ];
 
 export type AchCategory = 'combat' | 'prononciation' | 'salons' | 'collection' | 'voie';
@@ -127,7 +125,7 @@ export const ACH_CATEGORIES: { id: AchCategory; label: string }[] = [
 	{ id: 'voie', label: 'Decks et ressources' }
 ];
 
-export const ACHIEVEMENTS: AchDef[] = [
+const ACHIEVEMENT_BASE: AchDef[] = [
 	/* ---- L'Arène : le combat ---- */
 	{ id: 'a-first-win', label: 'Premier mot', desc: 'Gagner votre première partie.', reward: 100, cat: 'combat', check: (s) => s.wins >= 1 },
 	{ id: 'a-wins-5', label: "La voix s'affermit", desc: 'Gagner 5 parties.', reward: 150, cat: 'combat', check: (s) => s.wins >= 5 },
@@ -170,6 +168,11 @@ export const ACHIEVEMENTS: AchDef[] = [
 	{ id: 'a-rich-2500', label: "L'auréole se reforme", desc: "Détenir 2 500 Éclats d'un coup.", reward: 300, cat: 'voie', check: () => eco.balance >= 2500 }
 ];
 
+export const ACHIEVEMENTS: AchDef[] = ACHIEVEMENT_BASE.map((achievement) => ({
+	...achievement,
+	reward: Math.ceil(achievement.reward / 20) * 10
+}));
+
 /* ------------------------------- état + persistance ------------------------------- */
 
 interface QuestState {
@@ -185,6 +188,7 @@ interface EcoState {
 	stats: Stats;
 	day: string;
 	week: string;
+	rewardedMatches: number;
 	daily: Record<string, QuestState>;
 	weekly: Record<string, QuestState>;
 	ach: Record<string, { claimed: boolean }>;
@@ -213,6 +217,7 @@ export const eco = $state<EcoState>({
 	stats: blankStats(),
 	day: '',
 	week: '',
+	rewardedMatches: 0,
 	daily: {},
 	weekly: {},
 	ach: {},
@@ -249,6 +254,7 @@ export function initEconomy(): void {
 			eco.stats = { ...blankStats(), ...(d.stats ?? {}) };
 			eco.day = d.day ?? '';
 			eco.week = d.week ?? '';
+			eco.rewardedMatches = d.rewardedMatches ?? 0;
 			eco.daily = d.daily ?? {};
 			eco.weekly = d.weekly ?? {};
 			eco.ach = d.ach ?? {};
@@ -266,6 +272,7 @@ export function initEconomy(): void {
 	if (eco.day !== today) {
 		eco.day = today;
 		eco.daily = {};
+		eco.rewardedMatches = 0;
 	}
 	if (eco.week !== thisWeek) {
 		eco.week = thisWeek;
@@ -295,6 +302,22 @@ export function spend(amount: number): boolean {
 	eco.balance -= amount;
 	persist();
 	return true;
+}
+
+export type MatchResult = keyof typeof MATCH_REWARD;
+
+export function canEarnMatchReward(): boolean {
+	return eco.rewardedMatches < DAILY_REWARDED_MATCHES;
+}
+
+export function rewardMatch(result: MatchResult, reason: string): number {
+	const event: TrackEvent = result === 'pvpWin' ? 'pvpWin' : result === 'win' ? 'win' : 'loss';
+	track(event);
+	if (!canEarnMatchReward()) return 0;
+	eco.rewardedMatches++;
+	const amount = MATCH_REWARD[result];
+	earn(amount, reason);
+	return amount;
 }
 
 /** Libère des Syllabes. `raison` alimente le bandeau de gain. */

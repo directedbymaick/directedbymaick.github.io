@@ -21,6 +21,10 @@ Total : **60 cartes**.
 Deux factions majeures portent les decks principaux. Trois factions mineures servent de renforts
 et d'identités secondaires.
 
+Dans le set 01, seuls **Vasar** et **Exar** disposent d'un pool autonome suffisant pour être le
+peuple principal d'un deck. **Eshar**, **Morar** et **Velar** sont des peuples de soutien : ils
+peuvent compléter un deck, mais ne sont pas encore présentés comme des factions autonomes.
+
 | Faction | Cartes | Rôle |
 |---|---:|---|
 | **Vasar** | 22 | Deck majeur : ordre, protection, récitation. |

@@ -4,7 +4,7 @@
 	import { cards, getCard } from '$lib/cards';
 	import { simulate, buildDeck, MAX_COPIES } from '$lib/game/engine';
 	import { META_DECKS } from '$lib/metadecks';
-	import { loadDecks, type Deck } from '$lib/decks';
+	import { loadDecks, validateDeck, type Deck } from '$lib/decks';
 	import type { CardData, FactionId } from '$lib/types';
 
 	/* ---- configuration du duel : les modulations du Laboratoire ---- */
@@ -23,7 +23,7 @@
 
 	let myDecks = $state<Deck[]>([]);
 	onMount(() => {
-		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
+		myDecks = loadDecks().filter((d) => validateDeck(d, getCard).isLegal);
 	});
 
 	const CARD_OPTIONS = [...cards].sort(

@@ -12,10 +12,12 @@ const CURRENT = 'expelled-current-email';
 /** Les clés qui appartiennent au joueur (synchronisées avec le compte). */
 export const PLAYER_KEYS = [
 	'travelers-collection-v1',
+	'travelers-pity-v1',
 	'expelled-eco',
 	'expelled-decks',
 	'expelled-pseudo',
-	'expelled-mail'
+	'expelled-mail',
+	'boutique'
 ];
 
 export function currentEmail(): string | null {

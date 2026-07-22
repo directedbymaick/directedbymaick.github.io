@@ -6,6 +6,7 @@
  * Les 60 effets du set sont implémentés carte par carte (registre par id).
  */
 import type { CardData, CardKind, FactionId } from '$lib/types';
+import { GAME_RULES } from '$lib/game/rules';
 
 export type Side = 0 | 1;
 
@@ -195,7 +196,7 @@ export function buildDeck(cardPool: CardData[], major: FactionId, rng: () => num
 	let guard = 0;
 	while (deck.length < 24 && guard++ < 500) add(pool[Math.floor(rng() * pool.length)]);
 	guard = 0;
-	while (deck.length < 30 && guard++ < 500) add(minors[Math.floor(rng() * minors.length)]);
+	while (deck.length < GAME_RULES.deckSize && guard++ < 500) add(minors[Math.floor(rng() * minors.length)]);
 	// mélange
 	for (let i = deck.length - 1; i > 0; i--) {
 		const j = Math.floor(rng() * (i + 1));
@@ -555,7 +556,7 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean, sel?: Sel):
 			return true;
 		case 'chant-daube':
 			if (act) {
-				p.korum = Math.min(25, p.korum + 2);
+				p.korum = Math.min(GAME_RULES.startingKorum, p.korum + 2);
 				ev(g, { t: 'heal', side, msg: `Le Korum de ${p.name} respire (+2 → ${p.korum})` });
 				draw(g, side, 1);
 			}
@@ -1146,7 +1147,7 @@ function startTurn(g: G, side: Side): void {
 	const p = g.players[side];
 	g.active = side;
 	g.t += 1;
-	p.maxWill = Math.min(10, p.maxWill + 1);
+	p.maxWill = Math.min(GAME_RULES.maxWill, p.maxWill + 1);
 	p.will = p.maxWill;
 	p.firstCardPlayed = false;
 	p.allyDiedLastTurn = p.allyDiedThisTurn;
@@ -1200,12 +1201,12 @@ export function simulate(
 	const rng = mulberry32(seed);
 	const preset = (i: 0 | 1): CardData[] | null => {
 		const p = presetDecks?.[i];
-		return p && p.length === 30 ? p : null;
+		return p && p.length === GAME_RULES.deckSize ? p : null;
 	};
 	const mk = (faction: FactionId, name: string, forced: CardData[] | null): P => ({
 		name,
 		faction,
-		korum: 25,
+		korum: GAME_RULES.startingKorum,
 		will: 0,
 		maxWill: 0,
 		deck: forced ? shuffleInPlace([...forced], rng) : buildDeck(cardPool, faction, rng),
@@ -1239,8 +1240,8 @@ export function simulate(
 		g.players[1].deck.map((c) => c.id)
 	];
 	// équilibrage run-002 : le second joueur pioche 5 cartes de départ
-	draw(g, 0, 4, true);
-	draw(g, 1, 5, true);
+	draw(g, 0, GAME_RULES.firstHandSize, true);
+	draw(g, 1, GAME_RULES.secondHandSize, true);
 	ev(g, { t: 'start', side: 0, msg: `Le duel commence : ${g.players[0].name} contre ${g.players[1].name}` });
 
 	while (g.winner === null && g.t < 80) {
@@ -1477,7 +1478,7 @@ export class Duel {
 		const mk = (faction: FactionId, name: string, deck: CardData[]): P => ({
 			name,
 			faction,
-			korum: 25,
+			korum: GAME_RULES.startingKorum,
 			will: 0,
 			maxWill: 0,
 			deck,
@@ -1494,7 +1495,7 @@ export class Duel {
 			played: {}
 		});
 		const hd =
-			humanDeck && humanDeck.length === 30
+			humanDeck && humanDeck.length === GAME_RULES.deckSize
 				? shuffleInPlace([...humanDeck], rng)
 				: buildDeck(cardPool, humanFaction, rng);
 		this.g = {
@@ -1510,8 +1511,8 @@ export class Duel {
 			uidSeq: 1,
 			events: []
 		};
-		draw(this.g, 0, 4, true);
-		draw(this.g, 1, 5, true);
+		draw(this.g, 0, GAME_RULES.firstHandSize, true);
+		draw(this.g, 1, GAME_RULES.secondHandSize, true);
 		ev(this.g, {
 			t: 'start',
 			side: 0,
@@ -1719,7 +1720,7 @@ export class Match {
 		const mk = (faction: FactionId, name: string, deck: CardData[]): P => ({
 			name,
 			faction,
-			korum: 25,
+			korum: GAME_RULES.startingKorum,
 			will: 0,
 			maxWill: 0,
 			deck,
@@ -1736,9 +1737,9 @@ export class Match {
 			played: {}
 		});
 		const da =
-			a.deck && a.deck.length === 30 ? shuffleInPlace([...a.deck], rng) : buildDeck(cardPool, a.faction, rng);
+			a.deck && a.deck.length === GAME_RULES.deckSize ? shuffleInPlace([...a.deck], rng) : buildDeck(cardPool, a.faction, rng);
 		const db =
-			b.deck && b.deck.length === 30 ? shuffleInPlace([...b.deck], rng) : buildDeck(cardPool, b.faction, rng);
+			b.deck && b.deck.length === GAME_RULES.deckSize ? shuffleInPlace([...b.deck], rng) : buildDeck(cardPool, b.faction, rng);
 		this.g = {
 			t: 0,
 			active: 0,
@@ -1749,8 +1750,8 @@ export class Match {
 			uidSeq: 1,
 			events: []
 		};
-		draw(this.g, 0, 4, true);
-		draw(this.g, 1, 5, true);
+		draw(this.g, 0, GAME_RULES.firstHandSize, true);
+		draw(this.g, 1, GAME_RULES.secondHandSize, true);
 		ev(this.g, {
 			t: 'start',
 			side: 0,

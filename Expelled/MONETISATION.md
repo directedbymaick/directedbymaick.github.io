@@ -20,31 +20,22 @@ Quatre conséquences, non négociables :
 2. **Les taux sont identiques** dans un booster acheté et dans un booster gagné.
    Ils sont publiés et mesurés sur le moteur réel (cf. `scripts/taux.mjs`).
 3. **Les cosmétiques ne sont jamais des cartes** et n'ont aucun effet en duel.
-4. **La générosité actuelle ne baisse pas.** Le joueur gratuit garde ses 3 à 5
-   boosters par jour. La monétisation s'ajoute, elle ne prélève pas.
+4. **La progression gratuite reste complète.** La cible est de 1,5 à 3 boosters
+   par jour selon l'engagement, sans récompense de match illimitée.
 
-Le repère chiffré : un joueur gratuit complète le set de base en **114 boosters**,
-soit environ un mois. Aucune offre ne doit rendre ce chemin plus long qu'il ne
-l'est aujourd'hui.
+Le repère chiffré doit être suivi en distribution : médiane, P90 et P95. Une
+simulation de référence donne actuellement une médiane proche de 112 boosters,
+mais un P90 proche de 193. Le crafting doit réduire cette dispersion.
 
 ---
 
 ## 2. Ce qui se vend
 
-### Boosters — l'accélérateur
+### Boosters payants — suspendus
 
-Le joueur gratuit gagne ~350 Éclats par jour, le booster en coûte 100. L'offre
-payante vise donc le joueur qui veut avancer plus vite, pas celui qui serait
-bloqué sans elle.
-
-| Offre | Contenu | Prix | Par booster |
-|---|---|---|---|
-| Poignée | 5 boosters | 4,99 € | 1,00 € |
-| Réquisition | 12 boosters | 9,99 € | 0,83 € |
-| Grande réquisition | 30 boosters + 1 Full Art garanti | 19,99 € | 0,67 € |
-
-Repères du marché : Pokémon Pocket et Hearthstone se situent entre 0,80 € et
-1,00 € le booster. On est dedans, avec une dégressivité classique.
+Les boosters aléatoires ne sont pas vendus au lancement. Ils restent obtenables
+en jeu contre des Éclats. Une éventuelle commercialisation demandera d'abord une
+autorité serveur, une étude juridique par marché et des contrôles adaptés aux mineurs.
 
 ### Cosmétiques — le seul contenu réellement exclusif
 
@@ -59,8 +50,8 @@ porter l'effort de désirabilité.
 
 ### Passe du Silence — la saison
 
-Huit semaines, deux voies. La voie gratuite donne des Éclats et des boosters ;
-la voie payante ajoute des cosmétiques exclusifs et double les Éclats.
+Huit semaines, deux voies. La voie gratuite donne des Éclats et des objectifs ;
+la voie payante ajoute uniquement des cosmétiques exclusifs, sans doubler les Éclats.
 
 | | Prix |
 |---|---|

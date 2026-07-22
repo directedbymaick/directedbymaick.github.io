@@ -3,8 +3,8 @@
  * INTENTIONS (preset de foil, palette, seed) — jamais des valeurs CSS résolues.
  * Le rendu (Card.svelte + effects/) dérive la matière visuelle de ces intentions.
  *
- * Univers : TRAVELERS (bible : D:\Travelers\00_BIBLE). RIKKEN vs KAIROS,
- * pool neutre Les Époques. Raretés calquées sur la palette CELL du manga.
+ * Univers : Expelled. Le contrat reste indépendant du rendu Svelte afin que
+ * le moteur, la Forge et les pages de collection partagent les mêmes données.
  */
 
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary' | 'prism';

@@ -5,10 +5,11 @@
 	import logo from '$lib/assets/logo.svg';
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
-	import { loadDecks, type Deck } from '$lib/decks';
+	import { loadDecks, validateDeck, validateDeckOwnership, type Deck } from '$lib/decks';
+	import { loadCollection } from '$lib/gacha';
 	import { session, initSession } from '$lib/account.svelte';
 	import { nsKey } from '$lib/store';
-	import { initEconomy, earn, track, MATCH_REWARD } from '$lib/economy.svelte';
+	import { initEconomy, rewardMatch, track, MATCH_REWARD } from '$lib/economy.svelte';
 	import {
 		Match,
 		MAJORS,
@@ -94,7 +95,10 @@
 	onMount(() => {
 		initSession();
 		initEconomy();
-		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
+		const collection = loadCollection();
+		myDecks = loadDecks().filter(
+			(d) => validateDeck(d, getCard).isLegal && validateDeckOwnership(d, collection).isLegal
+		);
 	});
 
 	/* la porte PvP suit l'état de connexion (résolu de façon asynchrone) */
@@ -153,8 +157,11 @@
 	function onHostData(msg: Msg) {
 		if (msg.t === 'hello') {
 			const mine = chosen();
-			const guestDeck = msg.deck
-				? (msg.deck.map((id) => getCard(id)).filter(Boolean) as CardData[])
+			const guestDeckData = msg.deck
+				? { id: 'remote', name: 'Deck distant', updatedAt: 0, cards: msg.deck.reduce<Record<string, number>>((counts, id) => ({ ...counts, [id]: (counts[id] ?? 0) + 1 }), {}) }
+				: null;
+			const guestDeck = guestDeckData && validateDeck(guestDeckData, getCard).isLegal
+				? (msg.deck!.map((id) => getCard(id)).filter(Boolean) as CardData[])
 				: null;
 			match = new Match(
 				cards,
@@ -293,13 +300,8 @@
 	$effect(() => {
 		if (winner === null || rewarded || mode !== 'play') return;
 		rewarded = true;
-		if (winner === mySide) {
-			earn(MATCH_REWARD.pvpWin, 'Victoire en salon');
-			track('pvpWin');
-		} else {
-			earn(MATCH_REWARD.pvpLoss, 'Duel de salon');
-			track('loss');
-		}
+		if (winner === mySide) rewardMatch('pvpWin', 'Victoire en salon');
+		else rewardMatch('pvpLoss', 'Duel de salon');
 	});
 
 	/* ============ actions ============ */

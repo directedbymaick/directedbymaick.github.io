@@ -2,6 +2,7 @@
 	import Card from '$lib/Card.svelte';
 	import { getCard } from '$lib/cards';
 	import { charter } from '$lib/charter';
+	import { GAME_RULES } from '$lib/game/rules';
 
 	// Korven porte tout ce qu'il faut montrer : coût, type, effet, stats.
 	const demo = getCard('korven');
@@ -19,7 +20,7 @@
 		{
 			n: '01',
 			t: "L'objectif",
-			d: 'Chaque Korum commence avec 30 Intégrité. Réduisez celui de votre adversaire à zéro avant qu’il ne fasse de même avec le vôtre.'
+			d: `Chaque Korum commence avec ${GAME_RULES.startingKorum} Intégrité. Réduisez celui de votre adversaire à zéro avant qu’il ne fasse de même avec le vôtre.`
 		},
 		{
 			n: '02',

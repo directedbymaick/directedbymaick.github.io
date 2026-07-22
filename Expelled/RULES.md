@@ -306,7 +306,7 @@ Les valeurs suivantes sont provisoires :
 
 - Korum à 25 Intégrité ;
 - main de départ à 4 cartes ;
-- dégâts retirés à la fin du tour ;
+- dégâts persistants sur les Êtres ;
 - premier joueur qui ne pioche pas ;
 - fatigue à 1 dégât par pioche manquée ;
 - `Prononcer (n)` avec effet valant environ `2 × n`.

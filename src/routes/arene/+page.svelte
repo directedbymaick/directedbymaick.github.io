@@ -5,8 +5,9 @@
 	import logo from '$lib/assets/logo.svg';
 	import { charter } from '$lib/charter';
 	import { cards, getCard } from '$lib/cards';
-	import { loadDecks, type Deck } from '$lib/decks';
-	import { initEconomy, earn, track, MATCH_REWARD } from '$lib/economy.svelte';
+	import { loadDecks, validateDeck, validateDeckOwnership, type Deck } from '$lib/decks';
+	import { loadCollection } from '$lib/gacha';
+	import { initEconomy, rewardMatch, track, MATCH_REWARD } from '$lib/economy.svelte';
 	import {
 		Duel,
 		MAJORS,
@@ -28,7 +29,10 @@
 
 	onMount(() => {
 		initEconomy();
-		myDecks = loadDecks().filter((d) => Object.values(d.cards).reduce((a, b) => a + b, 0) === 30);
+		const collection = loadCollection();
+		myDecks = loadDecks().filter(
+			(d) => validateDeck(d, getCard).isLegal && validateDeckOwnership(d, collection).isLegal
+		);
 	});
 
 	function expandDeck(d: Deck): CardData[] {
@@ -69,13 +73,8 @@
 	$effect(() => {
 		if (winner === null || rewarded || phase !== 'play') return;
 		rewarded = true;
-		if (winner === 0) {
-			earn(MATCH_REWARD.win, 'Victoire en Arène');
-			track('win');
-		} else {
-			earn(MATCH_REWARD.loss, 'Défaite honorable');
-			track('loss');
-		}
+		if (winner === 0) rewardMatch('win', 'Victoire en Arène');
+		else rewardMatch('loss', 'Défaite honorable');
 	});
 
 	function refresh() {

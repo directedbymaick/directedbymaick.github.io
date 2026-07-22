@@ -118,6 +118,11 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<meta name="theme-color" content="#05070c" />
+	<meta property="og:site_name" content={charter.game.name} />
+	<meta property="og:locale" content="fr_FR" />
+	<meta property="og:type" content="website" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 {#if plateau}
@@ -126,6 +131,7 @@
 	{@render children()}
 {:else}
 <div class="app">
+	<a class="skip-link" href="#contenu">Aller au contenu</a>
 	<nav>
 		<div class="nav-inner">
 			<a class="brand" href="/">
@@ -211,7 +217,7 @@
 		</div>
 	{/if}
 
-	<main>
+	<main id="contenu">
 		{@render children()}
 	</main>
 
@@ -276,6 +282,21 @@
 {/if}
 
 <style>
+	:global(:focus-visible) {
+		outline: 2px solid #e5c568;
+		outline-offset: 3px;
+	}
+	.skip-link {
+		position: fixed;
+		left: 1rem;
+		top: 1rem;
+		z-index: 1000;
+		padding: .65rem 1rem;
+		color: #080a0e;
+		background: #f2d989;
+		transform: translateY(-180%);
+	}
+	.skip-link:focus { transform: translateY(0); }
 	:global(:root) {
 		/* tokens motion (cf. Expelled/PACKSCOM-CODES.md §2.6) : ressorts CSS linear() */
 		--ease-spring: linear(

@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Card from '$lib/Card.svelte';
 	import FactionSigil from '$lib/FactionSigil.svelte';
 	import { charter } from '$lib/charter';
 	import { getCard } from '$lib/cards';
 	import { META_DECKS, type MetaDeck } from '$lib/metadecks';
-	import { loadDecks, saveDecks, newDeck } from '$lib/decks';
+	import { loadDecks, saveDecks, newDeck, validateDeckOwnership } from '$lib/decks';
+	import { loadCollection } from '$lib/gacha';
 	import type { CardData, Rarity } from '$lib/types';
 
 	const STARS: Record<Rarity, number> = { common: 2, rare: 3, epic: 4, legendary: 5, prism: 5 };
@@ -13,6 +15,16 @@
 
 	let zoomed = $state<CardData | null>(null);
 	let imported = $state<Record<string, boolean>>({});
+	let collection = $state<Record<string, number>>({});
+
+	onMount(() => {
+		collection = loadCollection();
+	});
+
+	function missingCards(d: MetaDeck): number {
+		const deck = { id: d.id, name: d.name, cards: d.cards, updatedAt: 0 };
+		return validateDeckOwnership(deck, collection).errors.length;
+	}
 
 	function rowsOf(d: MetaDeck, kind: (typeof KINDS)[number]) {
 		return Object.entries(d.cards)
@@ -35,6 +47,7 @@
 	}
 
 	function importDeck(d: MetaDeck) {
+		if (missingCards(d) > 0) return;
 		const decks = loadDecks();
 		const copy = newDeck(d.name);
 		copy.cards = { ...d.cards };
@@ -68,6 +81,7 @@
 {#each META_DECKS as d (d.id)}
 	{@const curve = curveOf(d)}
 	{@const curveMax = Math.max(1, ...curve)}
+	{@const missing = missingCards(d)}
 	<article class="deck" style="--fc: {charter.factions[d.faction].color}">
 		<header class="dhead">
 			<span class="dsigil"><FactionSigil faction={d.faction} /></span>
@@ -83,7 +97,9 @@
 				{#if imported[d.id]}
 					<span class="dimported">✓ Ajouté à vos decks</span>
 				{:else}
-					<button class="dimport" onclick={() => importDeck(d)}>Ajouter à mes decks</button>
+					<button class="dimport" disabled={missing > 0} onclick={() => importDeck(d)}>
+						{missing > 0 ? `${missing} carte(s) manquante(s)` : 'Ajouter à mes decks'}
+					</button>
 				{/if}
 			</div>
 		</header>

@@ -4,12 +4,13 @@
 	import { cards } from '$lib/cards';
 	import { paliers } from '$lib/paliers';
 	import type { FactionId, Rarity } from '$lib/types';
+	import { GAME_RULES } from '$lib/game/rules';
 
 	const factions = Object.keys(charter.factions) as FactionId[];
 	const rarities = Object.keys(charter.rarities) as Rarity[];
 
 	const MATERIAL_LABEL: Record<string, string> = {
-		carbone: 'Carbone tissé',
+		carbone: 'Obsidienne mate',
 		nacre: 'Nacre',
 		argent: 'Argent brossé',
 		or: 'Or brossé',
@@ -17,7 +18,7 @@
 	};
 
 	const BASICS = [
-		{ t: 'Objectif', d: 'Chaque joueur commence avec un deck de 30 cartes et un Korum à 30 Intégrité. Réduisez le Korum adverse à zéro pour gagner.' },
+		{ t: 'Objectif', d: `Chaque joueur commence avec un deck de ${GAME_RULES.deckSize} cartes et un Korum à ${GAME_RULES.startingKorum} Intégrité. Réduisez le Korum adverse à zéro pour gagner.` },
 		{ t: 'Volonté', d: 'La Volonté permet de jouer vos cartes et d’activer Prononcer. Elle se recharge à chaque tour et augmente progressivement jusqu’à 10.' },
 		{ t: 'Types de cartes', d: 'Les Êtres combattent sur le plateau. Les Verbes produisent un effet immédiat. Les Reliques restent en jeu. Chaque camp ne peut contrôler qu’un seul Lieu.' },
 		{ t: 'Combat', d: 'Un Être peut attaquer une fois par tour. Lorsqu’il affronte un autre Être, les deux s’infligent simultanément des dégâts égaux à leur ATQ. Le Korum est protégé tant qu’un défenseur valide se trouve en jeu.' }

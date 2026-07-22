@@ -17,8 +17,8 @@ export { FOIL_RATE, ALT_RATE, ALT_FULLART_PART, POIDS_SP };
 
 
 /**
- * Chance qu'un tirage donne UN art alternatif donné, plutôt que l'illustration
- * de base. Une carte à deux alts leur cède donc 2 × ce taux.
+ * Chance totale qu'un tirage donne un art alternatif plutôt que l'illustration
+ * de base. Cette enveloppe est partagée entre tous les alts de la carte.
  *
  * Un alt ne sort JAMAIS en Raw : c'est une pièce de collection, elle porte
  * toujours une finition.
@@ -143,7 +143,8 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 	/* Les arts alternatifs prélèvent leur part sur l'illustration de base : le
 	   total des versions d'une carte vaut toujours 1. */
 	const alts = card.alts ?? [];
-	const pArt = 1 - alts.length * ALT_RATE;
+	const pAlt = alts.length ? ALT_RATE / alts.length : 0;
+	const pArt = 1 - (alts.length ? ALT_RATE : 0);
 
 	for (const fullArt of eligible ? [false, true] : [false]) {
 		const pForme = (fullArt ? pFA : 1 - pFA) * pArt;
@@ -254,7 +255,7 @@ export function versionsOf(card: CardData, fullArtRate: number): CardVersion[] {
 				label: `Alt ${i + 1}${f.fa ? ' · Full Art' : ''} · ${foilLabel(f.foil, f.vue, f.fa)}`,
 				foil: f.foil,
 				fullArt: f.fa,
-				rate: ALT_RATE * f.p,
+				rate: pAlt * f.p,
 				view: { ...f.vue, gene: { ...f.vue.gene, foilPreset: f.foil } }
 			});
 		}

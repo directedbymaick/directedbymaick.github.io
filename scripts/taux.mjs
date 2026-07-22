@@ -40,7 +40,12 @@ function empreinte() {
 		h.update(f);
 		h.update(readFileSync(`cards/${f}`));
 	}
-	for (const f of ['src/lib/gacha.ts', 'src/lib/variants.ts', 'src/lib/cards.ts']) {
+	for (const f of [
+		'src/lib/gacha.ts',
+		'src/lib/variants.ts',
+		'src/lib/cards.ts',
+		'src/lib/tirage.config.ts'
+	]) {
 		h.update(readFileSync(f));
 	}
 	h.update(String(BOOSTERS));

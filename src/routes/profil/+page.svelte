@@ -38,6 +38,10 @@
 		deckSize,
 		maxCopiesOf,
 		canAdd,
+		canAddFaction,
+		validateDeck,
+		validateDeckOwnership,
+		ownedCopies,
 		costCurve,
 		factionSpread
 	} from '$lib/decks';
@@ -135,7 +139,9 @@
 	const achCtx = $derived<AchContext>({
 		uniques: stats.unique,
 		setSize: cards.length,
-		fullDecks: decks.filter((d) => deckSize(d) === 30).length,
+		fullDecks: decks.filter(
+			(d) => validateDeck(d, getCard).isLegal && validateDeckOwnership(d, collection).isLegal
+		).length,
 		prisms: cards.filter((c) => c.rarity === 'prism' && (collection[c.id] ?? 0) > 0).length,
 		prismTotal: cards.filter((c) => c.rarity === 'prism').length,
 		legendaries: cards.filter((c) => c.rarity === 'legendary' && (collection[c.id] ?? 0) > 0)
@@ -174,13 +180,16 @@
 	}
 	const surplusCount = $derived(sellables.reduce((s, v) => s + surplusOf(v.key), 0));
 	const surplusValue = $derived(
-		sellables.reduce((s, v) => s + surplusOf(v.key) * (SELL_VALUE[v.rarity] ?? 5), 0)
+		sellables.reduce(
+			(s, v) => s + (v.vraie === 'prism' ? 0 : surplusOf(v.key) * (SELL_VALUE[v.vraie] ?? 2)),
+			0
+		)
 	);
 	/** Ce que rend UN exemplaire : Syllabes pour une Prismatique, Éclats sinon. */
-	function valeurUnitaire(vraie: string, rarity: string) {
+	function valeurUnitaire(vraie: string) {
 		return vraie === 'prism'
 			? { syllabes: SYLLABES_DEFAIRE, eclats: 0 }
-			: { syllabes: 0, eclats: SELL_VALUE[rarity] ?? 5 };
+			: { syllabes: 0, eclats: SELL_VALUE[vraie] ?? 2 };
 	}
 
 	/**
@@ -202,7 +211,7 @@
 		collection = { ...collection };
 		saveCollection($state.snapshot(collection));
 
-		const { syllabes, eclats } = valeurUnitaire(v.vraie, v.rarity);
+		const { syllabes, eclats } = valeurUnitaire(v.vraie);
 		if (syllabes) gagnerSyllabes(syllabes, `${v.name} défait`);
 		else earn(eclats, `Revente : ${v.name}`);
 	}
@@ -217,7 +226,7 @@
 		collection = { ...collection };
 		saveCollection($state.snapshot(collection));
 		if (v.vraie === 'prism') gagnerSyllabes(n * SYLLABES_DEFAIRE, `${v.name} défait ×${n}`);
-		else earn(n * (SELL_VALUE[v.rarity] ?? 5), `Revente : ${v.name} ×${n}`);
+		else earn(n * (SELL_VALUE[v.vraie] ?? 2), `Revente : ${v.name} ×${n}`);
 	}
 	function sellAllSurplus() {
 		let total = 0;
@@ -228,7 +237,7 @@
 			if (n <= 0) continue;
 			collection[v.key] = SELL_KEEP;
 			if (v.vraie === 'prism') syll += n * SYLLABES_DEFAIRE;
-			else total += n * (SELL_VALUE[v.rarity] ?? 5);
+			else total += n * (SELL_VALUE[v.vraie] ?? 2);
 			count += n;
 		}
 		if (syll > 0) gagnerSyllabes(syll, 'Noms entiers défaits');
@@ -279,7 +288,12 @@
 	function addTo(cardId: string) {
 		if (!cur) return;
 		const card = getCard(cardId);
-		if (!card || !canAdd(cur, card)) return;
+		if (
+			!card ||
+			(cur.cards[cardId] ?? 0) >= ownedCopies(collection, cardId) ||
+			!canAdd(cur, card) ||
+			!canAddFaction(cur, card, getCard)
+		) return;
 		cur.cards[cardId] = (cur.cards[cardId] ?? 0) + 1;
 		cur.updatedAt = Date.now();
 	}
@@ -429,7 +443,7 @@
 					<span class="lock">Non possédée</span>
 				{/if}
 				{#if owned > 0}
-					{@const v = valeurUnitaire(e.view.sourceRarity ?? e.view.rarity, e.view.rarity)}
+					{@const v = valeurUnitaire(e.view.sourceRarity ?? e.view.rarity)}
 					<button
 						class="vendre1"
 						title="Vendre un exemplaire"
@@ -613,7 +627,7 @@
 					<li>
 						<button
 							class="row"
-							disabled={!canAdd(cur, c)}
+							disabled={!canAdd(cur, c) || !canAddFaction(cur, c, getCard)}
 							onclick={() => addTo(c.id)}
 							title="{c.name} — ajouter"
 						>
