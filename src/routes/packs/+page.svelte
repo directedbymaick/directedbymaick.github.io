@@ -79,8 +79,8 @@
 	   probabilités du sachet qu'on s'apprête à ouvrir. */
 	const ECHELLE = $derived(paliers(editionId));
 
-	/* ---- carrousel des cartes vedettes de l'édition ---- */
-	const vedettes = $derived(vedettesDe(editionId));
+	/* ---- carrousel des cartes vedettes de l'édition (jusqu'à dix) ---- */
+	const vedettes = $derived(vedettesDe(editionId, 10));
 	let vedettesOuvert = $state(false);
 	let vedetteIdx = $state(0);
 	function ouvrirVedettes() {
@@ -1121,7 +1121,9 @@
 		box-sizing: border-box;
 	}
 	.vv-carte {
-		width: min(240px, 56vw);
+		/* on PILOTE la largeur du composant Card (--card-w) : sinon il garde ses
+		   320px par défaut et déborde du wrapper, décentré vers la droite. */
+		--card-w: min(240px, 56vw);
 		animation: vvslide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 	@keyframes vvslide {
