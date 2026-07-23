@@ -601,7 +601,7 @@
 						/>
 					{/key}
 				</div>
-				<button class="vedettes-lien" onclick={ouvrirVedettes}>★ Les 5 cartes vedettes de l’édition</button>
+				<button class="vedettes-lien" onclick={ouvrirVedettes}>★ Les {vedettes.length} cartes vedettes de l’édition</button>
 				<div class="openrow">
 					<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
 					<button class="ghost bulk" disabled={eco.balance < PACK_PRICE * 5} onclick={() => bulkOpen(5)}>
@@ -711,7 +711,7 @@
 
 <!-- ============ CARROUSEL DES CARTES VEDETTES ============
      Touche le sachet (ou le lien) sur l'écran d'accueil pour parcourir les
-     cinq plus belles pièces de l'édition et leur taux dans ce booster. -->
+     plus belles pièces de l'édition et leur taux dans ce booster. -->
 {#if vedettesOuvert && vedettes.length}
 	{@const v = vedettes[vedetteIdx]}
 	<div class="vedettes-voile" role="dialog" aria-modal="true" aria-label="Cartes vedettes de l’édition">
