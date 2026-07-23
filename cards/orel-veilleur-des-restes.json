@@ -19,5 +19,6 @@
 	},
 	"attack": 2,
 	"health": 5,
-	"flavor": "Il ne garde pas les morts. Il garde le passage qu’ils ont laissé."
+	"flavor": "Il ne garde pas les morts. Il garde le passage qu’ils ont laissé.",
+	"artPosition": "center 18%"
 }

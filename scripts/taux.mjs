@@ -44,7 +44,8 @@ function empreinte() {
 		'src/lib/gacha.ts',
 		'src/lib/variants.ts',
 		'src/lib/cards.ts',
-		'src/lib/tirage.config.ts'
+		'src/lib/tirage.config.ts',
+		'src/lib/editions.ts'
 	]) {
 		h.update(readFileSync(f));
 	}
@@ -83,13 +84,15 @@ function mulberry32(a) {
 const serveur = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 try {
 	const gacha = await serveur.ssrLoadModule('/src/lib/gacha.ts');
+	const { EDITIONS } = await serveur.ssrLoadModule('/src/lib/editions.ts');
 
 	const vrai = Math.random;
 	Math.random = mulberry32(GRAINE);
 
 	const versions = new Map();
-	// un joueur unique qui ouvre tout à la suite : les pity se comportent comme en jeu
-	const pity = { sansPrism: 0, sansFullArt: 0 };
+	/* un joueur unique qui alterne les DEUX éditions de boosters, chacune avec sa
+	   pitié — les taux publiés décrivent l'offre complète du comptoir */
+	const pities = EDITIONS.map(() => ({ sansPrism: 0, sansFullArt: 0 }));
 	let cartes = 0;
 	const t0 = Date.now();
 
@@ -109,7 +112,8 @@ try {
 	}
 
 	for (let i = 0; i < BOOSTERS; i++) {
-		const pulls = gacha.openPack(pity);
+		const ed = i % EDITIONS.length;
+		const pulls = gacha.openPack(pities[ed], EDITIONS[ed].cartes);
 		releverBooster(pulls, avec);
 		for (const pull of pulls) {
 			// versEnPull pose card.id = clé de version : c'est notre identifiant
@@ -126,7 +130,8 @@ try {
 	   compare au tirage réel. Plus courte, elle n'a qu'à donner l'ordre de grandeur. */
 	const REF = Math.min(BOOSTERS, 400_000);
 	const sans = compteur();
-	for (let i = 0; i < REF; i++) releverBooster(gacha.openPack(undefined), sans);
+	for (let i = 0; i < REF; i++)
+		releverBooster(gacha.openPack(undefined, EDITIONS[i % EDITIONS.length].cartes), sans);
 
 	Math.random = vrai;
 

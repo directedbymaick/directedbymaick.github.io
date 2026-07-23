@@ -3,6 +3,7 @@
 	import Card from '$lib/Card.svelte';
 	import CardBack from '$lib/CardBack.svelte';
 	import PackVisual from '$lib/PackVisual.svelte';
+	import { EDITIONS, editionDe } from '$lib/editions';
 	import { createPackFx, type PackFx, type BurstSpec } from '$lib/effects/packfx';
 	import { charter } from '$lib/charter';
 	import { cards } from '$lib/cards';
@@ -76,6 +77,17 @@
 	/* ---- pitié ---- */
 	let pity = $state<Pity>({ sansPrism: 0, sansFullArt: 0 });
 
+	/* ---- éditions : deux sachets, deux pools, deux pitiés ---- */
+	let editionId = $state<'ed1' | 'ed2'>('ed2');
+	const edition = $derived(editionDe(editionId));
+
+	function choisirEdition(id: 'ed1' | 'ed2') {
+		if (editionId === id) return;
+		savePity($state.snapshot(pity), edition.clePity);
+		editionId = id;
+		pity = loadPity(editionDe(id).clePity);
+	}
+
 	const RARITY_TINT: Record<Rarity, string> = {
 		common: '#8b95a5',
 		rare: '#e8e4da',
@@ -91,7 +103,7 @@
 	let reduced = false;
 	onMount(() => {
 		initEconomy();
-		pity = loadPity();
+		pity = loadPity(edition.clePity);
 		reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		if (!reduced) {
 			(async () => {
@@ -281,8 +293,8 @@
 		// le booster se paye en Éclats — dernier garde-fou si l'UI a laissé passer
 		if (!spend(PACK_PRICE)) return;
 		track('packOpened');
-		pulls = openPack(pity);
-		savePity($state.snapshot(pity));
+		pulls = openPack(pity, edition.cartes);
+		savePity($state.snapshot(pity), edition.clePity);
 		track('pull', pulls.length);
 		freshIds = addToCollection(collection, pulls);
 		moissonnerSyllabes(pulls, freshIds);
@@ -441,7 +453,7 @@
 		const all: Pull[] = [];
 		let god = false;
 		for (let k = 0; k < n; k++) {
-			const pk = openPack(pity);
+			const pk = openPack(pity, edition.cartes);
 			if (isGodPack(pk)) god = true;
 			all.push(...pk);
 		}
@@ -471,7 +483,7 @@
 		pulls = all;
 		godHit = god;
 		bulk = true;
-		savePity($state.snapshot(pity));
+		savePity($state.snapshot(pity), edition.clePity);
 		stage = 'recap';
 		await tick();
 		// une seule note de lumière au point du sachet — le reste est en CSS
@@ -525,13 +537,38 @@
 	</div>
 	{#if stage === 'idle'}
 		<div class="stage-inner">
+			<!-- le choix de l'édition : deux sachets, deux pools -->
+			<div class="editions" role="tablist" aria-label="Édition du booster">
+				{#each EDITIONS as ed (ed.id)}
+					<button
+						role="tab"
+						class="edbtn"
+						class:on={editionId === ed.id}
+						aria-selected={editionId === ed.id}
+						onclick={() => choisirEdition(ed.id)}
+					>
+						<b>{ed.nom}</b>
+						<small>{ed.sousTitre} · {ed.cartes.length} cartes</small>
+					</button>
+				{/each}
+			</div>
 			<p class="price">
-				<i class="shard" aria-hidden="true"></i> Booster — <b>{PACK_PRICE}</b> Éclats · solde
+				<i class="shard" aria-hidden="true"></i> Booster {edition.nom} — <b>{PACK_PRICE}</b> Éclats · solde
 				<b>{eco.balance}</b>
 			</p>
 			{#if canAfford}
 				<p class="hint">⠿ Tire la languette pour ouvrir</p>
-				<PackVisual bind:this={packRef} ontorn={onTorn} glow={TIER_GLOW.common} prisma={false} />
+				{#key editionId}
+					<PackVisual
+						bind:this={packRef}
+						ontorn={onTorn}
+						glow={TIER_GLOW.common}
+						prisma={false}
+						cover={edition.cover}
+						badge={edition.badge}
+						sousTitre={edition.sousTitre}
+					/>
+				{/key}
 				<div class="openrow">
 					<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
 					<button class="ghost bulk" disabled={eco.balance < PACK_PRICE * 5} onclick={() => bulkOpen(5)}>
@@ -543,7 +580,7 @@
 				</div>
 			{:else}
 				<div class="broke-pack">
-					<PackVisual glow={TIER_GLOW.common} prisma={false} />
+					<PackVisual glow={TIER_GLOW.common} prisma={false} cover={edition.cover} badge={edition.badge} sousTitre={edition.sousTitre} />
 				</div>
 				<p class="broke">
 					Éclats insuffisants — gagnez-en en <a href="/arene">Arène</a> et via vos
@@ -906,6 +943,44 @@
 		color: rgba(201, 164, 69, 0.8);
 		animation: pulse 2.4s ease-in-out infinite;
 	}
+	/* ---------- le choix de l'édition ---------- */
+	.editions {
+		display: flex;
+		gap: 0.6rem;
+		margin-bottom: 1.1rem;
+	}
+	.edbtn {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		padding: 0.6rem 1.1rem;
+		border: 1px solid var(--panel-line);
+		border-radius: 13px;
+		background: rgba(140, 170, 220, 0.06);
+		font-family: inherit;
+		color: rgba(238, 240, 245, 0.75);
+		text-align: left;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+	.edbtn:hover {
+		border-color: rgba(213, 178, 94, 0.4);
+	}
+	.edbtn.on {
+		border-color: rgba(213, 178, 94, 0.65);
+		background: rgba(213, 178, 94, 0.12);
+		color: var(--ink);
+	}
+	.edbtn b {
+		font-size: 0.92rem;
+	}
+	.edbtn small {
+		font-size: 0.7rem;
+		color: rgba(238, 240, 245, 0.45);
+	}
+
 	.price {
 		display: flex;
 		align-items: center;

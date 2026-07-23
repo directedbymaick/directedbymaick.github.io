@@ -46,15 +46,15 @@ function rollRarity(odds: Partial<Record<Rarity, number>>): Rarity {
 	return (Object.keys(odds) as Rarity[])[0];
 }
 
-function pickCard(rarity: Rarity, avoid: Set<string>): CardData {
+function pickCard(rarity: Rarity, avoid: Set<string>, src: CardData[]): CardData {
 	for (const tier of FALLBACK[rarity]) {
-		const pool = cards.filter((c) => c.rarity === tier);
+		const pool = src.filter((c) => c.rarity === tier);
 		if (pool.length === 0) continue;
 		const fresh = pool.filter((c) => !avoid.has(c.id));
 		const from = fresh.length > 0 ? fresh : pool;
 		return from[Math.floor(Math.random() * from.length)];
 	}
-	return cards[Math.floor(Math.random() * cards.length)];
+	return src[Math.floor(Math.random() * src.length)];
 }
 
 /* ---------- full art : le chase du set ---------- */
@@ -101,11 +101,11 @@ export function isGodPack(pulls: Pull[]): boolean {
 	return pulls.length === PACK_SIZE && pulls.every((p) => p.fullArt);
 }
 
-function openGodPack(): Pull[] {
-	const pool = cards.filter(
+function openGodPack(edition: CardData[]): Pull[] {
+	const pool = edition.filter(
 		(c) => c.rarity === 'epic' || c.rarity === 'legendary' || c.rarity === 'prism'
 	);
-	const src = pool.length >= PACK_SIZE ? pool : cards;
+	const src = pool.length >= PACK_SIZE ? pool : edition;
 	const seen = new Set<string>();
 	const pulls: Pull[] = [];
 	for (let i = 0; i < PACK_SIZE; i++) {
@@ -150,19 +150,20 @@ export interface Pity {
 
 const PITY_KEY = 'travelers-pity-v1';
 
-export function loadPity(): Pity {
+/** Chaque édition de booster compte sa propre pitié — `cle` la distingue. */
+export function loadPity(cle: string = PITY_KEY): Pity {
 	if (typeof localStorage === 'undefined') return { sansPrism: 0, sansFullArt: 0 };
 	try {
-		const p = JSON.parse(localStorage.getItem(nsKey(PITY_KEY)) ?? '{}');
+		const p = JSON.parse(localStorage.getItem(nsKey(cle)) ?? '{}');
 		return { sansPrism: p.sansPrism ?? 0, sansFullArt: p.sansFullArt ?? 0 };
 	} catch {
 		return { sansPrism: 0, sansFullArt: 0 };
 	}
 }
 
-export function savePity(p: Pity): void {
+export function savePity(p: Pity, cle: string = PITY_KEY): void {
 	if (typeof localStorage === 'undefined') return;
-	localStorage.setItem(nsKey(PITY_KEY), JSON.stringify(p));
+	localStorage.setItem(nsKey(cle), JSON.stringify(p));
 	scheduleCloudSync();
 }
 
@@ -197,8 +198,9 @@ function versEnPull(v: ReturnType<typeof rollVersion>, baseId: string): Pull {
 /**
  * Tire un booster : 5 cartes, sans doublon dans le pack si le pool le permet.
  * `pity` est MUTÉ : ses compteurs montent d'un cran ou retombent à zéro.
+ * `pool` restreint le tirage aux cartes d'une édition (défaut : tout le set).
  */
-export function openPack(pity?: Pity): Pull[] {
+export function openPack(pity?: Pity, pool: CardData[] = cards): Pull[] {
 	// le compteur est à son dernier cran : ce booster DOIT tenir la promesse
 	const duPrism = !!pity && pity.sansPrism + 1 >= PITY_PRISM;
 	const duFullArt = !!pity && pity.sansFullArt + 1 >= PITY_FULLART;
@@ -209,7 +211,7 @@ export function openPack(pity?: Pity): Pull[] {
 	   était de 41 pour une garantie annoncée à 40. Le report coûte 0,8 % des god
 	   packs sur les seuls boosters concernés, et rend l'annonce exacte. */
 	if (!duPrism && Math.random() < GOD_PACK_RATE) {
-		const p = openGodPack();
+		const p = openGodPack(pool);
 		if (pity) {
 			pity.sansFullArt = 0;
 			if (p.some((x) => (x.card.sourceRarity ?? x.card.rarity) === 'prism')) pity.sansPrism = 0;
@@ -228,7 +230,7 @@ export function openPack(pity?: Pity): Pull[] {
 		duPrism ? 'prism' : rollRarity(SLOT_ODDS[2].odds)
 	];
 	for (const rarity of slots) {
-		const card = pickCard(rarity, seen);
+		const card = pickCard(rarity, seen, pool);
 		seen.add(card.id);
 		/* le Raw est l'état de base : la version foil est un bonus rare, tiré selon
 		   les finitions réellement validées pour cette carte (cf. variants.ts) */
@@ -250,8 +252,8 @@ export function openPack(pity?: Pity): Pull[] {
 			}
 		});
 		if (i < 0) {
-			const pool = cards.filter((c) => eligibleFullArt(c) && !seen.has(c.id));
-			const src = pool.length ? pool : cards.filter(eligibleFullArt);
+			const frais = pool.filter((c) => eligibleFullArt(c) && !seen.has(c.id));
+			const src = frais.length ? frais : pool.filter(eligibleFullArt);
 			if (src.length) {
 				const c = src[Math.floor(Math.random() * src.length)];
 				pulls[pulls.length - 1] = versEnPull(rollVersion(c, 1), c.id);

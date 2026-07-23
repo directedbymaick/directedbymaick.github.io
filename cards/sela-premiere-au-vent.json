@@ -19,5 +19,6 @@
 	},
 	"attack": 1,
 	"health": 1,
-	"flavor": "Elle ne demanda pas où menait la route. Seulement si elle descendait."
+	"flavor": "Elle ne demanda pas où menait la route. Seulement si elle descendait.",
+	"artPosition": "center 18%"
 }

@@ -67,8 +67,18 @@
 	let {
 		ontorn,
 		glow = '#ffcd6e',
-		prisma = false
-	}: { ontorn?: () => void; glow?: string; prisma?: boolean } = $props();
+		prisma = false,
+		cover = '/art/rasen.webp',
+		badge = '1ʳᵉ Édition',
+		sousTitre = 'Nés du silence'
+	}: {
+		ontorn?: () => void;
+		glow?: string;
+		prisma?: boolean;
+		cover?: string;
+		badge?: string;
+		sousTitre?: string;
+	} = $props();
 
 	let progress = $state(0); // 0 → 1
 	let dragging = $state(false);
@@ -325,7 +335,7 @@
 
 	<!-- le corps : couverture pleine, habillage éditorial façon booster réel -->
 	<div class="body" style="clip-path: {clipBody}">
-		<img class="cover" src="/art/rasen.webp" alt="" draggable="false" />
+		<img class="cover" src={cover} alt="" draggable="false" />
 		<div class="grade" aria-hidden="true"></div>
 		<div class="plastic" aria-hidden="true"></div>
 		<div class="foilgrain" aria-hidden="true"></div>
@@ -339,13 +349,13 @@
 		<span class="brand-pill">Expelled</span>
 		<span class="badges">
 			<span class="badge red">Set 01</span>
-			<span class="badge dark">1ʳᵉ Édition</span>
+			<span class="badge dark">{badge}</span>
 		</span>
 
 		<div class="logo-block">
 			<p class="logo-over">Trading Card Game</p>
 			<p class="wordmark">Expelled</p>
-			<p class="set-banner">Nés du silence</p>
+			<p class="set-banner">{sousTitre}</p>
 		</div>
 
 		<p class="count">5 cartes<br /><small>par sachet</small></p>

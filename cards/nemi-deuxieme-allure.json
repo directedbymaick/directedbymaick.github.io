@@ -19,5 +19,6 @@
 	},
 	"attack": 1,
 	"health": 1,
-	"flavor": "Elle change de démarche avant de changer de monde."
+	"flavor": "Elle change de démarche avant de changer de monde.",
+	"artPosition": "center 18%"
 }
