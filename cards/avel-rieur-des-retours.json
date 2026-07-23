@@ -25,6 +25,12 @@
 		{
 			"foilPreset": "showcase",
 			"fullArt": false
+		},
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
 		}
-	]
+	],
+	"fullArt": true,
+	"fullArtFoil": "regular"
 }

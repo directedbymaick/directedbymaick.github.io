@@ -17,5 +17,12 @@
 		"accent": "#f0a626",
 		"seed": 881827
 	},
-	"flavor": "Aucun rempart n’a jamais arrêté le matin."
+	"flavor": "Aucun rempart n’a jamais arrêté le matin.",
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	]
 }

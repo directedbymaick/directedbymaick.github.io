@@ -17,5 +17,12 @@
 		"accent": "#8fb4d9",
 		"seed": 775605
 	},
-	"flavor": "Les papillons n’approchent que les noms prêts à disparaître."
+	"flavor": "Les papillons n’approchent que les noms prêts à disparaître.",
+	"fullArtFoil": "cosmos",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": true
+		}
+	]
 }
