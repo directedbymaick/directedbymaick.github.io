@@ -70,16 +70,23 @@
 	const flippedCount = $derived(flipped.filter(Boolean).length);
 	const allFlipped = $derived(flipped.length > 0 && flipped.every(Boolean));
 
-	/* L'échelle complète : mêmes paliers et mêmes taux que /raretes, dérivés du
-	   tirage lui-même. La publier ici, c'est publier les vraies probabilités. */
-	const ECHELLE = paliers();
-
-	/* ---- pitié ---- */
-	let pity = $state<Pity>({ sansPrism: 0, sansFullArt: 0 });
-
 	/* ---- éditions : deux sachets, deux pools, deux pitiés ---- */
 	let editionId = $state<'ed1' | 'ed2'>('ed2');
 	const edition = $derived(editionDe(editionId));
+
+	/* L'échelle complète : mêmes paliers et mêmes taux que /raretes, dérivés du
+	   tirage de CETTE édition. La publier ici, c'est publier les vraies
+	   probabilités du sachet qu'on s'apprête à ouvrir. */
+	const ECHELLE = $derived(paliers(editionId));
+	/* stats de pity de l'édition affichée (chaque produit a les siennes) */
+	const statsEd = $derived(
+		(mesures.editions as Record<string, { boostersAvec: any; boostersSansGarantie: any }>)[
+			editionId
+		]
+	);
+
+	/* ---- pitié ---- */
+	let pity = $state<Pity>({ sansPrism: 0, sansFullArt: 0 });
 
 	function choisirEdition(id: 'ed1' | 'ed2') {
 		if (editionId === id) return;
@@ -761,13 +768,13 @@
 
 	<p class="odds-note">
 		Les taux ci-dessus sont ceux du tirage seul, <strong>avant</strong> les garanties : à l'usage,
-		les compteurs les relèvent à {pct(mesures.boostersAvec.prism)}&nbsp;% de boosters avec
-		Prismatique (contre {pct(mesures.boostersSansGarantie.prism)}&nbsp;%) et
-		{pct(mesures.boostersAvec.fullArt)}&nbsp;% avec Full Art (contre
-		{pct(mesures.boostersSansGarantie.fullArt)}&nbsp;%), et bornent la pire disette à
-		{mesures.boostersAvec.pireDisettePrism} et {mesures.boostersAvec.pireDisetteFullArt} boosters
-		au lieu de {mesures.boostersSansGarantie.pireDisettePrism} et
-		{mesures.boostersSansGarantie.pireDisetteFullArt}.
+		les compteurs les relèvent à {pct(statsEd.boostersAvec.prism)}&nbsp;% de boosters avec
+		Prismatique (contre {pct(statsEd.boostersSansGarantie.prism)}&nbsp;%) et
+		{pct(statsEd.boostersAvec.fullArt)}&nbsp;% avec Full Art (contre
+		{pct(statsEd.boostersSansGarantie.fullArt)}&nbsp;%), et bornent la pire disette à
+		{statsEd.boostersAvec.pireDisettePrism} et {statsEd.boostersAvec.pireDisetteFullArt} boosters
+		au lieu de {statsEd.boostersSansGarantie.pireDisettePrism} et
+		{statsEd.boostersSansGarantie.pireDisetteFullArt}.
 		Si une rareté tirée n'a aucune carte forgée, le tirage se replie sur la rareté la plus proche.
 		Pas de doublon à l'intérieur d'un même booster tant que le pool le permet. Chaque carte épique
 		ou au-delà a {Math.round(FULLART_RATE * 100)}&nbsp;% de chance de sortir en version

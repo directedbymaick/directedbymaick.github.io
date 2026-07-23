@@ -1,14 +1,20 @@
 <script lang="ts">
 	import Card from '$lib/Card.svelte';
 	import { charter } from '$lib/charter';
-	import { paliers, frequence, classes } from '$lib/paliers';
+	import { paliers, frequence, classes, EDITION_DEFAUT } from '$lib/paliers';
+	import { EDITIONS, type EditionId } from '$lib/editions';
+
+	/* Les taux sont PROPRES À CHAQUE ÉDITION de booster : un produit, une grille.
+	   Le sélecteur recalcule toute la page pour l'édition choisie — c'est ainsi
+	   que tous les TCG publient leurs odds, par produit et non moyennés. */
+	let edition = $state<EditionId>(EDITION_DEFAUT);
 
 	/* L'échelle est dérivée du tirage lui-même : rien n'est saisi à la main ici,
 	   donc valider une variante au Lab la fait apparaître sur cette page. */
-	const echelle = paliers();
-	/* Six classes en tête, trente-cinq paliers en détail : personne ne retient
-	   trente-cinq niveaux, mais tout le monde reconnaît une carte détourée. */
-	const lesClasses = classes();
+	const echelle = $derived(paliers(edition));
+	/* Six classes en tête, le détail des paliers en dessous : personne ne retient
+	   trente niveaux, mais tout le monde reconnaît une carte détourée. */
+	const lesClasses = $derived(classes(edition));
 
 	/* Le filtre porte sur la CLASSE : c'est le vocabulaire de la page, et les six
 	   lignes du haut servent directement de commande — pas de troisième rangée de
@@ -19,11 +25,11 @@
 		filtre = filtre === id ? 'all' : id;
 	}
 
-	const leRare = echelle[echelle.length - 1];
+	const leRare = $derived(echelle[echelle.length - 1]);
 
 	/* Le total se compte en VERSIONS collectionnables, pas en paliers : c'est
 	   l'unité de la page, et chaque classe affiche sa part. */
-	const versionsTotal = echelle.reduce((a, p) => a + p.membres, 0);
+	const versionsTotal = $derived(echelle.reduce((a, p) => a + p.membres, 0));
 </script>
 
 <svelte:head>
@@ -35,8 +41,25 @@
 </svelte:head>
 
 <header class="tete">
-	<p class="kicker">Nés du silence · Set 01</p>
+	<p class="kicker">Set 01 · deux éditions</p>
 	<h1>Raretés</h1>
+
+	<!-- le choix de l'édition : chaque booster a sa propre grille de taux -->
+	<div class="ed-switch" role="tablist" aria-label="Édition du booster">
+		{#each EDITIONS as ed (ed.id)}
+			<button
+				role="tab"
+				class="ed-btn"
+				class:on={edition === ed.id}
+				aria-selected={edition === ed.id}
+				onclick={() => (edition = ed.id as EditionId)}
+			>
+				<b>{ed.nom}</b>
+				<small>{ed.sousTitre}</small>
+			</button>
+		{/each}
+	</div>
+
 	<p class="chapo">
 		Une carte se lit en <b>six classes</b>, reconnaissables à l’œil. En dessous, le détail complet :
 		les <b>{echelle.length} paliers</b> que produit réellement le tirage, jusqu’à
@@ -241,6 +264,42 @@
 	.tete {
 		margin: 3.5rem 0 3rem;
 		max-width: 44rem;
+	}
+	.ed-switch {
+		display: flex;
+		gap: 0.6rem;
+		margin: 1.4rem 0 0.4rem;
+	}
+	.ed-btn {
+		display: flex;
+		flex-direction: column;
+		gap: 0.12rem;
+		padding: 0.55rem 1.1rem;
+		border: 1px solid var(--panel-line);
+		border-radius: 13px;
+		background: rgba(140, 170, 220, 0.06);
+		font-family: inherit;
+		color: rgba(238, 240, 245, 0.72);
+		text-align: left;
+		cursor: pointer;
+		transition:
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+	.ed-btn:hover {
+		border-color: rgba(213, 178, 94, 0.4);
+	}
+	.ed-btn.on {
+		border-color: rgba(213, 178, 94, 0.65);
+		background: rgba(213, 178, 94, 0.12);
+		color: var(--ink);
+	}
+	.ed-btn b {
+		font-size: 0.9rem;
+	}
+	.ed-btn small {
+		font-size: 0.7rem;
+		color: rgba(238, 240, 245, 0.45);
 	}
 	.kicker {
 		margin: 0 0 0.9rem;

@@ -42,7 +42,10 @@
 	const tous: Nom[] = cards.flatMap((c) =>
 		versionsOf(c, FULLART_RATE).map((v) => {
 			const rarity = (v.view.sourceRarity ?? c.rarity) as Rarity;
-			const taux = tauxVersion(c, v);
+			/* Le glanage réunit TOUTES les cartes des deux éditions : le taux affiché
+			   est le meilleur des deux (l'édition où la carte tombe le plus souvent),
+			   pour ne jamais montrer 0 sur une carte pourtant tirable. */
+			const taux = Math.max(tauxVersion(c, v, 'ed1'), tauxVersion(c, v, 'ed2'));
 			return {
 				key: v.key,
 				base: c,

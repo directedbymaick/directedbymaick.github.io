@@ -3,7 +3,11 @@ import { cards } from '$lib/cards';
 import { charter } from '$lib/charter';
 import { FULLART_RATE, SLOT_ODDS } from '$lib/gacha';
 import { versionsOf, foilLabel } from '$lib/variants';
+import { carteDansEdition, type EditionId } from '$lib/editions';
 import mesures from '$lib/taux-mesures.json';
+
+/** L'édition par défaut : celle mise en avant au comptoir (la 2ᵉ, « Routes de Xenen »). */
+export const EDITION_DEFAUT: EditionId = 'ed2';
 
 /**
  * L'échelle réelle du jeu.
@@ -78,16 +82,33 @@ function tauxModele(card: CardData, rateVersion: number): number {
  * compris. Toute mécanique ajoutée plus tard au booster sera prise en compte
  * dès la prochaine régénération, sans une ligne à changer ici.
  */
-const COMPTES = mesures.versions as Record<string, number>;
+const EDITIONS_MESUREES = mesures.editions as Record<
+	string,
+	{ boosters: number; versions: Record<string, number> }
+>;
 
-export function tauxVersion(card: CardData, v: { key: string; rate: number }): number {
-	const vus = COMPTES[v.key];
+/**
+ * Taux par booster d'UNE version, MESURÉ sur le tirage réel de l'ÉDITION donnée.
+ *
+ * Chaque édition est un produit distinct, mesuré sur son propre pool : une carte
+ * exclusive à la 2ᵉ édition a son taux calculé sur les seuls boosters 2ᵉ édition,
+ * jamais dilué par les boosters 1ʳᵉ édition où elle ne peut pas tomber. Une carte
+ * absente de l'édition demandée rend 0 (indisponible dans ce produit).
+ */
+export function tauxVersion(
+	card: CardData,
+	v: { key: string; rate: number },
+	edition: EditionId = EDITION_DEFAUT
+): number {
+	const m = EDITIONS_MESUREES[edition];
+	if (!m) return tauxModele(card, v.rate);
+	if (!carteDansEdition(card.id, edition)) return 0; // pas dans ce booster
+	const vus = m.versions[v.key];
 	/* Toutes les versions du set apparaissent dans la mesure — `prebuild` la
 	   régénère dès qu'une carte ou le moteur de tirage bouge. Ce filet ne sert donc
-	   qu'à une exécution où le fichier serait momentanément en retard : un taux nul
-	   donnerait un prix plancher sur la carte la plus rare du jeu. */
+	   qu'à une exécution où le fichier serait momentanément en retard. */
 	if (vus === undefined) return tauxModele(card, v.rate);
-	return vus / mesures.boosters;
+	return vus / m.boosters;
 }
 
 /** Prix plancher : celui du nom le plus facile à tirer du set. */
@@ -103,11 +124,17 @@ const COMPRESSION = 0.9;
 /* La référence n'est pas posée à la main : c'est le taux du nom RÉELLEMENT le
    plus courant du set. Ainsi le plancher reste le plancher quoi qu'on ajoute au
    set, et aucun prix ne peut passer sous PRIX_PLANCHER par accident. */
+/* La référence de prix est GLOBALE (le nom le plus courant du set, toutes
+   éditions confondues) : le prix d'une carte ne doit pas dépendre du booster où
+   on la tire. On prend donc le taux le plus élevé observé, quelle que soit
+   l'édition. */
 let refCache = 0;
 function tauxReference(): number {
 	if (refCache) return refCache;
 	for (const c of cards)
-		for (const v of versionsOf(c, FULLART_RATE)) refCache = Math.max(refCache, tauxVersion(c, v));
+		for (const v of versionsOf(c, FULLART_RATE))
+			for (const ed of ['ed1', 'ed2'] as EditionId[])
+				refCache = Math.max(refCache, tauxVersion(c, v, ed));
 	return refCache;
 }
 
@@ -165,7 +192,9 @@ function planchers(): Map<string, number[]> {
 			if (i < 0) continue;
 			const f = forme(v, c);
 			const ligne = brut.get(f) ?? ECHELLE_RARETE.map(() => 0);
-			ligne[i] = Math.max(ligne[i], prixNom(tauxVersion(c, v)));
+			// prix indépendant de l'édition : on prend le taux le plus favorable
+			const taux = Math.max(tauxVersion(c, v, 'ed1'), tauxVersion(c, v, 'ed2'));
+			ligne[i] = Math.max(ligne[i], prixNom(taux));
 			brut.set(f, ligne);
 		}
 	}
@@ -206,10 +235,11 @@ export function prixVersion(
 	return Math.min(700, Math.round((base[r] * multiplier) / 5) * 5);
 }
 
-export function paliers(): Palier[] {
+export function paliers(edition: EditionId = EDITION_DEFAUT): Palier[] {
 	const map = new Map<string, Palier>();
 
 	for (const c of cards) {
+		if (!carteDansEdition(c.id, edition)) continue; // hors de ce booster
 		for (const v of versionsOf(c, FULLART_RATE)) {
 			const rarity = v.view.sourceRarity ?? v.view.rarity;
 			const nobg = v.foil === 'showcase' && !!v.view.cutout;
@@ -220,8 +250,8 @@ export function paliers(): Palier[] {
 			const key = `${rarity}|${v.fullArt ? 'fa' : 'n'}|${v.foil ?? 'raw'}|${nobg ? 'nobg' : ''}|${alt ? 'alt' : ''}`;
 
 			/* Mesuré, pas déduit : le nombre de fois que cette version exacte est
-			   sortie de `openPack`, rapporté au nombre de boosters ouverts. */
-			const taux = tauxVersion(c, v);
+			   sortie de `openPack`, rapporté au nombre de boosters de l'édition. */
+			const taux = tauxVersion(c, v, edition);
 
 			const dejaVu = map.get(key);
 			if (dejaVu) {
@@ -314,9 +344,9 @@ const ORDRE_CLASSES = ['raw', 'foil', 'fa', 'sp', 'fa-sp', 'alt'];
  * Les six classes du jeu, avec leur fréquence mesurée.
  * C'est ce que les pages annoncent ; `paliers()` reste le détail.
  */
-export function classes(): Classe[] {
+export function classes(edition: EditionId = EDITION_DEFAUT): Classe[] {
 	const map = new Map<string, Classe>();
-	for (const p of paliers()) {
+	for (const p of paliers(edition)) {
 		const c = classeDe(p);
 		const vu = map.get(c.id);
 		if (vu) {

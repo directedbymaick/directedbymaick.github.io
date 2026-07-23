@@ -86,3 +86,19 @@ export const EDITIONS: Edition[] = [
 
 export const editionDe = (id: string): Edition =>
 	EDITIONS.find((e) => e.id === id) ?? EDITIONS[0];
+
+export type EditionId = 'ed1' | 'ed2';
+
+/** Les identifiants des cartes présentes dans chaque édition (accès O(1)). */
+const membresParEdition: Record<EditionId, Set<string>> = {
+	ed1: new Set(EDITIONS[0].cartes.map((c) => c.id)),
+	ed2: new Set(EDITIONS[1].cartes.map((c) => c.id))
+};
+
+/** Vrai si la carte de base `id` est tirable dans cette édition. */
+export const carteDansEdition = (id: string, ed: EditionId): boolean =>
+	membresParEdition[ed].has(id);
+
+/** Les éditions où cette carte de base apparaît. */
+export const editionsDe = (id: string): Edition[] =>
+	EDITIONS.filter((e) => membresParEdition[e.id as EditionId].has(id));

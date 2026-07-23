@@ -89,19 +89,15 @@ try {
 	const vrai = Math.random;
 	Math.random = mulberry32(GRAINE);
 
-	const versions = new Map();
-	/* un joueur unique qui alterne les DEUX éditions de boosters, chacune avec sa
-	   pitié — les taux publiés décrivent l'offre complète du comptoir */
-	const pities = EDITIONS.map(() => ({ sansPrism: 0, sansFullArt: 0 }));
-	let cartes = 0;
 	const t0 = Date.now();
+	/* Chaque édition est un PRODUIT distinct : on la mesure isolément, avec son
+	   propre pool et sa propre pitié, exactement comme le fait un joueur qui
+	   n'ouvre que ce booster. Un taux « moyenné sur les deux » n'aurait aucun
+	   sens — personne n'ouvre une édition au hasard. */
+	const PAR_EDITION = Math.floor(BOOSTERS / EDITIONS.length);
 
-	/* Statistiques au BOOSTER et non à la carte : c'est ce qu'un joueur ressent, et
-	   c'est ce que la page Réquisition annonce en toutes lettres. Les mesurer ici
-	   empêche ce paragraphe de se périmer à son tour. */
+	/* Statistiques au BOOSTER et non à la carte : c'est ce qu'un joueur ressent. */
 	const compteur = () => ({ prism: 0, fullArt: 0, dPrism: 0, dFA: 0, pirePrism: 0, pireFA: 0 });
-	const avec = compteur();
-
 	function releverBooster(pulls, st) {
 		const aPrism = pulls.some((p) => (p.card.sourceRarity ?? p.card.rarity) === 'prism');
 		const aFA = pulls.some((p) => p.fullArt);
@@ -111,32 +107,52 @@ try {
 		else { st.dFA++; st.pireFA = Math.max(st.pireFA, st.dFA); }
 	}
 
-	for (let i = 0; i < BOOSTERS; i++) {
-		const ed = i % EDITIONS.length;
-		const pulls = gacha.openPack(pities[ed], EDITIONS[ed].cartes);
-		releverBooster(pulls, avec);
-		for (const pull of pulls) {
-			// versEnPull pose card.id = clé de version : c'est notre identifiant
-			versions.set(pull.card.id, (versions.get(pull.card.id) ?? 0) + 1);
-			cartes++;
+	const REF = Math.min(PAR_EDITION, 400_000);
+	const editions = {};
+	let totalCartes = 0;
+
+	for (const ed of EDITIONS) {
+		const versions = new Map();
+		const pity = { sansPrism: 0, sansFullArt: 0 };
+		const avec = compteur();
+		let cartes = 0;
+		for (let i = 0; i < PAR_EDITION; i++) {
+			const pulls = gacha.openPack(pity, ed.cartes);
+			releverBooster(pulls, avec);
+			for (const pull of pulls) {
+				versions.set(pull.card.id, (versions.get(pull.card.id) ?? 0) + 1);
+				cartes++;
+			}
 		}
-		if (i > 0 && i % 500_000 === 0) {
-			process.stdout.write(`  ${(i / 1000).toFixed(0)}k boosters…
-`);
-		}
+		// passe SANS garanties : la référence « avant pity » de cette édition
+		const sans = compteur();
+		for (let i = 0; i < REF; i++) releverBooster(gacha.openPack(undefined, ed.cartes), sans);
+
+		totalCartes += cartes;
+		const trie = Object.fromEntries([...versions.entries()].sort((a, b) => b[1] - a[1]));
+		editions[ed.id] = {
+			nom: ed.nom,
+			boosters: PAR_EDITION,
+			cartes,
+			boostersAvec: {
+				prism: avec.prism / PAR_EDITION,
+				fullArt: avec.fullArt / PAR_EDITION,
+				pireDisettePrism: avec.pirePrism,
+				pireDisetteFullArt: avec.pireFA
+			},
+			boostersSansGarantie: {
+				reference: REF,
+				prism: sans.prism / REF,
+				fullArt: sans.fullArt / REF,
+				pireDisettePrism: sans.pirePrism,
+				pireDisetteFullArt: sans.pireFA
+			},
+			versions: trie
+		};
+		process.stdout.write(`  ${ed.nom} : ${versions.size} versions sur ${(PAR_EDITION / 1000).toFixed(0)}k boosters\n`);
 	}
 
-	/* Deuxième passe SANS garanties : la référence « avant pity » que la page
-	   compare au tirage réel. Plus courte, elle n'a qu'à donner l'ordre de grandeur. */
-	const REF = Math.min(BOOSTERS, 400_000);
-	const sans = compteur();
-	for (let i = 0; i < REF; i++)
-		releverBooster(gacha.openPack(undefined, EDITIONS[i % EDITIONS.length].cartes), sans);
-
 	Math.random = vrai;
-
-	// tri par fréquence décroissante : le fichier se relit à l'œil
-	const trie = Object.fromEntries([...versions.entries()].sort((a, b) => b[1] - a[1]));
 
 	writeFileSync(
 		SORTIE,
@@ -144,25 +160,10 @@ try {
 			{
 				_: 'Généré par scripts/taux.mjs — ne pas éditer à la main.',
 				empreinte: attendue,
-				boosters: BOOSTERS,
 				graine: GRAINE,
-				cartes,
-				/* part de boosters contenant au moins un exemplaire, et pire disette
-				   observée — avec les garanties, puis sans, pour la comparaison */
-				boostersAvec: {
-					prism: avec.prism / BOOSTERS,
-					fullArt: avec.fullArt / BOOSTERS,
-					pireDisettePrism: avec.pirePrism,
-					pireDisetteFullArt: avec.pireFA
-				},
-				boostersSansGarantie: {
-					reference: REF,
-					prism: sans.prism / REF,
-					fullArt: sans.fullArt / REF,
-					pireDisettePrism: sans.pirePrism,
-					pireDisetteFullArt: sans.pireFA
-				},
-				versions: trie
+				/* Une entrée par édition de booster : chacune est un produit à part,
+				   avec ses propres taux mesurés sur son propre pool. */
+				editions
 			},
 			null,
 			'\t'
@@ -171,8 +172,8 @@ try {
 
 	const s = ((Date.now() - t0) / 1000).toFixed(1);
 	console.log(
-		`${SORTIE} : ${versions.size} versions vues sur ${BOOSTERS.toLocaleString('fr-FR')} boosters ` +
-			`(${cartes.toLocaleString('fr-FR')} cartes, ${(cartes / BOOSTERS).toFixed(4)} par booster) en ${s} s`
+		`${SORTIE} : ${EDITIONS.length} éditions × ${PAR_EDITION.toLocaleString('fr-FR')} boosters ` +
+			`(${totalCartes.toLocaleString('fr-FR')} cartes) en ${s} s`
 	);
 } finally {
 	await serveur.close();
