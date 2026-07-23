@@ -254,7 +254,7 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | V03 | Renna, porte-syllabe | Être | C | 2 | À l'arrivée, un autre Être allié gagne +1 ATQ et +1 Intégrité. | Elle porte aux chœurs des mots qu'on lui interdit de lire. |
 | V04 | Doras, rempart d'or | Être | C | 3 | Serment. | « Chacun à sa place. Le monde tient ainsi. » |
 | V05 | Senel, guetteuse des lisières | Être | C | 3 | Chaque fois que l'adversaire Prononce, infligez-lui 2 dégâts. | Elle écoute sous les chœurs, là où le silence prend forme. |
-| V06 | Korven, poids de la loi | Être | C | 4 | À l'arrivée, épuisez un Être adverse. Il ne se prépare pas au prochain tour de son contrôleur. | Chez Korven, une parole donnée devient un fardeau. |
+| V06 | Korven, poids de la loi | Être | C | 5 | À l'arrivée, épuisez un Être adverse. Il ne se prépare pas au prochain tour de son contrôleur. | Chez Korven, une parole donnée devient un fardeau. |
 | V07 | Récitation sans fin | Verbe | C | 2 | Vos Êtres gagnent +2 Intégrité ce tour-ci. | « KOR se tait. À nous de tenir la note. » |
 | V08 | Rappel à l'ordre | Verbe | C | 2 | Renvoyez un Être dans la main de son propriétaire. | Une seule note fausse, et tout le chœur recommence. |
 | V09 | Premier Chant | Verbe | C | 1 | Restaurez 2 Intégrité à une cible, puis piochez une carte. | À l'aube, les Vasar récitent le monde avant de l'habiter. |
@@ -265,7 +265,7 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | V14 | Sentence d'or | Verbe | R | 2 | Enchaînez un Être adverse. Il ne peut plus attaquer. | Chaque maillon porte un mot. Ensemble, ils disent : coupable. |
 | V15 | Tours de la Syntaxe | Lieu | R | 2 | Vos Verbes coûtent 1 Volonté de moins. | La nuit, Koren y mesure ce qu'il reste du monde. |
 | V16 | La Première Chaîne | Relique | R | 2 | Attachez cette Relique à un Être adverse. L'Être attaché ne peut pas attaquer. | Nul ne l'a rapportée d'Exen. Elle est revenue seule. |
-| V17 | Dorvel, gardien des listes | Être | E | 4 | À la fin de votre tour, piochez une carte. | Il connaît chaque nom condamné. Il se souvient aussi des innocents. |
+| V17 | Dorvel, gardien des listes | Être | E | 5 | À la fin de votre tour, piochez une carte. | Il connaît chaque nom condamné. Il se souvient aussi des innocents. |
 | V18 | Thalen, l’Oreille du silence | Être | E | 5 | À l'arrivée, regardez la main de l'adversaire. | Elle entendit EX sous mille voix. Depuis, aucun silence ne la quitte. |
 | V19 | Le Vasis réuni | Verbe | E | 5 | Épuisez tous les Êtres adverses. Ils ne se préparent pas au prochain tour de leur contrôleur. | Mille juges. Une voix. Aucun doute permis. |
 | V20 | Redoublement des chœurs | Verbe | E | 4 | Créez deux jetons Choriste 1/2. | Koren doubla les voix quand il comprit que le monde faiblissait. |
@@ -293,7 +293,7 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | X15 | Retourner la sentence | Verbe | R | 3 | Libérez un Être allié enchaîné. Il gagne +1 ATQ et +1 Intégrité. S'il n'est pas enchaîné, il gagne tout de même ces bonus. | « Lis leur verdict. Puis choisis lequel de vous deux le portera. » |
 | X16 | Clameur d'Exen | Verbe | R | 2 | Un Être allié gagne +2 ATQ ce tour-ci. | L'Envers aussi possède ses chœurs. Ils ne chantent pas à l'unisson. |
 | X17 | Exva, voix de l'abîme | Être | E | 6 | Prononcer (3) : répartissez 5 dégâts entre autant de cibles que vous le souhaitez. | Elle prête sa voix à ceux que la peur réduit au silence. |
-| X18 | Le Dernier Mot | Verbe | E | 5 | Infligez 3 dégâts à chaque Être adverse. | Toute sentence s'achève. Toute révolte commence là. |
+| X18 | Le Dernier Mot | Verbe | E | 6 | Infligez 3 dégâts à chaque Être adverse. | Toute sentence s'achève. Toute révolte commence là. |
 | X19 | L'Armée des premiers bannis | Verbe | E | 6 | Créez trois jetons Banni 2/1. | Le Vasis prononça chaque nom de cette armée. Il appelle cela la justice. |
 | X20 | Exen, royaume de l'Envers | Lieu | L | 3 | Chaque fois qu'un Être allié est détruit, piochez une carte. | Sous le monde, les bannis ont bâti ce que leurs juges leur refusaient. |
 | X21 | La Porte à sens unique | Lieu | L | 3 | Ajoutez 1 à chaque valeur numérique des effets de vos capacités Prononcer. | Elle ne s'ouvre que vers l'exil. Personne n'a encore trouvé l'autre côté. |
@@ -304,13 +304,13 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | Slot | Nom | Type | Rareté | Coût | Texte de règle | Citation d'ambiance |
 |---|---|---|---|---:|---|---|
 | E01 | Eshin, visage d'emprunt | Être | C | 2 | 1 ATQ / 3 Intégrité. À l'arrivée, regardez la première carte de votre deck. | Son visage vous ressemble. Son souvenir aussi. |
-| E02 | Eshna, glaneuse de syllabes | Être | C | 3 | À l'arrivée, reprenez une carte de votre défausse dans votre main. | Rien ne disparaît. Certaines choses oublient seulement leur forme. |
+| E02 | Eshna, glaneuse de syllabes | Être | C | 4 | À l'arrivée, récupérez une carte de coût 4 ou moins de votre défausse. | Rien ne disparaît. Certaines choses oublient seulement leur forme. |
 | E03 | Brume des souvenirs | Verbe | R | 2 | Regardez les trois premières cartes de votre deck. Ajoutez-en une à votre main et replacez les autres dans l'ordre de votre choix. | La brume se souvient de ce que vous étiez venu oublier. |
 | E04 | Eskor, passeur de l'exil | Être | R | 4 | À l'arrivée, reprenez dans votre main une de vos cartes exilées. | Il connaît le chemin du retour. Il refuse d'en révéler le prix. |
 | E05 | L'Interstice | Lieu | E | 3 | La première capacité que vous déclenchez depuis votre défausse ou votre exil à chaque tour se déclenche une fois de plus. | Ni Vasen ni Exen : un refuge pour ceux qui refusent de choisir. |
 | E06 | Eshel, mémoire intacte | Être | L | 5 | À l'arrivée, cherchez une carte dans votre deck, révélez-la et ajoutez-la à votre main. Mélangez ensuite votre deck. | « J'étais sans importance. C'est peut-être ce qui m'a sauvé. » |
 | E07 | Selin, écoute la cendre | Être | C | 1 | À l'arrivée : regardez la carte du dessus de votre deck — vous pouvez la placer dessous. | La cendre parle bas. Selin a appris à se taire davantage. |
-| E08 | Orel, veilleur des restes | Être | R | 4 | La première fois à chaque tour qu'une carte quitte votre défausse, Orel gagne +1 ATQ ce tour-ci. | Il ne garde pas les morts. Il garde le passage qu'ils ont laissé. |
+| E08 | Orel, veilleur des restes | Être | R | 4 | La première fois à chaque tour qu'une carte quitte votre défausse, Orel gagne +1 ATQ. | Il ne garde pas les morts. Il garde le passage qu'ils ont laissé. |
 | E09 | Rendre au silence | Verbe | C | 2 | Placez une carte de votre défausse sous votre deck, puis piochez une carte. | Ce qui revient n'est jamais ce qui fut perdu. |
 | E10 | Le Registre des absents | Lieu | R | 3 | La première carte que vous récupérez de votre défausse à chaque tour coûte 1 Volonté de moins ce tour-ci. | Chaque nom rayé demeure lisible à la lune. |
 | E11 | Lampe des noms éteints | Relique | E | 3 | Une fois par tour, quand une carte quitte une défausse, exilez-en la carte la plus récente. | Les papillons n'approchent que les noms prêts à disparaître. |
@@ -340,9 +340,9 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | S04 | Au bord du monde | Lieu | E | 4 | Vos Êtres ont Élan. | Aucun garde-fou. Ce n'est pas un oubli. |
 | S05 | Velna, soleil affranchi | Être | L | 6 | Élan. Velna gagne +1 ATQ pour chaque autre Être allié avec Élan. | « Tu gardes la porte d'une maison vide, Koren. Moi, je choisis le ciel. » |
 | S06 | Sela, première au vent | Être | C | 1 | Élan (peut attaquer dès son arrivée). | Elle ne demanda pas où menait la route. Seulement si elle descendait. |
-| S07 | Avel, rieur des retours | Être | R | 4 | La première fois à chaque tour qu'un Être est renvoyé dans une main, infligez 1 dégât au Korum adverse. | Chaque recul lui offre une nouvelle piste d'élan. |
+| S07 | Avel, rieur des retours | Être | R | 4 | La première fois à chaque tour qu'un Être est renvoyé dans une main, infligez 2 dégâts au Korum adverse. | Chaque recul lui offre une nouvelle piste d'élan. |
 | S08 | Rebond de lumière | Verbe | C | 2 | Renvoyez un Être allié dans votre main, puis infligez 2 dégâts à un Être adverse. | Le soleil frappe deux fois : au départ et au retour. |
-| S09 | La Route sans rambarde | Lieu | R | 3 | La première fois à chaque tour qu'un de vos Êtres avec Élan attaque, il gagne +1 ATQ ce tour-ci. | Les Velar peignent les virages après les avoir franchis. |
+| S09 | La Route sans rambarde | Lieu | R | 3 | La première fois à chaque tour qu'un de vos Êtres avec Élan attaque, il gagne +2 ATQ ce tour-ci. | Les Velar peignent les virages après les avoir franchis. |
 | S10 | Trait de soleil | Relique | E | 3 | Attachez-la à un Être allié. Ses attaques traversent les Êtres adverses : il frappe directement le Korum. | Aucun rempart n'a jamais arrêté le matin. |
 
 ---

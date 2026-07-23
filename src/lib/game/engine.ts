@@ -430,8 +430,8 @@ function onDiscardLeave(g: G, side: Side): void {
 		p.discardLeaveTriggered = true;
 		for (const u of p.board) {
 			if (u.card.id === 'orel-veilleur-des-restes') {
-				u.tempAtk += 1;
-				ev(g, { t: 'effect', side, uid: u.uid, msg: `Orel garde le passage (+1 ATQ ce tour)` });
+				u.permAtk += 1;
+				ev(g, { t: 'effect', side, uid: u.uid, msg: `Orel garde le passage (+1 ATQ)` });
 			}
 		}
 	}
@@ -457,8 +457,8 @@ function onBounce(g: G): void {
 		if (avels.length === 0) continue;
 		p.bounceTriggered = true;
 		for (const a of avels) {
-			ev(g, { t: 'effect', side: cote, uid: a.uid, msg: `Avel rit du recul — 1 dégât au Korum adverse` });
-			damageKorum(g, other(cote), 1);
+			ev(g, { t: 'effect', side: cote, uid: a.uid, msg: `Avel rit du recul — 2 dégâts au Korum adverse` });
+			damageKorum(g, other(cote), 2);
 		}
 	}
 }
@@ -1054,14 +1054,17 @@ function onSummon(g: G, side: Side, u: Unit, sel?: Sel): void {
 			break;
 		case 'eshna': {
 			const n = memFactor(p);
-			// la liste stable est figée AVANT les retraits : les indices restent valides
-			const stable = listeStable(p.discard);
+			/* Équilibrage : la récupération est bornée à coût 3 ou moins — sans borne,
+			   trois Eshna rachetaient les bombes (Rasen, Dernier Mot) toute la partie
+			   et l'optimiseur plafonnait à 90 % contre le champ. La liste stable est
+			   figée AVANT les retraits : les indices restent valides. */
+			const stable = listeStable(p.discard.filter((c) => c.cost <= 4));
 			const choisies = (sel?.cartes ?? []).map((i) => stable[i]).filter(Boolean);
 			for (let i = 0; i < n; i++) {
 				const carte =
-					choisies[i] && p.discard.includes(choisies[i])
+					choisies[i] && p.discard.includes(choisies[i]) && choisies[i].cost <= 4
 						? choisies[i]
-						: [...p.discard].sort((a, b) => handScore(b) - handScore(a))[0];
+						: p.discard.filter((c) => c.cost <= 4).sort((a, b) => handScore(b) - handScore(a))[0];
 				if (!carte) break;
 				p.discard.splice(p.discard.indexOf(carte), 1);
 				p.hand.push(carte);
@@ -1269,8 +1272,8 @@ function attack(g: G, side: Side, u: Unit, target: Unit | 'korum'): void {
 	const p = g.players[side];
 	if (!p.elanAttackTriggered && hasElan(g, side, u) && hasSupport(p, 'route-sans-rambarde')) {
 		p.elanAttackTriggered = true;
-		u.tempAtk += 1;
-		ev(g, { t: 'effect', side, uid: u.uid, msg: `La Route sans rambarde porte ${u.card.name} (+1 ATQ ce tour)` });
+		u.tempAtk += 2;
+		ev(g, { t: 'effect', side, uid: u.uid, msg: `La Route sans rambarde porte ${u.card.name} (+2 ATQ ce tour)` });
 	}
 	const atk = unitAtk(g, side, u);
 	if (target === 'korum') {
@@ -1656,9 +1659,10 @@ function choixPour(g: G, side: Side, c: CardData): Choix | null {
 				? { type: 'carte', titre: 'Eshel — cherchez une carte du deck', n: 1, cartes: listeStable(p.deck) }
 				: null;
 		case 'eshna': {
-			const nb = Math.min(memFactor(p), p.discard.length);
-			return p.discard.length > 1
-				? { type: 'carte', titre: 'Eshna — reprenez dans la défausse', n: nb, cartes: listeStable(p.discard) }
+			const eligibles = p.discard.filter((x) => x.cost <= 4);
+			const nb = Math.min(memFactor(p), eligibles.length);
+			return eligibles.length > 1
+				? { type: 'carte', titre: 'Eshna — reprenez dans la défausse (coût 4 ou moins)', n: nb, cartes: listeStable(eligibles) }
 				: null;
 		}
 		case 'eskor': {

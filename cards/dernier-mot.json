@@ -2,7 +2,7 @@
 	"id": "dernier-mot",
 	"name": "Le Dernier Mot",
 	"kind": "verbe",
-	"cost": 5,
+	"cost": 6,
 	"text": "Inflige 3 dégâts à tous les Êtres adverses.",
 	"rarity": "epic",
 	"faction": "exar",

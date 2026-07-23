@@ -2,7 +2,7 @@
 	"id": "dorvel",
 	"name": "Dorvel, gardien des listes",
 	"kind": "etre",
-	"cost": 4,
+	"cost": 5,
 	"attack": 2,
 	"health": 2,
 	"text": "À la fin de votre tour : piochez une carte.",

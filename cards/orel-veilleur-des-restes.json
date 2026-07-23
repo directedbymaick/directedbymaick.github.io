@@ -3,7 +3,7 @@
 	"name": "Orel, veilleur des restes",
 	"kind": "etre",
 	"cost": 4,
-	"text": "La première fois à chaque tour qu’une carte quitte votre défausse, Orel gagne +1 ATQ ce tour-ci.",
+	"text": "La première fois à chaque tour qu’une carte quitte votre défausse, Orel gagne +1 ATQ.",
 	"rarity": "rare",
 	"faction": "eshar",
 	"art": "/art/orel-veilleur-des-restes.webp",

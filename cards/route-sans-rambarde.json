@@ -3,7 +3,7 @@
 	"name": "La Route sans rambarde",
 	"kind": "lieu",
 	"cost": 3,
-	"text": "La première fois à chaque tour qu’un de vos Êtres avec Élan attaque, il gagne +1 ATQ ce tour-ci.",
+	"text": "La première fois à chaque tour qu’un de vos Êtres avec Élan attaque, il gagne +2 ATQ ce tour-ci.",
 	"rarity": "rare",
 	"faction": "velar",
 	"art": "/art/route-sans-rambarde.webp",

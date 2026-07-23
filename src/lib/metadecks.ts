@@ -214,36 +214,36 @@ export const META_DECKS: MetaDeck[] = [
 		style: 'Tempo-burn · Exar/Velar',
 		difficulty: 2,
 		cards: {
-			'morna': 1,
+			'sela-premiere-au-vent': 2,
+			'avel-rieur-des-retours': 2,
 			'thanor': 3,
 			'exna': 2,
-			'korsa': 2,
 			'clameur-dexen': 2,
 			'bruler-le-jour': 3,
 			'exoran': 2,
 			'dernier-mot': 2,
 			'couronne-dos': 2,
-			'morek': 1,
+			'morna': 1,
 			'velna': 1,
 			'bord-du-monde': 1,
 			'rasen': 1,
 			'premiere-armee': 2,
 			'exen': 1,
-			'exva': 2,
-			'echo-du-dixieme-mot': 1,
+			'exva': 1,
+			'korsa': 1,
 			'porte-du-dehors': 1
 		},
 		guide: {
 			resume:
-				"La course : des corps agressifs, la Clameur pour passer en force, et Brûler le jour pour finir par-dessus les murs. Neuf dégâts dorment dans vos trois Brûler le jour — le reste du deck n'a qu'à amener l'adversaire à portée. Korsa règle son compte aux Lieux et Reliques qui vous ralentissent, le Dernier Mot dégage la voie quand la défense tient trop.",
+				"La course : des corps agressifs, la Clameur pour passer en force, et Brûler le jour pour finir par-dessus les murs. Sela ouvre au premier tour avec Élan, Avel punit chaque renvoi de 2 dégâts directs, et neuf dégâts dorment dans vos trois Brûler le jour — le reste du deck n'a qu'à amener l'adversaire à portée. Le Dernier Mot dégage la voie quand la défense tient trop.",
 			plan: [
-				'Tours 2-3 : Morek et Thanor frappent tôt ; la Clameur d’Exen ajoute 2 ATQ pile au bon moment.',
-				'Tours 3-4 : Morna presse (4 ATQ), la Couronne d’os transforme n’importe qui en menace, Korsa détruit le Lieu ou la Relique qui vous bloque.',
+				'Tours 1-3 : Sela attaque dès son arrivée, Thanor suit ; la Clameur d’Exen ajoute 2 ATQ pile au bon moment.',
+				'Tours 3-4 : Morna et Avel pressent, la Couronne d’os transforme n’importe qui en menace. Chaque Être renvoyé en main — même le vôtre — coûte 2 Korum à l’adversaire tant qu’Avel rit.',
 				'Tours 5+ : le Bord du monde donne Élan à tout le monde — videz votre main et frappez la même seconde. Finissez aux Brûler le jour.'
 			],
 			forces: [
 				'Le tempo : vos Êtres à Élan attaquent le tour où ils arrivent — un tour d’avance permanent.',
-				'Le burn passe par-dessus les Serments : 9 dégâts qui ignorent le plateau.',
+				'Le burn passe par-dessus les Serments : 9 dégâts qui ignorent le plateau, plus les rires d’Avel.',
 				'Velna en fin de course arrive à 7-8 ATQ avec Élan.'
 			],
 			faiblesses: [
@@ -257,15 +257,132 @@ export const META_DECKS: MetaDeck[] = [
 					text: 'Le Bord du monde donne Élan à tous — Velna gagne +1 ATQ par allié à Élan : posée après, elle attaque immédiatement à 7+.'
 				},
 				{
-					cards: ['couronne-dos', 'morna'],
-					text: 'La Couronne (+2/+1) sur Morna en fait une 6/3 dès le tour 4 — sa blessure d’attaque devient un détail.'
+					cards: ['avel-rieur-des-retours', 'dernier-mot'],
+					text: 'Avel sur le terrain, puis l’adversaire renvoie ou vous rappelez un Être : 2 dégâts gratuits au Korum, une fois par tour, qui s’ajoutent au burn.'
 				},
 				{
 					cards: ['clameur-dexen', 'thanor'],
 					text: 'Thanor arrive, Clameur (+2 ATQ) : 5 dégâts surprise avant que la défense se mette en place.'
 				}
 			],
-			garder: ['morna', 'thanor', 'korsa', 'bruler-le-jour']
+			garder: ['sela-premiere-au-vent', 'thanor', 'exna', 'bruler-le-jour']
+		}
+	},
+	{
+		id: 'mille-postures',
+		name: 'Mille Postures',
+		faction: 'morar',
+		tagline: 'Aucune forme n’est fausse si elle permet de rester.',
+		style: 'Mutation-midrange · Morar/Vasar',
+		difficulty: 2,
+		cards: {
+			'nemi-deuxieme-allure': 3,
+			'nouvelle-peau': 3,
+			'sorel-mille-postures': 2,
+			'moren': 2,
+			'enfant-de-xenen': 1,
+			'talvas': 1,
+			'moras': 1,
+			'doras': 3,
+			'renna': 3,
+			'korven': 3,
+			'dasen': 2,
+			'dorvel': 2,
+			'koren': 1,
+			'recitation': 2,
+			'vasna': 1
+		},
+		guide: {
+			resume:
+				"Le deck de la Mutation : des corps Vasar solides que Morar retourne au meilleur moment. Faire peau neuve transforme un mur en attaquant, Sorel grossit à chaque échange, Moras retourne tout le camp d'un coup. L'ossature Vasar (Doras, Renna, Korven) tient la ligne pendant que les formes changent — l'adversaire ne sait jamais ce qu'il affronte vraiment.",
+			plan: [
+				'Tours 1-2 : Nemi ouvre (choisissez sa mutation selon le camp d’en face), Renna et Vasna posent des corps.',
+				'Tours 3-4 : Doras monte la garde, Korven neutralise, Sorel s’installe — chaque échange de stats le nourrit (+1/+1 permanent).',
+				'Tours 5+ : Faire peau neuve retourne votre plus gros mur en attaquant, Moras retourne tout le camp, Koren et Dasen renforcent ce qui est déjà là.'
+			],
+			forces: [
+				'Imprévisible : un plateau de murs devient une armée d’attaquants en un tour.',
+				'Sorel devient énorme si la partie dure — chaque mutation le grossit définitivement.',
+				'L’ossature Vasar donne des mains de départ stables, rare pour un deck à combo.'
+			],
+			faiblesses: [
+				'Les retournements sont temporaires ou uniques : mal minutés, ils ne font rien.',
+				'Peu de dégâts directs — un adversaire qui soigne reprend l’avantage.',
+				'L’Enfant de Xenen dépend du dernier Verbe joué : parfois il n’y a rien à copier.'
+			],
+			combos: [
+				{
+					cards: ['nouvelle-peau', 'doras'],
+					text: 'Doras 1/4 tient trois tours en Serment, puis Faire peau neuve : 4/1 qui frappe. Le mur devient la sentence.'
+				},
+				{
+					cards: ['sorel-mille-postures', 'moras'],
+					text: 'Moras échange les stats de chacun de vos Êtres — et chaque échange donne +1/+1 à Sorel. Un tour de Moras avec Sorel en jeu, c’est un Sorel géant.'
+				},
+				{
+					cards: ['enfant-de-xenen', 'recitation'],
+					text: 'Récitation (+2 Intégrité au camp), puis l’Enfant la copie : quatre points d’Intégrité de plus sur toute la ligne en deux cartes.'
+				}
+			],
+			garder: ['nemi-deuxieme-allure', 'renna', 'doras', 'nouvelle-peau']
+		}
+	},
+	{
+		id: 'cendres-du-silence',
+		name: 'Cendres du Silence',
+		faction: 'eshar',
+		tagline: 'Ce qui brûle parle encore. Il suffit d’écouter.',
+		style: 'Défausse-valeur · Eshar/Vasar',
+		difficulty: 3,
+		cards: {
+			'eshin': 3,
+			'rendre-au-silence': 2,
+			'eshna': 3,
+			'brume-memorielle': 2,
+			'orel-veilleur-des-restes': 2,
+			'lampe-des-noms-eteints': 2,
+			'eskor': 2,
+			'eshel': 1,
+			'doras': 3,
+			'korven': 3,
+			'dorvel': 2,
+			'thalen': 2,
+			'chant-daube': 2,
+			'koren': 1
+		},
+		guide: {
+			resume:
+				"Le deck qui joue avec sa défausse comme d'autres avec leur main. Rendre au silence recycle, Eshna récupère, et chaque mouvement de défausse arme Orel (+1 ATQ) et la Lampe des noms éteints (exil chez l'adversaire). Orel devient une menace permanente pendant que les murs Vasar tiennent et que Thalen lit la main d'en face — vous savez tout, vous gardez tout.",
+			plan: [
+				'Tours 1-3 : Eshin regarde, la Brume creuse, Doras tient. Votre défausse se remplit — c’est voulu.',
+				'Tours 3-5 : Orel s’installe, puis chaque Rendre au silence ou Eshna le réveille (+1 ATQ) ET déclenche la Lampe, qui exile la meilleure carte de la défausse adverse.',
+				'Tours 5+ : Orel a grossi à chaque mouvement (+1 ATQ permanent), Eshel va chercher la pièce manquante, Koren referme. L’adversaire n’a plus de ressources ; vous n’avez jamais cessé d’en avoir.'
+			],
+			forces: [
+				'Double moteur : chaque mouvement de défausse donne de l’ATQ (Orel) et détruit leurs ressources (Lampe).',
+				'Thalen + Korven : vous savez ce qui arrive et vous le neutralisez.',
+				'Presque rien n’est perdu : la défausse est une seconde main.'
+			],
+			faiblesses: [
+				'Le deck le plus exigeant du jeu : l’ordre des déclencheurs fait tout.',
+				'Départ lent — les aggros rapides peuvent passer avant que la machine tourne.',
+				'La Lampe exile aussi VOS cartes si votre défausse bouge chez l’adversaire.'
+			],
+			combos: [
+				{
+					cards: ['rendre-au-silence', 'orel-veilleur-des-restes', 'lampe-des-noms-eteints'],
+					text: 'Rendre au silence : une carte quitte votre défausse → Orel +1 ATQ, la Lampe exile chez eux, et vous piochez. Trois effets pour deux Volonté.'
+				},
+				{
+					cards: ['chant-daube', 'eshna'],
+					text: 'Chant d’aube soigne, pioche… puis finit à la défausse — et Eshna le ramène (coût 4 ou moins). Le même souffle deux fois par partie.'
+				},
+				{
+					cards: ['thalen', 'korven'],
+					text: 'Thalen révèle leur main : vous savez exactement quoi neutraliser avec Korven avant même que ça arrive.'
+				}
+			],
+			garder: ['eshin', 'doras', 'eshna', 'brume-memorielle']
 		}
 	}
 ];

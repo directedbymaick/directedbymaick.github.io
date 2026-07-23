@@ -3,7 +3,7 @@
 	"name": "Avel, rieur des retours",
 	"kind": "etre",
 	"cost": 4,
-	"text": "La première fois à chaque tour qu’un Être est renvoyé dans une main, infligez 1 dégât au Korum adverse.",
+	"text": "La première fois à chaque tour qu’un Être est renvoyé dans une main, infligez 2 dégâts au Korum adverse.",
 	"rarity": "rare",
 	"faction": "velar",
 	"art": "/art/avel-rieur-des-retours.webp",

@@ -18,7 +18,7 @@
 		"seed": 135777
 	},
 	"attack": 3,
-	"health": 2,
+	"health": 3,
 	"flavor": "Son rire franchit le bord du monde avant lui.",
 	"cutout": "/art/velor-cutout.webp",
 	"fullArt": true,
