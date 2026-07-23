@@ -3,7 +3,7 @@ import { cards } from '$lib/cards';
 import { charter } from '$lib/charter';
 import { FULLART_RATE, SLOT_ODDS } from '$lib/gacha';
 import { versionsOf, foilLabel } from '$lib/variants';
-import { carteDansEdition, type EditionId } from '$lib/editions';
+import { carteDansEdition, editionsDe, type EditionId } from '$lib/editions';
 import mesures from '$lib/taux-mesures.json';
 
 /** L'édition par défaut : celle mise en avant au comptoir (la 2ᵉ, « Routes de Xenen »). */
@@ -344,6 +344,50 @@ const ORDRE_CLASSES = ['raw', 'foil', 'fa', 'sp', 'fa-sp', 'alt'];
  * Les six classes du jeu, avec leur fréquence mesurée.
  * C'est ce que les pages annoncent ; `paliers()` reste le détail.
  */
+/* ------------------------------------------------------------------ vedettes
+   Les « chase » d'une édition : les cinq cartes qu'on espère en l'ouvrant. On
+   prend la version la plus PRÉCIEUSE de chaque carte (son prix de glanage, qui
+   suit la rareté × forme × finition), on garde une entrée par carte, et on
+   retient les cinq plus fortes — la plus rare départageant les prix plafonnés. */
+export interface Vedette {
+	card: CardData;
+	label: string;
+	taux: number;
+	prix: number;
+}
+
+export function vedettesDe(edition: EditionId = EDITION_DEFAUT, n = 5): Vedette[] {
+	/* meilleure version de chaque carte de l'édition, + si elle lui est exclusive */
+	const meilleure = new Map<string, Vedette & { id: string; exclusive: boolean }>();
+	for (const c of cards) {
+		if (!carteDansEdition(c.id, edition)) continue;
+		const exclusive = editionsDe(c.id).length === 1;
+		for (const v of versionsOf(c, FULLART_RATE)) {
+			const prix = prixVersion(c, v);
+			const vue = meilleure.get(c.id);
+			const taux = tauxVersion(c, v, edition);
+			if (!vue || prix > vue.prix || (prix === vue.prix && taux < vue.taux)) {
+				meilleure.set(c.id, { id: c.id, exclusive, card: v.view, label: v.label, taux, prix });
+			}
+		}
+	}
+	const parValeur = (a: Vedette, b: Vedette) => b.prix - a.prix || a.taux - b.taux;
+	const toutes = [...meilleure.values()].sort(parValeur);
+
+	/* Un chase qui RESSEMBLE à son édition : les grosses cartes globales (souvent
+	   les prismatiques et légendaires, partagées) ET les plus belles pièces
+	   PROPRES à cette édition — sinon les deux boosters afficheraient le même mur.
+	   On réserve jusqu'à deux places aux exclusives, le reste aux plus fortes. */
+	const gardeExclusives = Math.min(2, n);
+	const exclusives = toutes.filter((v) => v.exclusive).slice(0, gardeExclusives);
+	const choisies = new Set(exclusives.map((v) => v.id));
+	for (const v of toutes) {
+		if (choisies.size >= n) break;
+		if (!choisies.has(v.id)) choisies.add(v.id);
+	}
+	return toutes.filter((v) => choisies.has(v.id)).sort(parValeur).slice(0, n);
+}
+
 export function classes(edition: EditionId = EDITION_DEFAUT): Classe[] {
 	const map = new Map<string, Classe>();
 	for (const p of paliers(edition)) {

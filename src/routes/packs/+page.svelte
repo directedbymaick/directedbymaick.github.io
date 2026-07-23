@@ -31,7 +31,7 @@
 		type Pull
 	} from '$lib/gacha';
 	import type { Rarity } from '$lib/types';
-	import { paliers, frequence } from '$lib/paliers';
+	import { paliers, frequence, vedettesDe } from '$lib/paliers';
 	import {
 		eco,
 		initEconomy,
@@ -78,6 +78,20 @@
 	   tirage de CETTE édition. La publier ici, c'est publier les vraies
 	   probabilités du sachet qu'on s'apprête à ouvrir. */
 	const ECHELLE = $derived(paliers(editionId));
+
+	/* ---- carrousel des cartes vedettes de l'édition ---- */
+	const vedettes = $derived(vedettesDe(editionId));
+	let vedettesOuvert = $state(false);
+	let vedetteIdx = $state(0);
+	function ouvrirVedettes() {
+		if (stage !== 'idle') return; // pas pendant l'ouverture
+		vedetteIdx = 0;
+		vedettesOuvert = true;
+	}
+	function vedettePas(d: number) {
+		const n = vedettes.length;
+		vedetteIdx = (vedetteIdx + d + n) % n;
+	}
 	/* stats de pity de l'édition affichée (chaque produit a les siennes) */
 	const statsEd = $derived(
 		(mesures.editions as Record<string, { boostersAvec: any; boostersSansGarantie: any }>)[
@@ -564,18 +578,30 @@
 				<b>{eco.balance}</b>
 			</p>
 			{#if canAfford}
-				<p class="hint">⠿ Tire la languette pour ouvrir</p>
-				{#key editionId}
-					<PackVisual
-						bind:this={packRef}
-						ontorn={onTorn}
-						glow={TIER_GLOW.common}
-						prisma={false}
-						cover={edition.cover}
-						badge={edition.badge}
-						sousTitre={edition.sousTitre}
-					/>
-				{/key}
+				<p class="hint">⠿ Tire la languette pour ouvrir · touche le sachet pour voir les vedettes</p>
+				<!-- toucher le CORPS du sachet ouvre l'aperçu des cartes vedettes ; la
+				     languette (drag) garde son geste d'ouverture, elle capte le pointeur -->
+				<div
+					class="pack-clic"
+					role="button"
+					tabindex="0"
+					aria-label="Voir les cartes vedettes de l’édition"
+					onclick={ouvrirVedettes}
+					onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), ouvrirVedettes())}
+				>
+					{#key editionId}
+						<PackVisual
+							bind:this={packRef}
+							ontorn={onTorn}
+							glow={TIER_GLOW.common}
+							prisma={false}
+							cover={edition.cover}
+							badge={edition.badge}
+							sousTitre={edition.sousTitre}
+						/>
+					{/key}
+				</div>
+				<button class="vedettes-lien" onclick={ouvrirVedettes}>★ Les 5 cartes vedettes de l’édition</button>
 				<div class="openrow">
 					<button class="ghost" onclick={() => packRef?.tear()}>⚡ Ouverture rapide</button>
 					<button class="ghost bulk" disabled={eco.balance < PACK_PRICE * 5} onclick={() => bulkOpen(5)}>
@@ -682,6 +708,51 @@
 		</div>
 	{/if}
 </section>
+
+<!-- ============ CARROUSEL DES CARTES VEDETTES ============
+     Touche le sachet (ou le lien) sur l'écran d'accueil pour parcourir les
+     cinq plus belles pièces de l'édition et leur taux dans ce booster. -->
+{#if vedettesOuvert && vedettes.length}
+	{@const v = vedettes[vedetteIdx]}
+	<div class="vedettes-voile" role="dialog" aria-modal="true" aria-label="Cartes vedettes de l’édition">
+		<button class="vv-fond" aria-label="Fermer" onclick={() => (vedettesOuvert = false)}></button>
+		<div class="vv-boite">
+			<header class="vv-tete">
+				<p class="vv-kicker">★ Cartes vedettes · {edition.nom}</p>
+				<button class="vv-x" aria-label="Fermer" onclick={() => (vedettesOuvert = false)}>✕</button>
+			</header>
+
+			<div class="vv-scene">
+				<button class="vv-fleche" aria-label="Précédente" onclick={() => vedettePas(-1)}>‹</button>
+				{#key vedetteIdx}
+					<div class="vv-carte">
+						<Card card={v.card} interactive={true} fullArt={v.card.id.includes('--fullart')} />
+					</div>
+				{/key}
+				<button class="vv-fleche" aria-label="Suivante" onclick={() => vedettePas(1)}>›</button>
+			</div>
+
+			<div class="vv-info">
+				<p class="vv-nom">{v.card.name}</p>
+				<p class="vv-label">{v.label}</p>
+				<p class="vv-taux">Taux dans ce booster : <b>{frequence(v.taux)}</b></p>
+			</div>
+
+			<div class="vv-points" role="tablist" aria-label="Choisir une vedette">
+				{#each vedettes as vd, i (vd.card.id)}
+					<button
+						class="vv-point"
+						class:on={i === vedetteIdx}
+						role="tab"
+						aria-label={vd.card.name}
+						aria-selected={i === vedetteIdx}
+						onclick={() => (vedetteIdx = i)}
+					></button>
+				{/each}
+			</div>
+		</div>
+	</div>
+{/if}
 
 <!-- ============ ODDS PUBLIÉES ============ -->
 <section class="odds">
@@ -950,6 +1021,163 @@
 		color: rgba(201, 164, 69, 0.8);
 		animation: pulse 2.4s ease-in-out infinite;
 	}
+	/* le sachet cliquable : curseur loupe, léger halo au survol */
+	.pack-clic {
+		cursor: pointer;
+		border-radius: 20px;
+		transition: filter 0.2s ease;
+	}
+	.pack-clic:hover {
+		filter: drop-shadow(0 0 24px rgba(213, 178, 94, 0.35));
+	}
+	.pack-clic:focus-visible {
+		outline: 2px solid rgba(213, 178, 94, 0.6);
+		outline-offset: 6px;
+	}
+	.vedettes-lien {
+		margin-top: 0.2rem;
+		padding: 0.5rem 1.1rem;
+		border: 1px solid rgba(213, 178, 94, 0.4);
+		border-radius: 999px;
+		background: rgba(213, 178, 94, 0.08);
+		color: var(--gold, #d5b25e);
+		font-family: inherit;
+		font-size: 0.82rem;
+		font-weight: 650;
+		cursor: pointer;
+		transition: background 0.15s ease, border-color 0.15s ease;
+	}
+	.vedettes-lien:hover {
+		background: rgba(213, 178, 94, 0.16);
+		border-color: rgba(213, 178, 94, 0.7);
+	}
+
+	/* ---------- carrousel des cartes vedettes ---------- */
+	.vedettes-voile {
+		position: fixed;
+		inset: 0;
+		z-index: 400;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem;
+	}
+	.vv-fond {
+		position: absolute;
+		inset: 0;
+		border: none;
+		background: rgba(4, 7, 14, 0.86);
+		backdrop-filter: blur(12px);
+		cursor: pointer;
+	}
+	.vv-boite {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.9rem;
+		width: min(520px, 94vw);
+		padding: 1.4rem 1.4rem 1.6rem;
+		background: rgba(10, 16, 30, 0.96);
+		border: 1px solid rgba(213, 178, 94, 0.35);
+		border-radius: 22px;
+		box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+		animation: vvpop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	@keyframes vvpop {
+		from { opacity: 0; transform: translateY(14px) scale(0.97); }
+	}
+	.vv-tete {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+	}
+	.vv-kicker {
+		margin: 0;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--gold, #d5b25e);
+	}
+	.vv-x {
+		border: none;
+		background: none;
+		color: rgba(238, 240, 245, 0.6);
+		font-size: 1.1rem;
+		cursor: pointer;
+	}
+	.vv-x:hover { color: var(--ink, #eef0f5); }
+	.vv-scene {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		width: 100%;
+		justify-content: center;
+	}
+	.vv-carte {
+		width: min(280px, 62vw);
+		animation: vvslide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	@keyframes vvslide {
+		from { opacity: 0; transform: translateX(18px); }
+	}
+	.vv-fleche {
+		flex: none;
+		width: 2.6rem;
+		height: 2.6rem;
+		border: 1px solid rgba(213, 178, 94, 0.4);
+		border-radius: 50%;
+		background: rgba(213, 178, 94, 0.08);
+		color: var(--gold, #d5b25e);
+		font-size: 1.5rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+	.vv-fleche:hover { background: rgba(213, 178, 94, 0.2); }
+	.vv-info {
+		text-align: center;
+	}
+	.vv-nom {
+		margin: 0;
+		font-family: Cinzel, Georgia, serif;
+		font-size: 1.15rem;
+		color: var(--ink, #eef0f5);
+	}
+	.vv-label {
+		margin: 0.15rem 0 0;
+		font-size: 0.82rem;
+		color: rgba(238, 240, 245, 0.55);
+	}
+	.vv-taux {
+		margin: 0.35rem 0 0;
+		font-size: 0.9rem;
+		color: rgba(238, 240, 245, 0.7);
+	}
+	.vv-taux b {
+		color: var(--gold, #d5b25e);
+	}
+	.vv-points {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.vv-point {
+		width: 0.55rem;
+		height: 0.55rem;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: rgba(238, 240, 245, 0.25);
+		cursor: pointer;
+		transition: background 0.15s ease, transform 0.15s ease;
+	}
+	.vv-point.on {
+		background: var(--gold, #d5b25e);
+		transform: scale(1.3);
+	}
+
 	/* ---------- le choix de l'édition ---------- */
 	.editions {
 		display: flex;
