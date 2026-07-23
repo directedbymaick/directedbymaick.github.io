@@ -129,6 +129,12 @@ export interface CardData {
 	/** SP (hors Full Art) : cadrage du FOND d'illustration seul, sans toucher au
 	    détourage (qui garde --art-pos / ses offsets). Ex. « center 4% ». */
 	spArtPos?: string;
+	/** object-position du DÉTOURAGE (SP hors Full Art), découplé d'artPosition.
+	    Sans lui : retombe sur artPosition puis center 8% (comportement d'origine). */
+	cutoutPos?: string;
+	/** object-position du détourage en Full Art SP, découplé d'artPosition.
+	    Sans lui : retombe sur artPosition puis center 12% (comportement d'origine). */
+	faCutoutPos?: string;
 	/** Variantes officielles SUPPLÉMENTAIRES, validées depuis le Lab : une même
 	    carte peut exister en plusieurs finitions (ex. cosmique ET galerie).
 	    Elles s'ajoutent au Registre à côté de la version de base. */

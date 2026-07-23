@@ -184,7 +184,7 @@
 			((card.sourceRarity ?? card.rarity) === 'prism' ? 'cristal' : 'or')}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.spArtPos ? `; --sp-art-pos: ${card.spArtPos}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.spArtPos ? `; --sp-art-pos: ${card.spArtPos}` : ''}{card.cutoutPos ? `; --cutout-pos: ${card.cutoutPos}` : ''}{card.faCutoutPos ? `; --fa-cutout-pos: ${card.faCutoutPos}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -750,7 +750,8 @@
 		height: calc(84% * var(--cutout-scale, 1));
 		z-index: 1; /* AU-DESSUS du holo, mais SOUS le voile sombre et le texte */
 		object-fit: cover;
-		object-position: var(--art-pos, center 8%);
+		/* --cutout-pos découple le détourage du cadrage du FOND (artPosition) */
+		object-position: var(--cutout-pos, var(--art-pos, center 8%));
 		filter: drop-shadow(0 0.4cqw 0.8cqw rgba(0, 0, 0, 0.4));
 		/* calage surchargeable par carte (--cutout-x / --cutout-y) */
 		transform: translate(var(--cutout-x, 0%), var(--cutout-y, -4%));
@@ -768,7 +769,7 @@
 		left: calc(50% * (1 - var(--fa-scale)));
 		width: calc(100% * var(--fa-scale));
 		height: calc(100% * var(--fa-scale));
-		object-position: var(--art-pos, center 12%);
+		object-position: var(--fa-cutout-pos, var(--art-pos, center 12%));
 		/* calage : le détourage était un poil trop haut par rapport au fond */
 		transform: translate(var(--fa-cutout-x, 0%), var(--fa-cutout-y, 3.05%));
 		-webkit-mask-image: linear-gradient(to bottom, #000 64%, transparent 88%);
