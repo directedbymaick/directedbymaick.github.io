@@ -32,9 +32,8 @@
 		}
 	],
 	"fullArt": true,
-	"fullArtFoil": "regular",
-	"cutoutY": "-5%",
+	"cutoutY": "-4.6%",
 	"spFullArtFoil": "regular",
 	"spArtPos": "center 4%",
-	"faCutoutY": "0.5%"
+	"faCutoutY": "0.2%"
 }
