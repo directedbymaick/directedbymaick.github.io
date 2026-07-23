@@ -1,0 +1,21 @@
+{
+	"id": "courbe-des-possibles",
+	"name": "La Courbe des possibles",
+	"kind": "lieu",
+	"cost": 3,
+	"text": "La première fois à chaque tour que vous choisissez un mode ou échangez des statistiques, piochez puis défaussez une carte.",
+	"rarity": "rare",
+	"faction": "morar",
+	"art": "/art/courbe-des-possibles.webp",
+	"gene": {
+		"palette": [
+			"#717b85",
+			"#36404e",
+			"#e4d2bc"
+		],
+		"foilPreset": "regular",
+		"accent": "#8fb4d9",
+		"seed": 548049
+	},
+	"flavor": "À Xenen, les routes ne promettent que de continuer."
+}

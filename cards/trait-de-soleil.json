@@ -1,0 +1,21 @@
+{
+	"id": "trait-de-soleil",
+	"name": "Trait de soleil",
+	"kind": "relique",
+	"cost": 3,
+	"text": "Attachez-la à un Être allié. Ses attaques traversent les Êtres adverses : il frappe directement le Korum.",
+	"rarity": "epic",
+	"faction": "velar",
+	"art": "/art/trait-de-soleil.webp",
+	"gene": {
+		"palette": [
+			"#4f5a73",
+			"#1b2433",
+			"#ab999b"
+		],
+		"foilPreset": "cosmos",
+		"accent": "#f0a626",
+		"seed": 881827
+	},
+	"flavor": "Aucun rempart n’a jamais arrêté le matin."
+}

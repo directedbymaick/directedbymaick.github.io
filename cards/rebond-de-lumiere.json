@@ -1,0 +1,21 @@
+{
+	"id": "rebond-de-lumiere",
+	"name": "Rebond de lumière",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Renvoyez un Être allié dans votre main, puis infligez 2 dégâts à un Être adverse.",
+	"rarity": "common",
+	"faction": "velar",
+	"art": "/art/rebond-de-lumiere.webp",
+	"gene": {
+		"palette": [
+			"#40546a",
+			"#172736",
+			"#9e9a9b"
+		],
+		"foilPreset": "showcase",
+		"accent": "#f0a626",
+		"seed": 746019
+	},
+	"flavor": "Le soleil frappe deux fois : au départ et au retour."
+}

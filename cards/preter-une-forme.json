@@ -1,0 +1,21 @@
+{
+	"id": "preter-une-forme",
+	"name": "Prêter une forme",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Échangez l’ATQ et l’Intégrité d’un Être jusqu’à la fin du tour.",
+	"rarity": "common",
+	"faction": "morar",
+	"art": "/art/preter-une-forme.webp",
+	"gene": {
+		"palette": [
+			"#3e525c",
+			"#0e1011",
+			"#d6ab8e"
+		],
+		"foilPreset": "showcase",
+		"accent": "#8fb4d9",
+		"seed": 157599
+	},
+	"flavor": "Un corps n’est qu’une réponse tenue assez longtemps."
+}

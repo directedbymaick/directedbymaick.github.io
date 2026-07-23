@@ -146,7 +146,7 @@
 					<a href={l.href} class:active={page.url.pathname === l.href}>{l.label}</a>
 				{/each}
 			</div>
-			<span class="setcount">Collection <b>{cards.length}</b>/60</span>
+			<span class="setcount">Collection <b>{cards.length}</b> cartes</span>
 
 			<!-- les Éclats -->
 			<a class="wallet" href="/packs" title="Éclats — la monnaie du Silence">

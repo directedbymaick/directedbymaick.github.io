@@ -64,6 +64,8 @@
 		legal: { units: number[]; korum: boolean };
 		pron: { uid: number; cost: number; text: string }[];
 		swappables: number[];
+		/** attaquants dont le Korum adverse est ouvert (Trait de soleil, mur vide) */
+		evasifs: number[];
 		specs: (Choix | null)[];
 		pronSpecs: Record<number, Choix | null>;
 		meta: { turn: number; active: Side; winner: Side | -1 | null };
@@ -240,7 +242,7 @@
 		/* On interroge le moteur MAINTENANT plutôt que de lire `ciblesLegales` :
 		   ce $derived dépend de `attaquant`, posé au début du glisser, et Svelte
 		   ne l'a pas forcément recalculé quand on relâche. */
-		const legales = ciblesMaintenant();
+		const legales = ciblesMaintenant(t.uid);
 		if (cible === 'korum' && legales.korum) {
 			agir({ kind: 'attack', uid: t.uid, target: 'korum' });
 		} else {
@@ -431,6 +433,7 @@
 			legal: m.legalTargets(1),
 			pron,
 			swappables: m.swappables(1),
+			evasifs: m.attackers(1).filter((uid) => m.legalTargets(1, uid).korum),
 			specs: hand.map((h, i) => (h.playable ? m.choiceFor(1, i) : null)),
 			pronSpecs,
 			meta: { turn: mm.turn, active: mm.active, winner: mm.winner }
@@ -627,7 +630,7 @@
 	});
 	const ciblesLegales = $derived.by(() => {
 		if (version < 0 || attaquant === null) return { units: [], korum: false };
-		return ciblesMaintenant();
+		return ciblesMaintenant(attaquant);
 	});
 	const prononcables = $derived.by(() => {
 		if (version < 0 || !monTour) return [];
@@ -636,11 +639,13 @@
 		return vueInvite?.pron ?? [];
 	});
 
-	/** Les cibles légales, interrogées à l'instant T (cf. finTraine). */
-	function ciblesMaintenant(): { units: number[]; korum: boolean } {
-		if (duel) return duel.legalTargets();
-		if (match) return match.legalTargets(0);
-		return vueInvite?.legal ?? { units: [], korum: false };
+	/** Les cibles légales de CET attaquant (le Trait de soleil ouvre le Korum). */
+	function ciblesMaintenant(uid?: number): { units: number[]; korum: boolean } {
+		if (duel) return duel.legalTargets(uid);
+		if (match) return match.legalTargets(0, uid);
+		if (!vueInvite) return { units: [], korum: false };
+		if (uid !== undefined && vueInvite.evasifs.includes(uid)) return { units: [], korum: true };
+		return vueInvite.legal;
 	}
 
 	/**

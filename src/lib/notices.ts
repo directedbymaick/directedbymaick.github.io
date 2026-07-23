@@ -323,5 +323,86 @@ export const NOTICES: Record<string, Notice> = {
 		livre: 'fracture',
 		texte:
 			"La limite dont la seule existence a fêlé l'Origine. Les Velar en ont fait leur demeure, ce qui reste la provocation la plus complète jamais adressée à Vasen."
+	},
+
+	/* -------------------------------------------------- EXTENSION · ESHAR */
+	'selin-ecoute-la-cendre': {
+		livre: 'silence',
+		texte:
+			"Selin fut effacée si jeune qu'elle n'a jamais connu son nom entier. Elle écoute la cendre comme d'autres lisent : ce qui a brûlé parle encore, à condition de se taire plus fort que lui."
+	},
+	'orel-veilleur-des-restes': {
+		livre: 'eshar-velar',
+		texte:
+			"Les Eshar n'enterrent pas : ils veillent. Orel monte la garde au bord des défausses du monde, non pour retenir les morts, mais pour tenir ouvert le passage qu'ils empruntent en revenant."
+	},
+	'rendre-au-silence': {
+		livre: 'silence',
+		texte:
+			"Le rite le plus ancien des effacés : rendre un nom au silence, c'est le glisser sous la pile du monde plutôt que de le laisser pourrir en surface. Ce qui redescend ainsi remonte toujours changé."
+	},
+	'registre-des-absents': {
+		livre: 'silence',
+		texte:
+			"Le grand livre où les noms rayés demeurent lisibles à la lune. Ceux qui savent le consulter paient leurs retours moins cher — le Registre reconnaît les siens."
+	},
+	'lampe-des-noms-eteints': {
+		livre: 'eshar-velar',
+		texte:
+			"Une lampe qui n'éclaire que ce qui va disparaître. Les papillons qui l'entourent sont les dernières syllabes des noms éteints ; ce qu'elle touche quitte le monde par la porte définitive."
+	},
+
+	/* -------------------------------------------------- EXTENSION · MORAR */
+	'nemi-deuxieme-allure': {
+		livre: 'morar',
+		texte:
+			"Nemi a appris des Morar la leçon première : on ne choisit pas ce qu'on est, on choisit son allure. Elle en change comme on change de monde — avant que le monde ne l'exige."
+	},
+	'sorel-mille-postures': {
+		livre: 'morar',
+		texte:
+			"Sorel a survécu à la chute en refusant d'avoir une forme définitive. Chaque fois qu'un corps se retourne quelque part, le sien apprend — mille postures, aucune fausse."
+	},
+	'preter-une-forme': {
+		livre: 'morar',
+		texte:
+			"Chez les Morar, la forme n'appartient à personne : elle se prête, le temps de tenir. Rendre le corps emprunté à la fin du jour est une politesse — et une loi."
+	},
+	'courbe-des-possibles': {
+		livre: 'morar',
+		texte:
+			"La route de Xenen ne promet pas d'arriver : elle promet de continuer. Sur la Courbe, chaque bifurcation offre une carte et en reprend une — c'est le prix du possible."
+	},
+	'halo-a-charniere': {
+		livre: 'morar',
+		texte:
+			"Le cercle fêlé de Moras, monté sur charnière par des mains morar. Il bascule d'un bord à l'autre de la fêlure : la force un jour, l'endurance le lendemain — habitable, jamais immobile."
+	},
+
+	/* -------------------------------------------------- EXTENSION · VELAR */
+	'sela-premiere-au-vent': {
+		livre: 'eshar-velar',
+		texte:
+			"La plus jeune à avoir sauté. Sela ne demanda ni où menait la route ni ce qu'on y risquait — seulement si elle descendait. Elle court depuis, toujours première au vent."
+	},
+	'avel-rieur-des-retours': {
+		livre: 'eshar-velar',
+		texte:
+			"Avel rit chaque fois qu'un être recule, car il sait ce que les Velar savent : tout retour est une piste d'élan. Son rire porte jusqu'aux Korum — et il frappe."
+	},
+	'rebond-de-lumiere': {
+		livre: 'eshar-velar',
+		texte:
+			"Le soleil des Velar frappe deux fois : au départ et au retour. Rappeler un des siens n'est pas une retraite — c'est armer le second coup."
+	},
+	'route-sans-rambarde': {
+		livre: 'fracture',
+		texte:
+			"Les Velar peignent les virages après les avoir franchis. Leur route n'a pas de rambarde parce qu'une rambarde est une promesse de s'arrêter — et qu'ils n'en font pas."
+	},
+	'trait-de-soleil': {
+		livre: 'fracture',
+		texte:
+			"Un javelot de pur matin, lancé par-dessus les remparts du Silence. Aucun mur ne l'a jamais arrêté : la lumière ne force pas les portes, elle les ignore."
 	}
 };

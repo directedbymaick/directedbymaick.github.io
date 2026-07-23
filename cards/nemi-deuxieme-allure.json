@@ -1,0 +1,23 @@
+{
+	"id": "nemi-deuxieme-allure",
+	"name": "Nemi, deuxième allure",
+	"kind": "etre",
+	"cost": 1,
+	"text": "Mutation — À l’arrivée, choisissez : Nemi gagne +1 ATQ ce tour-ci, ou +1 Intégrité.",
+	"rarity": "common",
+	"faction": "morar",
+	"art": "/art/nemi-deuxieme-allure.webp",
+	"gene": {
+		"palette": [
+			"#7e725b",
+			"#2a2421",
+			"#e2d3b6"
+		],
+		"foilPreset": "showcase",
+		"accent": "#8fb4d9",
+		"seed": 185763
+	},
+	"attack": 1,
+	"health": 1,
+	"flavor": "Elle change de démarche avant de changer de monde."
+}

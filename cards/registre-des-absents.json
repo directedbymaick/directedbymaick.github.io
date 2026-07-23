@@ -1,0 +1,21 @@
+{
+	"id": "registre-des-absents",
+	"name": "Le Registre des absents",
+	"kind": "lieu",
+	"cost": 3,
+	"text": "La première carte que vous récupérez de votre défausse à chaque tour coûte 1 Volonté de moins ce tour-ci.",
+	"rarity": "rare",
+	"faction": "eshar",
+	"art": "/art/registre-des-absents.webp",
+	"gene": {
+		"palette": [
+			"#3c4973",
+			"#121a36",
+			"#9fa0c8"
+		],
+		"foilPreset": "regular",
+		"accent": "#8fb4d9",
+		"seed": 822212
+	},
+	"flavor": "Chaque nom rayé demeure lisible à la lune."
+}

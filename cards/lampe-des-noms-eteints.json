@@ -1,0 +1,21 @@
+{
+	"id": "lampe-des-noms-eteints",
+	"name": "Lampe des noms éteints",
+	"kind": "relique",
+	"cost": 3,
+	"text": "Une fois par tour, quand une carte quitte une défausse, exilez-en la carte la plus récente.",
+	"rarity": "epic",
+	"faction": "eshar",
+	"art": "/art/lampe-des-noms-eteints.webp",
+	"gene": {
+		"palette": [
+			"#20375d",
+			"#070c20",
+			"#7b8aca"
+		],
+		"foilPreset": "cosmos",
+		"accent": "#8fb4d9",
+		"seed": 775605
+	},
+	"flavor": "Les papillons n’approchent que les noms prêts à disparaître."
+}

@@ -1,0 +1,21 @@
+{
+	"id": "route-sans-rambarde",
+	"name": "La Route sans rambarde",
+	"kind": "lieu",
+	"cost": 3,
+	"text": "La première fois à chaque tour qu’un de vos Êtres avec Élan attaque, il gagne +1 ATQ ce tour-ci.",
+	"rarity": "rare",
+	"faction": "velar",
+	"art": "/art/route-sans-rambarde.webp",
+	"gene": {
+		"palette": [
+			"#7585a0",
+			"#374558",
+			"#d8cbc7"
+		],
+		"foilPreset": "regular",
+		"accent": "#f0a626",
+		"seed": 636071
+	},
+	"flavor": "Les Velar peignent les virages après les avoir franchis."
+}

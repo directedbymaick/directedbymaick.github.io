@@ -16,7 +16,7 @@ Le set raconte des premières fois :
 
 ## 1. Structure du set
 
-Total : **60 cartes**.
+Total : **75 cartes** (60 du set de base + 15 de l’extension des peuples de soutien).
 
 Deux factions majeures portent les decks principaux. Trois factions mineures servent de renforts
 et d'identités secondaires.
@@ -29,9 +29,9 @@ peuvent compléter un deck, mais ne sont pas encore présentés comme des factio
 |---|---:|---|
 | **Vasar** | 22 | Deck majeur : ordre, protection, récitation. |
 | **Exar** | 22 | Deck majeur : rupture, sacrifice, puissance définitive. |
-| **Eshar** | 6 | Renfort : mémoire, pioche, exil contrôlé. |
-| **Morar** | 5 | Renfort : adaptation, flexibilité, réduction de coûts. |
-| **Velar** | 5 | Renfort : tempo, dégâts directs, pression rapide. |
+| **Eshar** | 11 | Renfort : mémoire, pioche, exil contrôlé. |
+| **Morar** | 10 | Renfort : adaptation, flexibilité, réduction de coûts. |
+| **Velar** | 10 | Renfort : tempo, dégâts directs, pression rapide. |
 
 ---
 
@@ -41,9 +41,9 @@ Répartition cible :
 
 | Rareté | Nombre |
 |---|---:|
-| Communes | 26 |
-| Rares | 16 |
-| Épiques | 10 |
+| Communes | 32 |
+| Rares | 22 |
+| Épiques | 13 |
 | Légendaires | 6 |
 | Prismatiques | 2 |
 
@@ -234,13 +234,13 @@ Chaque carte doit être produite dans cet ordre :
 |---|---|---|
 | V01–V22 | Vasar | 22 |
 | X01–X22 | Exar | 22 |
-| E01–E06 | Eshar | 6 |
-| M01–M05 | Morar | 5 |
-| S01–S05 | Velar | 5 |
+| E01–E11 | Eshar | 11 |
+| M01–M10 | Morar | 10 |
+| S01–S10 | Velar | 10 |
 
 Note : le préfixe `S` pour Velar vient de **Soleil** afin d'éviter la collision avec `Vasar`.
 
-### La table des 60 (version éditoriale v2)
+### La table des 75 (version éditoriale v3)
 
 *Personnages, lieux, objets et actions de l'Âge du Silence. Les effets sont rédigés comme ils
 doivent être compris en jeu ; les citations donnent une voix au monde sans expliquer l'image.*
@@ -309,6 +309,11 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | E04 | Eskor, passeur de l'exil | Être | R | 4 | À l'arrivée, reprenez dans votre main une de vos cartes exilées. | Il connaît le chemin du retour. Il refuse d'en révéler le prix. |
 | E05 | L'Interstice | Lieu | E | 3 | La première capacité que vous déclenchez depuis votre défausse ou votre exil à chaque tour se déclenche une fois de plus. | Ni Vasen ni Exen : un refuge pour ceux qui refusent de choisir. |
 | E06 | Eshel, mémoire intacte | Être | L | 5 | À l'arrivée, cherchez une carte dans votre deck, révélez-la et ajoutez-la à votre main. Mélangez ensuite votre deck. | « J'étais sans importance. C'est peut-être ce qui m'a sauvé. » |
+| E07 | Selin, écoute la cendre | Être | C | 1 | À l'arrivée : regardez la carte du dessus de votre deck — vous pouvez la placer dessous. | La cendre parle bas. Selin a appris à se taire davantage. |
+| E08 | Orel, veilleur des restes | Être | R | 4 | La première fois à chaque tour qu'une carte quitte votre défausse, Orel gagne +1 ATQ ce tour-ci. | Il ne garde pas les morts. Il garde le passage qu'ils ont laissé. |
+| E09 | Rendre au silence | Verbe | C | 2 | Placez une carte de votre défausse sous votre deck, puis piochez une carte. | Ce qui revient n'est jamais ce qui fut perdu. |
+| E10 | Le Registre des absents | Lieu | R | 3 | La première carte que vous récupérez de votre défausse à chaque tour coûte 1 Volonté de moins ce tour-ci. | Chaque nom rayé demeure lisible à la lune. |
+| E11 | Lampe des noms éteints | Relique | E | 3 | Une fois par tour, quand une carte quitte une défausse, exilez-en la carte la plus récente. | Les papillons n'approchent que les noms prêts à disparaître. |
 
 #### MORAR (2 communes · 1 rare · 1 épique · 1 légendaire)
 
@@ -319,6 +324,11 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | M03 | Moren, des deux mondes | Être | R | 3 | La première carte que vous jouez à chaque tour coûte 1 Volonté de moins. | Il a connu Vasen et Xenen. Un seul des deux lui manque. |
 | M04 | Enfant de Xenen | Être | E | 3 | À l'arrivée, copiez le dernier Verbe joué pendant ce duel. Vous pouvez choisir de nouvelles cibles. | Lorsqu'il parla, cinq peuples retinrent leur souffle. |
 | M05 | Moras, le sourire dans la chute | Être | L | 5 | Une fois par tour, pour chacun de vos Êtres, vous pouvez échanger son ATQ et son Intégrité jusqu'à la fin du tour. | « Je souriais parce que je tombais enfin du bon côté. » |
+| M06 | Nemi, deuxième allure | Être | C | 1 | Mutation — À l'arrivée, choisissez : Nemi gagne +1 ATQ ce tour-ci, ou +1 Intégrité. | Elle change de démarche avant de changer de monde. |
+| M07 | Sorel, mille postures | Être | R | 4 | La première fois à chaque tour que l'ATQ et l'Intégrité d'un Être sont échangées, Sorel gagne +1 ATQ et +1 Intégrité. | Aucune forme n'est fausse si elle permet de rester. |
+| M08 | Prêter une forme | Verbe | C | 2 | Échangez l'ATQ et l'Intégrité d'un Être jusqu'à la fin du tour. | Un corps n'est qu'une réponse tenue assez longtemps. |
+| M09 | La Courbe des possibles | Lieu | R | 3 | La première fois à chaque tour que vous choisissez un mode ou échangez des statistiques, piochez puis défaussez une carte. | À Xenen, les routes ne promettent que de continuer. |
+| M10 | Halo à charnière | Relique | E | 3 | Attachez-la à un Être allié. Au début de votre tour, le halo bascule : +2 ATQ ou +2 Intégrité jusqu'au tour suivant, en alternance. | Moras conserva la fêlure. Elle rendait le cercle habitable. |
 
 #### VELAR (2 communes · 1 rare · 1 épique · 1 légendaire)
 
@@ -329,6 +339,11 @@ doivent être compris en jeu ; les citations donnent une voix au monde sans expl
 | S03 | Velor, rire au vent | Être | R | 3 | Élan. 3 ATQ / 2 Intégrité. | Son rire franchit le bord du monde avant lui. |
 | S04 | Au bord du monde | Lieu | E | 4 | Vos Êtres ont Élan. | Aucun garde-fou. Ce n'est pas un oubli. |
 | S05 | Velna, soleil affranchi | Être | L | 6 | Élan. Velna gagne +1 ATQ pour chaque autre Être allié avec Élan. | « Tu gardes la porte d'une maison vide, Koren. Moi, je choisis le ciel. » |
+| S06 | Sela, première au vent | Être | C | 1 | Élan (peut attaquer dès son arrivée). | Elle ne demanda pas où menait la route. Seulement si elle descendait. |
+| S07 | Avel, rieur des retours | Être | R | 4 | La première fois à chaque tour qu'un Être est renvoyé dans une main, infligez 1 dégât au Korum adverse. | Chaque recul lui offre une nouvelle piste d'élan. |
+| S08 | Rebond de lumière | Verbe | C | 2 | Renvoyez un Être allié dans votre main, puis infligez 2 dégâts à un Être adverse. | Le soleil frappe deux fois : au départ et au retour. |
+| S09 | La Route sans rambarde | Lieu | R | 3 | La première fois à chaque tour qu'un de vos Êtres avec Élan attaque, il gagne +1 ATQ ce tour-ci. | Les Velar peignent les virages après les avoir franchis. |
+| S10 | Trait de soleil | Relique | E | 3 | Attachez-la à un Être allié. Ses attaques traversent les Êtres adverses : il frappe directement le Korum. | Aucun rempart n'a jamais arrêté le matin. |
 
 ---
 

@@ -1,0 +1,23 @@
+{
+	"id": "selin-ecoute-la-cendre",
+	"name": "Selin, écoute la cendre",
+	"kind": "etre",
+	"cost": 1,
+	"text": "À l’arrivée : regardez la carte du dessus de votre deck — vous pouvez la placer dessous.",
+	"rarity": "common",
+	"faction": "eshar",
+	"art": "/art/selin-ecoute-la-cendre.webp",
+	"gene": {
+		"palette": [
+			"#4d6ea2",
+			"#12263d",
+			"#98aabf"
+		],
+		"foilPreset": "showcase",
+		"accent": "#8fb4d9",
+		"seed": 751532
+	},
+	"attack": 1,
+	"health": 1,
+	"flavor": "La cendre parle bas. Selin a appris à se taire davantage."
+}

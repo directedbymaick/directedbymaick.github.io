@@ -1,0 +1,30 @@
+{
+	"id": "avel-rieur-des-retours",
+	"name": "Avel, rieur des retours",
+	"kind": "etre",
+	"cost": 4,
+	"text": "La première fois à chaque tour qu’un Être est renvoyé dans une main, infligez 1 dégât au Korum adverse.",
+	"rarity": "rare",
+	"faction": "velar",
+	"art": "/art/avel-rieur-des-retours.webp",
+	"gene": {
+		"palette": [
+			"#427aa7",
+			"#2e3642",
+			"#c8bead"
+		],
+		"foilPreset": "regular",
+		"accent": "#f0a626",
+		"seed": 494951
+	},
+	"attack": 4,
+	"health": 3,
+	"flavor": "Chaque recul lui offre une nouvelle piste d’élan.",
+	"cutout": "/art/avel-rieur-des-retours-cutout.webp",
+	"variants": [
+		{
+			"foilPreset": "showcase",
+			"fullArt": false
+		}
+	]
+}

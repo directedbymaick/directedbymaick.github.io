@@ -1,0 +1,23 @@
+{
+	"id": "sela-premiere-au-vent",
+	"name": "Sela, première au vent",
+	"kind": "etre",
+	"cost": 1,
+	"text": "Élan (peut attaquer dès son arrivée).",
+	"rarity": "common",
+	"faction": "velar",
+	"art": "/art/sela-premiere-au-vent.webp",
+	"gene": {
+		"palette": [
+			"#547aac",
+			"#3d2b1b",
+			"#c2bcb8"
+		],
+		"foilPreset": "showcase",
+		"accent": "#f0a626",
+		"seed": 265997
+	},
+	"attack": 1,
+	"health": 1,
+	"flavor": "Elle ne demanda pas où menait la route. Seulement si elle descendait."
+}

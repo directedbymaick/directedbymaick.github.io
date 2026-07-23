@@ -1,0 +1,21 @@
+{
+	"id": "halo-a-charniere",
+	"name": "Halo à charnière",
+	"kind": "relique",
+	"cost": 3,
+	"text": "Attachez-la à un Être allié. Au début de votre tour, le halo bascule : +2 ATQ ou +2 Intégrité jusqu’au tour suivant, en alternance.",
+	"rarity": "epic",
+	"faction": "morar",
+	"art": "/art/halo-a-charniere.webp",
+	"gene": {
+		"palette": [
+			"#305e82",
+			"#161615",
+			"#c0b0a0"
+		],
+		"foilPreset": "cosmos",
+		"accent": "#8fb4d9",
+		"seed": 171917
+	},
+	"flavor": "Moras conserva la fêlure. Elle rendait le cercle habitable."
+}

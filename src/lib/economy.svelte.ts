@@ -153,7 +153,7 @@ const ACHIEVEMENT_BASE: AchDef[] = [
 	{ id: 'a-uniques-10', label: 'Premières pages', desc: 'Posséder 10 cartes uniques.', reward: 100, cat: 'collection', check: (_s, c) => c.uniques >= 10 },
 	{ id: 'a-uniques-30', label: 'À mi-chemin', desc: 'Posséder 30 cartes uniques.', reward: 200, cat: 'collection', check: (_s, c) => c.uniques >= 30 },
 	{ id: 'a-uniques-45', label: 'Bibliothécaire', desc: 'Posséder 45 cartes uniques.', reward: 300, cat: 'collection', check: (_s, c) => c.uniques >= 45 },
-	{ id: 'a-uniques-60', label: 'Collection complète', desc: 'Posséder les 60 cartes du Silence.', reward: 500, cat: 'collection', check: (_s, c) => c.uniques >= c.setSize },
+	{ id: 'a-uniques-60', label: 'Collection complète', desc: 'Posséder toutes les cartes du Silence.', reward: 500, cat: 'collection', check: (_s, c) => c.uniques >= c.setSize },
 	{ id: 'a-packs-10', label: 'Premier lot', desc: 'Ouvrir 10 boosters.', reward: 150, cat: 'collection', check: (s) => s.packsOpened >= 10 },
 	{ id: 'a-packs-25', label: 'Collectionneur assidu', desc: 'Ouvrir 25 boosters.', reward: 300, cat: 'collection', check: (s) => s.packsOpened >= 25 },
 	{ id: 'a-pulls-100', label: 'Cent tirages', desc: 'Tirer 100 cartes de boosters.', reward: 200, cat: 'collection', check: (s) => s.pulls >= 100 },

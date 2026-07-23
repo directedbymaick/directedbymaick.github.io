@@ -14,7 +14,7 @@
 		return versionsOf(card, FULLART_RATE).length;
 	}
 
-	const SET_SIZE = 60;
+	const SET_SIZE = cards.length;
 
 	const factions = Object.keys(charter.factions) as FactionId[];
 	const pct = Math.round((cards.length / SET_SIZE) * 100);

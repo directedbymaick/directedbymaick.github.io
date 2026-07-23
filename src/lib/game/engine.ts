@@ -42,12 +42,18 @@ interface Unit {
 	enteredTurn: number;
 	attacked: boolean;
 	swapped: boolean;
+	/** Échange TEMPORAIRE (Prêter une forme) : annulé en fin de tour. */
+	tempSwap: boolean;
+	/** Intégrité prêtée par le Halo à charnière, recalculée à chaque bascule. */
+	haloHp: number;
 	token: boolean;
 }
 
 interface Support {
 	card: CardData;
 	targetUid?: number;
+	/** Halo à charnière : 0 = ATQ ce tour, 1 = Intégrité (bascule à chaque tour). */
+	mode?: number;
 }
 
 interface P {
@@ -67,6 +73,21 @@ interface P {
 	allyDiedThisTurn: boolean;
 	allyDiedLastTurn: boolean;
 	sacrificedThisTurn: boolean;
+	/* — extension SET01 : verrous « une fois par tour », remis à zéro à chaque tour — */
+	/** Orel : une carte a déjà quitté ma défausse ce tour. */
+	discardLeaveTriggered: boolean;
+	/** Lampe des noms éteints : déjà utilisée ce tour. */
+	lampeUsed: boolean;
+	/** Registre des absents : la carte récupérée qui coûte 1 de moins ce tour. */
+	reducCarte: CardData | null;
+	/** Sorel : un échange ATQ/INT a déjà été observé ce tour. */
+	swapTriggered: boolean;
+	/** Courbe des possibles : un mode ou un échange a déjà été observé ce tour. */
+	mutationTriggered: boolean;
+	/** Avel : un renvoi en main a déjà été observé ce tour. */
+	bounceTriggered: boolean;
+	/** Route sans rambarde : une attaque avec Élan a déjà été observée ce tour. */
+	elanAttackTriggered: boolean;
 	played: Record<string, number>;
 }
 
@@ -252,7 +273,7 @@ function unitAtk(g: G, side: Side, u: Unit): number {
 }
 
 function unitMaxHp(g: G, side: Side, u: Unit): number {
-	let h = u.baseHp + u.permHp;
+	let h = u.baseHp + u.permHp + u.haloHp;
 	const p = g.players[side];
 	/* aura de Koren supprimee : son bonus est ponctuel, pose a l'arrivee */
 	for (const s of p.supports)
@@ -364,6 +385,8 @@ function spawnUnit(g: G, side: Side, card: CardData, silent = false): Unit | nul
 		enteredTurn: g.t,
 		attacked: false,
 		swapped: false,
+		tempSwap: false,
+		haloHp: 0,
 		token: card.cost === 0 && card.art === ''
 	};
 	p.board.push(u);
@@ -383,6 +406,98 @@ function detachSupports(g: G, uid: number): void {
 				owner.discard.push(s.card);
 			}
 		}
+	}
+}
+
+/* --------------------- Extension SET01 : déclencheurs partagés --------------------- */
+
+/** Le porteur d'un Trait de soleil : ses attaques filent droit au Korum. */
+function hasEvasion(g: G, side: Side, u: Unit): boolean {
+	return g.players[side].supports.some(
+		(s) => s.card.id === 'trait-de-soleil' && s.targetUid === u.uid
+	);
+}
+
+/**
+ * Une carte vient de quitter la défausse de `side`.
+ * Orel (+1 ATQ, une fois par tour) puis la Lampe des noms éteints de chaque
+ * camp (exil de la carte la plus récente de CETTE défausse, une fois par tour).
+ * La Lampe peut redéclencher ce hook : les verrous par tour bornent la chaîne.
+ */
+function onDiscardLeave(g: G, side: Side): void {
+	const p = g.players[side];
+	if (!p.discardLeaveTriggered) {
+		p.discardLeaveTriggered = true;
+		for (const u of p.board) {
+			if (u.card.id === 'orel-veilleur-des-restes') {
+				u.tempAtk += 1;
+				ev(g, { t: 'effect', side, uid: u.uid, msg: `Orel garde le passage (+1 ATQ ce tour)` });
+			}
+		}
+	}
+	for (const cote of [0, 1] as Side[]) {
+		const q = g.players[cote];
+		if (q.lampeUsed || !hasSupport(q, 'lampe-des-noms-eteints')) continue;
+		const cible = p.discard[p.discard.length - 1];
+		if (!cible) continue;
+		q.lampeUsed = true;
+		p.discard.pop();
+		p.exile.push(cible);
+		ev(g, { t: 'effect', side: cote, msg: `La Lampe des noms éteints exile ${cible.name}` });
+		onDiscardLeave(g, side);
+	}
+}
+
+/** Un Être vient d'être renvoyé dans une main : les Avel frappent (1/tour chacun). */
+function onBounce(g: G): void {
+	for (const cote of [0, 1] as Side[]) {
+		const p = g.players[cote];
+		if (p.bounceTriggered) continue;
+		const avels = p.board.filter((u) => u.card.id === 'avel-rieur-des-retours');
+		if (avels.length === 0) continue;
+		p.bounceTriggered = true;
+		for (const a of avels) {
+			ev(g, { t: 'effect', side: cote, uid: a.uid, msg: `Avel rit du recul — 1 dégât au Korum adverse` });
+			damageKorum(g, other(cote), 1);
+		}
+	}
+}
+
+/**
+ * `side` vient de choisir un mode (Mutation) ou d'échanger ATQ/INT.
+ * Sorel ne s'éveille que sur les échanges ; la Courbe des possibles filtre
+ * (pioche puis défausse) sur l'un comme l'autre.
+ */
+function onMutation(g: G, side: Side, kind: 'mode' | 'swap'): void {
+	const p = g.players[side];
+	if (kind === 'swap' && !p.swapTriggered) {
+		p.swapTriggered = true;
+		for (const u of p.board) {
+			if (u.card.id === 'sorel-mille-postures') {
+				u.permAtk += 1;
+				u.permHp += 1;
+				ev(g, { t: 'effect', side, uid: u.uid, msg: `Sorel épouse la posture (+1/+1)` });
+			}
+		}
+	}
+	if (!p.mutationTriggered && hasSupport(p, 'courbe-des-possibles')) {
+		p.mutationTriggered = true;
+		draw(g, side, 1);
+		const pire = [...p.hand].sort((a, b) => handScore(a) - handScore(b))[0];
+		if (pire) {
+			p.hand.splice(p.hand.indexOf(pire), 1);
+			p.discard.push(pire);
+			ev(g, { t: 'effect', side, msg: `La Courbe des possibles filtre — pioche puis défausse` });
+		}
+	}
+}
+
+/** La carte reprise en main compte comme « récupérée » pour le Registre des absents. */
+function marquerRecuperation(g: G, side: Side, carte: CardData): void {
+	const p = g.players[side];
+	if (p.reducCarte === null && hasSupport(p, 'registre-des-absents')) {
+		p.reducCarte = carte;
+		ev(g, { t: 'effect', side, msg: `Le Registre des absents allège ${carte.name} (-1 Volonté ce tour)` });
 	}
 }
 
@@ -479,6 +594,8 @@ function playCost(g: G, side: Side, c: CardData): number {
 	let cost = c.cost;
 	if (c.kind === 'verbe' && hasSupport(p, 'tours-de-grammaire')) cost -= 1;
 	if (!p.firstCardPlayed && p.board.some((u) => u.card.id === 'moren')) cost -= 1;
+	// Registre des absents : la carte récupérée de la défausse ce tour coûte 1 de moins
+	if (p.reducCarte === c) cost -= 1;
 	return Math.max(0, cost);
 }
 
@@ -605,6 +722,7 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean, sel?: Sel):
 			if (!t.token) owner.hand.push(t.card);
 			detachSupports(g, t.uid);
 			ev(g, { t: 'effect', side, targetUid: t.uid, msg: `${t.card.name} est renvoyé dans la main de son propriétaire` });
+			onBounce(g);
 			return true;
 		}
 		case 'recitation':
@@ -662,7 +780,83 @@ function resolveVerb(g: G, side: Side, c: CardData, dryRun: boolean, sel?: Sel):
 				t.baseHp = a + t.dmg;
 				t.permHp = 0;
 				ev(g, { t: 'effect', side, uid: t.uid, msg: `${t.card.name} change de peau (${unitAtk(g, side, t)}/${unitHp(g, side, t)})` });
+				onMutation(g, side, 'swap');
 			}
+			return true;
+		}
+		case 'preter-une-forme': {
+			/* Échange TEMPORAIRE, sur n'importe quel Être — le sien pour armer un
+			   mur, celui d'en face pour éteindre une menace. L'IA vise le meilleur
+			   écart absolu ; l'humain choisit. */
+			const candidats = [...p.board, ...e.board].filter((u) => !u.token);
+			const auto = candidats.sort((x, y) => {
+				const gainDe = (u: Unit) => {
+					const côté = p.board.includes(u) ? 1 : -1;
+					const su = p.board.includes(u) ? side : en;
+					return côté * (unitHp(g, su, u) - unitAtk(g, su, u));
+				};
+				return gainDe(y) - gainDe(x);
+			})[0];
+			if (dryRun) {
+				if (!auto) return false;
+				const su = p.board.includes(auto) ? side : en;
+				const ecart = unitHp(g, su, auto) - unitAtk(g, su, auto);
+				return p.board.includes(auto) ? ecart >= 2 : ecart <= -2;
+			}
+			const t = selUnit() ?? auto;
+			if (!t) return false;
+			const ba = t.baseAtk;
+			t.baseAtk = t.baseHp;
+			t.baseHp = ba;
+			t.tempSwap = !t.tempSwap; // deux prêts dans le tour s'annulent proprement
+			const st = p.board.includes(t) ? side : en;
+			ev(g, { t: 'effect', side, uid: t.uid, msg: `${t.card.name} emprunte une forme (${unitAtk(g, st, t)}/${unitHp(g, st, t)}) jusqu'à la fin du tour` });
+			onMutation(g, side, 'swap');
+			return true;
+		}
+		case 'rendre-au-silence': {
+			/* Une carte de la défausse rejoint le dessous du deck, puis pioche. */
+			if (p.discard.length === 0) {
+				if (act) draw(g, side, 1); // main vide de cible : la pioche reste due
+				return dryRun ? false : true;
+			}
+			if (act) {
+				const stable = listeStable(p.discard);
+				const idx = sel?.cartes?.[0];
+				const choisie = idx !== undefined ? stable[idx] : undefined;
+				const carte =
+					choisie && p.discard.includes(choisie)
+						? choisie
+						: [...p.discard].sort((a, b) => handScore(a) - handScore(b))[0];
+				p.discard.splice(p.discard.indexOf(carte), 1);
+				p.deck.push(carte);
+				ev(g, { t: 'effect', side, msg: `${carte.name} est rendu au silence — sous le deck` });
+				onDiscardLeave(g, side);
+				draw(g, side, 1);
+			}
+			return true;
+		}
+		case 'rebond-de-lumiere': {
+			/* Renvoie un allié en main, puis 2 dégâts à un Être adverse. */
+			if (p.board.length === 0) return false;
+			const cibles = e.board.filter((u) => unitHp(g, en, u) <= 2);
+			if (dryRun) return cibles.length > 0;
+			// la sélection porte deux unités : la nôtre à renvoyer, la leur à frapper
+			const sels = (sel?.unites ?? []).filter((v): v is number => v !== 'korum');
+			const allie =
+				p.board.find((u) => sels.includes(u.uid)) ??
+				[...p.board].sort((a, b) => a.card.cost - b.card.cost)[0];
+			const adverse =
+				e.board.find((u) => sels.includes(u.uid)) ??
+				(cibles.sort((a, b) => b.card.cost - a.card.cost)[0] ?? strongest(g, en));
+			if (allie) {
+				p.board.splice(p.board.indexOf(allie), 1);
+				if (!allie.token) p.hand.push(allie.card);
+				detachSupports(g, allie.uid);
+				ev(g, { t: 'effect', side, uid: allie.uid, msg: `${allie.card.name} rebondit dans la main de ${p.name}` });
+				onBounce(g);
+			}
+			if (adverse) damageUnit(g, en, adverse, 2);
 			return true;
 		}
 		case 'brume-memorielle': {
@@ -776,6 +970,28 @@ function onSummon(g: G, side: Side, u: Unit, sel?: Sel): void {
 		case 'norel':
 			draw(g, side, 1);
 			break;
+		case 'selin-ecoute-la-cendre': {
+			const dessus = p.deck[0];
+			if (!dessus) break;
+			// l'IA enterre les cartes faibles ; le joueur a choisi (forme 1 = dessous)
+			const dessous = sel?.forme !== undefined ? sel.forme === 1 : handScore(dessus) < 3;
+			if (dessous) {
+				p.deck.shift();
+				p.deck.push(dessus);
+			}
+			// le nom ne circule pas dans le journal : seul son propriétaire l'a vu
+			ev(g, { t: 'effect', side, uid: u.uid, msg: `Selin écoute la cendre — la carte du dessus ${dessous ? 'glisse dessous' : 'reste en place'}` });
+			break;
+		}
+		case 'nemi-deuxieme-allure': {
+			// Mutation : +1 ATQ ce tour, ou +1 Intégrité qui reste
+			const offensif = sel?.forme !== undefined ? sel.forme === 0 : e.board.length === 0;
+			if (offensif) u.tempAtk += 1;
+			else u.permHp += 1;
+			ev(g, { t: 'effect', side, uid: u.uid, msg: `Nemi change d'allure — ${offensif ? '+1 ATQ ce tour' : '+1 Intégrité'}` });
+			onMutation(g, side, 'mode');
+			break;
+		}
 		case 'renna': {
 			const choisi = selUnit();
 			const t =
@@ -850,6 +1066,8 @@ function onSummon(g: G, side: Side, u: Unit, sel?: Sel): void {
 				p.discard.splice(p.discard.indexOf(carte), 1);
 				p.hand.push(carte);
 				ev(g, { t: 'effect', side, msg: `Eshna ramasse ${carte.name} dans la défausse` });
+				marquerRecuperation(g, side, carte);
+				onDiscardLeave(g, side);
 			}
 			break;
 		}
@@ -928,6 +1146,7 @@ function playCard(g: G, side: Side, c: CardData, sel?: Sel): void {
 	const cost = playCost(g, side, c);
 	p.will -= cost;
 	p.firstCardPlayed = true;
+	if (p.reducCarte === c) p.reducCarte = null; // l'allègement du Registre est consommé
 	p.hand.splice(p.hand.indexOf(c), 1);
 	p.played[c.id] = (p.played[c.id] ?? 0) + 1;
 
@@ -947,6 +1166,8 @@ function playCard(g: G, side: Side, c: CardData, sel?: Sel): void {
 			typeof selUid === 'number' ? camp.board.find((u) => u.uid === selUid) : undefined;
 		let targetUid: number | undefined;
 		if (c.id === 'couronne-dos') targetUid = (pick(p) ?? strongest(g, side) ?? undefined)?.uid;
+		if (c.id === 'halo-a-charniere' || c.id === 'trait-de-soleil')
+			targetUid = (pick(p) ?? strongest(g, side) ?? undefined)?.uid;
 		if (c.id === 'premiere-chaine') {
 			const t = pick(g.players[other(side)]) ?? strongest(g, other(side));
 			if (t) {
@@ -966,6 +1187,7 @@ function worthPlaying(g: G, side: Side, c: CardData): boolean {
 	const en = other(side);
 	if (c.kind === 'verbe') return resolveVerb(g, side, c, true);
 	if (c.id === 'couronne-dos') return p.board.length > 0;
+	if (c.id === 'halo-a-charniere' || c.id === 'trait-de-soleil') return p.board.length > 0;
 	if (c.id === 'premiere-chaine') return g.players[en].board.length > 0;
 	if (c.id === 'eskor') return true; // corps correct même sans exil
 	// la Porte ne vaut un tour que si un Prononcer peut en profiter
@@ -1043,6 +1265,13 @@ function attack(g: G, side: Side, u: Unit, target: Unit | 'korum'): void {
 	const en = other(side);
 	const e = g.players[en];
 	u.attacked = true;
+	// La Route sans rambarde : la première attaque avec Élan du tour part plus fort
+	const p = g.players[side];
+	if (!p.elanAttackTriggered && hasElan(g, side, u) && hasSupport(p, 'route-sans-rambarde')) {
+		p.elanAttackTriggered = true;
+		u.tempAtk += 1;
+		ev(g, { t: 'effect', side, uid: u.uid, msg: `La Route sans rambarde porte ${u.card.name} (+1 ATQ ce tour)` });
+	}
 	const atk = unitAtk(g, side, u);
 	if (target === 'korum') {
 		ev(g, { t: 'attack', side, uid: u.uid, targetKorum: true, msg: `${u.card.name} frappe le Korum adverse (${atk})` });
@@ -1076,6 +1305,7 @@ function combatPhase(g: G, side: Side): void {
 				u.baseHp = ba;
 				u.swapped = true;
 				ev(g, { t: 'effect', side, uid: u.uid, msg: `${u.card.name} inverse son être (${unitAtk(g, side, u)}/${unitHp(g, side, u)}) — le sourire de Moras` });
+				onMutation(g, side, 'swap');
 			}
 		}
 	}
@@ -1097,6 +1327,15 @@ function combatPhase(g: G, side: Side): void {
 				attack(g, side, u, 'korum');
 			}
 			continue;
+		}
+
+		// Trait de soleil : le porteur traverse le mur — sauf Serment, qui le retient
+		if (!wall.some((t) => t.serment)) {
+			const perceur = attackers.find((u) => hasEvasion(g, side, u));
+			if (perceur) {
+				attack(g, side, perceur, 'korum');
+				continue;
+			}
 		}
 
 		const u = attackers.sort((a, b) => unitAtk(g, side, b) - unitAtk(g, side, a))[0];
@@ -1153,9 +1392,36 @@ function startTurn(g: G, side: Side): void {
 	p.allyDiedLastTurn = p.allyDiedThisTurn;
 	p.allyDiedThisTurn = false;
 	p.sacrificedThisTurn = false;
+	// les verrous « une fois par tour » de l'extension se rouvrent pour tous
+	for (const q of g.players) {
+		q.discardLeaveTriggered = false;
+		q.lampeUsed = false;
+		q.reducCarte = null;
+		q.swapTriggered = false;
+		q.mutationTriggered = false;
+		q.bounceTriggered = false;
+		q.elanAttackTriggered = false;
+	}
 	for (const u of p.board) {
 		u.attacked = false;
 		u.swapped = false;
+	}
+	// Halo à charnière : le halo bascule au début du tour de son propriétaire
+	for (const s of p.supports) {
+		if (s.card.id !== 'halo-a-charniere' || s.targetUid === undefined) continue;
+		const t = p.board.find((u) => u.uid === s.targetUid);
+		if (!t) continue;
+		const versAtk = (s.mode ?? 1) === 1; // première bascule : l'attaque
+		s.mode = versAtk ? 0 : 1;
+		if (versAtk) {
+			if (t.haloHp > 0) t.dmg = Math.max(0, t.dmg - t.haloHp); // le halo absorbe en partant
+			t.haloHp = 0;
+			t.tempAtk += 2;
+			ev(g, { t: 'effect', side, uid: t.uid, msg: `Le halo bascule — ${t.card.name} gagne +2 ATQ` });
+		} else {
+			t.haloHp = 2;
+			ev(g, { t: 'effect', side, uid: t.uid, msg: `Le halo bascule — ${t.card.name} gagne +2 Intégrité` });
+		}
 	}
 	ev(g, { t: 'turn', side, msg: `— Tour ${Math.ceil(g.t / 2)} · ${p.name} (${p.will} Volonté) —` });
 	if (!(g.t === 1)) draw(g, side, 1);
@@ -1171,6 +1437,16 @@ function endTurnFx(g: G, side: Side): void {
 	}
 	// équilibrage run-002 : les dégâts PERSISTENT (le soin de fin de tour est supprimé)
 	for (const u of p.board) u.tempAtk = 0;
+	// Prêter une forme : les échanges temporaires se dénouent, des deux côtés
+	for (const q of g.players) {
+		for (const u of q.board) {
+			if (!u.tempSwap) continue;
+			const ba = u.baseAtk;
+			u.baseAtk = u.baseHp;
+			u.baseHp = ba;
+			u.tempSwap = false;
+		}
+	}
 }
 
 function runTurn(g: G, side: Side): void {
@@ -1220,6 +1496,13 @@ export function simulate(
 		allyDiedThisTurn: false,
 		allyDiedLastTurn: false,
 		sacrificedThisTurn: false,
+		discardLeaveTriggered: false,
+		lampeUsed: false,
+		reducCarte: null,
+		swapTriggered: false,
+		mutationTriggered: false,
+		bounceTriggered: false,
+		elanAttackTriggered: false,
 		played: {}
 	});
 	const g: G = {
@@ -1336,6 +1619,33 @@ function choixPour(g: G, side: Side, c: CardData): Choix | null {
 			return p.board.length > 1
 				? { type: 'unite', titre: 'Couronne d’os — attachez à…', n: 1, unites: miens() }
 				: null;
+		case 'halo-a-charniere':
+			return p.board.length > 1
+				? { type: 'unite', titre: 'Halo à charnière — attachez à…', n: 1, unites: miens() }
+				: null;
+		case 'trait-de-soleil':
+			return p.board.length > 1
+				? { type: 'unite', titre: 'Trait de soleil — attachez à…', n: 1, unites: miens() }
+				: null;
+		case 'preter-une-forme': {
+			const tous = [...miens(), ...siens()];
+			return tous.length > 1
+				? { type: 'unite', titre: 'Prêter une forme — échangez ATQ et INT de…', n: 1, unites: tous }
+				: null;
+		}
+		case 'rebond-de-lumiere':
+			return p.board.length && e.board.length
+				? {
+						type: 'unite',
+						titre: 'Rebond de lumière — renvoyez un allié, frappez un adverse',
+						n: 2,
+						unites: [...miens(), ...siens()]
+					}
+				: null;
+		case 'rendre-au-silence':
+			return p.discard.length > 1
+				? { type: 'carte', titre: 'Rendre au silence — sous le deck…', n: 1, cartes: listeStable(p.discard) }
+				: null;
 		case 'premiere-chaine':
 			return e.board.length > 1
 				? { type: 'unite', titre: 'Première Chaîne — entravez…', n: 1, unites: siens() }
@@ -1375,6 +1685,22 @@ function choixPour(g: G, side: Side, c: CardData): Choix | null {
 				titre: 'Tala — choisissez sa forme',
 				n: 1,
 				formes: ['Défensive (1/3)', 'Offensive (3/1)']
+			};
+		case 'selin-ecoute-la-cendre':
+			return p.deck[0]
+				? {
+						type: 'forme',
+						titre: `Selin écoute — le dessus du deck : ${p.deck[0].name}`,
+						n: 1,
+						formes: ['La laisser au-dessus', 'La glisser dessous']
+					}
+				: null;
+		case 'nemi-deuxieme-allure':
+			return {
+				type: 'forme',
+				titre: 'Nemi — choisissez sa mutation',
+				n: 1,
+				formes: ['+1 ATQ ce tour-ci', '+1 Intégrité (permanent)']
 			};
 	}
 	return null;
@@ -1463,6 +1789,24 @@ function shuffleInPlace<T>(arr: T[], rng: () => number): T[] {
  * le camp 1 par l'IA heuristique du simulateur. Chaque action pousse des
  * événements avec snapshots — l'UI les draine et les rejoue.
  */
+/**
+ * Cibles légales d'une attaque : Serment prioritaire, Korum exposé sans
+ * défenseur valide. Avec l'uid de l'attaquant, le Trait de soleil ouvre le
+ * Korum à son porteur — jamais face à un Serment.
+ */
+function ciblesLegalesDe(g: G, side: Side, uid?: number): { units: number[]; korum: boolean } {
+	const e = g.players[other(side)];
+	const wall = e.board.filter((t) => !isLocked(g, t));
+	if (wall.length === 0) return { units: [], korum: true };
+	const serments = wall.filter((t) => t.serment);
+	if (serments.length > 0) return { units: serments.map((t) => t.uid), korum: false };
+	if (uid !== undefined) {
+		const u = g.players[side].board.find((x) => x.uid === uid);
+		if (u && hasEvasion(g, side, u)) return { units: [], korum: true };
+	}
+	return { units: wall.map((t) => t.uid), korum: false };
+}
+
 export class Duel {
 	private g: G;
 
@@ -1492,6 +1836,13 @@ export class Duel {
 			allyDiedThisTurn: false,
 			allyDiedLastTurn: false,
 			sacrificedThisTurn: false,
+		discardLeaveTriggered: false,
+		lampeUsed: false,
+		reducCarte: null,
+		swapTriggered: false,
+		mutationTriggered: false,
+		bounceTriggered: false,
+		elanAttackTriggered: false,
 			played: {}
 		});
 		const hd =
@@ -1596,6 +1947,7 @@ export class Duel {
 		u.baseHp = ba;
 		u.swapped = true;
 		ev(g, { t: 'effect', side: 0, uid: u.uid, msg: `${u.card.name} inverse son être (${unitAtk(g, 0, u)}/${unitHp(g, 0, u)}) — le sourire de Moras` });
+		onMutation(g, 0, 'swap');
 		return true;
 	}
 
@@ -1606,19 +1958,15 @@ export class Duel {
 	}
 
 	/** Cibles légales : Serment prioritaire ; Korum exposé seulement sans défenseur valide. */
-	legalTargets(): { units: number[]; korum: boolean } {
-		const e = this.g.players[1];
-		const wall = e.board.filter((t) => !isLocked(this.g, t));
-		if (wall.length === 0) return { units: [], korum: true };
-		const serments = wall.filter((t) => t.serment);
-		return { units: (serments.length > 0 ? serments : wall).map((t) => t.uid), korum: false };
+	legalTargets(uid?: number): { units: number[]; korum: boolean } {
+		return ciblesLegalesDe(this.g, 0, uid);
 	}
 
 	attack(uid: number, target: number | 'korum'): boolean {
 		if (!this.myTurn) return false;
 		const u = this.g.players[0].board.find((x) => x.uid === uid);
 		if (!u || !canAttack(this.g, 0, u)) return false;
-		const legal = this.legalTargets();
+		const legal = this.legalTargets(uid);
 		if (target === 'korum') {
 			if (!legal.korum) return false;
 			attack(this.g, 0, u, 'korum');
@@ -1734,6 +2082,13 @@ export class Match {
 			allyDiedThisTurn: false,
 			allyDiedLastTurn: false,
 			sacrificedThisTurn: false,
+		discardLeaveTriggered: false,
+		lampeUsed: false,
+		reducCarte: null,
+		swapTriggered: false,
+		mutationTriggered: false,
+		bounceTriggered: false,
+		elanAttackTriggered: false,
 			played: {}
 		});
 		const da =
@@ -1828,6 +2183,7 @@ export class Match {
 		u.baseHp = ba;
 		u.swapped = true;
 		ev(g, { t: 'effect', side, uid: u.uid, msg: `${u.card.name} inverse son être (${unitAtk(g, side, u)}/${unitHp(g, side, u)}) — le sourire de Moras` });
+		onMutation(g, side, 'swap');
 		return true;
 	}
 
@@ -1836,19 +2192,15 @@ export class Match {
 		return this.g.players[side].board.filter((u) => canAttack(this.g, side, u)).map((u) => u.uid);
 	}
 
-	legalTargets(side: Side): { units: number[]; korum: boolean } {
-		const e = this.g.players[other(side)];
-		const wall = e.board.filter((t) => !isLocked(this.g, t));
-		if (wall.length === 0) return { units: [], korum: true };
-		const serments = wall.filter((t) => t.serment);
-		return { units: (serments.length > 0 ? serments : wall).map((t) => t.uid), korum: false };
+	legalTargets(side: Side, uid?: number): { units: number[]; korum: boolean } {
+		return ciblesLegalesDe(this.g, side, uid);
 	}
 
 	attack(side: Side, uid: number, target: number | 'korum'): boolean {
 		if (!this.isTurn(side)) return false;
 		const u = this.g.players[side].board.find((x) => x.uid === uid);
 		if (!u || !canAttack(this.g, side, u)) return false;
-		const legal = this.legalTargets(side);
+		const legal = this.legalTargets(side, uid);
 		if (target === 'korum') {
 			if (!legal.korum) return false;
 			attack(this.g, side, u, 'korum');

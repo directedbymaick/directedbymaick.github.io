@@ -1,0 +1,21 @@
+{
+	"id": "rendre-au-silence",
+	"name": "Rendre au silence",
+	"kind": "verbe",
+	"cost": 2,
+	"text": "Placez une carte de votre défausse sous votre deck, puis piochez une carte.",
+	"rarity": "common",
+	"faction": "eshar",
+	"art": "/art/rendre-au-silence.webp",
+	"gene": {
+		"palette": [
+			"#344c79",
+			"#071a2f",
+			"#969fd1"
+		],
+		"foilPreset": "showcase",
+		"accent": "#8fb4d9",
+		"seed": 473797
+	},
+	"flavor": "Ce qui revient n’est jamais ce qui fut perdu."
+}

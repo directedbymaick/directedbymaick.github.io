@@ -1,0 +1,23 @@
+{
+	"id": "sorel-mille-postures",
+	"name": "Sorel, mille postures",
+	"kind": "etre",
+	"cost": 4,
+	"text": "La première fois à chaque tour que l’ATQ et l’Intégrité d’un Être sont échangées, Sorel gagne +1 ATQ et +1 Intégrité.",
+	"rarity": "rare",
+	"faction": "morar",
+	"art": "/art/sorel-mille-postures.webp",
+	"gene": {
+		"palette": [
+			"#776758",
+			"#372221",
+			"#d0b99b"
+		],
+		"foilPreset": "regular",
+		"accent": "#8fb4d9",
+		"seed": 668931
+	},
+	"attack": 3,
+	"health": 5,
+	"flavor": "Aucune forme n’est fausse si elle permet de rester."
+}

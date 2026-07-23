@@ -1,0 +1,23 @@
+{
+	"id": "orel-veilleur-des-restes",
+	"name": "Orel, veilleur des restes",
+	"kind": "etre",
+	"cost": 4,
+	"text": "La première fois à chaque tour qu’une carte quitte votre défausse, Orel gagne +1 ATQ ce tour-ci.",
+	"rarity": "rare",
+	"faction": "eshar",
+	"art": "/art/orel-veilleur-des-restes.webp",
+	"gene": {
+		"palette": [
+			"#1b586a",
+			"#031016",
+			"#71a1be"
+		],
+		"foilPreset": "regular",
+		"accent": "#8fb4d9",
+		"seed": 409249
+	},
+	"attack": 2,
+	"health": 5,
+	"flavor": "Il ne garde pas les morts. Il garde le passage qu’ils ont laissé."
+}
