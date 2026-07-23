@@ -88,6 +88,18 @@
 		vedetteIdx = 0;
 		vedettesOuvert = true;
 	}
+	/* Toucher le sachet ouvre le carrousel — mais PAS quand on tire la languette :
+	   l'arrachage est un glisser, on mesure le déplacement pour le distinguer d'un
+	   vrai tap. Sans ça, chaque ouverture de booster faisait surgir le carrousel. */
+	let tapStart = { x: 0, y: 0 };
+	function packDown(e: PointerEvent) {
+		tapStart = { x: e.clientX, y: e.clientY };
+	}
+	function packClick(e: MouseEvent) {
+		const bouge = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y);
+		if (bouge > 8) return; // c'était un arrachage, pas un clic
+		ouvrirVedettes();
+	}
 	function vedettePas(d: number) {
 		const n = vedettes.length;
 		vedetteIdx = (vedetteIdx + d + n) % n;
@@ -586,7 +598,8 @@
 					role="button"
 					tabindex="0"
 					aria-label="Voir les cartes vedettes de l’édition"
-					onclick={ouvrirVedettes}
+					onpointerdown={packDown}
+					onclick={packClick}
 					onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), ouvrirVedettes())}
 				>
 					{#key editionId}
