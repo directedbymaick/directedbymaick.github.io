@@ -55,6 +55,8 @@ export interface Edition {
 	badge: string;
 	sousTitre: string;
 	cover: string;
+	/** Le visage du set : la carte en couverture, toujours mise en avant. */
+	coverId: string;
 	clePity: string;
 	cartes: CardData[];
 }
@@ -70,6 +72,7 @@ export const EDITIONS: Edition[] = [
 		badge: '1ʳᵉ Édition',
 		sousTitre: 'Nés du silence',
 		cover: '/art/rasen.webp',
+		coverId: 'rasen',
 		clePity: 'travelers-pity-v1', // la clé historique : les compteurs existants continuent
 		cartes: cards.filter((c) => !EXTENSION_IDS.includes(c.id))
 	},
@@ -79,6 +82,7 @@ export const EDITIONS: Edition[] = [
 		badge: '2ᵉ Édition',
 		sousTitre: 'Routes de Xenen',
 		cover: '/art/avel-rieur-des-retours.webp',
+		coverId: 'avel-rieur-des-retours',
 		clePity: 'expelled-pity-ed2',
 		cartes: listeDe([...EXTENSION_IDS, ...REPRISES_ED2])
 	}

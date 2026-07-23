@@ -1109,34 +1109,49 @@
 		cursor: pointer;
 	}
 	.vv-x:hover { color: var(--ink, #eef0f5); }
+	/* la scène : carte centrée, flèches posées SUR les bords (jamais derrière) */
 	.vv-scene {
+		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
-		width: 100%;
 		justify-content: center;
+		width: 100%;
+		/* réserve la place des flèches de chaque côté pour que la carte reste centrée */
+		padding: 0 3.2rem;
+		box-sizing: border-box;
 	}
 	.vv-carte {
-		width: min(280px, 62vw);
+		width: min(240px, 56vw);
 		animation: vvslide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 	@keyframes vvslide {
 		from { opacity: 0; transform: translateX(18px); }
 	}
 	.vv-fleche {
-		flex: none;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 2;
+		display: grid;
+		place-items: center;
 		width: 2.6rem;
 		height: 2.6rem;
-		border: 1px solid rgba(213, 178, 94, 0.4);
+		border: 1px solid rgba(213, 178, 94, 0.45);
 		border-radius: 50%;
-		background: rgba(213, 178, 94, 0.08);
+		background: rgba(10, 16, 30, 0.9);
 		color: var(--gold, #d5b25e);
 		font-size: 1.5rem;
 		line-height: 1;
 		cursor: pointer;
-		transition: background 0.15s ease;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+		transition: background 0.15s ease, border-color 0.15s ease;
 	}
-	.vv-fleche:hover { background: rgba(213, 178, 94, 0.2); }
+	.vv-fleche:first-of-type { left: 0; }
+	.vv-fleche:last-of-type { right: 0; }
+	.vv-fleche:hover {
+		background: rgba(213, 178, 94, 0.22);
+		border-color: rgba(213, 178, 94, 0.8);
+	}
 	.vv-info {
 		text-align: center;
 	}

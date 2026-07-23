@@ -3,7 +3,7 @@ import { cards } from '$lib/cards';
 import { charter } from '$lib/charter';
 import { FULLART_RATE, SLOT_ODDS } from '$lib/gacha';
 import { versionsOf, foilLabel } from '$lib/variants';
-import { carteDansEdition, editionsDe, type EditionId } from '$lib/editions';
+import { carteDansEdition, editionsDe, editionDe, type EditionId } from '$lib/editions';
 import mesures from '$lib/taux-mesures.json';
 
 /** L'édition par défaut : celle mise en avant au comptoir (la 2ᵉ, « Routes de Xenen »). */
@@ -257,6 +257,15 @@ export function paliers(edition: EditionId = EDITION_DEFAUT): Palier[] {
 			if (dejaVu) {
 				dejaVu.membres++;
 				dejaVu.taux += taux;
+				/* L'exemple montré préfère une carte PROPRE à l'édition affichée : sur
+				   « Épique Full Art Cristallin » en 2ᵉ édition, on veut voir la Lampe
+				   des noms éteints (nouveauté) plutôt que l'Interstice (partagée). */
+				const exclNouveau = editionsDe(c.id).length === 1;
+				const exclActuel = editionsDe(dejaVu.exemple.id.split('--')[0]).length === 1;
+				if (exclNouveau && !exclActuel) {
+					dejaVu.exemple = v.view;
+					dejaVu.exempleFullArt = v.fullArt;
+				}
 				continue;
 			}
 			map.set(key, {
@@ -356,9 +365,12 @@ export interface Vedette {
 	prix: number;
 }
 
+type VedettePlus = Vedette & { id: string; exclusive: boolean; rarete: Rarity; estAlt: boolean };
+
 export function vedettesDe(edition: EditionId = EDITION_DEFAUT, n = 5): Vedette[] {
-	/* meilleure version de chaque carte de l'édition, + si elle lui est exclusive */
-	const meilleure = new Map<string, Vedette & { id: string; exclusive: boolean }>();
+	/* la version la plus PRÉCIEUSE de chaque carte de l'édition — pour Avel c'est
+	   sa Full Art SP, pour Velsa son Alt, pour un prismatique sa Full Art SP. */
+	const meilleure = new Map<string, VedettePlus>();
 	for (const c of cards) {
 		if (!carteDansEdition(c.id, edition)) continue;
 		const exclusive = editionsDe(c.id).length === 1;
@@ -367,25 +379,45 @@ export function vedettesDe(edition: EditionId = EDITION_DEFAUT, n = 5): Vedette[
 			const vue = meilleure.get(c.id);
 			const taux = tauxVersion(c, v, edition);
 			if (!vue || prix > vue.prix || (prix === vue.prix && taux < vue.taux)) {
-				meilleure.set(c.id, { id: c.id, exclusive, card: v.view, label: v.label, taux, prix });
+				meilleure.set(c.id, {
+					id: c.id,
+					exclusive,
+					rarete: (v.view.sourceRarity ?? v.view.rarity) as Rarity,
+					estAlt: !!v.view.alt,
+					card: v.view,
+					label: v.label,
+					taux,
+					prix
+				});
 			}
 		}
 	}
 	const parValeur = (a: Vedette, b: Vedette) => b.prix - a.prix || a.taux - b.taux;
-	const toutes = [...meilleure.values()].sort(parValeur);
+	const toutes = [...meilleure.values()];
+	const parId = new Map(toutes.map((v) => [v.id, v]));
 
-	/* Un chase qui RESSEMBLE à son édition : les grosses cartes globales (souvent
-	   les prismatiques et légendaires, partagées) ET les plus belles pièces
-	   PROPRES à cette édition — sinon les deux boosters afficheraient le même mur.
-	   On réserve jusqu'à deux places aux exclusives, le reste aux plus fortes. */
-	const gardeExclusives = Math.min(2, n);
-	const exclusives = toutes.filter((v) => v.exclusive).slice(0, gardeExclusives);
-	const choisies = new Set(exclusives.map((v) => v.id));
-	for (const v of toutes) {
-		if (choisies.size >= n) break;
-		if (!choisies.has(v.id)) choisies.add(v.id);
-	}
-	return toutes.filter((v) => choisies.has(v.id)).sort(parValeur).slice(0, n);
+	/* Un chase CURÉ, qui raconte l'édition — pas seulement les plus chères :
+	   1. le visage du set (la carte en couverture, en Full Art SP) ;
+	   2. l'art alternatif, chase visuel unique ;
+	   3. une pièce PROPRE à l'édition (une nouveauté en 2ᵉ, une épique en 1ʳᵉ) ;
+	   4. les prismatiques puis les légendaires — les « SP rouges », cadre noble ;
+	   5. on complète avec les plus fortes restantes. */
+	const ordre: string[] = [];
+	const add = (id?: string) => {
+		if (id && parId.has(id) && !ordre.includes(id)) ordre.push(id);
+	};
+	const listeParValeur = (pred: (v: VedettePlus) => boolean) =>
+		toutes.filter(pred).sort(parValeur);
+
+	add(editionDe(edition).coverId);
+	for (const v of listeParValeur((v) => v.estAlt)) add(v.id);
+	for (const v of listeParValeur((v) => v.exclusive).slice(0, 1)) add(v.id);
+	for (const v of listeParValeur((v) => v.rarete === 'prism')) add(v.id);
+	for (const v of listeParValeur((v) => v.rarete === 'legendary')) add(v.id);
+	for (const v of listeParValeur((v) => v.exclusive)) add(v.id);
+	for (const v of [...toutes].sort(parValeur)) add(v.id);
+
+	return ordre.slice(0, n).map((id) => parId.get(id)!);
 }
 
 export function classes(edition: EditionId = EDITION_DEFAUT): Classe[] {
