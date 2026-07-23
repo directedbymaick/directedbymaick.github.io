@@ -23,6 +23,14 @@
 		{
 			"foilPreset": "showcase",
 			"fullArt": true
+		},
+		{
+			"foilPreset": "amazing",
+			"fullArt": false
+		},
+		{
+			"foilPreset": "amazing",
+			"fullArt": true
 		}
 	]
 }

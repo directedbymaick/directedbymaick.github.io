@@ -123,6 +123,9 @@ export interface CardData {
 	/** Foil officiel de la vue Full Art, validé depuis le Lab. Sans lui, la vue
 	    full art retombe sur son défaut (showcase si détourage, sinon galerie). */
 	fullArtFoil?: FoilPreset;
+	/** Full Art SP : la recette de holo DERRIÈRE le détourage (défaut : galerie).
+	    Exception d'auteur — ex. Avel flotte sur l'holographique, pas la Galerie. */
+	spFullArtFoil?: FoilPreset;
 	/** Variantes officielles SUPPLÉMENTAIRES, validées depuis le Lab : une même
 	    carte peut exister en plusieurs finitions (ex. cosmique ET galerie).
 	    Elles s'ajoutent au Registre à côté de la version de base. */

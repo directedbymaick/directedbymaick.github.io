@@ -144,13 +144,21 @@
 		legendary: 'radiant rare',
 		prism: 'rare secret'
 	};
+	/* les recettes empruntables par une carte qui surcharge son fond de SP */
+	const recettesFond: Record<string, string> = {
+		regular: 'rare holo',
+		amazing: 'amazing rare',
+		cosmos: 'rare holo cosmos',
+		galerie: 'trainer gallery rare holo'
+	};
 	const holoRarity = $derived(
 		foil.preset === 'showcase'
-			? /* en Full Art, le holo derrière le détourage est TOUJOURS la Galerie :
-			     la vue full art force la rareté prismatique, le fond suivrait sinon
+			? /* en Full Art, le holo derrière le détourage est la Galerie — sauf
+			     exception d'auteur (spFullArtFoil), ex. Avel sur l'holographique.
+			     La vue full art force la rareté prismatique, le fond suivrait sinon
 			     une recette (rare secret) qui n'est plus une variante proposée. */
 				fullArt
-				? 'trainer gallery rare holo'
+				? (recettesFond[card.spFullArtFoil ?? 'galerie'] ?? 'trainer gallery rare holo')
 				: (showcaseHolo[card.rarity] ?? 'rare rainbow alt')
 			: ({
 					mat: '',
