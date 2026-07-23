@@ -77,7 +77,7 @@ export const EDITIONS: Edition[] = [
 		id: 'ed2',
 		nom: '2ᵉ édition',
 		badge: '2ᵉ Édition',
-		sousTitre: 'Les peuples de soutien',
+		sousTitre: 'Routes de Xenen',
 		cover: '/art/avel-rieur-des-retours.webp',
 		clePity: 'expelled-pity-ed2',
 		cartes: listeDe([...EXTENSION_IDS, ...REPRISES_ED2])

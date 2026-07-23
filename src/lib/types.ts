@@ -126,6 +126,9 @@ export interface CardData {
 	/** Full Art SP : la recette de holo DERRIÈRE le détourage (défaut : galerie).
 	    Exception d'auteur — ex. Avel flotte sur l'holographique, pas la Galerie. */
 	spFullArtFoil?: FoilPreset;
+	/** SP (hors Full Art) : cadrage du FOND d'illustration seul, sans toucher au
+	    détourage (qui garde --art-pos / ses offsets). Ex. « center 4% ». */
+	spArtPos?: string;
 	/** Variantes officielles SUPPLÉMENTAIRES, validées depuis le Lab : une même
 	    carte peut exister en plusieurs finitions (ex. cosmique ET galerie).
 	    Elles s'ajoutent au Registre à côté de la version de base. */

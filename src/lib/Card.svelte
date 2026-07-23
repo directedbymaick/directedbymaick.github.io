@@ -184,7 +184,7 @@
 			((card.sourceRarity ?? card.rarity) === 'prism' ? 'cristal' : 'or')}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.spArtPos ? `; --sp-art-pos: ${card.spArtPos}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -729,6 +729,11 @@
 	.art.showcase {
 		isolation: isolate;
 		z-index: 0;
+	}
+	/* le FOND du mode SP peut être recadré seul (--sp-art-pos), le détourage
+	   garde son propre calage — ex. Avel : décor descendu, personnage intact */
+	.art.showcase .art-base {
+		object-position: var(--sp-art-pos, var(--art-pos, center 12%));
 	}
 	/* le détourage déborde la fenêtre d'art et descend dans le corps, DERRIÈRE le
 	   texte : z-index 2 (le holo est en dessous, le contenu/coût/sigil au-dessus).
