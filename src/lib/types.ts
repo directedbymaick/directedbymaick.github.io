@@ -135,6 +135,12 @@ export interface CardData {
 	/** object-position du détourage en Full Art SP, découplé d'artPosition.
 	    Sans lui : retombe sur artPosition puis center 12% (comportement d'origine). */
 	faCutoutPos?: string;
+	/** Full Art : léger zoom du fond, pour créer le débord vertical qui permet de
+	    le recadrer (par défaut 1, aucun zoom). À coupler avec faArtDrop. */
+	faArtScale?: number;
+	/** Full Art : décalage vertical du fond (ex. « 4% » = descendu). Nécessite un
+	    faArtScale > 1 pour rester couvert. Par défaut 0 (aucun décalage). */
+	faArtDrop?: string;
 	/** Variantes officielles SUPPLÉMENTAIRES, validées depuis le Lab : une même
 	    carte peut exister en plusieurs finitions (ex. cosmique ET galerie).
 	    Elles s'ajoutent au Registre à côté de la version de base. */

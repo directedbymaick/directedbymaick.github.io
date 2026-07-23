@@ -184,7 +184,7 @@
 			((card.sourceRarity ?? card.rarity) === 'prism' ? 'cristal' : 'or')}
 		data-kind={card.kind}
 		data-fullart={fullArt ? 'true' : 'false'}
-		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.spArtPos ? `; --sp-art-pos: ${card.spArtPos}` : ''}{card.cutoutPos ? `; --cutout-pos: ${card.cutoutPos}` : ''}{card.faCutoutPos ? `; --fa-cutout-pos: ${card.faCutoutPos}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
+		style="{styleString(foil.vars)}; {pointerVars}{card.artPosition ? `; --art-pos: ${card.artPosition}` : ''}{card.spArtPos ? `; --sp-art-pos: ${card.spArtPos}` : ''}{card.cutoutPos ? `; --cutout-pos: ${card.cutoutPos}` : ''}{card.faCutoutPos ? `; --fa-cutout-pos: ${card.faCutoutPos}` : ''}{card.faArtScale ? `; --fa-art-scale: ${card.faArtScale}` : ''}{card.faArtDrop ? `; --fa-art-drop: ${card.faArtDrop}` : ''}{card.cutoutY ? `; --cutout-y: ${card.cutoutY}` : ''}{card.cutoutX ? `; --cutout-x: ${card.cutoutX}` : ''}{card.faCutoutY ? `; --fa-cutout-y: ${card.faCutoutY}` : ''}{card.faCutoutX ? `; --fa-cutout-x: ${card.faCutoutX}` : ''}{card.faCutoutScale ? `; --fa-cutout-scale: ${card.faCutoutScale}` : ''}{card.faArtLift ? `; --fa-art-lift: ${card.faArtLift}` : ''}{card.cutoutScale ? `; --cutout-scale: ${card.cutoutScale}` : ''}"
 		onpointermove={onMove}
 		onpointerleave={onLeave}
 	>
@@ -526,6 +526,10 @@
 	.card[data-fullart='true'] .art-base {
 		top: calc(-1 * var(--fa-art-lift, 0%));
 		height: calc(100% + var(--fa-art-lift, 0%));
+		/* recadrage vertical du fond : un léger zoom (--fa-art-scale) crée le débord,
+		   --fa-art-drop l'exploite pour descendre l'image. Défaut neutre (1 / 0). */
+		transform: scale(var(--fa-art-scale, 1)) translateY(var(--fa-art-drop, 0%));
+		transform-origin: center center;
 	}
 	/* Le voile du bas doit porter le texte, pas éteindre l'illustration : sur les
 	   artworks lumineux (Velsa, Bord du monde) un noir quasi opaque tranchait net.

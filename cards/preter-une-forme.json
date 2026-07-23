@@ -18,5 +18,7 @@
 		"seed": 157599
 	},
 	"flavor": "Un corps n’est qu’une réponse tenue assez longtemps.",
-	"fullArt": true
+	"fullArt": true,
+	"faArtScale": 1.1,
+	"faArtDrop": "4%"
 }
