@@ -368,29 +368,41 @@ export interface Vedette {
 type VedettePlus = Vedette & { id: string; exclusive: boolean; rarete: Rarity; estAlt: boolean };
 
 export function vedettesDe(edition: EditionId = EDITION_DEFAUT, n = 5): Vedette[] {
-	/* la version la plus PRÉCIEUSE de chaque carte de l'édition — pour Avel c'est
-	   sa Full Art SP, pour Velsa son Alt, pour un prismatique sa Full Art SP. */
+	/* On classe chaque carte par sa version la plus PRÉCIEUSE, mais on peut en
+	   AFFICHER une autre : le visage du set et les prismatiques en Full Art SP,
+	   Velsa en Alt — et les LÉGENDAIRES en SP simple (non Full Art), le cadre
+	   rouge noble que le joueur reconnaît, plutôt que leur Full Art SP. */
 	const meilleure = new Map<string, VedettePlus>();
 	for (const c of cards) {
 		if (!carteDansEdition(c.id, edition)) continue;
 		const exclusive = editionsDe(c.id).length === 1;
-		for (const v of versionsOf(c, FULLART_RATE)) {
+		const versions = versionsOf(c, FULLART_RATE);
+		type Cand = { v: ReturnType<typeof versionsOf>[number]; prix: number; taux: number };
+		let best: Cand | null = null;
+		let spNue: Cand | null = null;
+		for (const v of versions) {
 			const prix = prixVersion(c, v);
-			const vue = meilleure.get(c.id);
 			const taux = tauxVersion(c, v, edition);
-			if (!vue || prix > vue.prix || (prix === vue.prix && taux < vue.taux)) {
-				meilleure.set(c.id, {
-					id: c.id,
-					exclusive,
-					rarete: (v.view.sourceRarity ?? v.view.rarity) as Rarity,
-					estAlt: !!v.view.alt,
-					card: v.view,
-					label: v.label,
-					taux,
-					prix
-				});
+			if (!best || prix > best.prix || (prix === best.prix && taux < best.taux)) {
+				best = { v, prix, taux };
 			}
+			// la SP « nue » : détourée, mais PAS Full Art (le cadre rouge simple)
+			if (v.foil === 'showcase' && !v.fullArt && v.view.cutout) spNue = { v, prix, taux };
 		}
+		if (!best) continue;
+		const rarete = (best.v.view.sourceRarity ?? best.v.view.rarity) as Rarity;
+		// une légendaire s'affiche en SP non Full Art quand elle en a une
+		const montre = rarete === 'legendary' && spNue ? spNue : best;
+		meilleure.set(c.id, {
+			id: c.id,
+			exclusive,
+			rarete,
+			estAlt: !!best.v.view.alt,
+			card: montre.v.view,
+			label: montre.v.label,
+			taux: montre.taux,
+			prix: best.prix // le RANG reste celui de la meilleure version
+		});
 	}
 	const parValeur = (a: Vedette, b: Vedette) => b.prix - a.prix || a.taux - b.taux;
 	const toutes = [...meilleure.values()];
